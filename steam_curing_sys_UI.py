@@ -5,6 +5,8 @@ from PyQt5.QtGui import QFont, QPixmap, QPalette, QColor
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtWidgets import QButtonGroup
 import random
+from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QDialog
 
 class SensorFrame(QFrame):
     def __init__(self, title, value):
@@ -201,8 +203,8 @@ class ControlButtons(QFrame):
 class IndustrialControlPanel(QWidget):
     def __init__(self, sensor_thread):
         super().__init__()
-        self.initUI()
         self.sensor_thread = sensor_thread
+        self.initUI()
 
     def initUI(self):
         self.setWindowTitle('工业控制面板')
@@ -236,10 +238,10 @@ class IndustrialControlPanel(QWidget):
         limits_layout = QHBoxLayout()
         limits_layout.setSpacing(10)
 
-        self.temp_limit_frame = LimitControlFrame("温度限制", 80, 70, "°C")
+        self.temp_limit_frame = LimitControlFrame("温度限制", self.sensor_thread.temp_upper_limit, self.sensor_thread.temp_lower_limit, "°C")
         limits_layout.addWidget(self.temp_limit_frame)
 
-        self.humidity_limit_frame = LimitControlFrame("湿度限制", 90, 80, "%")
+        self.humidity_limit_frame = LimitControlFrame("湿度限制", self.sensor_thread.humidity_upper_limit, self.sensor_thread.humidity_lower_limit, "%")
         limits_layout.addWidget(self.humidity_limit_frame)
 
         self.control_buttons = ControlButtons()
@@ -254,6 +256,9 @@ class IndustrialControlPanel(QWidget):
         self.control_buttons.mode1_button.clicked.connect(self.on_mode1_clicked)
         self.control_buttons.mode2_button.clicked.connect(self.on_mode2_clicked)
         self.control_buttons.export_button.clicked.connect(self.on_export_clicked)
+
+        # 设置模式一按钮为初始选中状态
+        self.control_buttons.mode1_button.setChecked(True)
 
         limits_widget = QWidget()
         limits_widget.setLayout(limits_layout)
@@ -318,6 +323,76 @@ class IndustrialControlPanel(QWidget):
         # print(f"Sending limit settings: Temp {temp_lower}-{temp_upper}°C, Humidity {humidity_lower}-{humidity_upper}%")
         # 发射信号，将数据传递给工作线程
         self.sensor_thread.limit_settings.emit(temp_upper, temp_lower, humidity_upper, humidity_lower)
+
+    def receive_limit_settings(self, temp_upper, temp_lower, humidity_upper, humidity_lower):
+        self.temp_limit_frame.upper_control.value = temp_upper
+        self.temp_limit_frame.lower_control.value = temp_lower
+        self.humidity_limit_frame.upper_control.value = humidity_upper
+        self.humidity_limit_frame.lower_control.value = humidity_lower
+
+    def show_export_completed_dialog(self, success):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("导出完成")
+        
+        # 获取屏幕尺寸
+        screen = QDesktopWidget().screenNumber(QDesktopWidget().cursor().pos())
+        screen_size = QDesktopWidget().screenGeometry(screen).size()
+        
+        # 设置对话框大小为屏幕的四分之一
+        dialog_width = screen_size.width() // 2
+        dialog_height = screen_size.height() // 2
+        dialog.resize(dialog_width, dialog_height)
+
+        layout = QVBoxLayout()
+
+        # 创建并设置消息标签
+        if success == 1:
+            message_label = QLabel("数据已成功导出")
+        elif success == 0:
+            message_label = QLabel("未检测到U盘，请插入U盘")
+        elif success == -1:
+            message_label = QLabel("数字继电器模块未插入，系统故障")
+        message_label.setAlignment(Qt.AlignCenter)
+        message_label.setFont(QFont("Arial", 16, QFont.Bold))
+        message_label.setStyleSheet("color: #4CAF50;")  # 绿色文本
+
+        # 创建确定按钮
+        ok_button = QPushButton("确定")
+        ok_button.setFont(QFont("Arial", 12))
+        ok_button.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+        """)
+        ok_button.clicked.connect(dialog.accept)
+
+        # 将部件添加到布局中
+        layout.addStretch(1)
+        layout.addWidget(message_label)
+        layout.addStretch(1)
+        layout.addWidget(ok_button, alignment=Qt.AlignCenter)
+        layout.addStretch(1)
+
+        dialog.setLayout(layout)
+
+        # 设置对话框的样式
+        dialog.setStyleSheet("""
+            QDialog {
+                background-color: #f0f0f0;
+                border: 2px solid #4CAF50;
+                border-radius: 10px;
+            }
+        """)
+
+        # 显示对话框
+        dialog.exec_()
 
     def closeEvent(self, event):
         super().closeEvent(event)
