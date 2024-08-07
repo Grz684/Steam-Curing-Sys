@@ -16,12 +16,15 @@ import json
 import pyudev
 import shutil
 import subprocess
+import signal
 
 class ROS2Thread(QThread):
     # pyqtSignal必须是类属性
     limit_settings = pyqtSignal(float, float, float, float)
     recover_limit_settings = pyqtSignal(float, float, float, float)
     data_updated = pyqtSignal(list)
+    left_steam_status_updated = pyqtSignal(int)
+    right_steam_status_updated = pyqtSignal(int)
     mode_chosen = pyqtSignal(int)
     export_completed = pyqtSignal(int)
     # error_occurred = pyqtSignal(str)  # 添加错误信号
@@ -44,6 +47,11 @@ class ROS2Thread(QThread):
             self.node = SensorSubscriberNode(self)
             while self.running and rclpy.ok():
                 rclpy.spin_once(self.node, timeout_sec=0.1)
+            # 关闭输出
+            self.node.control_output(self.node.zone1_output_addr, False)
+            self.node.control_output(self.node.zone2_output_addr, False)
+            # 在子线程中关闭数据库连接
+            self.node.conn.close()
             self.node.destroy_node()
             rclpy.shutdown()
         except ModbusControlException as e:
@@ -52,7 +60,6 @@ class ROS2Thread(QThread):
             self.running = False
         
     def stop(self):
-        self.node.conn.close()
         self.running = False
 
     def process_limit_settings(self, temp_upper, temp_lower, humidity_upper, humidity_lower):
@@ -129,6 +136,10 @@ class SensorSubscriberNode(Node):
                 raise ModbusControlException(f"无法连接到 Modbus 服务器 {self.dio_ip}:{self.dio_port}")
         except ConnectionException as e:
             raise ModbusControlException(f"Modbus 连接错误: {e}")
+        
+        # 初始化关闭所有输出
+        self.control_output(self.zone1_output_addr, False)
+        self.control_output(self.zone2_output_addr, False)
         
         for i in range(1, 5):
             self.create_subscription(
@@ -273,24 +284,29 @@ class SensorSubscriberNode(Node):
             self.zone1_humidifier_on = True
             self.get_logger().info('Turning zone1 humidifier ON')
             self.control_output(self.zone1_output_addr, True)
+            self.ros2_thread.left_steam_status_updated.emit(1)
 
     def turn_zone1_humidifier_off(self):
         if self.zone1_humidifier_on:
             self.zone1_humidifier_on = False
             self.get_logger().info('Turning zone1 humidifier OFF')
             self.control_output(self.zone1_output_addr, False)
+            self.ros2_thread.left_steam_status_updated.emit(0)
 
     def turn_zone2_humidifier_on(self):
         if not self.zone2_humidifier_on:
             self.zone2_humidifier_on = True
             self.get_logger().info('Turning zone2 humidifier ON')
             self.control_output(self.zone2_output_addr, True)
+            self.ros2_thread.right_steam_status_updated.emit(1)
+
 
     def turn_zone2_humidifier_off(self):
         if self.zone2_humidifier_on:
             self.zone2_humidifier_on = False
             self.get_logger().info('Turning zone2 humidifier OFF')
             self.control_output(self.zone2_output_addr, False)
+            self.ros2_thread.right_steam_status_updated.emit(0)
 
     @staticmethod
     def create_tables(cursor):
@@ -373,9 +389,9 @@ class SensorSubscriberNode(Node):
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
         tables = cursor.fetchall()
 
-        # 生成带有当前时间的文件名
-        current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-        excel_file = os.path.join(usb_mount, f'{current_time}_sensor_data_export.xlsx')
+        # 生成带有当前时间的中文文件名
+        current_time = datetime.now().strftime("%Y年%m月%d日_%H时%M分%S秒")
+        excel_file = os.path.join(usb_mount, f'{current_time}_传感器数据导出.xlsx')
 
         try:
             with pd.ExcelWriter(excel_file, engine='openpyxl') as writer:
@@ -384,8 +400,31 @@ class SensorSubscriberNode(Node):
                     # 读取表数据到DataFrame
                     df = pd.read_sql_query(f"SELECT * FROM {table_name}", conn)
                     
+                    # 翻译表名
+                    if 'temperature_sensor_1' in table_name:
+                        translated_table_name = '左侧温度传感器1'
+                    elif 'temperature_sensor_2' in table_name:
+                        translated_table_name = '左侧温度传感器2'
+                    elif 'temperature_sensor_3' in table_name:
+                        translated_table_name = '右侧温度传感器3'
+                    elif 'temperature_sensor_4' in table_name:
+                        translated_table_name = '右侧温度传感器4'
+                    elif 'humidity_sensor_1' in table_name:
+                        translated_table_name = '左侧湿度传感器1'
+                    elif 'humidity_sensor_2' in table_name:
+                        translated_table_name = '左侧湿度传感器2'
+                    elif 'humidity_sensor_3' in table_name:
+                        translated_table_name = '右侧湿度传感器3'
+                    elif 'humidity_sensor_4' in table_name:
+                        translated_table_name = '右侧湿度传感器4'
+                    else:
+                        translated_table_name = table_name
+                    
+                    # 翻译列名
+                    df.rename(columns={'timestamp': '时间戳', 'value': '数值'}, inplace=True)
+                    
                     # 将DataFrame写入Excel的一个工作表
-                    df.to_excel(writer, sheet_name=table_name, index=False)
+                    df.to_excel(writer, sheet_name=translated_table_name, index=False)
 
             print(f"数据已导出到U盘: {excel_file}")
         except Exception as e:
@@ -475,12 +514,29 @@ if __name__ == '__main__':
     ros2_thread.recover_limit_settings.connect(ex.receive_limit_settings)
     ros2_thread.mode_chosen.connect(ros2_thread.process_mode_chosen)
     ros2_thread.export_completed.connect(ex.show_export_completed_dialog)
+    ros2_thread.left_steam_status_updated.connect(ex.update_left_steam_status)
+    ros2_thread.right_steam_status_updated.connect(ex.update_right_steam_status)
     ros2_thread.start()
 
-    ex.showFullScreen()
-    app.exec_()
+    def signal_handler(sig, frame):
+        print("SIGINT received. Shutting down gracefully...")
+        if 'ex' in globals():
+            ex.close()
+        if 'ros2_thread' in globals():
+            ros2_thread.stop()
+            ros2_thread.wait()
+        QApplication.quit()
 
+    # 设置信号处理器
+    signal.signal(signal.SIGINT, signal_handler)
+
+    ex.showFullScreen()
+    
+    # 使用 app.exec() 替代 app.exec_()
+    exit_code = app.exec()
+
+    # 清理操作
     ros2_thread.stop()
     ros2_thread.wait()
 
-    sys.exit()
+    sys.exit(exit_code)

@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import (QApplication, QWidget, QGridLayout, QLabel, QPushButton,
 QVBoxLayout, QHBoxLayout, QFrame, QSizePolicy, QGroupBox, QScrollArea, QDesktopWidget)
 from PyQt5.QtGui import QFont, QPixmap, QPalette, QColor
-from PyQt5.QtCore import Qt, QEvent
+from PyQt5.QtCore import Qt, QEvent, QTimer
 from PyQt5.QtWidgets import QButtonGroup
 import random
 from PyQt5.QtWidgets import QMessageBox
@@ -21,11 +21,11 @@ class SensorFrame(QFrame):
 
         self.title_label = QLabel(self.title)
         self.title_label.setAlignment(Qt.AlignCenter)
-        self.title_label.setStyleSheet("font-weight: bold; color: #333333;")
+        self.title_label.setStyleSheet("font-weight: bold; color: #333333; font-size: 18px;") # 增大标题字体大小
         
         self.value_label = QLabel(self.value)
         self.value_label.setAlignment(Qt.AlignCenter)
-        self.value_label.setStyleSheet("font-size: 24px; font-weight: bold; color: #4CAF50;")
+        self.value_label.setStyleSheet("font-size: 24px; font-weight: bold; color: #4CAF50;")  # 增大数值字体大小
         
         layout.addWidget(self.title_label)
         layout.addWidget(self.value_label)
@@ -34,7 +34,7 @@ class SensorFrame(QFrame):
         self.setFrameStyle(QFrame.Box | QFrame.Plain)
         self.setLineWidth(2)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.setMinimumSize(120, 80)
+        self.setMinimumSize(150, 120)  # 增大传感器框的最小尺寸
         self.setStyleSheet("""
             SensorFrame {
                 background-color: white;
@@ -49,6 +49,8 @@ class LimitControl(QFrame):
         self.label_text = label_text
         self.value = value
         self.unit = unit
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.on_timeout)
         self.initUI()
 
     def initUI(self):
@@ -57,20 +59,22 @@ class LimitControl(QFrame):
         layout.setSpacing(5)
 
         label = QLabel(self.label_text)
-        label.setStyleSheet("color: #666666; min-width: 40px;")
+        label.setStyleSheet("color: #666666; min-width: 40px; font-size: 18px;")
         layout.addWidget(label)
 
         self.minus_button = QPushButton("-")
-        self.minus_button.setFixedSize(30, 30)
-        self.minus_button.clicked.connect(self.decrease_value)
+        self.minus_button.setFixedSize(40, 40)
+        self.minus_button.pressed.connect(self.start_timer)
+        self.minus_button.released.connect(self.stop_timer)
+        self.minus_button.clicked.connect(self.decrease_value)  # 添加单击事件
         layout.addWidget(self.minus_button)
 
         self.value_label = QLabel(f"{self.value} {self.unit}")
         self.value_label.setAlignment(Qt.AlignCenter)
         self.value_label.setStyleSheet("""
-            font-size: 18px; 
+            font-size: 20px; 
             font-weight: bold; 
-            min-width: 80px; 
+            min-width: 100px; 
             background-color: white; 
             border: 1px solid #dcdcdc; 
             border-radius: 5px;
@@ -79,8 +83,10 @@ class LimitControl(QFrame):
         layout.addWidget(self.value_label)
 
         self.plus_button = QPushButton("+")
-        self.plus_button.setFixedSize(30, 30)
-        self.plus_button.clicked.connect(self.increase_value)
+        self.plus_button.setFixedSize(40, 40)
+        self.plus_button.pressed.connect(self.start_timer)
+        self.plus_button.released.connect(self.stop_timer)
+        self.plus_button.clicked.connect(self.increase_value)  # 添加单击事件
         layout.addWidget(self.plus_button)
 
         layout.addStretch()
@@ -95,8 +101,9 @@ class LimitControl(QFrame):
             QPushButton {
                 background-color: #4CAF50;
                 color: white;
-                border-radius: 15px;
+                border-radius: 20px;
                 font-weight: bold;
+                font-size: 24px;
             }
             QPushButton:hover {
                 background-color: #45a049;
@@ -112,10 +119,35 @@ class LimitControl(QFrame):
         self.update_value()
 
     def update_value(self):
-        self.value_label.setText(f"{self.value} {self.unit}")
         main_window = self.window()
         if isinstance(main_window, IndustrialControlPanel):
-            main_window.send_limit_settings()
+            if self == main_window.temp_limit_frame.upper_control:
+                if self.value <= main_window.temp_limit_frame.lower_control.value:
+                    return
+            elif self == main_window.temp_limit_frame.lower_control:
+                if self.value >= main_window.temp_limit_frame.upper_control.value:
+                    return
+            elif self == main_window.humidity_limit_frame.upper_control:
+                if self.value <= main_window.humidity_limit_frame.lower_control.value:
+                    return
+            elif self == main_window.humidity_limit_frame.lower_control:
+                if self.value >= main_window.humidity_limit_frame.upper_control.value:
+                    return
+
+        self.value_label.setText(f"{self.value} {self.unit}")
+        main_window.send_limit_settings()
+
+    def on_timeout(self):
+        if self.plus_button.isDown():
+            self.increase_value()
+        elif self.minus_button.isDown():
+            self.decrease_value()
+
+    def start_timer(self):
+        self.timer.start(200)
+
+    def stop_timer(self):
+        self.timer.stop()
 
 class LimitControlFrame(QFrame):
     def __init__(self, title, upper_value, lower_value, unit):
@@ -131,7 +163,7 @@ class LimitControlFrame(QFrame):
         layout.setSpacing(5)
 
         title_label = QLabel(self.title)
-        title_label.setStyleSheet("font-weight: bold; color: #333333;")
+        title_label.setStyleSheet("font-weight: bold; color: #333333; font-size: 18px;")
         layout.addWidget(title_label)
 
         layout.addWidget(self.upper_control)
@@ -146,6 +178,7 @@ class LimitControlFrame(QFrame):
             }
         """)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.setMinimumHeight(150)  # 设置限制控制框的最小高度
 
 class ControlButtons(QFrame):
     def __init__(self):
@@ -154,14 +187,14 @@ class ControlButtons(QFrame):
 
     def initUI(self):
         layout = QVBoxLayout()
-        layout.setContentsMargins(5, 5, 5, 5)
-        layout.setSpacing(5)
+        layout.setContentsMargins(10, 10, 10, 10) # 布局内的部件(在这个例子中是按钮)与布局边缘之间的空间
+        layout.setSpacing(10) # 增加按钮之间的间距
 
         self.mode_group = QButtonGroup(self)
 
         self.mode1_button = self.create_mode_button("模式一")
         self.mode2_button = self.create_mode_button("模式二")
-        self.export_button = QPushButton("导出数据")
+        self.export_button = self.create_export_button("导出数据")  # 使用新的方法创建导出数据按钮
 
         self.mode_group.addButton(self.mode1_button)
         self.mode_group.addButton(self.mode2_button)
@@ -171,24 +204,28 @@ class ControlButtons(QFrame):
         layout.addWidget(self.export_button)
 
         self.setLayout(layout)
+        # QFrame 的内容(在这个例子中是布局和按钮)与 QFrame 边缘之间的空间
         self.setStyleSheet("""
             QFrame {
                 background-color: #e0e0e0;
                 border-radius: 5px;
-                padding: 5px;
+                padding: 10px;
             }
         """)
+        self.setMinimumHeight(150)
 
     def create_mode_button(self, text):
         btn = QPushButton(text)
         btn.setCheckable(True)
+        # 减少按钮的内边距
         btn.setStyleSheet("""
             QPushButton {
                 background-color: #f0f0f0;
                 border: 1px solid #d0d0d0;
                 border-radius: 5px;
-                padding: 5px;
+                padding: 15px;
                 font-weight: bold;
+                font-size: 18px;
             }
             QPushButton:checked {
                 background-color: #4CAF50;
@@ -200,6 +237,24 @@ class ControlButtons(QFrame):
         """)
         return btn
 
+    def create_export_button(self, text):
+        btn = QPushButton(text)
+        btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2196F3;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 15px;
+                font-weight: bold;
+                font-size: 18px;
+            }
+            QPushButton:hover {
+                background-color: #1976D2;
+            }
+        """)
+        return btn
+    
 class IndustrialControlPanel(QWidget):
     def __init__(self, sensor_thread):
         super().__init__()
@@ -211,23 +266,51 @@ class IndustrialControlPanel(QWidget):
         main_layout = QVBoxLayout()
         main_layout.setSpacing(10)
 
-        sensor_grid = QGridLayout()
-        sensor_grid.setSpacing(15)
+        sensor_grid = QHBoxLayout()
+        sensor_grid.setSpacing(10)
+
+        left_group_box = QGroupBox()
+        left_layout = QGridLayout()
+        left_layout.setSpacing(10)  # 减小左侧网格的间距
+
+        right_group_box = QGroupBox()  
+        right_layout = QGridLayout()
+        right_layout.setSpacing(10)  # 减小右侧网格的间距
+
+        self.left_status_label = QLabel("左蒸汽机: 未工作")
+        self.left_status_label.setStyleSheet("font-weight: bold; color: red; font-size: 20px;")
+        left_layout.addWidget(self.left_status_label, 0, 0, 1, 2, Qt.AlignLeft | Qt.AlignTop)
+
+        self.right_status_label = QLabel("右蒸汽机: 未工作")
+        self.right_status_label.setStyleSheet("font-weight: bold; color: red; font-size: 20px;")
+        right_layout.addWidget(self.right_status_label, 0, 0, 1, 2, Qt.AlignLeft | Qt.AlignTop)
+
         self.sensor_frames = []
-        for i in range(4):
+        for i in range(2):
             sensor_frame = SensorFrame(f"温度传感器{i+1}", "未知")
             self.sensor_frames.append(sensor_frame)
-            sensor_grid.addWidget(sensor_frame, 0, i)
+            left_layout.addWidget(sensor_frame, 1, i)
+
+        for i in range(2, 4):
+            sensor_frame = SensorFrame(f"温度传感器{i+1}", "未知")
+            self.sensor_frames.append(sensor_frame)
+            right_layout.addWidget(sensor_frame, 1, i-2)
         
-        for i in range(4):
+        for i in range(2):
             sensor_frame = SensorFrame(f"湿度传感器{i+1}", "未知")
             self.sensor_frames.append(sensor_frame)
-            sensor_grid.addWidget(sensor_frame, 1, i)
+            left_layout.addWidget(sensor_frame, 2, i)
+        
+        for i in range(2, 4):
+            sensor_frame = SensorFrame(f"湿度传感器{i+1}", "未知")
+            self.sensor_frames.append(sensor_frame)
+            right_layout.addWidget(sensor_frame, 2, i-2)
 
-        for i in range(4):
-            sensor_grid.setColumnStretch(i, 1)
-        for i in range(2):
-            sensor_grid.setRowStretch(i, 1)
+        left_group_box.setLayout(left_layout)
+        right_group_box.setLayout(right_layout)
+
+        sensor_grid.addWidget(left_group_box)
+        sensor_grid.addWidget(right_group_box)
 
         sensor_widget = QWidget()
         sensor_widget.setLayout(sensor_grid)
@@ -270,17 +353,17 @@ class IndustrialControlPanel(QWidget):
         logo_pixmap = QPixmap('fute_logo.png')
         if not logo_pixmap.isNull():
             logo_label = QLabel()
-            logo_pixmap = logo_pixmap.scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            logo_pixmap = logo_pixmap.scaled(81, 81, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             logo_label.setPixmap(logo_pixmap)
-            logo_label.setFixedSize(64, 64)
+            logo_label.setFixedSize(81, 81)
         else:
             logo_label = QLabel('Logo')
             logo_label.setStyleSheet('background-color: #cccccc; padding: 5px; font-size: 14px;')
-            logo_label.setFixedSize(64, 64)
+            logo_label.setFixedSize(81, 81)
             logo_label.setAlignment(Qt.AlignCenter)
 
-        company_info = QLabel('涪特智能装备(重庆)有限公司')
-        company_info.setFont(QFont('Arial', 11, QFont.Bold))
+        company_info = QLabel(' 涪特智能装备(重庆)有限公司')
+        company_info.setFont(QFont('Arial', 16, QFont.Bold))  # 增大公司名称字体
         company_info.setStyleSheet('color: #333333;')
         company_info.setWordWrap(True)
 
@@ -300,7 +383,6 @@ class IndustrialControlPanel(QWidget):
         screen = QDesktopWidget().screenNumber(QDesktopWidget().cursor().pos())
         screen_size = QDesktopWidget().screenGeometry(screen).size()
         self.resize(screen_size)
-
         # self.setMinimumSize(1280, 720)
         self.setStyleSheet("""
             QWidget {
@@ -330,9 +412,40 @@ class IndustrialControlPanel(QWidget):
         self.humidity_limit_frame.upper_control.value = humidity_upper
         self.humidity_limit_frame.lower_control.value = humidity_lower
 
+    # def update_sensor_status(self, left_status, right_status):
+    #     if left_status:
+    #         self.left_status_label.setText("左蒸汽机: 工作中")
+    #         self.left_status_label.setStyleSheet("font-weight: bold; color: green; font-size: 20px;")
+    #     else:
+    #         self.left_status_label.setText("左蒸汽机: 未工作")
+    #         self.left_status_label.setStyleSheet("font-weight: bold; color: red; font-size: 20px;")
+
+    #     if right_status:
+    #         self.right_status_label.setText("右蒸汽机: 工作中")
+    #         self.right_status_label.setStyleSheet("font-weight: bold; color: green; font-size: 20px;")
+    #     else:
+    #         self.right_status_label.setText("右蒸汽机: 未工作")
+    #         self.right_status_label.setStyleSheet("font-weight: bold; color: red; font-size: 20px;")
+
+    def update_left_steam_status(self, status):
+        if status:
+            self.left_status_label.setText("左蒸汽机: 工作中")
+            self.left_status_label.setStyleSheet("font-weight: bold; color: green; font-size: 20px;")
+        else:
+            self.left_status_label.setText("左蒸汽机: 未工作")
+            self.left_status_label.setStyleSheet("font-weight: bold; color: red; font-size: 20px;")
+
+    def update_right_steam_status(self, status):
+        if status:
+            self.right_status_label.setText("右蒸汽机: 工作中")
+            self.right_status_label.setStyleSheet("font-weight: bold; color: green; font-size: 20px;")
+        else:
+            self.right_status_label.setText("右蒸汽机: 未工作")
+            self.right_status_label.setStyleSheet("font-weight: bold; color: red; font-size: 20px;")
+
     def show_export_completed_dialog(self, success):
         dialog = QDialog(self)
-        dialog.setWindowTitle("导出完成")
+        dialog.setWindowTitle("提示消息")
         
         # 获取屏幕尺寸
         screen = QDesktopWidget().screenNumber(QDesktopWidget().cursor().pos())
@@ -353,18 +466,18 @@ class IndustrialControlPanel(QWidget):
         elif success == -1:
             message_label = QLabel("数字继电器模块未插入，系统故障")
         message_label.setAlignment(Qt.AlignCenter)
-        message_label.setFont(QFont("Arial", 16, QFont.Bold))
+        message_label.setFont(QFont("Arial", 18, QFont.Bold))  # 消息字体大小
         message_label.setStyleSheet("color: #4CAF50;")  # 绿色文本
 
         # 创建确定按钮
         ok_button = QPushButton("确定")
-        ok_button.setFont(QFont("Arial", 12))
+        ok_button.setFont(QFont("Arial", 16))  # 增大按钮字体
         ok_button.setStyleSheet("""
             QPushButton {
                 background-color: #4CAF50;
                 color: white;
                 border: none;
-                padding: 10px 20px;
+                padding: 15px 30px;
                 border-radius: 5px;
             }
             QPushButton:hover {
@@ -395,7 +508,12 @@ class IndustrialControlPanel(QWidget):
         dialog.exec_()
 
     def closeEvent(self, event):
-        super().closeEvent(event)
+        # 用户关闭窗口，停止工作线程
+        self.sensor_thread.stop()
+        self.sensor_thread.wait()
+
+        # 接受关闭事件，允许窗口关闭
+        event.accept()
 
     def on_mode1_clicked(self):
         # print("模式一被选中")
@@ -408,9 +526,3 @@ class IndustrialControlPanel(QWidget):
     def on_export_clicked(self):
         # print("导出数据")
         self.sensor_thread.mode_chosen.emit(3)
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = IndustrialControlPanel()
-    ex.show()
-    sys.exit(app.exec_())
