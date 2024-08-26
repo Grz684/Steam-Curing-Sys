@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import (QApplication, QWidget, QGridLayout, QLabel, QPushButton,
 QVBoxLayout, QHBoxLayout, QFrame, QSizePolicy, QGroupBox, QScrollArea, QDesktopWidget)
 from PyQt5.QtGui import QFont, QPixmap, QPalette, QColor
-from PyQt5.QtCore import Qt, QEvent
+from PyQt5.QtCore import Qt, QEvent, QTimer
 from PyQt5.QtWidgets import QButtonGroup
 import random
 from PyQt5.QtWidgets import QMessageBox
@@ -49,6 +49,8 @@ class LimitControl(QFrame):
         self.label_text = label_text
         self.value = value
         self.unit = unit
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.on_timeout)
         self.initUI()
 
     def initUI(self):
@@ -57,17 +59,18 @@ class LimitControl(QFrame):
         layout.setSpacing(5)
 
         label = QLabel(self.label_text)
-        label.setStyleSheet("color: #666666; min-width: 40px; font-size: 18px;")  # 增大标签字体大小
+        label.setStyleSheet("color: #666666; min-width: 40px; font-size: 18px;")
         layout.addWidget(label)
 
         self.minus_button = QPushButton("-")
         self.minus_button.setFixedSize(40, 40)
-        self.minus_button.clicked.connect(self.decrease_value)
+        self.minus_button.pressed.connect(self.start_timer)
+        self.minus_button.released.connect(self.stop_timer)
+        self.minus_button.clicked.connect(self.decrease_value)  # 添加单击事件
         layout.addWidget(self.minus_button)
 
         self.value_label = QLabel(f"{self.value} {self.unit}")
         self.value_label.setAlignment(Qt.AlignCenter)
-        # 上下限数字大小
         self.value_label.setStyleSheet("""
             font-size: 20px; 
             font-weight: bold; 
@@ -81,13 +84,14 @@ class LimitControl(QFrame):
 
         self.plus_button = QPushButton("+")
         self.plus_button.setFixedSize(40, 40)
-        self.plus_button.clicked.connect(self.increase_value)
+        self.plus_button.pressed.connect(self.start_timer)
+        self.plus_button.released.connect(self.stop_timer)
+        self.plus_button.clicked.connect(self.increase_value)  # 添加单击事件
         layout.addWidget(self.plus_button)
 
         layout.addStretch()
 
         self.setLayout(layout)
-        # 加减号数字大小
         self.setStyleSheet("""
             LimitControl {
                 background-color: #f0f0f0;
@@ -115,10 +119,35 @@ class LimitControl(QFrame):
         self.update_value()
 
     def update_value(self):
-        self.value_label.setText(f"{self.value} {self.unit}")
         main_window = self.window()
         if isinstance(main_window, IndustrialControlPanel):
-            main_window.send_limit_settings()
+            if self == main_window.temp_limit_frame.upper_control:
+                if self.value <= main_window.temp_limit_frame.lower_control.value:
+                    return
+            elif self == main_window.temp_limit_frame.lower_control:
+                if self.value >= main_window.temp_limit_frame.upper_control.value:
+                    return
+            elif self == main_window.humidity_limit_frame.upper_control:
+                if self.value <= main_window.humidity_limit_frame.lower_control.value:
+                    return
+            elif self == main_window.humidity_limit_frame.lower_control:
+                if self.value >= main_window.humidity_limit_frame.upper_control.value:
+                    return
+
+        self.value_label.setText(f"{self.value} {self.unit}")
+        main_window.send_limit_settings()
+
+    def on_timeout(self):
+        if self.plus_button.isDown():
+            self.increase_value()
+        elif self.minus_button.isDown():
+            self.decrease_value()
+
+    def start_timer(self):
+        self.timer.start(200)
+
+    def stop_timer(self):
+        self.timer.stop()
 
 class LimitControlFrame(QFrame):
     def __init__(self, title, upper_value, lower_value, unit):
@@ -238,7 +267,7 @@ class IndustrialControlPanel(QWidget):
         main_layout.setSpacing(10)
 
         sensor_grid = QHBoxLayout()
-        sensor_grid.setSpacing(10)  # 减小传感器网格的间距
+        sensor_grid.setSpacing(10)
 
         left_group_box = QGroupBox()
         left_layout = QGridLayout()
@@ -261,16 +290,16 @@ class IndustrialControlPanel(QWidget):
             sensor_frame = SensorFrame(f"温度传感器{i+1}", "未知")
             self.sensor_frames.append(sensor_frame)
             left_layout.addWidget(sensor_frame, 1, i)
-        
-        for i in range(2):
-            sensor_frame = SensorFrame(f"湿度传感器{i+1}", "未知")
-            self.sensor_frames.append(sensor_frame)
-            left_layout.addWidget(sensor_frame, 2, i)
 
         for i in range(2, 4):
             sensor_frame = SensorFrame(f"温度传感器{i+1}", "未知")
             self.sensor_frames.append(sensor_frame)
             right_layout.addWidget(sensor_frame, 1, i-2)
+        
+        for i in range(2):
+            sensor_frame = SensorFrame(f"湿度传感器{i+1}", "未知")
+            self.sensor_frames.append(sensor_frame)
+            left_layout.addWidget(sensor_frame, 2, i)
         
         for i in range(2, 4):
             sensor_frame = SensorFrame(f"湿度传感器{i+1}", "未知")
@@ -383,15 +412,31 @@ class IndustrialControlPanel(QWidget):
         self.humidity_limit_frame.upper_control.value = humidity_upper
         self.humidity_limit_frame.lower_control.value = humidity_lower
 
-    def update_sensor_status(self, left_status, right_status):
-        if left_status:
+    # def update_sensor_status(self, left_status, right_status):
+    #     if left_status:
+    #         self.left_status_label.setText("左蒸汽机: 工作中")
+    #         self.left_status_label.setStyleSheet("font-weight: bold; color: green; font-size: 20px;")
+    #     else:
+    #         self.left_status_label.setText("左蒸汽机: 未工作")
+    #         self.left_status_label.setStyleSheet("font-weight: bold; color: red; font-size: 20px;")
+
+    #     if right_status:
+    #         self.right_status_label.setText("右蒸汽机: 工作中")
+    #         self.right_status_label.setStyleSheet("font-weight: bold; color: green; font-size: 20px;")
+    #     else:
+    #         self.right_status_label.setText("右蒸汽机: 未工作")
+    #         self.right_status_label.setStyleSheet("font-weight: bold; color: red; font-size: 20px;")
+
+    def update_left_steam_status(self, status):
+        if status:
             self.left_status_label.setText("左蒸汽机: 工作中")
             self.left_status_label.setStyleSheet("font-weight: bold; color: green; font-size: 20px;")
         else:
             self.left_status_label.setText("左蒸汽机: 未工作")
             self.left_status_label.setStyleSheet("font-weight: bold; color: red; font-size: 20px;")
 
-        if right_status:
+    def update_right_steam_status(self, status):
+        if status:
             self.right_status_label.setText("右蒸汽机: 工作中")
             self.right_status_label.setStyleSheet("font-weight: bold; color: green; font-size: 20px;")
         else:
@@ -463,7 +508,12 @@ class IndustrialControlPanel(QWidget):
         dialog.exec_()
 
     def closeEvent(self, event):
-        super().closeEvent(event)
+        # 用户关闭窗口，停止工作线程
+        self.sensor_thread.stop()
+        self.sensor_thread.wait()
+
+        # 接受关闭事件，允许窗口关闭
+        event.accept()
 
     def on_mode1_clicked(self):
         # print("模式一被选中")

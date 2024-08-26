@@ -21,11 +21,11 @@ class SensorFrame(QFrame):
 
         self.title_label = QLabel(self.title)
         self.title_label.setAlignment(Qt.AlignCenter)
-        self.title_label.setStyleSheet("font-weight: bold; color: #333333; font-size: 18px;") # 增大标题字体大小
+        self.title_label.setStyleSheet("font-weight: bold; color: #333333; font-size: 20px;") # 增大标题字体大小
         
         self.value_label = QLabel(self.value)
         self.value_label.setAlignment(Qt.AlignCenter)
-        self.value_label.setStyleSheet("font-size: 24px; font-weight: bold; color: #4CAF50;")  # 增大数值字体大小
+        self.value_label.setStyleSheet("font-size: 22px; font-weight: bold; color: #4CAF50;")  # 增大数值字体大小
         
         layout.addWidget(self.title_label)
         layout.addWidget(self.value_label)
@@ -34,7 +34,7 @@ class SensorFrame(QFrame):
         self.setFrameStyle(QFrame.Box | QFrame.Plain)
         self.setLineWidth(2)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.setMinimumSize(150, 120)  # 增大传感器框的最小尺寸
+        self.setMinimumSize(120, 120)  # 增大传感器框的最小尺寸
         self.setStyleSheet("""
             SensorFrame {
                 background-color: white;
@@ -286,25 +286,25 @@ class IndustrialControlPanel(QWidget):
         right_layout.addWidget(self.right_status_label, 0, 0, 1, 2, Qt.AlignLeft | Qt.AlignTop)
 
         self.sensor_frames = []
-        for i in range(2):
-            sensor_frame = SensorFrame(f"温度传感器{i+1}", "未知")
+        for i in range(4):
+            sensor_frame = SensorFrame(f"温感{i+1}", "未知")
             self.sensor_frames.append(sensor_frame)
             left_layout.addWidget(sensor_frame, 1, i)
 
-        for i in range(2, 4):
-            sensor_frame = SensorFrame(f"温度传感器{i+1}", "未知")
+        for i in range(4, 8):
+            sensor_frame = SensorFrame(f"温感{i+1}", "未知")
             self.sensor_frames.append(sensor_frame)
-            right_layout.addWidget(sensor_frame, 1, i-2)
+            right_layout.addWidget(sensor_frame, 1, i-4)
         
-        for i in range(2):
-            sensor_frame = SensorFrame(f"湿度传感器{i+1}", "未知")
+        for i in range(4):
+            sensor_frame = SensorFrame(f"湿感{i+1}", "未知")
             self.sensor_frames.append(sensor_frame)
             left_layout.addWidget(sensor_frame, 2, i)
         
-        for i in range(2, 4):
-            sensor_frame = SensorFrame(f"湿度传感器{i+1}", "未知")
+        for i in range(4, 8):
+            sensor_frame = SensorFrame(f"湿感{i+1}", "未知")
             self.sensor_frames.append(sensor_frame)
-            right_layout.addWidget(sensor_frame, 2, i-2)
+            right_layout.addWidget(sensor_frame, 2, i-4)
 
         left_group_box.setLayout(left_layout)
         right_group_box.setLayout(right_layout)
@@ -465,33 +465,37 @@ class IndustrialControlPanel(QWidget):
             message_label = QLabel("未检测到U盘，请插入U盘")
         elif success == -1:
             message_label = QLabel("数字继电器模块未插入，系统故障")
+            dialog.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
+        
         message_label.setAlignment(Qt.AlignCenter)
         message_label.setFont(QFont("Arial", 18, QFont.Bold))  # 消息字体大小
         message_label.setStyleSheet("color: #4CAF50;")  # 绿色文本
 
-        # 创建确定按钮
-        ok_button = QPushButton("确定")
-        ok_button.setFont(QFont("Arial", 16))  # 增大按钮字体
-        ok_button.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                padding: 15px 30px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #45a049;
-            }
-        """)
-        ok_button.clicked.connect(dialog.accept)
+        # 创建确定按钮（仅在 success 不为 -1 时显示）
+        if success != -1:
+            ok_button = QPushButton("确定")
+            ok_button.setFont(QFont("Arial", 16))  # 增大按钮字体
+            ok_button.setStyleSheet("""
+                QPushButton {
+                    background-color: #4CAF50;
+                    color: white;
+                    border: none;
+                    padding: 15px 30px;
+                    border-radius: 5px;
+                }
+                QPushButton:hover {
+                    background-color: #45a049;
+                }
+            """)
+            ok_button.clicked.connect(dialog.accept)
 
         # 将部件添加到布局中
         layout.addStretch(1)
         layout.addWidget(message_label)
         layout.addStretch(1)
-        layout.addWidget(ok_button, alignment=Qt.AlignCenter)
-        layout.addStretch(1)
+        if success != -1:
+            layout.addWidget(ok_button, alignment=Qt.AlignCenter)
+            layout.addStretch(1)
 
         dialog.setLayout(layout)
 

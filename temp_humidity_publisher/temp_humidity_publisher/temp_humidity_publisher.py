@@ -3,6 +3,7 @@ from rclpy.node import Node
 from std_msgs.msg import Float32
 from pymodbus.client import ModbusTcpClient
 import time
+import signal
 
 class TempHumidityPublisher(Node):
 
@@ -15,15 +16,15 @@ class TempHumidityPublisher(Node):
         
         # 创建4个ModbusTcpClient，每个对应一个传感器
         self.modbus_clients = []
-        for i in range(8):
+        for i in range(4):
             client = ModbusTcpClient(self.ip_address, port=self.base_port + i, timeout=1)
             self.modbus_clients.append(client)
             
-        # 创建16个发布者,8个温度传感器和8个湿度传感器
+        # 创建8个发布者,4个温度传感器和4个湿度传感器
         self.temp_publishers = []
         self.humidity_publishers = []
         
-        for i in range(1, 9):
+        for i in range(1, 5):
             temp_pub = self.create_publisher(Float32, f'temperature_sensor_{i}', 10)
             self.temp_publishers.append(temp_pub)
             
@@ -49,7 +50,7 @@ class TempHumidityPublisher(Node):
                 
                 return temperature, humidity
             else:
-                self.get_logger().error(f"读取错误: {result}")
+                # self.get_logger().error(f"读取错误: {result}")
                 return None, None
         except Exception as e:
             self.get_logger().error(f"通信异常: {e}")
@@ -72,9 +73,10 @@ class TempHumidityPublisher(Node):
                 humidity_msg.data = humi
                 self.humidity_publishers[i].publish(humidity_msg)
                 
-                self.get_logger().info(f'Published: Temp{i+1}={temp:.1f}°C, Humidity{i+1}={humi:.1f}%')
+                # self.get_logger().info(f'Published: Temp{i+1}={temp:.1f}°C, Humidity{i+1}={humi:.1f}%')
             else:
-                self.get_logger().warn(f'Failed to read sensor {i+1}')
+                # self.get_logger().warn(f'Failed to read sensor {i+1}')
+                pass
 
     def __del__(self):
         for client in self.modbus_clients:
@@ -84,9 +86,16 @@ class TempHumidityPublisher(Node):
 def main(args=None):
     rclpy.init(args=args)
     temp_humidity_publisher = TempHumidityPublisher()
+
+    def signal_handler(sig, frame):
+        print("SIGINT received. Shutting down Sensor...")
+        temp_humidity_publisher.destroy_node()
+        rclpy.shutdown()
+
+    # 设置信号处理器
+    signal.signal(signal.SIGINT, signal_handler)
+
     rclpy.spin(temp_humidity_publisher)
-    temp_humidity_publisher.destroy_node()
-    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

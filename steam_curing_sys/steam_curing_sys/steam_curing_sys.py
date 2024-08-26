@@ -5,12 +5,11 @@ from rclpy.node import Node
 from std_msgs.msg import Float32
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer
 from PyQt5.QtWidgets import QApplication
-from steam_curing_sys_UI import IndustrialControlPanel
+from .steam_curing_sys_UI import IndustrialControlPanel
 from pymodbus.client import ModbusTcpClient
 from pymodbus.exceptions import ModbusException, ConnectionException
 import sqlite3
 from datetime import datetime
-from datetime import timedelta
 import pandas as pd
 import os
 import json
@@ -18,7 +17,6 @@ import pyudev
 import shutil
 import subprocess
 import signal
-import re
 
 class ROS2Thread(QThread):
     # pyqtSignal必须是类属性
@@ -114,8 +112,8 @@ class SensorSubscriberNode(Node):
         super().__init__('sensor_subscriber')
         self.ros2_thread = ros2_thread
         
-        self.temp_data = {f'temperature_sensor_{i}': -1 for i in range(1, 9)}  # 修改为 8 个传感器
-        self.humidity_data = {f'humidity_sensor_{i}': -1 for i in range(1, 9)}  # 修改为 8 个传感器
+        self.temp_data = {f'temperature_sensor_{i}': -1 for i in range(1, 5)}
+        self.humidity_data = {f'humidity_sensor_{i}': -1 for i in range(1, 5)}
 
         self.zone1_heater_on = False
         self.zone2_heater_on = False
@@ -143,7 +141,7 @@ class SensorSubscriberNode(Node):
         self.control_output(self.zone1_output_addr, False)
         self.control_output(self.zone2_output_addr, False)
         
-        for i in range(1, 9):  # 修改为 8 个传感器
+        for i in range(1, 5):
             self.create_subscription(
                 Float32,
                 f'temperature_sensor_{i}',
@@ -177,9 +175,14 @@ class SensorSubscriberNode(Node):
             average_temp = (self.ros2_thread.temp_lower_limit + self.ros2_thread.temp_upper_limit)/2
             average_humidity = (self.ros2_thread.humidity_lower_limit + self.ros2_thread.humidity_upper_limit)/2
             sensor_data = [
-                (f'温感{i}', f'{average_temp+random.uniform(-3, 3):.1f}°C') for i in range(1, 9)  # 修改为 8 个传感器
-            ] + [
-                (f'湿感{i}', f'{average_humidity+random.uniform(-3, 3):.1f}%') for i in range(1, 9)  # 修改为 8 个传感器
+                ('温度传感器1', f'{average_temp+random.uniform(-3, 3):.1f}°C'),
+                ('温度传感器2', f'{average_temp+random.uniform(-3, 3):.1f}°C'),
+                ('温度传感器3', f'{average_temp+random.uniform(-3, 3):.1f}°C'),
+                ('温度传感器4', f'{average_temp+random.uniform(-3, 3):.1f}°C'),
+                ('湿度传感器1', f'{average_humidity+random.uniform(-3, 3):.1f}%'),
+                ('湿度传感器2', f'{average_humidity+random.uniform(-3, 3):.1f}%'),
+                ('湿度传感器3', f'{average_humidity+random.uniform(-3, 3):.1f}%'),
+                ('湿度传感器4', f'{average_humidity+random.uniform(-3, 3):.1f}%')
             ]
             self.ros2_thread.data_updated.emit(sensor_data)
             # 保存数据
@@ -192,21 +195,21 @@ class SensorSubscriberNode(Node):
     def true_process(self):
         sensor_data = []
 
-        for i in range(1, 9):  # 修改为 8 个传感器
+        for i in range(1, 5):
             temp_sensor_name = f'temperature_sensor_{i}'
             temp_value = self.temp_data[temp_sensor_name]
             if temp_value != -1:
-                sensor_data.append((f'温感{i}', f'{temp_value:.1f}°C'))
+                sensor_data.append((f'温度传感器{i}', f'{temp_value:.1f}°C'))
             else:
-                sensor_data.append((f'温感{i}', '未知'))
+                sensor_data.append((f'温度传感器{i}', '未知'))
         
-        for i in range(1, 9):  # 修改为 8 个传感器
+        for i in range(1, 5):
             humidity_sensor_name = f'humidity_sensor_{i}'
             humidity_value = self.humidity_data[humidity_sensor_name]
             if humidity_value != -1:
-                sensor_data.append((f'湿感{i}', f'{humidity_value:.1f}%'))
+                sensor_data.append((f'湿度传感器{i}', f'{humidity_value:.1f}%'))
             else:
-                sensor_data.append((f'湿感{i}', '未知'))
+                sensor_data.append((f'湿度传感器{i}', '未知'))
 
         if sensor_data:
             self.ros2_thread.data_updated.emit(sensor_data)
@@ -219,12 +222,12 @@ class SensorSubscriberNode(Node):
 
         if updated_temp_data or updated_humidity_data:
             self.process_data_zone1(
-                {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(1, 5)]},  # 修改为前 4 个传感器
-                {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(1, 5)]}  # 修改为前 4 个传感器
+                {k: v for k, v in updated_temp_data.items() if k in ['temperature_sensor_1', 'temperature_sensor_2']},
+                {k: v for k, v in updated_humidity_data.items() if k in ['humidity_sensor_1', 'humidity_sensor_2']}
             )
             self.process_data_zone2(
-                {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(5, 9)]},  # 修改为后 4 个传感器
-                {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(5, 9)]}  # 修改为后 4 个传感器
+                {k: v for k, v in updated_temp_data.items() if k in ['temperature_sensor_3', 'temperature_sensor_4']},
+                {k: v for k, v in updated_humidity_data.items() if k in ['humidity_sensor_3', 'humidity_sensor_4']}
             )
 
         self.temp_data = {sensor: -1 for sensor in self.temp_data}
@@ -306,16 +309,24 @@ class SensorSubscriberNode(Node):
             self.ros2_thread.right_steam_status_updated.emit(0)
 
     @staticmethod
-    def create_table(cursor):
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS sensor_data (
-            timestamp TEXT PRIMARY KEY,
-            temp_1 REAL, temp_2 REAL, temp_3 REAL, temp_4 REAL,
-            temp_5 REAL, temp_6 REAL, temp_7 REAL, temp_8 REAL,
-            hum_1 REAL, hum_2 REAL, hum_3 REAL, hum_4 REAL,
-            hum_5 REAL, hum_6 REAL, hum_7 REAL, hum_8 REAL
-        )
-        ''')
+    def create_tables(cursor):
+      # 创建温度传感器表
+      for i in range(1, 5):
+          cursor.execute(f'''
+          CREATE TABLE IF NOT EXISTS temperature_sensor_{i} (
+              timestamp TEXT PRIMARY KEY,
+              value REAL
+          )
+          ''')
+      
+      # 创建湿度传感器表
+      for i in range(1, 5):
+          cursor.execute(f'''
+          CREATE TABLE IF NOT EXISTS humidity_sensor_{i} (
+              timestamp TEXT PRIMARY KEY,
+              value REAL
+          )
+          ''')
 
     @staticmethod
     def table_exists(cursor, table_name):
@@ -325,54 +336,43 @@ class SensorSubscriberNode(Node):
         return cursor.fetchone() is not None
 
     @staticmethod
-    def initialize_database(db_name, days_to_keep=14):
+    def initialize_database(db_name):
         conn = sqlite3.connect(db_name)
         cursor = conn.cursor()
 
-        if not SensorSubscriberNode.table_exists(cursor, 'sensor_data'):
-            print("Creating sensor_data table")
-            SensorSubscriberNode.create_table(cursor)
-        else:
-            print("sensor_data table already exists.")
+        # 检查并创建表
+        tables = [f'temperature_sensor_{i}' for i in range(1, 5)] + [f'humidity_sensor_{i}' for i in range(1, 5)]
+        tables_to_create = [table for table in tables if not SensorSubscriberNode.table_exists(cursor, table)]
 
-        # 清理旧数据
-        timestamp_threshold = datetime.now() - timedelta(days=days_to_keep)
-        cursor.execute('''
-        DELETE FROM sensor_data
-        WHERE timestamp < ?
-        ''', (timestamp_threshold.strftime("%Y-%m-%d %H:%M:%S"),))
+        if tables_to_create:
+            print(f"Creating tables: {', '.join(tables_to_create)}")
+            SensorSubscriberNode.create_tables(cursor)
+        else:
+            print("All tables already exist.")
 
         conn.commit()
         return conn, cursor
 
     @staticmethod
     def save_data_to_db(cursor, sensor_data):
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        data = {f"temp_{i}": None for i in range(1, 9)}
-        data.update({f"hum_{i}": None for i in range(1, 9)})
-        
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 格式化为 'YYYY-MM-DD HH:MM:SS'
         for sensor, value in sensor_data:
-            if '温感' in sensor:
-                sensor_num = int(sensor[-1])
+            if '温度传感器' in sensor:
+                sensor_num = sensor[-1]
                 if value != '未知':
-                    data[f"temp_{sensor_num}"] = float(value[:-2])  # 移除 '°C' 并转换为浮点数
-                else:
-                    data[f"temp_{sensor_num}"] = 'unknown'
-            elif '湿感' in sensor:
-                sensor_num = int(sensor[-1])
+                    value = float(value[:-2])  # 移除 '°C' 并转换为浮点数
+                    cursor.execute(f'''
+                    INSERT OR REPLACE INTO temperature_sensor_{sensor_num}
+                    (timestamp, value) VALUES (?, ?)
+                    ''', (timestamp, value))
+            elif '湿度传感器' in sensor:
+                sensor_num = sensor[-1]
                 if value != '未知':
-                    data[f"hum_{sensor_num}"] = float(value[:-1])  # 移除 '%' 并转换为浮点数
-                else:
-                    data[f"hum_{sensor_num}"] = 'unknown'
-
-        placeholders = ', '.join(['?'] * (len(data) + 1))
-        columns = ', '.join(['timestamp'] + list(data.keys()))
-        values = [timestamp] + list(data.values())
-        
-        cursor.execute(f'''
-        INSERT OR REPLACE INTO sensor_data
-        ({columns}) VALUES ({placeholders})
-        ''', values)
+                    value = float(value[:-1])  # 移除 '%' 并转换为浮点数
+                    cursor.execute(f'''
+                    INSERT OR REPLACE INTO humidity_sensor_{sensor_num}
+                    (timestamp, value) VALUES (?, ?)
+                    ''', (timestamp, value))
 
     def export_tables_to_excel(self, db_name):
         # 检查并获取U盘挂载点
@@ -384,27 +384,47 @@ class SensorSubscriberNode(Node):
         # 连接到数据库
         conn = sqlite3.connect(db_name)
 
+        # 获取所有表名
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+
+        # 生成带有当前时间的中文文件名
+        current_time = datetime.now().strftime("%Y年%m月%d日_%H时%M分%S秒")
+        excel_file = os.path.join(usb_mount, f'{current_time}_传感器数据导出.xlsx')
+
         try:
-            # 读取表数据到DataFrame
-            df = pd.read_sql_query("SELECT * FROM sensor_data", conn)
-
-            # 重命名列
-            column_mapping = {
-                'timestamp': '时间戳',
-                **{f'temp_{i}': f'温感{i}' for i in range(1, 9)},
-                **{f'hum_{i}': f'湿感{i}' for i in range(1, 9)}
-            }
-            df.rename(columns=column_mapping, inplace=True)
-
-            # 替换 'unknown' 为 '未知'
-            df = df.replace('unknown', '未知')
-
-            # 生成带有当前时间的中文文件名
-            current_time = datetime.now().strftime("%Y年%m月%d日_%H时%M分%S秒")
-            excel_file = os.path.join(usb_mount, f'{current_time}_传感器数据导出.xlsx')
-
-            # 将DataFrame写入Excel
-            df.to_excel(excel_file, sheet_name='传感器数据', index=False)
+            with pd.ExcelWriter(excel_file, engine='openpyxl') as writer:
+                for table in tables:
+                    table_name = table[0]
+                    # 读取表数据到DataFrame
+                    df = pd.read_sql_query(f"SELECT * FROM {table_name}", conn)
+                    
+                    # 翻译表名
+                    if 'temperature_sensor_1' in table_name:
+                        translated_table_name = '左侧温度传感器1'
+                    elif 'temperature_sensor_2' in table_name:
+                        translated_table_name = '左侧温度传感器2'
+                    elif 'temperature_sensor_3' in table_name:
+                        translated_table_name = '右侧温度传感器3'
+                    elif 'temperature_sensor_4' in table_name:
+                        translated_table_name = '右侧温度传感器4'
+                    elif 'humidity_sensor_1' in table_name:
+                        translated_table_name = '左侧湿度传感器1'
+                    elif 'humidity_sensor_2' in table_name:
+                        translated_table_name = '左侧湿度传感器2'
+                    elif 'humidity_sensor_3' in table_name:
+                        translated_table_name = '右侧湿度传感器3'
+                    elif 'humidity_sensor_4' in table_name:
+                        translated_table_name = '右侧湿度传感器4'
+                    else:
+                        translated_table_name = table_name
+                    
+                    # 翻译列名
+                    df.rename(columns={'timestamp': '时间戳', 'value': '数值'}, inplace=True)
+                    
+                    # 将DataFrame写入Excel的一个工作表
+                    df.to_excel(writer, sheet_name=translated_table_name, index=False)
 
             print(f"数据已导出到U盘: {excel_file}")
         except Exception as e:
@@ -484,8 +504,7 @@ class SensorSubscriberNode(Node):
             print(f"复制文件时发生错误: {e}")
             return False
 
-
-if __name__ == '__main__':
+def main(args=None):
     app = QApplication(sys.argv)
     ros2_thread = ROS2Thread()
     ex = IndustrialControlPanel(ros2_thread)
@@ -520,3 +539,7 @@ if __name__ == '__main__':
     ros2_thread.wait()
 
     sys.exit(exit_code)
+
+
+if __name__ == '__main__':
+    main()
