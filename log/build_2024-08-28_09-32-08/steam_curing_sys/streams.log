@@ -1,0 +1,27 @@
+[2.629s] Invoking command in '/steam_curing_sys/build/steam_curing_sys': PYTHONPATH=/steam_curing_sys/build/steam_curing_sys/prefix_override:/steam_curing_sys/install/steam_curing_sys/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --editable --build-directory /steam_curing_sys/build/steam_curing_sys/build --no-deps install_data
+[3.568s] running develop
+[4.224s] running egg_info
+[4.225s] creating steam_curing_sys.egg-info
+[4.226s] writing steam_curing_sys.egg-info/PKG-INFO
+[4.226s] writing dependency_links to steam_curing_sys.egg-info/dependency_links.txt
+[4.227s] writing entry points to steam_curing_sys.egg-info/entry_points.txt
+[4.228s] writing requirements to steam_curing_sys.egg-info/requires.txt
+[4.229s] writing top-level names to steam_curing_sys.egg-info/top_level.txt
+[4.237s] writing manifest file 'steam_curing_sys.egg-info/SOURCES.txt'
+[4.390s] reading manifest file 'steam_curing_sys.egg-info/SOURCES.txt'
+[4.392s] writing manifest file 'steam_curing_sys.egg-info/SOURCES.txt'
+[4.588s] running build_ext
+[4.590s] Creating /steam_curing_sys/install/steam_curing_sys/lib/python3.8/site-packages/site.py
+[4.598s] Creating /steam_curing_sys/install/steam_curing_sys/lib/python3.8/site-packages/steam-curing-sys.egg-link (link to .)
+[4.602s] Installing main_sys script to /steam_curing_sys/install/steam_curing_sys/lib/steam_curing_sys
+[4.603s] 
+[4.604s] Installed /steam_curing_sys/build/steam_curing_sys
+[4.605s] running install_data
+[4.606s] creating /steam_curing_sys/install/steam_curing_sys/share/ament_index
+[4.606s] creating /steam_curing_sys/install/steam_curing_sys/share/ament_index/resource_index
+[4.607s] creating /steam_curing_sys/install/steam_curing_sys/share/ament_index/resource_index/packages
+[4.607s] copying resource/steam_curing_sys -> /steam_curing_sys/install/steam_curing_sys/share/ament_index/resource_index/packages
+[4.608s] copying package.xml -> /steam_curing_sys/install/steam_curing_sys/share/steam_curing_sys
+[4.609s] creating /steam_curing_sys/install/steam_curing_sys/share/steam_curing_sys/launch
+[4.609s] copying launch/steam_curing_sys_launch.py -> /steam_curing_sys/install/steam_curing_sys/share/steam_curing_sys/launch
+[4.718s] Invoked command in '/steam_curing_sys/build/steam_curing_sys' returned '0': PYTHONPATH=/steam_curing_sys/build/steam_curing_sys/prefix_override:/steam_curing_sys/install/steam_curing_sys/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --editable --build-directory /steam_curing_sys/build/steam_curing_sys/build --no-deps install_data

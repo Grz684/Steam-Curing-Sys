@@ -1,0 +1,9 @@
+source;share/steam_curing_sys/hook/pythonpath.ps1
+source;share/steam_curing_sys/hook/pythonpath.dsv
+source;share/steam_curing_sys/hook/pythonpath.sh
+source;share/steam_curing_sys/hook/ament_prefix_path.ps1
+source;share/steam_curing_sys/hook/ament_prefix_path.dsv
+source;share/steam_curing_sys/hook/ament_prefix_path.sh
+source;../../build/steam_curing_sys/share/steam_curing_sys/hook/pythonpath_develop.ps1
+source;../../build/steam_curing_sys/share/steam_curing_sys/hook/pythonpath_develop.dsv
+source;../../build/steam_curing_sys/share/steam_curing_sys/hook/pythonpath_develop.sh

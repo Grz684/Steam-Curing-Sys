@@ -1,0 +1,13 @@
+package.xml
+setup.cfg
+setup.py
+resource/temp_humidity_publisher
+temp_humidity_publisher/__init__.py
+temp_humidity_publisher/temp_humidity_publisher.py
+temp_humidity_publisher.egg-info/PKG-INFO
+temp_humidity_publisher.egg-info/SOURCES.txt
+temp_humidity_publisher.egg-info/dependency_links.txt
+temp_humidity_publisher.egg-info/entry_points.txt
+temp_humidity_publisher.egg-info/requires.txt
+temp_humidity_publisher.egg-info/top_level.txt
+temp_humidity_publisher.egg-info/zip-safe

@@ -1,0 +1,3 @@
+[console_scripts]
+main_sys = steam_curing_sys.steam_curing_sys:main
+
