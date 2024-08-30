@@ -1,1 +1,1 @@
-/steam_curing_sys/temp_humidity_publisher/setup.py
+/home/grz/Steam-Curing-Sys/temp_humidity_publisher/setup.py

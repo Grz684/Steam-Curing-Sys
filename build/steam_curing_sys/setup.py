@@ -1,1 +1,1 @@
-/steam_curing_sys/steam_curing_sys/setup.py
+/home/grz/Steam-Curing-Sys/steam_curing_sys/setup.py

@@ -11,12 +11,12 @@ class TempHumidityPublisher(Node):
         super().__init__('temp_humidity_publisher')
         
         # RS485转网口模块的设置
-        self.ip_address = '192.168.166.8'  # 请替换为您的实际IP地址
-        self.base_port = 1024  # COM1 对应的起始端口号
+        self.ip_address = '192.168.3.7'  # 请替换为您的实际IP地址
+        self.base_port = 8001  # COM1 对应的起始端口号
         
         # 创建ModbusTcpClient，对应指定的传感器
         self.sensor_number = sensor_number
-        self.modbus_client = ModbusTcpClient(self.ip_address, port=self.base_port + sensor_number - 1, timeout=5, retries=3)
+        self.modbus_client = ModbusTcpClient(self.ip_address, port=self.base_port + sensor_number - 1, timeout=1)
             
         # 创建发布者，一个温度传感器和一个湿度传感器
         self.temp_publisher = self.create_publisher(Float32, f'temperature_sensor_{sensor_number}', 10)

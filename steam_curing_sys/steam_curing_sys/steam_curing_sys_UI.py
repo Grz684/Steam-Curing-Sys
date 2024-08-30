@@ -1,19 +1,18 @@
 import sys
-from PyQt5.QtWidgets import (QApplication, QWidget, QGridLayout, QLabel, QPushButton,
-QVBoxLayout, QHBoxLayout, QFrame, QSizePolicy, QGroupBox, QScrollArea, QDesktopWidget)
-from PyQt5.QtGui import QFont, QPixmap, QPalette, QColor
-from PyQt5.QtCore import Qt, QEvent, QTimer
-from PyQt5.QtWidgets import QButtonGroup
-from PyQt5.QtWidgets import QTabWidget
-import random
-from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtWidgets import QDialog
-from PyQt5.QtCore import QTime, pyqtSignal
-from PyQt5.QtGui import QPainter
+from PyQt5.QtGui import QFont, QPixmap, QPalette, QColor, QPainter
+from PyQt5.QtCore import Qt, QEvent, QTimer, QTime, pyqtSignal, QPropertyAnimation, QEasingCurve, pyqtProperty
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QPushButton, QButtonGroup
-from PyQt5.QtCore import QTimer, Qt, pyqtSignal, QPropertyAnimation, QEasingCurve, pyqtProperty
-from PyQt5.QtGui import QPainter, QColor
+import random
+
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QGridLayout, QLabel, QPushButton,
+    QVBoxLayout, QHBoxLayout, QFrame, QSizePolicy, QGroupBox, QScrollArea, QDesktopWidget,
+    QButtonGroup, QTabWidget, QMessageBox, QDialog
+)
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class SensorFrame(QFrame):
     def __init__(self, title, value):
@@ -130,16 +129,16 @@ class LimitControl(QFrame):
         if isinstance(main_window, IndustrialControlPanel):
             if self == main_window.temp_limit_frame.upper_control:
                 if self.value <= main_window.temp_limit_frame.lower_control.value:
-                    return
+                    self.value = main_window.temp_limit_frame.lower_control.value + 1
             elif self == main_window.temp_limit_frame.lower_control:
                 if self.value >= main_window.temp_limit_frame.upper_control.value:
-                    return
+                    self.value = main_window.temp_limit_frame.upper_control.value - 1
             elif self == main_window.humidity_limit_frame.upper_control:
                 if self.value <= main_window.humidity_limit_frame.lower_control.value:
-                    return
+                    self.value = main_window.humidity_limit_frame.lower_control.value + 1
             elif self == main_window.humidity_limit_frame.lower_control:
                 if self.value >= main_window.humidity_limit_frame.upper_control.value:
-                    return
+                    self.value = main_window.humidity_limit_frame.upper_control.value - 1
 
         self.value_label.setText(f"{self.value} {self.unit}")
         main_window.send_limit_settings()
@@ -367,15 +366,41 @@ class ControlButtons(QFrame):
         self.mode1_button.set_current_mode(mode == 1)
         self.mode2_button.set_current_mode(mode == 2)
         self.update_button_styles()
+
+class ExportProgressDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("导出进行中")
+        self.setFixedSize(400, 200)  # 设置对话框的固定大小
+
+        layout = QVBoxLayout()
+
+        self.label = QLabel("正在导出数据到U盘,请稍候...")
+        self.label.setAlignment(Qt.AlignCenter)
+        
+        # 设置标签的字体
+        font = self.label.font()
+        font.setPointSize(16)  # 设置字体大小为20
+        self.label.setFont(font)
+
+        layout.addWidget(self.label)
+
+        self.setLayout(layout)
+
+    def closeEvent(self, event):
+        event.accept()
     
 class IndustrialControlPanel(QWidget):
     def __init__(self, sensor_thread):
         super().__init__()
         self.sensor_thread = sensor_thread
+        self.export_progress_dialog = None
         self.initUI()
 
     def initUI(self):
         self.setWindowTitle('工业控制面板')
+         # 设置窗口始终在最上层
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
         main_layout = QVBoxLayout()
         main_layout.setSpacing(0)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -637,7 +662,17 @@ class IndustrialControlPanel(QWidget):
             self.right_status_label.setText("右蒸汽机: 未工作")
             self.right_status_label.setStyleSheet("font-weight: bold; color: red; font-size: 20px;")
 
+    def close_export_progress(self):
+        if self.export_progress_dialog and self.export_progress_dialog.isVisible():
+            self.export_progress_dialog.close()
+
+    def show_export_progress(self):
+        self.close_export_progress()  # 先关闭已有的对话框
+        self.export_progress_dialog = ExportProgressDialog(self)
+        self.export_progress_dialog.show()
+
     def show_export_completed_dialog(self, success):
+        self.close_export_progress()
         dialog = QDialog(self)
         dialog.setWindowTitle("提示消息")
         
@@ -657,6 +692,8 @@ class IndustrialControlPanel(QWidget):
             message_label = QLabel("数据已成功导出")
         elif success == 0:
             message_label = QLabel("未检测到U盘，请插入U盘")
+        elif success == -2:
+            message_label = QLabel("数据导出失败，请重试")
         elif success == -1:
             message_label = QLabel("数字继电器模块未插入，系统故障")
             dialog.setWindowFlags(Qt.Dialog | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)

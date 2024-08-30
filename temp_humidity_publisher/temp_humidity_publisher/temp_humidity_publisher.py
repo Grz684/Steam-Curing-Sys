@@ -14,20 +14,20 @@ class TempHumidityPublisher(Node):
         super().__init__('temp_humidity_publisher')
         
         # RS485转网口模块的设置
-        self.ip_address = '192.168.166.8'  # 请替换为您的实际IP地址
-        self.base_port = 1024  # COM1 对应的起始端口号
+        self.ip_address = '192.168.3.7'  # 请替换为您的实际IP地址
+        self.base_port = 8001  # COM1 对应的起始端口号
         
         # 创建4个ModbusTcpClient，每个对应一个传感器
         self.modbus_clients = []
-        for i in range(4):
-            client = ModbusTcpClient(self.ip_address, port=self.base_port + i, timeout=1)
+        for i in range(16):
+            client = ModbusTcpClient(self.ip_address, port=self.base_port + i, timeout=0.1)
             self.modbus_clients.append(client)
             
-        # 创建16个发布者,8个温度传感器和8个湿度传感器
+        # 创建32个发布者,16个温度传感器和16个湿度传感器
         self.temp_publishers = []
         self.humidity_publishers = []
         
-        for i in range(1, 5):
+        for i in range(1, 17):
             temp_pub = self.create_publisher(Float32, f'temperature_sensor_{i}', 10)
             self.temp_publishers.append(temp_pub)
             
@@ -61,9 +61,8 @@ class TempHumidityPublisher(Node):
 
     def timer_callback(self):
         for i, client in enumerate(self.modbus_clients):
-            if not client.is_socket_open():
-                if not client.connect():
-                    self.get_logger().error(f"无法连接到设备 {i+1}")
+            if not client.connect():
+                    # self.get_logger().error(f"无法连接到设备 {i+1}")
                     continue
 
             temp, humi = self.read_temperature_humidity(client)
@@ -85,13 +84,6 @@ class TempHumidityPublisher(Node):
         for client in self.modbus_clients:
             if client.is_socket_open():
                 client.close()
-
-def main(args=None):
-    rclpy.init(args=args)
-    temp_humidity_publisher = TempHumidityPublisher()
-    rclpy.spin(temp_humidity_publisher)
-    temp_humidity_publisher.destroy_node()
-    rclpy.shutdown()
 
 def main(args=None):
     rclpy.init(args=args)

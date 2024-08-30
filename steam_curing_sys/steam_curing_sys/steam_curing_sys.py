@@ -9,6 +9,7 @@ from .steam_curing_sys_UI import IndustrialControlPanel
 from pymodbus.client import ModbusTcpClient
 from pymodbus.exceptions import ModbusException, ConnectionException
 from pymodbus.pdu import ExceptionResponse
+from PyQt5.QtCore import QEventLoop
 import sqlite3
 from datetime import datetime
 from datetime import timedelta
@@ -29,50 +30,75 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class ExportThread(Thread):
-    def __init__(self, db_name, usb_mount, result_queue):
+    def __init__(self, db_name, usb_mount, result_queue, timeout=30):
         Thread.__init__(self)
         self.db_name = db_name
         self.usb_mount = usb_mount
         self.result_queue = result_queue
+        self.timeout = timeout
 
     def run(self):
+        conn = None
         try:
-            # 连接到数据库
             conn = sqlite3.connect(self.db_name)
-
-            # 读取表数据到DataFrame
             df = pd.read_sql_query("SELECT * FROM sensor_data", conn)
 
-            # 重命名列
             column_mapping = {
                 'timestamp': '时间戳',
                 **{f'temp_{i}': f'温感{i}' for i in range(1, 17)},
                 **{f'hum_{i}': f'湿感{i}' for i in range(1, 17)}
             }
             df.rename(columns=column_mapping, inplace=True)
-
-            # 替换 'unknown' 为 '未知'
             df = df.replace('unknown', '未知')
 
-            # 生成带有当前时间的中文文件名
             current_time = datetime.now().strftime("%Y年%m月%d日_%H时%M分%S秒")
             excel_file = os.path.join(self.usb_mount, f'{current_time}_传感器数据导出.xlsx')
 
-            # 将DataFrame写入Excel
-            df.to_excel(excel_file, sheet_name='传感器数据', index=False, engine='openpyxl')
-
-            # 确保文件已经完全写入
-            start_time = time.time()
-            while not os.path.exists(excel_file) or os.path.getsize(excel_file) == 0:
-                time.sleep(0.1)
-                if time.time() - start_time > 10:  # 10秒超时
-                    raise TimeoutError("导出文件超时")
+            self.export_with_verification(df, excel_file)
 
             self.result_queue.put((True, f"数据已成功导出到U盘: {excel_file}"))
         except Exception as e:
             self.result_queue.put((False, f"导出数据到U盘时发生错误: {e}"))
         finally:
-            conn.close()
+            if conn:
+                conn.close()
+
+    def export_with_verification(self, df, excel_file, max_retries=3):
+        for attempt in range(max_retries):
+            try:
+                with pd.ExcelWriter(excel_file, engine='openpyxl') as writer:
+                    df.to_excel(writer, sheet_name='传感器数据', index=False)
+                    writer.save()
+                    writer.close()
+
+                # 强制刷新到磁盘
+                with open(excel_file, 'rb') as f:
+                    os.fsync(f.fileno())
+
+                # 验证文件
+                if self.verify_file(excel_file, df):
+                    return
+            except Exception as e:
+                if attempt == max_retries - 1:
+                    raise Exception(f"导出失败，已重试{max_retries}次: {e}")
+                time.sleep(1)
+
+        raise Exception("验证文件失败，导出可能不完整")
+
+    def verify_file(self, excel_file, original_df):
+        start_time = time.time()
+        while time.time() - start_time < self.timeout:
+            if os.path.exists(excel_file) and os.path.getsize(excel_file) > 0:
+                try:
+                    # 尝试读取Excel文件
+                    df_read = pd.read_excel(excel_file, engine='openpyxl')
+                    # 比较导出的数据和原始数据
+                    if df_read.equals(original_df):
+                        return True
+                except Exception:
+                    pass
+            time.sleep(0.5)
+        return False
 
 class ROS2Thread(QThread):
     # pyqtSignal必须是类属性
@@ -83,6 +109,7 @@ class ROS2Thread(QThread):
     right_steam_status_updated = pyqtSignal(int)
     mode_chosen = pyqtSignal(int)
     export_completed = pyqtSignal(int)
+    export_started = pyqtSignal()
     # error_occurred = pyqtSignal(str)  # 添加错误信号
     
     def __init__(self, parent=None):
@@ -187,6 +214,8 @@ class SensorSubscriberNode(Node):
         self.zone1_output_addr = 0
         self.zone2_output_addr = 1
 
+        self.save_to_db_count = 0
+
         try:
             self.dio_client = ModbusTcpClient(self.dio_ip, port=self.dio_port)
             if not self.dio_client.connect():
@@ -258,7 +287,7 @@ class SensorSubscriberNode(Node):
             ]
             self.ros2_thread.data_updated.emit(sensor_data)
             # 保存数据
-            SensorSubscriberNode.save_data_to_db(self.cursor, sensor_data)
+            self.save_data_to_db(self.cursor, sensor_data)
             self.conn.commit()
 
             self.turn_zone1_humidifier_on()
@@ -286,7 +315,7 @@ class SensorSubscriberNode(Node):
         if sensor_data:
             self.ros2_thread.data_updated.emit(sensor_data)
             # 保存数据
-            SensorSubscriberNode.save_data_to_db(self.cursor, sensor_data)
+            self.save_data_to_db(self.cursor, sensor_data)
             self.conn.commit()
 
         updated_temp_data = {sensor: value for sensor, value in self.temp_data.items() if value != -1}
@@ -424,34 +453,37 @@ class SensorSubscriberNode(Node):
         conn.commit()
         return conn, cursor
 
-    @staticmethod
-    def save_data_to_db(cursor, sensor_data):
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        data = {f"temp_{i}": None for i in range(1, 17)}
-        data.update({f"hum_{i}": None for i in range(1, 17)})
-        
-        for sensor, value in sensor_data:
-            if '温感' in sensor:
-                sensor_num = int(sensor[2:])  # 修改这里以支持两位数的传感器编号
-                if value != '未知':
-                    data[f"temp_{sensor_num}"] = float(value[:-2])  # 移除 '°C' 并转换为浮点数
-                else:
-                    data[f"temp_{sensor_num}"] = 'unknown'
-            elif '湿感' in sensor:
-                sensor_num = int(sensor[2:])  # 修改这里以支持两位数的传感器编号
-                if value != '未知':
-                    data[f"hum_{sensor_num}"] = float(value[:-1])  # 移除 '%' 并转换为浮点数
-                else:
-                    data[f"hum_{sensor_num}"] = 'unknown'
+    def save_data_to_db(self, cursor, sensor_data):
+        if self.save_to_db_count == 11:
+            self.save_to_db_count = 0
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            data = {f"temp_{i}": None for i in range(1, 17)}
+            data.update({f"hum_{i}": None for i in range(1, 17)})
+            
+            for sensor, value in sensor_data:
+                if '温感' in sensor:
+                    sensor_num = int(sensor[2:])  # 修改这里以支持两位数的传感器编号
+                    if value != '未知':
+                        data[f"temp_{sensor_num}"] = float(value[:-2])  # 移除 '°C' 并转换为浮点数
+                    else:
+                        data[f"temp_{sensor_num}"] = 'unknown'
+                elif '湿感' in sensor:
+                    sensor_num = int(sensor[2:])  # 修改这里以支持两位数的传感器编号
+                    if value != '未知':
+                        data[f"hum_{sensor_num}"] = float(value[:-1])  # 移除 '%' 并转换为浮点数
+                    else:
+                        data[f"hum_{sensor_num}"] = 'unknown'
 
-        placeholders = ', '.join(['?'] * (len(data) + 1))
-        columns = ', '.join(['timestamp'] + list(data.keys()))
-        values = [timestamp] + list(data.values())
-        
-        cursor.execute(f'''
-        INSERT OR REPLACE INTO sensor_data
-        ({columns}) VALUES ({placeholders})
-        ''', values)
+            placeholders = ', '.join(['?'] * (len(data) + 1))
+            columns = ', '.join(['timestamp'] + list(data.keys()))
+            values = [timestamp] + list(data.values())
+            
+            cursor.execute(f'''
+            INSERT OR REPLACE INTO sensor_data
+            ({columns}) VALUES ({placeholders})
+            ''', values)
+        else:
+            self.save_to_db_count += 1
 
     def export_tables_to_excel(self, db_name):
         # 检查并获取U盘挂载点
@@ -460,15 +492,25 @@ class SensorSubscriberNode(Node):
             self.ros2_thread.export_completed.emit(0)  # 发射信号
             return
 
+        # 发射导出开始信号
+        self.ros2_thread.export_started.emit()
+
         result_queue = Queue()
         export_thread = ExportThread(db_name, usb_mount, result_queue)
         export_thread.start()
-        export_thread.join()  # 等待线程完成
 
-        success, message = result_queue.get()
-        logger.info(message)
-        if success:
-            self.ros2_thread.export_completed.emit(1)
+        def check_export_finished():
+            if not export_thread.is_alive():
+                success, message = result_queue.get()
+                logger.info(message)
+                if success:
+                    self.ros2_thread.export_completed.emit(1)
+                else:
+                    self.ros2_thread.export_completed.emit(-2)
+            else:
+                QTimer.singleShot(100, check_export_finished)
+
+        QTimer.singleShot(100, check_export_finished)
 
     @staticmethod
     def check_and_find_usb_drive():
@@ -550,6 +592,8 @@ def main():
     ros2_thread.recover_limit_settings.connect(ex.receive_limit_settings)
     ros2_thread.mode_chosen.connect(ros2_thread.process_mode_chosen)
     ros2_thread.export_completed.connect(ex.show_export_completed_dialog)
+
+    ros2_thread.export_started.connect(ex.show_export_progress)
     ros2_thread.left_steam_status_updated.connect(ex.update_left_steam_status)
     ros2_thread.right_steam_status_updated.connect(ex.update_right_steam_status)
     ros2_thread.start()
