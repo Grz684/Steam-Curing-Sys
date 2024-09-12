@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Component in PyQt</title>
+    <link rel="stylesheet" href="my-vue-component.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="qwebchannel.js"></script>
+    <script src="my-vue-component.umd.js"></script>
+</head>
+<body>
+    <div id="app"></div>
+    <script>
+        const { createApp } = Vue;
+        const app = createApp(MyVueComponent);
+        app.mount('#app');
+    </script>
+</body>
+</html>

@@ -5,7 +5,7 @@ from rclpy.node import Node
 from std_msgs.msg import Float32
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer
 from PyQt5.QtWidgets import QApplication
-from .steam_curing_sys_UI import IndustrialControlPanel
+from steam_curing_sys_UI_test import MainWindow
 from pymodbus.client import ModbusTcpClient
 from pymodbus.exceptions import ModbusException, ConnectionException
 from pymodbus.pdu import ExceptionResponse
@@ -28,6 +28,156 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+import sqlite3
+from datetime import datetime
+
+class ConfigManager:
+    # config_manager = ConfigManager()  # 这将默认使用 'sensor_data.db'
+
+    # # 加载配置
+    # config_manager.load_config()
+
+    # # 更新单个配置项
+    # config_manager.update_config(temp_lower_limit=18.5)
+
+    # # 更新多个配置项
+    # new_configs = {
+    #     'sprinkler_single_run_time': 180,
+    #     'sprinkler_run_interval_time': 3600,
+    # }
+    # config_manager.update_multiple_config(new_configs)
+
+    # # 获取所有配置，包括时间戳
+    # all_configs = config_manager.get_all_config()
+    # print("All configs:", all_configs)
+
+    # # 获取最后更新时间
+    # last_update = config_manager.get_last_update_time()
+    # print("Last update time:", last_update)
+
+    def __init__(self, db_file='sensor_data.db'):
+        self.db_file = db_file
+        self.conn = None
+        self.cursor = None
+        self.config = {}
+        self.load_config_settings = None  # Assuming this is a signal, initialize it properly
+        self.config_schema = {
+            'temp_lower_limit': 'REAL',
+            'temp_upper_limit': 'REAL',
+            'humidity_lower_limit': 'REAL',
+            'humidity_upper_limit': 'REAL',
+            'sprinkler_single_run_time': 'REAL',
+            'sprinkler_run_interval_time': 'REAL',
+            'sprinkler_loop_interval': 'REAL',
+            'trolley_single_run_time': 'REAL',
+            'trolley_run_interval_time': 'REAL',
+            'dolly_single_run_time': 'REAL',
+            'dolly_run_interval_time': 'REAL'
+        }
+
+    def connect(self):
+        self.conn = sqlite3.connect(self.db_file)
+        self.cursor = self.conn.cursor()
+        self._create_table()
+
+    def _create_table(self):
+        columns = ', '.join([f"{key} {value}" for key, value in self.config_schema.items()])
+        self.cursor.execute(f'''
+            CREATE TABLE IF NOT EXISTS config (
+                {columns},
+                timestamp TEXT
+            )
+        ''')
+        self.conn.commit()
+
+    def add_config_item(self, name, data_type):
+        if name not in self.config_schema:
+            self.config_schema[name] = data_type
+            self.connect()
+            self.cursor.execute(f"ALTER TABLE config ADD COLUMN {name} {data_type}")
+            self.conn.commit()
+            self.conn.close()
+
+    def load_config(self):
+        self.connect()
+        self.cursor.execute('SELECT * FROM config ORDER BY timestamp DESC LIMIT 1')
+        row = self.cursor.fetchone()
+        if row:
+            columns = [description[0] for description in self.cursor.description]
+            self.config = dict(zip(columns, row))
+            if self.load_config_settings:
+                self.load_config_settings.emit(self.config)
+        self.conn.close()
+
+    def save_config(self):
+        self.connect()
+        current_time = datetime.now().isoformat()
+        self.config['timestamp'] = current_time
+        
+        # Delete existing config
+        self.cursor.execute('DELETE FROM config')
+        
+        # Insert new config
+        columns = ', '.join(self.config.keys())
+        placeholders = ', '.join('?' * len(self.config))
+        query = f'INSERT INTO config ({columns}) VALUES ({placeholders})'
+        self.cursor.execute(query, tuple(self.config.values()))
+        
+        self.conn.commit()
+        self.conn.close()
+
+    def update_config(self, **kwargs):
+        self.config.update(kwargs)
+        self.save_config()
+
+    def get_config(self, key, default=None):
+        return self.config.get(key, default)
+
+    def get_multiple_config(self, keys):
+        return {key: value for key, value in 
+                ((key, self.config.get(key)) for key in keys) 
+                if value is not None}
+
+    def update_multiple_config(self, config_dict):
+        self.config.update(config_dict)
+        self.save_config()
+
+    def get_all_config(self):
+        return self.config.copy()
+
+    def get_last_update_time(self):
+        return self.config.get('timestamp')
+
+class SprinklerSystem(Thread):
+    def __init__(self, n, single_run_time, run_interval_time, loop_interval):
+        Thread.__init__(self)
+        self.n = n
+        self.sprinkler_single_run_time = single_run_time
+        self.sprinkler_run_interval_time = run_interval_time
+        self.sprinkler_loop_interval = loop_interval
+        self.running = False
+        self.daemon = True  # 设置为守护线程，这样主程序退出时，此线程也会退出
+
+    def run(self):
+        self.running = True
+        while self.running:
+            for i in range(1, self.n + 1):
+                if not self.running:
+                    break
+                print(f"激活输出 {i}")
+                time.sleep(self.sprinkler_single_run_time)
+                
+                if i < self.n and self.running:
+                    print(f"输出 {i} 结束，等待间隔")
+                    time.sleep(self.sprinkler_run_interval_time)
+            
+            if self.running:
+                print("一轮循环结束，等待下一轮")
+                time.sleep(self.sprinkler_loop_interval)
+
+    def stop(self):
+        self.running = False
 
 class ExportThread(Thread):
     def __init__(self, db_name, usb_mount, result_queue, timeout=30):
@@ -103,10 +253,11 @@ class ExportThread(Thread):
 class ROS2Thread(QThread):
     # pyqtSignal必须是类属性
     limit_settings = pyqtSignal(float, float, float, float)
-    recover_limit_settings = pyqtSignal(float, float, float, float)
+    load_limit_settings = pyqtSignal(float, float, float, float)
+    load_sprinkler_settings = pyqtSignal(dict)
     data_updated = pyqtSignal(list)
-    left_steam_status_updated = pyqtSignal(int)
-    right_steam_status_updated = pyqtSignal(int)
+    left_steam_status_updated = pyqtSignal(bool)
+    right_steam_status_updated = pyqtSignal(bool)
     mode_chosen = pyqtSignal(int)
     export_completed = pyqtSignal(int)
     export_started = pyqtSignal()
@@ -115,19 +266,29 @@ class ROS2Thread(QThread):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.running = True
-        self.mode = 1
+        self.control_auto_mode = True
         self.temp_lower_limit = 70.0
         self.temp_upper_limit = 80.0
         self.humidity_lower_limit = 80.0
         self.humidity_upper_limit = 90.0
+        self.sprinkler_single_run_time = 5
+        self.sprinkler_run_interval_time = 2
+        self.sprinkler_loop_interval = 10
+        self.is_system_started = False
         self.node = None  # 初始化为 None
-        self.config_file = 'sensor_limits.json'
-        self.load_limits()
+        self.sprinkler = None
+        
+        self.config_manager = ConfigManager()  # 这将默认使用 'sensor_data.db'
+
+        # 加载配置
+        self.config_manager.load_config()
         
     def run(self):
         try:
             rclpy.init()
             self.node = SensorSubscriberNode(self)
+            self.load_limits()
+            self.load_sprinkler()
             while self.running and rclpy.ok():
                 rclpy.spin_once(self.node, timeout_sec=0.1)
             # 关闭输出
@@ -154,39 +315,115 @@ class ROS2Thread(QThread):
         self.humidity_upper_limit = humidity_upper
         self.save_limits()  # 保存新的限制值
 
-    def process_mode_chosen(self, mode):
-        # 在工作线程中处理接收到的模式选择
-        logger.info(f"Worker received: Mode {mode}")
-        if mode == 1 and self.mode == 2:
-            self.node.turn_zone1_humidifier_off()
-            self.node.turn_zone2_humidifier_off()
-            self.mode = 1
-            logger.info('Mode 1 chosen')
-        elif mode == 2 and self.mode == 1:
-            self.mode = 2
-            logger.info('Mode 2 chosen')
-        elif mode == 3:
-            self.node.export_tables_to_excel(self.node.db_name)
+    def process_sprinkler_settings(self, sprinkler_settings):
+        self.sprinkler_single_run_time = sprinkler_settings['sprinkler_single_run_time']
+        self.sprinkler_run_interval_time = sprinkler_settings['sprinkler_run_interval_time']
+        self.sprinkler_loop_interval = sprinkler_settings['sprinkler_loop_interval']
+        logger.info(f"Worker received sprinkler settings: {sprinkler_settings}")
+        if self.sprinkler is not None:
+            self.sprinkler.sprinkler_single_run_time = self.sprinkler_single_run_time
+            self.sprinkler.sprinkler_run_interval_time = self.sprinkler_run_interval_time
+            self.sprinkler.sprinkler_loop_interval = self.sprinkler_loop_interval
+
+        self.save_sprinkler()
+
+    def sprinkler_stop(self):
+        if self.sprinkler is not None:
+            self.sprinkler.stop()
+            self.sprinkler.join()
+            self.sprinkler = None
+            logger.info("sprinkler stop")
+
+    def process_control_mode(self, auto_mode_flag):
+        # 代表模式发生了变化
+        self.sprinkler_stop()
+        
+        if auto_mode_flag:
+            logger.info('Auto Mode chosen')
+            self.control_auto_mode = True
+        else:
+            logger.info('Manual Mode chosen')
+            self.control_auto_mode = False
+
+    def process_steam_engine_state(self, state):
+        if state["engine"] == "left":
+            self.node.turn_zone1_humidifier_on() if state["state"] else self.node.turn_zone1_humidifier_off()
+        elif state["engine"] == "right":
+            self.node.turn_zone2_humidifier_on() if state["state"] else self.node.turn_zone2_humidifier_off()
+
+    def process_system_state(self, state):
+        self.is_system_started = state
+        logger.info(f"is System started?: {state}")
+        # 只处理开始/停止按钮的功能
+        if state:
+            self.sprinkler = SprinklerSystem(
+                n=10,
+                single_run_time=self.sprinkler_single_run_time,
+                run_interval_time=self.sprinkler_run_interval_time,
+                loop_interval=self.sprinkler_loop_interval
+            )
+            # 启动喷水器系统
+            self.sprinkler.start()
+        else:
+            self.sprinkler_stop()
+
 
     def load_limits(self):
-        if os.path.exists(self.config_file):
-            with open(self.config_file, 'r') as f:
-                limits = json.load(f)
-            self.temp_lower_limit = limits['temp_lower']
-            self.temp_upper_limit = limits['temp_upper']
-            self.humidity_lower_limit = limits['humidity_lower']
-            self.humidity_upper_limit = limits['humidity_upper']
-            self.recover_limit_settings.emit(self.temp_upper_limit, self.temp_lower_limit, self.humidity_upper_limit, self.humidity_lower_limit)
+        temp_humidity_configs = self.config_manager.get_multiple_config([
+            'temp_lower_limit', 
+            'temp_upper_limit', 
+            'humidity_lower_limit', 
+            'humidity_upper_limit'
+        ])
+        
+        if temp_humidity_configs:
+            self.temp_lower_limit = temp_humidity_configs['temp_lower_limit']
+            self.temp_upper_limit = temp_humidity_configs['temp_upper_limit']
+            self.humidity_lower_limit = temp_humidity_configs['humidity_lower_limit']
+            self.humidity_upper_limit = temp_humidity_configs['humidity_upper_limit']
+            logger.info(f"Loaded limits: Temp {self.temp_lower_limit}-{self.temp_upper_limit}°C, Humidity {self.humidity_lower_limit}-{self.humidity_upper_limit}%")
+            self.load_limit_settings.emit(float(self.temp_upper_limit), float(self.temp_lower_limit), float(self.humidity_upper_limit), float(self.humidity_lower_limit))
+        else:
+            self.load_limit_settings.emit(float(self.temp_upper_limit), float(self.temp_lower_limit), float(self.humidity_upper_limit), float(self.humidity_lower_limit))
+
+    def load_sprinkler(self):
+        sprinkler_configs = self.config_manager.get_multiple_config([
+            'sprinkler_single_run_time',
+            'sprinkler_run_interval_time',
+            'sprinkler_loop_interval',
+        ])
+        
+        if sprinkler_configs:
+            self.sprinkler_single_run_time = sprinkler_configs['sprinkler_single_run_time']
+            self.sprinkler_run_interval_time = sprinkler_configs['sprinkler_run_interval_time']
+            self.sprinkler_loop_interval = sprinkler_configs['sprinkler_loop_interval']
+            logger.info(f"Loaded sprinkler settings: {sprinkler_configs}")
+            self.load_sprinkler_settings.emit(sprinkler_configs)
+        else:
+            sprinkler_configs = {
+                'sprinkler_single_run_time': self.sprinkler_single_run_time,
+                'sprinkler_run_interval_time': self.sprinkler_run_interval_time,
+                'sprinkler_loop_interval': self.sprinkler_loop_interval,
+            }
+            self.load_sprinkler_settings.emit(sprinkler_configs)
+
+    def save_sprinkler(self):
+        new_configs = {
+            'sprinkler_single_run_time': self.sprinkler_single_run_time,
+            'sprinkler_run_interval_time': self.sprinkler_run_interval_time,
+            'sprinkler_loop_interval': self.sprinkler_loop_interval,
+        }
+        self.config_manager.update_multiple_config(new_configs)
 
     def save_limits(self):
-        limits = {
-            'temp_lower': self.temp_lower_limit,
-            'temp_upper': self.temp_upper_limit,
-            'humidity_lower': self.humidity_lower_limit,
-            'humidity_upper': self.humidity_upper_limit
+        # 更新多个配置项
+        new_configs = {
+            'temp_lower_limit': self.temp_lower_limit,
+            'temp_upper_limit': self.temp_upper_limit,
+            'humidity_lower_limit': self.humidity_lower_limit,
+            'humidity_upper_limit': self.humidity_upper_limit,
         }
-        with open(self.config_file, 'w') as f:
-            json.dump(limits, f)
+        self.config_manager.update_multiple_config(new_configs)
 
 class ModbusControlException(Exception):
     pass
@@ -195,6 +432,8 @@ class SensorSubscriberNode(Node):
     def __init__(self, ros2_thread):
         super().__init__('sensor_subscriber')
         self.ros2_thread = ros2_thread
+        # debug时不连接Modbus服务器
+        self.debug = True
         
         self.temp_data = {f'temperature_sensor_{i}': -1 for i in range(1, 17)}  # 修改为 16 个传感器
         self.humidity_data = {f'humidity_sensor_{i}': -1 for i in range(1, 17)}  # 修改为 16 个传感器
@@ -216,20 +455,21 @@ class SensorSubscriberNode(Node):
 
         self.save_to_db_count = 0
 
-        try:
-            self.dio_client = ModbusTcpClient(self.dio_ip, port=self.dio_port)
-            if not self.dio_client.connect():
-                raise ModbusControlException(f"无法连接到 Modbus 服务器 {self.dio_ip}:{self.dio_port}")
-            else:
-                try:
-                    initial_data = self.dio_client.socket.recv(1024)
-                    if initial_data:
-                        logger.info(f"初始响应: {initial_data.hex()}")
-                        logger.info(f"初始响应 (ASCII): {initial_data.decode('ascii', errors='ignore')}")
-                except Exception as e:
-                    logger.error(f"读取初始响应时出错: {e}")
-        except ConnectionException as e:
-            raise ModbusControlException(f"Modbus 连接错误: {e}")
+        if not self.debug:
+            try:
+                self.dio_client = ModbusTcpClient(self.dio_ip, port=self.dio_port)
+                if not self.dio_client.connect():
+                    raise ModbusControlException(f"无法连接到 Modbus 服务器 {self.dio_ip}:{self.dio_port}")
+                else:
+                    try:
+                        initial_data = self.dio_client.socket.recv(1024)
+                        if initial_data:
+                            logger.info(f"初始响应: {initial_data.hex()}")
+                            logger.info(f"初始响应 (ASCII): {initial_data.decode('ascii', errors='ignore')}")
+                    except Exception as e:
+                        logger.error(f"读取初始响应时出错: {e}")
+            except ConnectionException as e:
+                raise ModbusControlException(f"Modbus 连接错误: {e}")
         
         # 初始化关闭所有输出
         # self.control_output(self.zone1_output_addr, False)
@@ -250,23 +490,26 @@ class SensorSubscriberNode(Node):
         self.timer = self.create_timer(5.0, self.timer_callback)
 
     def control_output(self, address, value):
-        try:
-            result = self.dio_client.write_coil(address, value, slave=1)
-            logger.info("写入操作返回值:")
-            logger.info(f"  类型: {type(result)}")
-            logger.info(f"  内容: {result}")
-            if hasattr(result, 'function_code'):
-                logger.info(f"  功能码: {result.function_code}")
-            if hasattr(result, 'address'):
-                logger.info(f"  地址: {result.address}")
-            if hasattr(result, 'value'):
-                logger.info(f"  值: {result.value}")
-            if isinstance(result, ExceptionResponse):
-                logger.info(f"Modbus异常: {result}")
-            else:
-                logger.info(f"成功{'打开' if value else '关闭'}输出 {address}")
-        except ModbusException as e:
-            raise ModbusControlException(f"Modbus错误: {e}")
+        if not self.debug:
+            try:
+                result = self.dio_client.write_coil(address, value, slave=1)
+                logger.info("写入操作返回值:")
+                logger.info(f"  类型: {type(result)}")
+                logger.info(f"  内容: {result}")
+                if hasattr(result, 'function_code'):
+                    logger.info(f"  功能码: {result.function_code}")
+                if hasattr(result, 'address'):
+                    logger.info(f"  地址: {result.address}")
+                if hasattr(result, 'value'):
+                    logger.info(f"  值: {result.value}")
+                if isinstance(result, ExceptionResponse):
+                    logger.info(f"Modbus异常: {result}")
+                else:
+                    logger.info(f"成功{'打开' if value else '关闭'}输出 {address}")
+            except ModbusException as e:
+                raise ModbusControlException(f"Modbus错误: {e}")
+        else:
+            logger.info(f"模拟{'打开' if value else '关闭'}输出 {address}")
 
     def temp_callback(self, msg, sensor_name):
         self.temp_data[sensor_name] = msg.data
@@ -275,23 +518,7 @@ class SensorSubscriberNode(Node):
         self.humidity_data[sensor_name] = msg.data
 
     def timer_callback(self):
-        if self.ros2_thread.mode == 1:
-            self.true_process()
-        else:
-            average_temp = (self.ros2_thread.temp_lower_limit + self.ros2_thread.temp_upper_limit)/2
-            average_humidity = (self.ros2_thread.humidity_lower_limit + self.ros2_thread.humidity_upper_limit)/2
-            sensor_data = [
-                (f'温感{i}', f'{average_temp+random.uniform(-3, 3):.1f}°C') for i in range(1, 17)  # 修改为 16 个传感器
-            ] + [
-                (f'湿感{i}', f'{average_humidity+random.uniform(-3, 3):.1f}%') for i in range(1, 17)  # 修改为 16 个传感器
-            ]
-            self.ros2_thread.data_updated.emit(sensor_data)
-            # 保存数据
-            self.save_data_to_db(self.cursor, sensor_data)
-            self.conn.commit()
-
-            self.turn_zone1_humidifier_on()
-            self.turn_zone2_humidifier_on()
+        self.true_process()
 
     def true_process(self):
         sensor_data = []
@@ -318,18 +545,19 @@ class SensorSubscriberNode(Node):
             self.save_data_to_db(self.cursor, sensor_data)
             self.conn.commit()
 
-        updated_temp_data = {sensor: value for sensor, value in self.temp_data.items() if value != -1}
-        updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
+        if self.ros2_thread.control_auto_mode:
+            updated_temp_data = {sensor: value for sensor, value in self.temp_data.items() if value != -1}
+            updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
 
-        if updated_temp_data or updated_humidity_data:
-            self.process_data_zone1(
-                {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(1, 9)]},  # 修改为前 8 个传感器
-                {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(1, 9)]}  # 修改为前 8 个传感器
-            )
-            self.process_data_zone2(
-                {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(9, 17)]},  # 修改为后 8 个传感器
-                {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(9, 17)]}  # 修改为后 8 个传感器
-            )
+            if updated_temp_data or updated_humidity_data:
+                self.process_data_zone1(
+                    {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(1, 9)]},  # 修改为前 8 个传感器
+                    {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(1, 9)]}  # 修改为前 8 个传感器
+                )
+                self.process_data_zone2(
+                    {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(9, 17)]},  # 修改为后 8 个传感器
+                    {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(9, 17)]}  # 修改为后 8 个传感器
+                )
 
         self.temp_data = {sensor: -1 for sensor in self.temp_data}
         self.humidity_data = {sensor: -1 for sensor in self.humidity_data}
@@ -385,21 +613,24 @@ class SensorSubscriberNode(Node):
             self.zone1_humidifier_on = True
             logger.info('Turning zone1 humidifier ON')
             self.control_output(self.zone1_output_addr, True)
-            self.ros2_thread.left_steam_status_updated.emit(1)
+            if self.ros2_thread.control_auto_mode:
+                self.ros2_thread.left_steam_status_updated.emit(True)
 
     def turn_zone1_humidifier_off(self):
         if self.zone1_humidifier_on:
             self.zone1_humidifier_on = False
             logger.info('Turning zone1 humidifier OFF')
             self.control_output(self.zone1_output_addr, False)
-            self.ros2_thread.left_steam_status_updated.emit(0)
+            if self.ros2_thread.control_auto_mode:
+                self.ros2_thread.left_steam_status_updated.emit(False)
 
     def turn_zone2_humidifier_on(self):
         if not self.zone2_humidifier_on:
             self.zone2_humidifier_on = True
             logger.info('Turning zone2 humidifier ON')
             self.control_output(self.zone2_output_addr, True)
-            self.ros2_thread.right_steam_status_updated.emit(1)
+            if self.ros2_thread.control_auto_mode:
+                self.ros2_thread.right_steam_status_updated.emit(True)
 
 
     def turn_zone2_humidifier_off(self):
@@ -407,7 +638,8 @@ class SensorSubscriberNode(Node):
             self.zone2_humidifier_on = False
             logger.info('Turning zone2 humidifier OFF')
             self.control_output(self.zone2_output_addr, False)
-            self.ros2_thread.right_steam_status_updated.emit(0)
+            if self.ros2_thread.control_auto_mode:
+                self.ros2_thread.right_steam_status_updated.emit(False)
 
     @staticmethod
     def create_table(cursor):
@@ -586,14 +818,20 @@ class SensorSubscriberNode(Node):
 def main():
     app = QApplication(sys.argv)
     ros2_thread = ROS2Thread()
-    ex = IndustrialControlPanel(ros2_thread)
+    # ex = IndustrialControlPanel(ros2_thread)
+    ex = MainWindow()
     ros2_thread.data_updated.connect(ex.update_sensor_data)
-    ros2_thread.limit_settings.connect(ros2_thread.process_limit_settings)
-    ros2_thread.recover_limit_settings.connect(ex.receive_limit_settings)
-    ros2_thread.mode_chosen.connect(ros2_thread.process_mode_chosen)
-    ros2_thread.export_completed.connect(ex.show_export_completed_dialog)
+    ex.bridge.limitSettingsUpdated.connect(ros2_thread.process_limit_settings)
+    ros2_thread.load_limit_settings.connect(ex.update_limit_settings)
+    ex.bridge.ControlAutoMode.connect(ros2_thread.process_control_mode)
+    ex.bridge.steamEngineState.connect(ros2_thread.process_steam_engine_state)
+    ex.bridge.sprinkerSettingsUpdated.connect(ros2_thread.process_sprinkler_settings)
+    ros2_thread.load_sprinkler_settings.connect(ex.update_sprinkler_settings)
+    ex.bridge.IsSystemStarted.connect(ros2_thread.process_system_state)
+    # ros2_thread.mode_chosen.connect(ros2_thread.process_mode_chosen)
+    # ros2_thread.export_completed.connect(ex.show_export_completed_dialog)
 
-    ros2_thread.export_started.connect(ex.show_export_progress)
+    # ros2_thread.export_started.connect(ex.show_export_progress)
     ros2_thread.left_steam_status_updated.connect(ex.update_left_steam_status)
     ros2_thread.right_steam_status_updated.connect(ex.update_right_steam_status)
     ros2_thread.start()
@@ -620,3 +858,6 @@ def main():
     ros2_thread.wait()
 
     sys.exit(exit_code)
+
+if __name__ == '__main__':
+    main()
