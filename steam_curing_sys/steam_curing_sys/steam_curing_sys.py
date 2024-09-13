@@ -26,6 +26,7 @@ import time
 from threading import Thread
 import threading
 import logging
+from std_srvs.srv import Trigger
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -524,6 +525,11 @@ class SensorSubscriberNode(Node):
         self.save_to_db_count = 0
 
         self.lock = threading.Lock()
+        self.cli = self.create_client(Trigger, 'get_sensor_data')
+        # 等待服务可用
+        while not self.cli.wait_for_service(timeout_sec=1.0):
+            logger.info('服务不可用，等待中...')
+        logger.info('服务现在可用')
 
         if not self.debug:
             try:
@@ -581,24 +587,40 @@ class SensorSubscriberNode(Node):
         else:
             logger.info(f"模拟{'打开' if value else '关闭'}输出 {address}")
 
-    def temp_callback(self, msg, sensor_name):
-        with self.lock:
-            self.temp_data[sensor_name] = msg.data
-
-    def humidity_callback(self, msg, sensor_name):
-        with self.lock:
-            self.humidity_data[sensor_name] = msg.data
-
     def get_all_sensor_data(self):
         with self.lock:
             # 返回整个温度和湿度数组的副本
+            logger.info(f"获取所有传感器数据: {self.temp_data}, {self.humidity_data}")
             return {
                 'temperature': self.temp_data.copy(),
                 'humidity': self.humidity_data.copy()
             }
 
     def timer_callback(self):
-        self.true_process()
+        # self.get_logger().info('开始请求数据...')
+        request = Trigger.Request()
+
+        # 异步调用服务
+        future = self.cli.call_async(request)
+        future.add_done_callback(self.service_response_callback)
+
+    def service_response_callback(self, future):
+        try:
+            response = future.result()  # 获取服务的响应
+            if response.success:
+                data = json.loads(response.message)
+                with self.lock:
+                    self.temp_data = data["temperatures"]
+                    self.humidity_data = data["humidities"]
+                self.true_process()
+                # self.get_logger().info('接收到传感器数据:')
+                # self.get_logger().info(f'温度: {data["temperatures"]}, 湿度: {data["humidities"]}')
+            else:
+                self.get_logger().warn(f'获取传感器数据失败: {response.message}')
+                self.temp_data = {sensor: -1 for sensor in self.temp_data}
+                self.humidity_data = {sensor: -1 for sensor in self.humidity_data}
+        except Exception as e:
+            self.get_logger().error(f'获取传感器数据时出错: {str(e)}')
 
     def true_process(self):
         sensor_data = []
@@ -624,9 +646,6 @@ class SensorSubscriberNode(Node):
             # 保存数据
             self.save_data_to_db(self.cursor, sensor_data)
             self.conn.commit()
-
-        self.temp_data = {sensor: -1 for sensor in self.temp_data}
-        self.humidity_data = {sensor: -1 for sensor in self.humidity_data}
 
     def turn_zone1_heater_on(self):
         if not self.zone1_heater_on:
