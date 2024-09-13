@@ -27,6 +27,7 @@ from threading import Thread
 import threading
 import logging
 from std_srvs.srv import Trigger
+import asyncio
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -357,9 +358,10 @@ class ROS2Thread(QThread):
             self.load_sprinkler()
             while self.running and rclpy.ok():
                 rclpy.spin_once(self.node, timeout_sec=0.1)
-            # 关闭输出
-            self.node.control_output(self.node.zone1_output_addr, False)
-            self.node.control_output(self.node.zone2_output_addr, False)
+            # 关闭sprinkler线程
+            self.sprinkler_stop()
+            # 关闭所有输出
+            pass
             # 在子线程中关闭数据库连接
             self.node.conn.close()
             self.node.destroy_node()
@@ -404,6 +406,7 @@ class ROS2Thread(QThread):
             # 手动-->自动
             logger.info('Auto Mode chosen')
             logger.info("关闭所有输出")
+            pass
             
             self.control_auto_mode = True
         else:
@@ -412,6 +415,10 @@ class ROS2Thread(QThread):
             self.sprinkler_stop()
 
             self.control_auto_mode = False
+
+    def sprinkler_manual_control(self, control):
+        # { sprinkler: n, state: 1 }
+        logger.info(f"Manual control sprinkler: 喷头{control['sprinkler']} -> {control['state']}")
 
     def process_steam_engine_state(self, state):
         if state["engine"] == "left":
@@ -526,10 +533,10 @@ class SensorSubscriberNode(Node):
 
         self.lock = threading.Lock()
         self.cli = self.create_client(Trigger, 'get_sensor_data')
-        # 等待服务可用
-        while not self.cli.wait_for_service(timeout_sec=1.0):
-            logger.info('服务不可用，等待中...')
-        logger.info('服务现在可用')
+        # # 等待服务可用
+        # while not self.cli.wait_for_service(timeout_sec=1.0):
+        #     logger.info('服务不可用，等待中...')
+        # logger.info('服务现在可用')
 
         if not self.debug:
             try:
@@ -612,15 +619,20 @@ class SensorSubscriberNode(Node):
                 with self.lock:
                     self.temp_data = data["temperatures"]
                     self.humidity_data = data["humidities"]
-                self.true_process()
                 # self.get_logger().info('接收到传感器数据:')
                 # self.get_logger().info(f'温度: {data["temperatures"]}, 湿度: {data["humidities"]}')
             else:
                 self.get_logger().warn(f'获取传感器数据失败: {response.message}')
-                self.temp_data = {sensor: -1 for sensor in self.temp_data}
-                self.humidity_data = {sensor: -1 for sensor in self.humidity_data}
+                with self.lock:
+                    self.temp_data = {sensor: -1 for sensor in self.temp_data}
+                    self.humidity_data = {sensor: -1 for sensor in self.humidity_data}
         except Exception as e:
             self.get_logger().error(f'获取传感器数据时出错: {str(e)}')
+            with self.lock:
+                self.temp_data = {sensor: -1 for sensor in self.temp_data}
+                self.humidity_data = {sensor: -1 for sensor in self.humidity_data}
+
+        self.true_process()
 
     def true_process(self):
         sensor_data = []
@@ -887,6 +899,7 @@ def main():
     ex.bridge.sprinkerSettingsUpdated.connect(ros2_thread.process_sprinkler_settings)
     ros2_thread.load_sprinkler_settings.connect(ex.update_sprinkler_settings)
     ex.bridge.IsSystemStarted.connect(ros2_thread.process_system_state)
+    ex.bridge.sprinklerControl.connect(ros2_thread.sprinkler_manual_control)
     # ros2_thread.mode_chosen.connect(ros2_thread.process_mode_chosen)
     # ros2_thread.export_completed.connect(ex.show_export_completed_dialog)
 

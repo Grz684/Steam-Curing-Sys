@@ -20,6 +20,7 @@ class Bridge(QObject):
     steamEngineState = pyqtSignal(dict)
     limitSettingsUpdated = pyqtSignal(float, float, float, float)  # 新增信号
     sprinkerSettingsUpdated = pyqtSignal(dict)
+    sprinklerControl = pyqtSignal(dict)
     def __init__(self):
         super().__init__()
         print("Bridge object initialized")
@@ -63,12 +64,18 @@ class Bridge(QObject):
                 self.setSteamEngineState(args)
             elif method_name == "startSystem":
                 self.startSystem(args)
+            elif method_name == "ManualControlSprinkler":
+                self.ManualControlSprinkler(args)
             else:
                 print(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
             print(f"Failed to parse JSON: {args_json}")
         except Exception as e:
             print(f"Error processing method {method_name}: {str(e)}")
+
+    def ManualControlSprinkler(self, args):
+        print(f"Manual control sprinkler: {args}")
+        self.sprinklerControl.emit(args)
 
     def updateLimitSettings(self, settings):
         print(f"Updating settings: {settings}")

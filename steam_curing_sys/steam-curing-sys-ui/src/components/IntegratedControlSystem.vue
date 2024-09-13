@@ -158,8 +158,8 @@
     }
     if (oldMode !== isAutoMode.value) {
       stopSystemWithoutSend();
-      // leftEngineOn.value = false;
-      // rightEngineOn.value = false;
+      leftEngineOn.value = false;
+      rightEngineOn.value = false;
       // sendToPyQt('setEngineState', { engine: 'left', state: leftEngineOn.value });
       // sendToPyQt('setEngineState', { engine: 'right', state: rightEngineOn.value });
     }
@@ -305,7 +305,32 @@
   
   function toggleManualSprinkler(n) {
     if (isAutoMode.value) return;
-    waterLevels.value[n - 1] = waterLevels.value[n - 1] > 0 ? 0 : 100;
+    
+    // 找出当前激活的喷头（如果有）
+    const activeIndex = waterLevels.value.findIndex(level => level === 100);
+    
+    // 检查当前点击的喷头是否已经激活
+    if (waterLevels.value[n - 1] > 0) {
+      // 如果已激活，则关闭它
+      waterLevels.value[n - 1] = 0;
+      if (environment.isPyQtWebEngine) {
+        sendToPyQt('ManualControlSprinkler', { sprinkler: n, state: 0 });
+      }
+    } else {
+      // 如果未激活，关闭当前激活的喷头（如果有），然后激活新的喷头
+      if (activeIndex !== -1) {
+        waterLevels.value[activeIndex] = 0;
+        if (environment.isPyQtWebEngine) {
+          sendToPyQt('ManualControlSprinkler', { sprinkler: activeIndex + 1, state: 0 });
+        }
+      }
+      
+      // 激活新的喷头
+      waterLevels.value[n - 1] = 100;
+      if (environment.isPyQtWebEngine) {
+        sendToPyQt('ManualControlSprinkler', { sprinkler: n, state: 1 });
+      }
+    }
   }
   </script>
   

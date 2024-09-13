@@ -1,10 +1,9 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float32
-from pymodbus.client import ModbusTcpClient
-import time
-import logging
+from std_srvs.srv import Trigger
+import json
 import random
+import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -14,51 +13,30 @@ class TempHumidityPublisher(Node):
     def __init__(self):
         super().__init__('temp_humidity_publisher')
           
-        # 创建32个发布者,16个温度传感器和16个湿度传感器
-        self.temp_publishers = []
-        self.humidity_publishers = []
-        
-        for i in range(1, 17):
-            temp_pub = self.create_publisher(Float32, f'temperature_sensor_{i}', 10)
-            self.temp_publishers.append(temp_pub)
-            
-            humidity_pub = self.create_publisher(Float32, f'humidity_sensor_{i}', 10)
-            self.humidity_publishers.append(humidity_pub)
-
-        # 创建定时器,每5秒调用一次回调函数
-        self.timer = self.create_timer(5.0, self.timer_callback)
+        self.srv = self.create_service(Trigger, 'get_sensor_data', self.get_sensor_data_callback)
 
         self.get_logger().info('Temperature and Humidity Publisher node has been started')
 
-    def read_temperature_humidity_test(self):
-        try:
-            # 生成随机温度，范围在 -10 到 40 度之间
-            temperature = round(random.uniform(38, 40), 1)
-            
-            # 生成随机湿度，范围在 0 到 100% 之间
-            humidity = round(random.uniform(90, 92), 1)
-            
-            return temperature, humidity
-        except Exception as e:
-            print(f"生成随机数据时发生错误: {e}")
-            return None, None
-
-    def timer_callback(self):
-        for i in range(16):
-            temp, humi = self.read_temperature_humidity_test()
-            if temp is not None and humi is not None:
-                temp_msg = Float32()
-                temp_msg.data = temp
-                self.temp_publishers[i].publish(temp_msg)
-                
-                humidity_msg = Float32()
-                humidity_msg.data = humi
-                self.humidity_publishers[i].publish(humidity_msg)
-                
-                # self.get_logger().info(f'Published: Temp{i+1}={temp:.1f}°C, Humidity{i+1}={humi:.1f}%')
-            else:
-                # self.get_logger().warn(f'Failed to read sensor {i+1}')
-                pass
+    def get_sensor_data_callback(self, request, response):
+        # 模拟获取16个温度和16个湿度数据
+        temperatures = {
+            f'temperature_sensor_{i}': round(random.uniform(38.0, 40.0), 2)
+            for i in range(1, 17)
+        }
+        
+        humidities = {
+            f'humidity_sensor_{i}': round(random.uniform(90.0, 92.0), 2)
+            for i in range(1, 17)
+        }
+        
+        data = {
+            "temperatures": temperatures,
+            "humidities": humidities
+        }
+        
+        response.message = json.dumps(data)
+        response.success = True
+        return response
 
 def main(args=None):
     rclpy.init(args=args)
