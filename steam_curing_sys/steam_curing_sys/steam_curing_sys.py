@@ -24,6 +24,7 @@ import re
 from queue import Queue
 import time
 from threading import Thread
+import threading
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -150,35 +151,99 @@ class ConfigManager:
         return self.config.get('timestamp')
 
 class SprinklerSystem(Thread):
-    def __init__(self, n, single_run_time, run_interval_time, loop_interval):
+    def __init__(self, ros2_thread, n, single_run_time, run_interval_time, loop_interval):
         Thread.__init__(self)
         self.n = n
+        self.ros2_thread = ros2_thread
         self.sprinkler_single_run_time = single_run_time
         self.sprinkler_run_interval_time = run_interval_time
         self.sprinkler_loop_interval = loop_interval
-        self.running = False
-        self.daemon = True  # 设置为守护线程，这样主程序退出时，此线程也会退出
+        self.running_event = threading.Event()
+        self.daemon = True
 
     def run(self):
-        self.running = True
-        while self.running:
+        self.running_event.set()
+        while self.running_event.is_set():
             for i in range(1, self.n + 1):
-                if not self.running:
+                if not self.running_event.is_set():
                     break
                 print(f"激活输出 {i}")
-                time.sleep(self.sprinkler_single_run_time)
+                start_time = time.time()
+                sprinkler_single_run_time = self.sprinkler_single_run_time
+                while time.time() - start_time < sprinkler_single_run_time:
+                    if not self.running_event.is_set():
+                        break
+                    time.sleep(0.1)  # 小的睡眠时间，使线程可以响应停止信号
                 
-                if i < self.n and self.running:
+                print(f"关闭输出 {i}")
+                
+                if i < self.n and self.running_event.is_set():
                     print(f"输出 {i} 结束，等待间隔")
-                    time.sleep(self.sprinkler_run_interval_time)
+                    start_time = time.time()
+                    sprinkler_run_interval_time = self.sprinkler_run_interval_time
+                    while time.time() - start_time < sprinkler_run_interval_time:
+                        if not self.running_event.is_set():
+                            break
+                        time.sleep(0.1)
             
-            if self.running:
+            if self.running_event.is_set():
                 print("一轮循环结束，等待下一轮")
-                time.sleep(self.sprinkler_loop_interval)
+                self.wait_with_function_call(self.sprinkler_loop_interval)
+                self.ros2_thread.node.turn_zone1_humidifier_off()
+                self.ros2_thread.node.turn_zone2_humidifier_off()
+
+    def wait_with_function_call(self, total_wait_time):
+        start_time = time.time()
+        while time.time() - start_time < total_wait_time:
+            if not self.running_event.is_set():
+                break
+            temp_humid_data = self.ros2_thread.node.get_all_sensor_data()
+            self.control_steam_engine(temp_humid_data['temperature'], temp_humid_data['humidity'])
+            time.sleep(1)
 
     def stop(self):
-        self.running = False
+        self.running_event.clear()
 
+    def control_steam_engine(self, temp_data, humidity_data):
+        updated_temp_data = {sensor: value for sensor, value in temp_data.items() if value != -1}
+        updated_humidity_data = {sensor: value for sensor, value in humidity_data.items() if value != -1}
+
+        if updated_temp_data or updated_humidity_data:
+            self.process_data_zone1(
+                {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(1, 9)]},  # 修改为前 8 个传感器
+                {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(1, 9)]}  # 修改为前 8 个传感器
+            )
+            self.process_data_zone2(
+                {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(9, 17)]},  # 修改为后 8 个传感器
+                {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(9, 17)]}  # 修改为后 8 个传感器
+            )
+
+    def process_data_zone1(self, temp_data, humidity_data):
+        if temp_data:
+            if any(temp < self.ros2_thread.temp_lower_limit for temp in temp_data.values()):
+                self.ros2_thread.node.turn_zone1_heater_on()
+            elif all(temp > self.ros2_thread.temp_upper_limit for temp in temp_data.values()):
+                self.ros2_thread.node.turn_zone1_heater_off()
+
+        if humidity_data:
+            if any(humidity < self.ros2_thread.humidity_lower_limit for humidity in humidity_data.values()):
+                self.ros2_thread.node.turn_zone1_humidifier_on()
+            elif all(humidity > self.ros2_thread.humidity_upper_limit for humidity in humidity_data.values()):
+                self.ros2_thread.node.turn_zone1_humidifier_off()
+
+    def process_data_zone2(self, temp_data, humidity_data):
+        if temp_data:
+            if any(temp < self.ros2_thread.temp_lower_limit for temp in temp_data.values()):
+                self.ros2_thread.node.turn_zone2_heater_on()
+            elif all(temp > self.ros2_thread.temp_upper_limit for temp in temp_data.values()):
+                self.ros2_thread.node.turn_zone2_heater_off()
+
+        if humidity_data:
+            if any(humidity < self.ros2_thread.humidity_lower_limit for humidity in humidity_data.values()):
+                self.ros2_thread.node.turn_zone2_humidifier_on()
+            elif all(humidity > self.ros2_thread.humidity_upper_limit for humidity in humidity_data.values()):
+                self.ros2_thread.node.turn_zone2_humidifier_off()
+        
 class ExportThread(Thread):
     def __init__(self, db_name, usb_mount, result_queue, timeout=30):
         Thread.__init__(self)
@@ -332,17 +397,19 @@ class ROS2Thread(QThread):
             self.sprinkler.stop()
             self.sprinkler.join()
             self.sprinkler = None
-            logger.info("sprinkler stop")
 
     def process_control_mode(self, auto_mode_flag):
-        # 代表模式发生了变化
-        self.sprinkler_stop()
-        
         if auto_mode_flag:
+            # 手动-->自动
             logger.info('Auto Mode chosen')
+            logger.info("关闭所有输出")
+            
             self.control_auto_mode = True
         else:
+            # 自动-->手动
             logger.info('Manual Mode chosen')
+            self.sprinkler_stop()
+
             self.control_auto_mode = False
 
     def process_steam_engine_state(self, state):
@@ -357,6 +424,7 @@ class ROS2Thread(QThread):
         # 只处理开始/停止按钮的功能
         if state:
             self.sprinkler = SprinklerSystem(
+                self,
                 n=10,
                 single_run_time=self.sprinkler_single_run_time,
                 run_interval_time=self.sprinkler_run_interval_time,
@@ -455,6 +523,8 @@ class SensorSubscriberNode(Node):
 
         self.save_to_db_count = 0
 
+        self.lock = threading.Lock()
+
         if not self.debug:
             try:
                 self.dio_client = ModbusTcpClient(self.dio_ip, port=self.dio_port)
@@ -512,10 +582,20 @@ class SensorSubscriberNode(Node):
             logger.info(f"模拟{'打开' if value else '关闭'}输出 {address}")
 
     def temp_callback(self, msg, sensor_name):
-        self.temp_data[sensor_name] = msg.data
+        with self.lock:
+            self.temp_data[sensor_name] = msg.data
 
     def humidity_callback(self, msg, sensor_name):
-        self.humidity_data[sensor_name] = msg.data
+        with self.lock:
+            self.humidity_data[sensor_name] = msg.data
+
+    def get_all_sensor_data(self):
+        with self.lock:
+            # 返回整个温度和湿度数组的副本
+            return {
+                'temperature': self.temp_data.copy(),
+                'humidity': self.humidity_data.copy()
+            }
 
     def timer_callback(self):
         self.true_process()
@@ -545,48 +625,8 @@ class SensorSubscriberNode(Node):
             self.save_data_to_db(self.cursor, sensor_data)
             self.conn.commit()
 
-        if self.ros2_thread.control_auto_mode:
-            updated_temp_data = {sensor: value for sensor, value in self.temp_data.items() if value != -1}
-            updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
-
-            if updated_temp_data or updated_humidity_data:
-                self.process_data_zone1(
-                    {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(1, 9)]},  # 修改为前 8 个传感器
-                    {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(1, 9)]}  # 修改为前 8 个传感器
-                )
-                self.process_data_zone2(
-                    {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(9, 17)]},  # 修改为后 8 个传感器
-                    {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(9, 17)]}  # 修改为后 8 个传感器
-                )
-
         self.temp_data = {sensor: -1 for sensor in self.temp_data}
         self.humidity_data = {sensor: -1 for sensor in self.humidity_data}
-
-    def process_data_zone1(self, temp_data, humidity_data):
-        if temp_data:
-            if any(temp < self.ros2_thread.temp_lower_limit for temp in temp_data.values()):
-                self.turn_zone1_heater_on()
-            elif all(temp > self.ros2_thread.temp_upper_limit for temp in temp_data.values()):
-                self.turn_zone1_heater_off()
-
-        if humidity_data:
-            if any(humidity < self.ros2_thread.humidity_lower_limit for humidity in humidity_data.values()):
-                self.turn_zone1_humidifier_on()
-            elif all(humidity > self.ros2_thread.humidity_upper_limit for humidity in humidity_data.values()):
-                self.turn_zone1_humidifier_off()
-
-    def process_data_zone2(self, temp_data, humidity_data):
-        if temp_data:
-            if any(temp < self.ros2_thread.temp_lower_limit for temp in temp_data.values()):
-                self.turn_zone2_heater_on()
-            elif all(temp > self.ros2_thread.temp_upper_limit for temp in temp_data.values()):
-                self.turn_zone2_heater_off()
-
-        if humidity_data:
-            if any(humidity < self.ros2_thread.humidity_lower_limit for humidity in humidity_data.values()):
-                self.turn_zone2_humidifier_on()
-            elif all(humidity > self.ros2_thread.humidity_upper_limit for humidity in humidity_data.values()):
-                self.turn_zone2_humidifier_off()
 
     def turn_zone1_heater_on(self):
         if not self.zone1_heater_on:

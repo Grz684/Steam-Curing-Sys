@@ -158,8 +158,8 @@
     }
     if (oldMode !== isAutoMode.value) {
       stopSystemWithoutSend();
-      leftEngineOn.value = false;
-      rightEngineOn.value = false;
+      // leftEngineOn.value = false;
+      // rightEngineOn.value = false;
       // sendToPyQt('setEngineState', { engine: 'left', state: leftEngineOn.value });
       // sendToPyQt('setEngineState', { engine: 'right', state: rightEngineOn.value });
     }

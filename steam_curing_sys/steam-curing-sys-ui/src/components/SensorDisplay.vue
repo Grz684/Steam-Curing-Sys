@@ -56,7 +56,7 @@ const fetchSensorData = async () => {
         <div class="sensor-grid">
           <div v-for="(value, sensor) in sensorData.temperature" :key="sensor" class="sensor-card">
             <div class="sensor-title">{{ sensor }}</div>
-            <div class="sensor-value">{{ value }}°C</div>
+            <div class="sensor-value">{{ value }}</div>
           </div>
         </div>
       </div>
@@ -67,7 +67,7 @@ const fetchSensorData = async () => {
         <div class="sensor-grid">
           <div v-for="(value, sensor) in sensorData.humidity" :key="sensor" class="sensor-card">
             <div class="sensor-title">{{  sensor }}</div>
-            <div class="sensor-value">{{ value }}%</div>
+            <div class="sensor-value">{{ value }}</div>
           </div>
         </div>
       </div>
