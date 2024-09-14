@@ -152,6 +152,16 @@ class ConfigManager:
     def get_last_update_time(self):
         return self.config.get('timestamp')
 
+class DollySystem(Thread):
+    def __init__(self, ros2_thread, n, single_run_time, run_interval_time):
+        Thread.__init__(self)
+        self.n = n
+        self.ros2_thread = ros2_thread
+        self.dolly_single_run_time = single_run_time
+        self.dolly_run_interval_time = run_interval_time
+        self.running_event = threading.Event()
+        self.daemon = True
+
 class SprinklerSystem(Thread):
     def __init__(self, ros2_thread, n, single_run_time, run_interval_time, loop_interval):
         Thread.__init__(self)
@@ -322,6 +332,7 @@ class ROS2Thread(QThread):
     limit_settings = pyqtSignal(float, float, float, float)
     load_limit_settings = pyqtSignal(float, float, float, float)
     load_sprinkler_settings = pyqtSignal(dict)
+    load_dolly_settings = pyqtSignal(dict)
     data_updated = pyqtSignal(list)
     left_steam_status_updated = pyqtSignal(bool)
     right_steam_status_updated = pyqtSignal(bool)
@@ -341,6 +352,7 @@ class ROS2Thread(QThread):
         self.sprinkler_single_run_time = 5
         self.sprinkler_run_interval_time = 2
         self.sprinkler_loop_interval = 10
+        self.dolly_auto_mode = True
         self.is_system_started = False
         self.node = None  # 初始化为 None
         self.sprinkler = None
@@ -356,6 +368,7 @@ class ROS2Thread(QThread):
             self.node = SensorSubscriberNode(self)
             self.load_limits()
             self.load_sprinkler()
+            self.load_dolly()
             while self.running and rclpy.ok():
                 rclpy.spin_once(self.node, timeout_sec=0.1)
             # 关闭sprinkler线程
@@ -443,6 +456,24 @@ class ROS2Thread(QThread):
         else:
             self.sprinkler_stop()
 
+    def dolly_control(self, control):
+
+        if control["target"] == "setState":
+            # 半自动模式下控制dolly
+            dolly_state = control["dolly_state"]
+            if dolly_state:
+                self.node.turn_dolly_on()
+            else:
+                self.node.turn_dolly_off()
+        elif control["target"] == "dolly_settings":
+            self.save_dolly_settings(control["dolly_single_run_time"], control["dolly_run_interval_time"])
+        elif control["target"] == "setMode":
+            if control["mode"] == "auto":
+                self.dolly_auto_mode = True
+            else:
+                self.dolly_auto_mode = False
+            
+        logger.info(f"Control dolly: {control}")
 
     def load_limits(self):
         temp_humidity_configs = self.config_manager.get_multiple_config([
@@ -491,6 +522,31 @@ class ROS2Thread(QThread):
         }
         self.config_manager.update_multiple_config(new_configs)
 
+    def save_dolly_settings(self, dolly_single_run_time, dolly_run_interval_time):
+        new_configs = {
+            'dolly_single_run_time': dolly_single_run_time,
+            'dolly_run_interval_time': dolly_run_interval_time,
+        }
+        self.config_manager.update_multiple_config(new_configs)
+
+    def load_dolly(self):
+        dolly_configs = self.config_manager.get_multiple_config([
+            'dolly_single_run_time',
+            'dolly_run_interval_time',
+        ])
+        
+        if dolly_configs:
+            self.dolly_single_run_time = dolly_configs['dolly_single_run_time']
+            self.dolly_run_interval_time = dolly_configs['dolly_run_interval_time']
+            logger.info(f"Loaded dolly settings: {dolly_configs}")
+            self.load_dolly_settings.emit(dolly_configs)
+        else:
+            dolly_configs = {
+                'dolly_single_run_time': self.dolly_single_run_time,
+                'dolly_run_interval_time': self.dolly_run_interval_time,
+            }
+            self.load_dolly_settings.emit(dolly_configs)
+
     def save_limits(self):
         # 更新多个配置项
         new_configs = {
@@ -528,6 +584,11 @@ class SensorSubscriberNode(Node):
 
         self.zone1_output_addr = 0
         self.zone2_output_addr = 1
+
+        self.sprinkler_base_addr = 2
+
+        self.dolly_move_addr = 2
+        self.dolly_move_addr = 4
 
         self.save_to_db_count = 0
 
@@ -703,7 +764,6 @@ class SensorSubscriberNode(Node):
             if self.ros2_thread.control_auto_mode:
                 self.ros2_thread.right_steam_status_updated.emit(True)
 
-
     def turn_zone2_humidifier_off(self):
         if self.zone2_humidifier_on:
             self.zone2_humidifier_on = False
@@ -711,6 +771,16 @@ class SensorSubscriberNode(Node):
             self.control_output(self.zone2_output_addr, False)
             if self.ros2_thread.control_auto_mode:
                 self.ros2_thread.right_steam_status_updated.emit(False)
+
+    def turn_dolly_on(self):
+        self.control_output(self.dolly_move_addr, True)
+        self.control_output(self.zone2_output_addr, True)
+        self.control_output(self.zone1_output_addr, True)
+
+    def turn_dolly_off(self):
+        self.control_output(self.dolly_move_addr, False)
+        self.control_output(self.zone2_output_addr, False)
+        self.control_output(self.zone1_output_addr, False)
 
     @staticmethod
     def create_table(cursor):
@@ -900,6 +970,8 @@ def main():
     ros2_thread.load_sprinkler_settings.connect(ex.update_sprinkler_settings)
     ex.bridge.IsSystemStarted.connect(ros2_thread.process_system_state)
     ex.bridge.sprinklerControl.connect(ros2_thread.sprinkler_manual_control)
+    ex.bridge.dollyControl.connect(ros2_thread.dolly_control)
+    ros2_thread.load_dolly_settings.connect(ex.update_dolly_settings)
     # ros2_thread.mode_chosen.connect(ros2_thread.process_mode_chosen)
     # ros2_thread.export_completed.connect(ex.show_export_completed_dialog)
 

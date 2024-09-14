@@ -21,6 +21,7 @@ class Bridge(QObject):
     limitSettingsUpdated = pyqtSignal(float, float, float, float)  # 新增信号
     sprinkerSettingsUpdated = pyqtSignal(dict)
     sprinklerControl = pyqtSignal(dict)
+    dollyControl = pyqtSignal(dict)
     def __init__(self):
         super().__init__()
         print("Bridge object initialized")
@@ -66,6 +67,8 @@ class Bridge(QObject):
                 self.startSystem(args)
             elif method_name == "ManualControlSprinkler":
                 self.ManualControlSprinkler(args)
+            elif method_name == "controlDolly":
+                self.controlDolly(args)
             else:
                 print(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
@@ -76,6 +79,10 @@ class Bridge(QObject):
     def ManualControlSprinkler(self, args):
         print(f"Manual control sprinkler: {args}")
         self.sprinklerControl.emit(args)
+
+    def controlDolly(self, args):
+        print(f"Control dolly: {args}")
+        self.dollyControl.emit(args)
 
     def updateLimitSettings(self, settings):
         print(f"Updating settings: {settings}")
@@ -181,6 +188,11 @@ class MainWindow(QMainWindow):
     def update_sprinkler_settings(self, settings):
         msg_type = "update_sprinkler_settings"
         logger.info(f"Send sprinkler settings: {settings}")
+        self.bridge.send_message(msg_type, json.dumps(settings))
+
+    def update_dolly_settings(self, settings):
+        msg_type = "update_dolly_settings"
+        logger.info(f"Send dolly settings: {settings}")
         self.bridge.send_message(msg_type, json.dumps(settings))
 
     def update_left_steam_status(self, status):

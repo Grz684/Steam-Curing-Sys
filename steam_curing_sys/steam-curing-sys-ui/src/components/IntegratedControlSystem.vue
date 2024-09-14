@@ -180,17 +180,20 @@
   }
   
   function updateSingleRunTime() {
-    nextSingleRunTime.value = parseInt(tempSingleRunTime.value) || 1;
+    tempSingleRunTime.value = parseInt(tempSingleRunTime.value) || 1;
+    nextSingleRunTime.value = tempSingleRunTime.value
     updateSprinklerSettings();
   }
   
   function updateRunIntervalTime() {
-    nextRunIntervalTime.value = parseInt(tempRunIntervalTime.value) || 0;
+    tempRunIntervalTime.value = parseInt(tempRunIntervalTime.value) || 0;
+    nextRunIntervalTime.value = tempRunIntervalTime.value;
     updateSprinklerSettings();
   }
   
   function updateLoopInterval() {
-    nextLoopInterval.value = parseInt(tempLoopInterval.value) || 0;
+    tempLoopInterval.value = parseInt(tempLoopInterval.value) || 0;
+    nextLoopInterval.value = tempLoopInterval.value;
     updateSprinklerSettings();
   }
   
