@@ -92,14 +92,9 @@ body {
   box-sizing: border-box;
 }
 
-h1 {
-  text-align: center;
-  color: #333;
-}
-
 h2 {
   margin-bottom: 10px;
-  color: #333;
+  color: #2c3e50;
   font-size: 20px;
 }
 

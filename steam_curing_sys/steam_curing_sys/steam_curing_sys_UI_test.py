@@ -130,6 +130,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("PyQt with Vue Demo")
+        # 设置窗口始终在最上层
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
         # 设置为全屏
         self.showFullScreen()
         # self.setGeometry(100, 100, 1280, 720)

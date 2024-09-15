@@ -387,8 +387,11 @@ class QtSignalHandler(QObject):
         # 加载配置
         self.config_manager.load_config()
         # 加载控制工具
-        self.control_utils = ControlUtils()
-
+        try:
+            self.control_utils = ControlUtils()
+        except ModbusControlException as e:
+            self.export_completed.emit(-1)  # 发送错误信号
+        
         self.ros2_thread = ROS2Thread(self)
 
     def process_limit_settings(self, temp_upper, temp_lower, humidity_upper, humidity_lower):
@@ -653,6 +656,7 @@ class ROS2Thread(QThread):
             while self.running and rclpy.ok():
                 rclpy.spin_once(self.node, timeout_sec=0.1)
             # 关闭所有输出
+            pass
             
             # 在子线程中关闭数据库连接
             self.node.conn.close()

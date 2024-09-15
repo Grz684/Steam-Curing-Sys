@@ -43,8 +43,8 @@ body {
 
 h1 {
   text-align: center;
-  color: #333;
-  font-size: 24px;
+  color: #2c3e50;;
+  font-size: 28px;
 }
 
 /* 响应式设计 */

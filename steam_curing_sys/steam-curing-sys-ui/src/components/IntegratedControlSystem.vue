@@ -43,15 +43,30 @@
         <div class="controls">
           <div class="input-group">
             <label>单次运行时间 (秒):</label>
-            <input id="singleRunTime" type="number" v-model="tempSingleRunTime" @blur="updateSingleRunTime" min="1" />
+            <input 
+              type="text" 
+              :value="tempSingleRunTime" 
+              @focus="focusInput('singleRunTime')"
+              readonly
+            />
           </div>
           <div class="input-group">
             <label>运行时间间隔 (秒):</label>
-            <input id="runIntervalTime" type="number" v-model="tempRunIntervalTime" @blur="updateRunIntervalTime" min="0" />
+            <input 
+              type="text" 
+              :value="tempRunIntervalTime" 
+              @focus="focusInput('runIntervalTime')"
+              readonly
+            />
           </div>
           <div class="input-group">
             <label>循环时间间隔 (秒):</label>
-            <input id="loopInterval" type="number" v-model="tempLoopInterval" @blur="updateLoopInterval" min="0" />
+            <input 
+              type="text" 
+              :value="tempLoopInterval" 
+              @focus="focusInput('loopInterval')"
+              readonly
+            />
           </div>
         </div>
         <div class="visualization">
@@ -67,17 +82,25 @@
         </div>
       </div>
     </div>
+
+    <numeric-keyboard 
+      :modelValue="currentValue" 
+      :showKeyboard="showKeyboard"
+      @update:modelValue="updateInputValue"
+      @update:showKeyboard="showKeyboard = $event"
+    />
   </div>
 </template>
   
   <script setup>
   import { ref, watch, reactive, onMounted, computed } from 'vue';
   import { useWebChannel } from './useWebChannel';
-  
+  import NumericKeyboard from './NumericKeyboard.vue';
+
   // Steam Engine Control
   const leftEngineOn = ref(false);
   const rightEngineOn = ref(false);
-  
+
   // Sprinkler System
   const currentSingleRunTime = ref(5);
   const currentRunIntervalTime = ref(2);
@@ -92,24 +115,29 @@
   const currentPhase = ref('');
   const waterLevels = ref(Array(12).fill(0));
   const remainingTime = ref(0);
-  
+
   // Shared state
   const isAutoMode = ref(true);
   const isRunning = ref(false);
-  
+
+  // Numeric Keyboard
+  const showKeyboard = ref(false);
+  const focusedInput = ref(null);
+  const currentValue = ref('');
+
   const { sendToPyQt } = useWebChannel();
-  
+
   const environment = reactive({
     isPyQtWebEngine: false
   });
-  
+
   onMounted(() => {
     environment.isPyQtWebEngine = typeof window.qt !== 'undefined' && window.qt.webChannelTransport;
-  
+
     if (environment.isPyQtWebEngine) {
       console.log('在PyQt QWebEngine环境中运行');
       const { message } = useWebChannel();
-  
+
       watch(message, (newMessage) => {
         if (newMessage && newMessage.type === 'update_left_steam_status') {
           leftEngineOn.value = newMessage.content;
@@ -137,7 +165,7 @@
       console.log('在普通网页环境中运行');
     }
   });
-  
+
   const statusMessage = computed(() => {
     if (!isAutoMode.value) return '手动模式';
     if (!isRunning.value) return '系统未运行';
@@ -146,10 +174,10 @@
     if (currentPhase.value === 'loop') return `循环间隔中，剩余 ${remainingTime.value+1} 秒`;
     return '';
   });
-  
+
   let timer;
   let waterTimer;
-  
+
   function setMode(mode) {
     const oldMode = isAutoMode.value;
     isAutoMode.value = mode === 'auto';
@@ -158,7 +186,7 @@
       if (environment.isPyQtWebEngine) {
         sendToPyQt('controlSprinkler', { target:'setMode', mode: isAutoMode.value ? 'auto' : 'manual' });
       }
-  
+
       if (isAutoMode.value) {
         // 手动切换到自动模式时
 
@@ -183,43 +211,67 @@
       else {
         // 自动切换到手动模式时，关闭所有引擎
         stopSystem()
-
       }
     }
   }
-  
+
   function toggleLeftEngine() {
     if (environment.isPyQtWebEngine) {
       sendToPyQt('setEngineState', { engine: 'left', state: !leftEngineOn.value });
       leftEngineOn.value = !leftEngineOn.value;
     }
   }
-  
+
   function toggleRightEngine() {
     if (environment.isPyQtWebEngine) {
       sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
       rightEngineOn.value = !rightEngineOn.value;
     }
   }
-  
+
+  function focusInput(inputName) {
+    focusedInput.value = inputName;
+    showKeyboard.value = true;
+    currentValue.value = inputName === 'singleRunTime' ? tempSingleRunTime.value.toString() :
+                        inputName === 'runIntervalTime' ? tempRunIntervalTime.value.toString() :
+                        tempLoopInterval.value.toString();
+  }
+
+  function updateInputValue(value) {
+    const numValue = parseInt(value);
+    if (!isNaN(numValue)) {
+      if (focusedInput.value === 'singleRunTime') {
+        tempSingleRunTime.value = numValue;
+        updateSingleRunTime();
+      } else if (focusedInput.value === 'runIntervalTime') {
+        tempRunIntervalTime.value = numValue;
+        updateRunIntervalTime();
+      } else if (focusedInput.value === 'loopInterval') {
+        tempLoopInterval.value = numValue;
+        updateLoopInterval();
+      }
+    }
+    focusedInput.value = null;
+  }
+
   function updateSingleRunTime() {
-    tempSingleRunTime.value = parseInt(tempSingleRunTime.value) || 1;
-    nextSingleRunTime.value = tempSingleRunTime.value
+    tempSingleRunTime.value = Math.max(1, tempSingleRunTime.value);
+    nextSingleRunTime.value = tempSingleRunTime.value;
     updateSprinklerSettings();
   }
-  
+
   function updateRunIntervalTime() {
-    tempRunIntervalTime.value = parseInt(tempRunIntervalTime.value) || 0;
+    tempRunIntervalTime.value = Math.max(0, tempRunIntervalTime.value);
     nextRunIntervalTime.value = tempRunIntervalTime.value;
     updateSprinklerSettings();
   }
-  
+
   function updateLoopInterval() {
-    tempLoopInterval.value = parseInt(tempLoopInterval.value) || 0;
+    tempLoopInterval.value = Math.max(0, tempLoopInterval.value);
     nextLoopInterval.value = tempLoopInterval.value;
     updateSprinklerSettings();
   }
-  
+
   function updateSprinklerSettings() {
     if (environment.isPyQtWebEngine) {
       console.log('在PyQt QWebEngine环境中执行更新设置');
@@ -233,22 +285,22 @@
       console.log('在普通网页环境中执行更新设置');
     }
   }
-  
+
   function startSystem() {
     if (isRunning.value || !isAutoMode.value) return;
     isRunning.value = true;
     waterLevels.value = Array(12).fill(0);
     runCycle();
   }
-  
+
   function stopSystem() {
     // 停止自动系统时，关闭当前喷头，停止喷雾循环
     if (environment.isPyQtWebEngine) {
-        if (activeSprinkler.value > 0) {
-          sendToPyQt('controlSprinkler', { target: "manual", index: activeSprinkler.value, state: 0 });
-        }
-        sendToPyQt('controlSprinkler', { target: 'setState', state: false });
+      if (activeSprinkler.value > 0) {
+        sendToPyQt('controlSprinkler', { target: "manual", index: activeSprinkler.value, state: 0 });
       }
+      sendToPyQt('controlSprinkler', { target: 'setState', state: false });
+    }
 
     // 如果有引擎被后端激活，关闭它
     if (leftEngineOn.value) {
@@ -262,23 +314,22 @@
     stopSystemWithoutSend()
   }
 
-  function stopSystemWithoutSend()
-    {
-      isRunning.value = false;
-      clearTimeout(timer);
-      clearInterval(waterTimer);
+  function stopSystemWithoutSend() {
+    isRunning.value = false;
+    clearTimeout(timer);
+    clearInterval(waterTimer);
 
-      activeSprinkler.value = 0;
-      currentPhase.value = '';
-      waterLevels.value = Array(12).fill(0);
-      remainingTime.value = 0;
-    }
-  
+    activeSprinkler.value = 0;
+    currentPhase.value = '';
+    waterLevels.value = Array(12).fill(0);
+    remainingTime.value = 0;
+  }
+
   function runCycle() {
     activeSprinkler.value = 1;
     runSprinkler();
   }
-  
+
   function updateRemainingTime() {
     if (!isRunning.value || !isAutoMode.value) return;
     remainingTime.value--;
@@ -286,15 +337,15 @@
       setTimeout(updateRemainingTime, 1000);
     }
   }
-  
+
   function runSprinkler() {
     if (!isRunning.value || !isAutoMode.value) return;
-  
+
     currentPhase.value = 'run';
     currentSingleRunTime.value = nextSingleRunTime.value;
     remainingTime.value = currentSingleRunTime.value;
     updateRemainingTime();
-  
+
     let startTime = Date.now();
     sendToPyQt('controlSprinkler', { target: "manual", index: activeSprinkler.value, state: 1 });
 
@@ -303,7 +354,7 @@
       let progress = Math.min(elapsedTime / (currentSingleRunTime.value * 1000), 1);
       waterLevels.value[activeSprinkler.value - 1] = progress * 100;
     }, 100);
-  
+
     timer = setTimeout(() => {
       clearInterval(waterTimer);
       if (activeSprinkler.value < 12) {
@@ -316,29 +367,29 @@
       }
     }, currentSingleRunTime.value * 1000);
   }
-  
+
   function runInterval() {
     if (!isRunning.value || !isAutoMode.value) return;
-  
+
     currentPhase.value = 'interval';
     currentRunIntervalTime.value = nextRunIntervalTime.value;
     remainingTime.value = currentRunIntervalTime.value;
     updateRemainingTime();
-  
+
     timer = setTimeout(() => {
       activeSprinkler.value++;
       runSprinkler();
     }, currentRunIntervalTime.value * 1000);
   }
-  
+
   function runLoopInterval() {
     if (!isRunning.value || !isAutoMode.value) return;
-  
+
     currentPhase.value = 'loop';
     currentLoopInterval.value = nextLoopInterval.value;
     remainingTime.value = currentLoopInterval.value;
     updateRemainingTime();
-  
+
     activeSprinkler.value = 0;
     timer = setTimeout(() => {
       waterLevels.value = Array(12).fill(0);
@@ -355,11 +406,11 @@
       runCycle();
     }, currentLoopInterval.value * 1000);
   }
-  
+
   function waterHeight(n) {
     return waterLevels.value[n - 1];
   }
-  
+
   function toggleManualSprinkler(n) {
     if (isAutoMode.value) return;
     

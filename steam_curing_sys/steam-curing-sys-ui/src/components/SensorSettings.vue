@@ -6,7 +6,12 @@
         <span class="setting-label">上限：</span>
         <div class="setting-controls">
           <button @click="adjustValue('tempUpper', -1)">-</button>
-          <input type="number" v-model.lazy.number="tempUpper" @blur="validateTemp('upper')">
+          <input 
+            type="text" 
+            :value="tempUpper" 
+            @focus="focusInput('tempUpper')"
+            readonly
+          >
           <button @click="adjustValue('tempUpper', 1)">+</button>
         </div>
       </div>
@@ -14,7 +19,12 @@
         <span class="setting-label">下限：</span>
         <div class="setting-controls">
           <button @click="adjustValue('tempLower', -1)">-</button>
-          <input type="number" v-model.lazy.number="tempLower" @blur="validateTemp('lower')">
+          <input 
+            type="text" 
+            :value="tempLower" 
+            @focus="focusInput('tempLower')"
+            readonly
+          >
           <button @click="adjustValue('tempLower', 1)">+</button>
         </div>
       </div>
@@ -25,7 +35,12 @@
         <span class="setting-label">上限：</span>
         <div class="setting-controls">
           <button @click="adjustValue('humidityUpper', -1)">-</button>
-          <input type="number" v-model.lazy.number="humidityUpper" @blur="validateHumidity('upper')">
+          <input 
+            type="text" 
+            :value="humidityUpper" 
+            @focus="focusInput('humidityUpper')"
+            readonly
+          >
           <button @click="adjustValue('humidityUpper', 1)">+</button>
         </div>
       </div>
@@ -33,21 +48,33 @@
         <span class="setting-label">下限：</span>
         <div class="setting-controls">
           <button @click="adjustValue('humidityLower', -1)">-</button>
-          <input type="number" v-model.lazy.number="humidityLower" @blur="validateHumidity('lower')">
+          <input 
+            type="text" 
+            :value="humidityLower" 
+            @focus="focusInput('humidityLower')"
+            readonly
+          >
           <button @click="adjustValue('humidityLower', 1)">+</button>
         </div>
       </div>
     </div>
+    <numeric-keyboard 
+      :modelValue="currentValue" 
+      :showKeyboard="showKeyboard"
+      @update:modelValue="updateInputValue"
+      @update:showKeyboard="showKeyboard = $event"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, watch, reactive, onMounted} from 'vue'
-
+import { ref, watch, reactive, onMounted } from 'vue'
 import { useWebChannel } from './useWebChannel'
+import NumericKeyboard from './NumericKeyboard.vue'
 
 const { sendToPyQt } = useWebChannel()
-//环境信息
+
+// 环境信息
 const environment = reactive({
   isPyQtWebEngine: false
 })
@@ -56,6 +83,10 @@ const tempUpper = ref(30)
 const tempLower = ref(10)
 const humidityUpper = ref(80)
 const humidityLower = ref(20)
+
+const showKeyboard = ref(false)
+const focusedInput = ref(null)
+const currentValue = ref('')
 
 onMounted(() => {
   // 检查是否在PyQt的QWebEngine环境中
@@ -76,9 +107,9 @@ onMounted(() => {
           humidityLower.value = settings['humidity_lower'];
 
           console.log('Sensor Settings updated:', settings);
-            } catch (error) {
-              console.error('Failed to parse sensor settings data:', error)
-            }
+        } catch (error) {
+          console.error('Failed to parse sensor settings data:', error)
+        }
       }
     })
   } else {
@@ -156,6 +187,35 @@ const updateSettings = () => {
     }
   }
 }
+
+const focusInput = (inputName) => {
+  focusedInput.value = inputName
+  showKeyboard.value = true
+  currentValue.value = inputName.startsWith('temp') 
+    ? (inputName === 'tempUpper' ? tempUpper.value : tempLower.value)
+    : (inputName === 'humidityUpper' ? humidityUpper.value : humidityLower.value)
+}
+
+const updateInputValue = (value) => {
+  const numValue = parseFloat(value)
+  if (!isNaN(numValue)) {
+    if (focusedInput.value === 'tempUpper') {
+      tempUpper.value = numValue
+      validateTemp('upper')
+    } else if (focusedInput.value === 'tempLower') {
+      tempLower.value = numValue
+      validateTemp('lower')
+    } else if (focusedInput.value === 'humidityUpper') {
+      humidityUpper.value = numValue
+      validateHumidity('upper')
+    } else if (focusedInput.value === 'humidityLower') {
+      humidityLower.value = numValue
+      validateHumidity('lower')
+    }
+  }
+  focusedInput.value = null
+}
+
 </script>
 
 <style scoped>
@@ -217,6 +277,7 @@ input {
   margin: 0 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  cursor: pointer;
 }
 
 input[type="number"]::-webkit-inner-spin-button, 
