@@ -11,11 +11,11 @@
 
     <div class="systems-container">
       <div class="steam-engine-control">
-        <h3>蒸汽机控制系统</h3>
+        <h3>雾化机控制系统</h3>
         <div class="control-panel">
           <div class="engine-status">
             <div class="engine left">
-              <h4>左蒸汽机</h4>
+              <h4>左雾化机</h4>
               <div class="status" :class="{ 'on': leftEngineOn }">
                 <div class="status-indicator"></div>
                 {{ leftEngineOn ? '开' : '关' }}
@@ -25,7 +25,7 @@
               </button>
             </div>
             <div class="engine right">
-              <h4>右蒸汽机</h4>
+              <h4>右雾化机</h4>
               <div class="status" :class="{ 'on': rightEngineOn }">
                 <div class="status-indicator"></div>
                 {{ rightEngineOn ? '开' : '关' }}
@@ -55,7 +55,7 @@
           </div>
         </div>
         <div class="visualization">
-          <div v-for="n in 10" :key="n" class="sprinkler" 
+          <div v-for="n in 12" :key="n" class="sprinkler" 
                :class="{ active: isAutoMode ? activeSprinkler === n : waterLevels[n-1] > 0 }"
                @click="!isAutoMode && toggleManualSprinkler(n)">
             <div class="water" :style="{ height: waterHeight(n) + '%' }"></div>
@@ -90,7 +90,7 @@
   const tempLoopInterval = ref(currentLoopInterval.value);
   const activeSprinkler = ref(0);
   const currentPhase = ref('');
-  const waterLevels = ref(Array(10).fill(0));
+  const waterLevels = ref(Array(12).fill(0));
   const remainingTime = ref(0);
   
   // Shared state
@@ -153,27 +153,50 @@
   function setMode(mode) {
     const oldMode = isAutoMode.value;
     isAutoMode.value = mode === 'auto';
-    if (environment.isPyQtWebEngine && oldMode !== isAutoMode.value) {
-      sendToPyQt('setControlMode', { mode: isAutoMode.value ? 'auto' : 'manual' });
-    }
+
     if (oldMode !== isAutoMode.value) {
-      stopSystemWithoutSend();
-      leftEngineOn.value = false;
-      rightEngineOn.value = false;
-      // sendToPyQt('setEngineState', { engine: 'left', state: leftEngineOn.value });
-      // sendToPyQt('setEngineState', { engine: 'right', state: rightEngineOn.value });
+      if (environment.isPyQtWebEngine) {
+        sendToPyQt('controlSprinkler', { target:'setMode', mode: isAutoMode.value ? 'auto' : 'manual' });
+      }
+  
+      if (isAutoMode.value) {
+        // 手动切换到自动模式时
+
+        // 关闭所有引擎
+        if (leftEngineOn.value) {
+          toggleLeftEngine();
+        }
+
+        if (rightEngineOn.value) {
+          toggleRightEngine();
+        }
+
+        // 找出当前激活的喷头（如果有）
+        const activeIndex = waterLevels.value.findIndex(level => level === 100);
+        if (activeIndex !== -1) {
+          waterLevels.value[activeIndex] = 0;
+          if (environment.isPyQtWebEngine) {
+            sendToPyQt('controlSprinkler', { target: "manual", index: activeIndex+1, state: 0 });
+          }
+        }
+      }
+      else {
+        // 自动切换到手动模式时，关闭所有引擎
+        stopSystem()
+
+      }
     }
   }
   
   function toggleLeftEngine() {
-    if (!isAutoMode.value && environment.isPyQtWebEngine) {
+    if (environment.isPyQtWebEngine) {
       sendToPyQt('setEngineState', { engine: 'left', state: !leftEngineOn.value });
       leftEngineOn.value = !leftEngineOn.value;
     }
   }
   
   function toggleRightEngine() {
-    if (!isAutoMode.value && environment.isPyQtWebEngine) {
+    if (environment.isPyQtWebEngine) {
       sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
       rightEngineOn.value = !rightEngineOn.value;
     }
@@ -205,7 +228,7 @@
         sprinkler_run_interval_time: nextRunIntervalTime.value,
         sprinkler_loop_interval: nextLoopInterval.value
       };
-      sendToPyQt('updateSprinklerSettings', settings);
+      sendToPyQt('controlSprinkler', { target: 'settings', settings: JSON.stringify(settings) });
     } else {
       console.log('在普通网页环境中执行更新设置');
     }
@@ -213,14 +236,29 @@
   
   function startSystem() {
     if (isRunning.value || !isAutoMode.value) return;
-    sendToPyQt('startSystem', true);
     isRunning.value = true;
-    waterLevels.value = Array(10).fill(0);
+    waterLevels.value = Array(12).fill(0);
     runCycle();
   }
   
   function stopSystem() {
-    sendToPyQt('startSystem', false);
+    // 停止自动系统时，关闭当前喷头，停止喷雾循环
+    if (environment.isPyQtWebEngine) {
+        if (activeSprinkler.value > 0) {
+          sendToPyQt('controlSprinkler', { target: "manual", index: activeSprinkler.value, state: 0 });
+        }
+        sendToPyQt('controlSprinkler', { target: 'setState', state: false });
+      }
+
+    // 如果有引擎被后端激活，关闭它
+    if (leftEngineOn.value) {
+      toggleLeftEngine();
+    }
+
+    if (rightEngineOn.value) {
+      toggleRightEngine();
+    }
+
     stopSystemWithoutSend()
   }
 
@@ -229,9 +267,10 @@
       isRunning.value = false;
       clearTimeout(timer);
       clearInterval(waterTimer);
+
       activeSprinkler.value = 0;
       currentPhase.value = '';
-      waterLevels.value = Array(10).fill(0);
+      waterLevels.value = Array(12).fill(0);
       remainingTime.value = 0;
     }
   
@@ -257,6 +296,8 @@
     updateRemainingTime();
   
     let startTime = Date.now();
+    sendToPyQt('controlSprinkler', { target: "manual", index: activeSprinkler.value, state: 1 });
+
     waterTimer = setInterval(() => {
       let elapsedTime = Date.now() - startTime;
       let progress = Math.min(elapsedTime / (currentSingleRunTime.value * 1000), 1);
@@ -265,9 +306,12 @@
   
     timer = setTimeout(() => {
       clearInterval(waterTimer);
-      if (activeSprinkler.value < 10) {
+      if (activeSprinkler.value < 12) {
+        sendToPyQt('controlSprinkler', { target: "manual", index: activeSprinkler.value, state: 0 });
         runInterval();
       } else {
+        sendToPyQt('controlSprinkler', { target: "manual", index: activeSprinkler.value, state: 0 });
+        sendToPyQt('controlSprinkler', { target: 'setState', state: true });
         runLoopInterval();
       }
     }, currentSingleRunTime.value * 1000);
@@ -297,7 +341,17 @@
   
     activeSprinkler.value = 0;
     timer = setTimeout(() => {
-      waterLevels.value = Array(10).fill(0);
+      waterLevels.value = Array(12).fill(0);
+
+      sendToPyQt('controlSprinkler', { target: 'setState', state: false });
+      if (leftEngineOn.value) {
+        toggleLeftEngine();
+      }
+
+      if (rightEngineOn.value) {
+        toggleRightEngine();
+      }
+
       runCycle();
     }, currentLoopInterval.value * 1000);
   }
@@ -317,21 +371,21 @@
       // 如果已激活，则关闭它
       waterLevels.value[n - 1] = 0;
       if (environment.isPyQtWebEngine) {
-        sendToPyQt('ManualControlSprinkler', { sprinkler: n, state: 0 });
+        sendToPyQt('controlSprinkler', { target: "manual", index: n, state: 0 });
       }
     } else {
       // 如果未激活，关闭当前激活的喷头（如果有），然后激活新的喷头
       if (activeIndex !== -1) {
         waterLevels.value[activeIndex] = 0;
         if (environment.isPyQtWebEngine) {
-          sendToPyQt('ManualControlSprinkler', { sprinkler: activeIndex + 1, state: 0 });
+          sendToPyQt('controlSprinkler', { target: "manual", index: activeIndex+1, state: 0 });
         }
       }
       
       // 激活新的喷头
       waterLevels.value[n - 1] = 100;
       if (environment.isPyQtWebEngine) {
-        sendToPyQt('ManualControlSprinkler', { sprinkler: n, state: 1 });
+        sendToPyQt('controlSprinkler', { target: "manual", index: n, state: 1 });
       }
     }
   }
@@ -344,8 +398,22 @@
   padding: 10px;
 }
 
-h2, h3, h4 {
+h2, h4 {
   color: #2c3e50;
+}
+
+h4 {
+  font-size: 18px;
+}
+
+h3 {
+  margin-bottom: 10px;
+  color: #2c3e50;
+  font-size: 20px;
+}
+
+label {
+  font-size: 18px;
 }
 
 .mode-controls {
@@ -436,11 +504,28 @@ h2, h3, h4 {
 .input-group {
   display: flex;
   justify-content: space-between;
+  align-items: center;  /* 添加这行来实现垂直居中对齐 */
   margin-bottom: 10px;
 }
 
 .input-group input {
-  width: 60px;
+  width: 80px;
+  height: 40px;
+  text-align: center;
+  font-size: 18px;
+  margin: 0 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+
+input[type="number"] {
+-moz-appearance: textfield;
 }
 
 .visualization {

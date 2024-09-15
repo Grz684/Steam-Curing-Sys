@@ -9,7 +9,7 @@ from steam_curing_sys_UI_test import MainWindow
 from pymodbus.client import ModbusTcpClient
 from pymodbus.exceptions import ModbusException, ConnectionException
 from pymodbus.pdu import ExceptionResponse
-from PyQt5.QtCore import QEventLoop
+from PyQt5.QtCore import QEventLoop, QObject
 import sqlite3
 from datetime import datetime
 from datetime import timedelta
@@ -152,109 +152,128 @@ class ConfigManager:
     def get_last_update_time(self):
         return self.config.get('timestamp')
 
-class DollySystem(Thread):
-    def __init__(self, ros2_thread, n, single_run_time, run_interval_time):
-        Thread.__init__(self)
-        self.n = n
-        self.ros2_thread = ros2_thread
-        self.dolly_single_run_time = single_run_time
-        self.dolly_run_interval_time = run_interval_time
-        self.running_event = threading.Event()
-        self.daemon = True
+class ControlUtils():
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.zone1_heater_on = False
+        self.zone2_heater_on = False
 
-class SprinklerSystem(Thread):
-    def __init__(self, ros2_thread, n, single_run_time, run_interval_time, loop_interval):
-        Thread.__init__(self)
-        self.n = n
-        self.ros2_thread = ros2_thread
-        self.sprinkler_single_run_time = single_run_time
-        self.sprinkler_run_interval_time = run_interval_time
-        self.sprinkler_loop_interval = loop_interval
-        self.running_event = threading.Event()
-        self.daemon = True
+        self.zone1_humidifier_on = False
+        self.zone2_humidifier_on = False
 
-    def run(self):
-        self.running_event.set()
-        while self.running_event.is_set():
-            for i in range(1, self.n + 1):
-                if not self.running_event.is_set():
-                    break
-                print(f"激活输出 {i}")
-                start_time = time.time()
-                sprinkler_single_run_time = self.sprinkler_single_run_time
-                while time.time() - start_time < sprinkler_single_run_time:
-                    if not self.running_event.is_set():
-                        break
-                    time.sleep(0.1)  # 小的睡眠时间，使线程可以响应停止信号
+        self.dolly_on = False
+
+        self.zone1_output_addr = 0
+        self.zone2_output_addr = 1
+
+        self.sprinkler_base_addr = 2
+
+        self.dolly_move_addr = 2
+        self.dolly_move_addr = 4
+
+        self.dio_ip = "192.168.0.7"  # 替换为您设备的实际IP地址
+        self.dio_port = 8234  # Modbus TCP默认端口
+
+        # debug时不连接Modbus服务器
+        self.debug = True
+
+        if not self.debug:
+            try:
+                self.dio_client = ModbusTcpClient(self.dio_ip, port=self.dio_port)
+                if not self.dio_client.connect():
+                    raise ModbusControlException(f"无法连接到 Modbus 服务器 {self.dio_ip}:{self.dio_port}")
+                else:
+                    logger.info(f"成功连接到 Modbus 服务器 {self.dio_ip}:{self.dio_port}")
+                    # try:
+                    #     initial_data = self.dio_client.socket.recv(1024)
+                    #     if initial_data:
+                    #         logger.info(f"初始响应: {initial_data.hex()}")
+                    #         logger.info(f"初始响应 (ASCII): {initial_data.decode('ascii', errors='ignore')}")
+                    # except Exception as e:
+                    #     logger.error(f"读取初始响应时出错: {e}")
+            except ConnectionException as e:
+                raise ModbusControlException(f"Modbus 连接错误: {e}")
+
+    def control_output(self, address, value):
+        with self.lock:
+            if not self.debug:
+                try:
+                    result = self.dio_client.write_coil(address, value, slave=1)
+                    # logger.info("写入操作返回值:")
+                    # logger.info(f"  类型: {type(result)}")
+                    # logger.info(f"  内容: {result}")
+                    # if hasattr(result, 'function_code'):
+                    #     logger.info(f"  功能码: {result.function_code}")
+                    # if hasattr(result, 'address'):
+                    #     logger.info(f"  地址: {result.address}")
+                    # if hasattr(result, 'value'):
+                    #     logger.info(f"  值: {result.value}")
+                    if isinstance(result, ExceptionResponse):
+                        logger.info(f"Modbus异常: {result}")
+                    else:
+                        logger.info(f"成功{'打开' if value else '关闭'}输出 {address}")
+                except ModbusException as e:
+                    raise ModbusControlException(f"Modbus错误: {e}")
+            else:
+                logger.info(f"模拟{'打开' if value else '关闭'}输出 {address}")
+
+    def turn_zone1_heater_on(self):
+        if not self.zone1_heater_on:
+            self.zone1_heater_on = True
+            logger.info('Turning zone1 heater ON')
+
+    def turn_zone1_heater_off(self):
+        if self.zone1_heater_on:
+            self.zone1_heater_on = False
+            logger.info('Turning zone1 heater OFF')
+
+    def turn_zone2_heater_on(self):
+        if not self.zone2_heater_on:
+            self.zone2_heater_on = True
+            logger.info('Turning zone2 heater ON')
+
+    def turn_zone2_heater_off(self):
+        if self.zone2_heater_on:
+            self.zone2_heater_on = False
+            logger.info('Turning zone2 heater OFF')
+
+    def turn_zone1_humidifier_on(self):
+        if not self.zone1_humidifier_on:
+            self.zone1_humidifier_on = True
+            logger.info('Turning zone1 humidifier ON')
+            self.control_output(self.zone1_output_addr, True)
+
+    def turn_zone1_humidifier_off(self):
+        if self.zone1_humidifier_on:
+            self.zone1_humidifier_on = False
+            logger.info('Turning zone1 humidifier OFF')
+            self.control_output(self.zone1_output_addr, False)
+
+    def turn_zone2_humidifier_on(self):
+        if not self.zone2_humidifier_on:
+            self.zone2_humidifier_on = True
+            logger.info('Turning zone2 humidifier ON')
+            self.control_output(self.zone2_output_addr, True)
+
+    def turn_zone2_humidifier_off(self):
+        if self.zone2_humidifier_on:
+            self.zone2_humidifier_on = False
+            logger.info('Turning zone2 humidifier OFF')
+            self.control_output(self.zone2_output_addr, False)
                 
-                print(f"关闭输出 {i}")
-                
-                if i < self.n and self.running_event.is_set():
-                    print(f"输出 {i} 结束，等待间隔")
-                    start_time = time.time()
-                    sprinkler_run_interval_time = self.sprinkler_run_interval_time
-                    while time.time() - start_time < sprinkler_run_interval_time:
-                        if not self.running_event.is_set():
-                            break
-                        time.sleep(0.1)
-            
-            if self.running_event.is_set():
-                print("一轮循环结束，等待下一轮")
-                self.wait_with_function_call(self.sprinkler_loop_interval)
-                self.ros2_thread.node.turn_zone1_humidifier_off()
-                self.ros2_thread.node.turn_zone2_humidifier_off()
+    def turn_dolly_on(self):
+        if not self.dolly_on:
+            self.dolly_on = True
+            self.control_output(self.dolly_move_addr, True)
+            self.control_output(self.zone2_output_addr, True)
+            self.control_output(self.zone1_output_addr, True)
 
-    def wait_with_function_call(self, total_wait_time):
-        start_time = time.time()
-        while time.time() - start_time < total_wait_time:
-            if not self.running_event.is_set():
-                break
-            temp_humid_data = self.ros2_thread.node.get_all_sensor_data()
-            self.control_steam_engine(temp_humid_data['temperature'], temp_humid_data['humidity'])
-            time.sleep(1)
-
-    def stop(self):
-        self.running_event.clear()
-
-    def control_steam_engine(self, temp_data, humidity_data):
-        updated_temp_data = {sensor: value for sensor, value in temp_data.items() if value != -1}
-        updated_humidity_data = {sensor: value for sensor, value in humidity_data.items() if value != -1}
-
-        if updated_temp_data or updated_humidity_data:
-            self.process_data_zone1(
-                {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(1, 9)]},  # 修改为前 8 个传感器
-                {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(1, 9)]}  # 修改为前 8 个传感器
-            )
-            self.process_data_zone2(
-                {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(9, 17)]},  # 修改为后 8 个传感器
-                {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(9, 17)]}  # 修改为后 8 个传感器
-            )
-
-    def process_data_zone1(self, temp_data, humidity_data):
-        if temp_data:
-            if any(temp < self.ros2_thread.temp_lower_limit for temp in temp_data.values()):
-                self.ros2_thread.node.turn_zone1_heater_on()
-            elif all(temp > self.ros2_thread.temp_upper_limit for temp in temp_data.values()):
-                self.ros2_thread.node.turn_zone1_heater_off()
-
-        if humidity_data:
-            if any(humidity < self.ros2_thread.humidity_lower_limit for humidity in humidity_data.values()):
-                self.ros2_thread.node.turn_zone1_humidifier_on()
-            elif all(humidity > self.ros2_thread.humidity_upper_limit for humidity in humidity_data.values()):
-                self.ros2_thread.node.turn_zone1_humidifier_off()
-
-    def process_data_zone2(self, temp_data, humidity_data):
-        if temp_data:
-            if any(temp < self.ros2_thread.temp_lower_limit for temp in temp_data.values()):
-                self.ros2_thread.node.turn_zone2_heater_on()
-            elif all(temp > self.ros2_thread.temp_upper_limit for temp in temp_data.values()):
-                self.ros2_thread.node.turn_zone2_heater_off()
-
-        if humidity_data:
-            if any(humidity < self.ros2_thread.humidity_lower_limit for humidity in humidity_data.values()):
-                self.ros2_thread.node.turn_zone2_humidifier_on()
-            elif all(humidity > self.ros2_thread.humidity_upper_limit for humidity in humidity_data.values()):
-                self.ros2_thread.node.turn_zone2_humidifier_off()
+    def turn_dolly_off(self):
+        if self.dolly_on:
+            self.dolly_on = False
+            self.control_output(self.dolly_move_addr, False)
+            self.control_output(self.zone2_output_addr, False)
+            self.control_output(self.zone1_output_addr, False)
         
 class ExportThread(Thread):
     def __init__(self, db_name, usb_mount, result_queue, timeout=30):
@@ -327,24 +346,25 @@ class ExportThread(Thread):
             time.sleep(0.5)
         return False
 
-class ROS2Thread(QThread):
+class QtSignalHandler(QObject):
     # pyqtSignal必须是类属性
+    update_dolly_state = pyqtSignal(bool)
     limit_settings = pyqtSignal(float, float, float, float)
     load_limit_settings = pyqtSignal(float, float, float, float)
     load_sprinkler_settings = pyqtSignal(dict)
     load_dolly_settings = pyqtSignal(dict)
-    data_updated = pyqtSignal(list)
+    
     left_steam_status_updated = pyqtSignal(bool)
     right_steam_status_updated = pyqtSignal(bool)
     mode_chosen = pyqtSignal(int)
+    data_updated = pyqtSignal(list)
     export_completed = pyqtSignal(int)
     export_started = pyqtSignal()
-    # error_occurred = pyqtSignal(str)  # 添加错误信号
     
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.running = True
-        self.control_auto_mode = True
+    # error_occurred = pyqtSignal(str)  # 添加错误信号
+
+    def __init__(self):
+        super().__init__() 
         self.temp_lower_limit = 70.0
         self.temp_upper_limit = 80.0
         self.humidity_lower_limit = 80.0
@@ -352,40 +372,24 @@ class ROS2Thread(QThread):
         self.sprinkler_single_run_time = 5
         self.sprinkler_run_interval_time = 2
         self.sprinkler_loop_interval = 10
-        self.dolly_auto_mode = True
-        self.is_system_started = False
-        self.node = None  # 初始化为 None
-        self.sprinkler = None
+
+        self.dolly_single_run_time = 4
+        self.dolly_run_interval_time = 4
+
+        self.dolly_auto_mode = False
+        self.dolly_mode_lock = threading.Lock()
+
+        self.sprinkler_system_on = False
+        self.sprinkler_system_lock = threading.Lock()
         
         self.config_manager = ConfigManager()  # 这将默认使用 'sensor_data.db'
 
         # 加载配置
         self.config_manager.load_config()
-        
-    def run(self):
-        try:
-            rclpy.init()
-            self.node = SensorSubscriberNode(self)
-            self.load_limits()
-            self.load_sprinkler()
-            self.load_dolly()
-            while self.running and rclpy.ok():
-                rclpy.spin_once(self.node, timeout_sec=0.1)
-            # 关闭sprinkler线程
-            self.sprinkler_stop()
-            # 关闭所有输出
-            pass
-            # 在子线程中关闭数据库连接
-            self.node.conn.close()
-            self.node.destroy_node()
-            rclpy.shutdown()
-        except ModbusControlException as e:
-            self.export_completed.emit(-1)  # 发送错误信号
-        finally:
-            self.running = False
-        
-    def stop(self):
-        self.running = False
+        # 加载控制工具
+        self.control_utils = ControlUtils()
+
+        self.ros2_thread = ROS2Thread(self)
 
     def process_limit_settings(self, temp_upper, temp_lower, humidity_upper, humidity_lower):
         # 在工作线程中处理接收到的限制设置
@@ -396,84 +400,75 @@ class ROS2Thread(QThread):
         self.humidity_upper_limit = humidity_upper
         self.save_limits()  # 保存新的限制值
 
-    def process_sprinkler_settings(self, sprinkler_settings):
-        self.sprinkler_single_run_time = sprinkler_settings['sprinkler_single_run_time']
-        self.sprinkler_run_interval_time = sprinkler_settings['sprinkler_run_interval_time']
-        self.sprinkler_loop_interval = sprinkler_settings['sprinkler_loop_interval']
-        logger.info(f"Worker received sprinkler settings: {sprinkler_settings}")
-        if self.sprinkler is not None:
-            self.sprinkler.sprinkler_single_run_time = self.sprinkler_single_run_time
-            self.sprinkler.sprinkler_run_interval_time = self.sprinkler_run_interval_time
-            self.sprinkler.sprinkler_loop_interval = self.sprinkler_loop_interval
-
-        self.save_sprinkler()
-
-    def sprinkler_stop(self):
-        if self.sprinkler is not None:
-            self.sprinkler.stop()
-            self.sprinkler.join()
-            self.sprinkler = None
-
-    def process_control_mode(self, auto_mode_flag):
-        if auto_mode_flag:
-            # 手动-->自动
-            logger.info('Auto Mode chosen')
-            logger.info("关闭所有输出")
-            pass
-            
-            self.control_auto_mode = True
-        else:
-            # 自动-->手动
-            logger.info('Manual Mode chosen')
-            self.sprinkler_stop()
-
-            self.control_auto_mode = False
-
-    def sprinkler_manual_control(self, control):
+    def sprinkler_manual_control(self, index, state):
         # { sprinkler: n, state: 1 }
-        logger.info(f"Manual control sprinkler: 喷头{control['sprinkler']} -> {control['state']}")
+        self.control_utils.control_output(self.control_utils.sprinkler_base_addr + index -1, state)
 
-    def process_steam_engine_state(self, state):
+    def manual_steam_engine_state(self, state):
+        logger.info(f"Steam engine state: {state}")
         if state["engine"] == "left":
-            self.node.turn_zone1_humidifier_on() if state["state"] else self.node.turn_zone1_humidifier_off()
+            self.control_utils.turn_zone1_humidifier_on() if state["state"] else self.control_utils.turn_zone1_humidifier_off()
         elif state["engine"] == "right":
-            self.node.turn_zone2_humidifier_on() if state["state"] else self.node.turn_zone2_humidifier_off()
-
-    def process_system_state(self, state):
-        self.is_system_started = state
-        logger.info(f"is System started?: {state}")
-        # 只处理开始/停止按钮的功能
-        if state:
-            self.sprinkler = SprinklerSystem(
-                self,
-                n=10,
-                single_run_time=self.sprinkler_single_run_time,
-                run_interval_time=self.sprinkler_run_interval_time,
-                loop_interval=self.sprinkler_loop_interval
-            )
-            # 启动喷水器系统
-            self.sprinkler.start()
-        else:
-            self.sprinkler_stop()
+            self.control_utils.turn_zone2_humidifier_on() if state["state"] else self.control_utils.turn_zone2_humidifier_off()
 
     def dolly_control(self, control):
-
         if control["target"] == "setState":
             # 半自动模式下控制dolly
             dolly_state = control["dolly_state"]
             if dolly_state:
-                self.node.turn_dolly_on()
+                self.control_utils.turn_dolly_on()
             else:
-                self.node.turn_dolly_off()
+                self.control_utils.turn_dolly_off()
+
         elif control["target"] == "dolly_settings":
             self.save_dolly_settings(control["dolly_single_run_time"], control["dolly_run_interval_time"])
         elif control["target"] == "setMode":
             if control["mode"] == "auto":
-                self.dolly_auto_mode = True
+                with self.dolly_mode_lock:
+                    self.dolly_auto_mode = True
             else:
-                self.dolly_auto_mode = False
+                with self.dolly_mode_lock:
+                    self.dolly_auto_mode = False
             
         logger.info(f"Control dolly: {control}")
+
+    def sprinkler_control(self, control):
+        if control["target"] == "setMode":
+            mode = control["mode"]
+            if mode == "auto":
+                logger.info('Sprinkler Auto Mode chosen')
+                
+            else:
+                # 自动-->手动
+                logger.info('Sprinkler Manual Mode chosen')
+
+        elif control["target"] == "setState":
+            if control["state"]:
+                logger.info('Sprinkler System turned ON')
+                with self.sprinkler_system_lock:
+                    self.sprinkler_system_on = True
+            else:
+                logger.info('Sprinkler System turned OFF')
+                with self.sprinkler_system_lock:
+                    self.sprinkler_system_on = False
+
+        elif control["target"] == "settings":
+            settings = json.loads(control["settings"])
+            run_time = settings["sprinkler_single_run_time"]
+            run_interval_time = settings["sprinkler_run_interval_time"]
+            loop_time = settings["sprinkler_loop_interval"]
+            self.save_sprinkler_settings(run_time, run_interval_time, loop_time)
+
+        elif control["target"] == "manual":
+            self.sprinkler_manual_control(control["index"], control["state"])
+
+    def get_sprinkler_system_state(self):
+        with self.sprinkler_system_lock:
+            return self.sprinkler_system_on
+
+    def get_dolly_auto_mode(self):
+        with self.dolly_mode_lock:
+            return self.dolly_auto_mode
 
     def load_limits(self):
         temp_humidity_configs = self.config_manager.get_multiple_config([
@@ -514,11 +509,11 @@ class ROS2Thread(QThread):
             }
             self.load_sprinkler_settings.emit(sprinkler_configs)
 
-    def save_sprinkler(self):
+    def save_sprinkler_settings(self, sprinkler_single_run_time, sprinkler_run_interval_time, sprinkler_loop_interval):
         new_configs = {
-            'sprinkler_single_run_time': self.sprinkler_single_run_time,
-            'sprinkler_run_interval_time': self.sprinkler_run_interval_time,
-            'sprinkler_loop_interval': self.sprinkler_loop_interval,
+            'sprinkler_single_run_time': sprinkler_single_run_time,
+            'sprinkler_run_interval_time': sprinkler_run_interval_time,
+            'sprinkler_loop_interval': sprinkler_loop_interval,
         }
         self.config_manager.update_multiple_config(new_configs)
 
@@ -557,112 +552,206 @@ class ROS2Thread(QThread):
         }
         self.config_manager.update_multiple_config(new_configs)
 
+    def export_data(self, choice):
+        if choice:
+            self.export_tables_to_excel()
+
+    def export_tables_to_excel(self, db_name="sensor_data.db"):
+        # 检查并获取U盘挂载点
+        usb_mount = QtSignalHandler.check_and_find_usb_drive()
+        if not usb_mount:
+            self.export_completed.emit(0)  # 发射信号
+            return
+
+        # 发射导出开始信号
+        self.export_started.emit()
+
+        result_queue = Queue()
+        export_thread = ExportThread(db_name, usb_mount, result_queue)
+        export_thread.start()
+
+        def check_export_finished():
+            if not export_thread.is_alive():
+                success, message = result_queue.get()
+                logger.info(message)
+                if success:
+                    self.export_completed.emit(1)
+                else:
+                    self.export_completed.emit(-2)
+            else:
+                QTimer.singleShot(100, check_export_finished)
+
+        QTimer.singleShot(100, check_export_finished)
+
+    @staticmethod
+    def check_and_find_usb_drive():
+        context = pyudev.Context()
+        removable = [device for device in context.list_devices(subsystem='block', DEVTYPE='disk')
+                    if device.attributes.asstring('removable') == "1"]
+        
+        if not removable:
+            logger.info("没有检测到可移动设备")
+            return None
+
+        logger.info(f"检测到 {len(removable)} 个可移动设备")
+
+        for device in removable:
+            logger.info(f"检查设备: {device.device_node}")
+            
+            # 检查设备本身是否已挂载
+            mountpoint = QtSignalHandler.get_mountpoint(device.device_node)
+            if mountpoint:
+                logger.info(f"设备 {device.device_node} 已挂载于 {mountpoint}")
+                return mountpoint
+
+            # 检查设备的分区
+            partitions = [part for part in device.children if part.get('DEVTYPE') == 'partition']
+            logger.info(f"设备 {device.device_node} 有 {len(partitions)} 个分区")
+            
+            for partition in partitions:
+                logger.info(f"检查分区: {partition.device_node}")
+                mountpoint = partition.get('MOUNTPOINT')
+                if not mountpoint:
+                    mountpoint = QtSignalHandler.get_mountpoint(partition.device_node)
+                
+                if mountpoint:
+                    logger.info(f"分区 {partition.device_node} 已挂载于 {mountpoint}")
+                    return mountpoint
+                else:
+                    logger.info(f"分区 {partition.device_node} 未挂载")
+
+        logger.info("没有找到已挂载的 U 盘分区")
+        return None
+
+    @staticmethod
+    def get_mountpoint(device):
+        try:
+            result = subprocess.run(['findmnt', '-no', 'TARGET', device], capture_output=True, text=True)
+            mountpoint = result.stdout.strip()
+            return mountpoint if mountpoint else None
+        except subprocess.CalledProcessError:
+            return None
+
+
+class ROS2Thread(QThread):
+    def __init__(self, qtSignalHandler):
+        super().__init__()
+        self.running = True
+        # self.node = None
+        self.qtSignalHandler = qtSignalHandler
+        self.node = None
+        
+    def run(self):
+        try:
+            rclpy.init()
+            self.node = SensorSubscriberNode(self.qtSignalHandler)
+
+            self.qtSignalHandler.load_limits()
+            self.qtSignalHandler.load_sprinkler()
+            self.qtSignalHandler.load_dolly()
+            
+            while self.running and rclpy.ok():
+                rclpy.spin_once(self.node, timeout_sec=0.1)
+            # 关闭所有输出
+            
+            # 在子线程中关闭数据库连接
+            self.node.conn.close()
+            self.node.destroy_node()
+            rclpy.shutdown()
+        except ModbusControlException as e:
+            self.qtSignalHandler.export_completed.emit(-1)  # 发送错误信号
+        finally:
+            self.running = False
+        
+    def stop(self):
+        self.running = False
+
 class ModbusControlException(Exception):
     pass
 
 class SensorSubscriberNode(Node):
-    def __init__(self, ros2_thread):
-        super().__init__('sensor_subscriber')
-        self.ros2_thread = ros2_thread
-        # debug时不连接Modbus服务器
-        self.debug = True
+    def __init__(self, qtSignalHandler):
+        Node.__init__(self, 'sensor_subscriber')
+        self.qtSignalHandler = qtSignalHandler
         
         self.temp_data = {f'temperature_sensor_{i}': -1 for i in range(1, 17)}  # 修改为 16 个传感器
         self.humidity_data = {f'humidity_sensor_{i}': -1 for i in range(1, 17)}  # 修改为 16 个传感器
 
-        self.zone1_heater_on = False
-        self.zone2_heater_on = False
-
-        self.zone1_humidifier_on = False
-        self.zone2_humidifier_on = False
-
         self.db_name = 'sensor_data.db'
         self.conn, self.cursor = SensorSubscriberNode.initialize_database(self.db_name)
 
-        self.dio_ip = "192.168.0.7"  # 替换为您设备的实际IP地址
-        self.dio_port = 8234  # Modbus TCP默认端口
-
-        self.zone1_output_addr = 0
-        self.zone2_output_addr = 1
-
-        self.sprinkler_base_addr = 2
-
-        self.dolly_move_addr = 2
-        self.dolly_move_addr = 4
-
         self.save_to_db_count = 0
 
-        self.lock = threading.Lock()
         self.cli = self.create_client(Trigger, 'get_sensor_data')
-        # # 等待服务可用
-        # while not self.cli.wait_for_service(timeout_sec=1.0):
-        #     logger.info('服务不可用，等待中...')
-        # logger.info('服务现在可用')
-
-        if not self.debug:
-            try:
-                self.dio_client = ModbusTcpClient(self.dio_ip, port=self.dio_port)
-                if not self.dio_client.connect():
-                    raise ModbusControlException(f"无法连接到 Modbus 服务器 {self.dio_ip}:{self.dio_port}")
-                else:
-                    try:
-                        initial_data = self.dio_client.socket.recv(1024)
-                        if initial_data:
-                            logger.info(f"初始响应: {initial_data.hex()}")
-                            logger.info(f"初始响应 (ASCII): {initial_data.decode('ascii', errors='ignore')}")
-                    except Exception as e:
-                        logger.error(f"读取初始响应时出错: {e}")
-            except ConnectionException as e:
-                raise ModbusControlException(f"Modbus 连接错误: {e}")
-        
-        # 初始化关闭所有输出
-        # self.control_output(self.zone1_output_addr, False)
-        # self.control_output(self.zone2_output_addr, False)
-        
-        for i in range(1, 17):  # 修改为 16 个传感器
-            self.create_subscription(
-                Float32,
-                f'temperature_sensor_{i}',
-                lambda msg, sensor=f'temperature_sensor_{i}': self.temp_callback(msg, sensor),
-                10)
-            self.create_subscription(
-                Float32,
-                f'humidity_sensor_{i}',
-                lambda msg, sensor=f'humidity_sensor_{i}': self.humidity_callback(msg, sensor),
-                10)
 
         self.timer = self.create_timer(5.0, self.timer_callback)
 
-    def control_output(self, address, value):
-        if not self.debug:
-            try:
-                result = self.dio_client.write_coil(address, value, slave=1)
-                logger.info("写入操作返回值:")
-                logger.info(f"  类型: {type(result)}")
-                logger.info(f"  内容: {result}")
-                if hasattr(result, 'function_code'):
-                    logger.info(f"  功能码: {result.function_code}")
-                if hasattr(result, 'address'):
-                    logger.info(f"  地址: {result.address}")
-                if hasattr(result, 'value'):
-                    logger.info(f"  值: {result.value}")
-                if isinstance(result, ExceptionResponse):
-                    logger.info(f"Modbus异常: {result}")
-                else:
-                    logger.info(f"成功{'打开' if value else '关闭'}输出 {address}")
-            except ModbusException as e:
-                raise ModbusControlException(f"Modbus错误: {e}")
-        else:
-            logger.info(f"模拟{'打开' if value else '关闭'}输出 {address}")
+        self.dolly_timer = self.create_timer(2.0, self.dolly_timer_callback)
+        self.sprinkler_timer = self.create_timer(2.0, self.sprinkler_timer_callback)
 
-    def get_all_sensor_data(self):
-        with self.lock:
-            # 返回整个温度和湿度数组的副本
-            logger.info(f"获取所有传感器数据: {self.temp_data}, {self.humidity_data}")
-            return {
-                'temperature': self.temp_data.copy(),
-                'humidity': self.humidity_data.copy()
-            }
+        self.control_utils = self.qtSignalHandler.control_utils
+
+    def sprinkler_timer_callback(self):
+        if self.qtSignalHandler.get_sprinkler_system_state():
+            updated_temp_data = {sensor: value for sensor, value in self.temp_data.items() if value != -1}
+            updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
+
+            if updated_temp_data or updated_humidity_data:
+                self.process_data_zone1(
+                    {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(1, 9)]},  # 修改为前 8 个传感器
+                    {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(1, 9)]}  # 修改为前 8 个传感器
+                )
+                self.process_data_zone2(
+                    {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(9, 17)]},  # 修改为后 8 个传感器
+                    {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(9, 17)]}  # 修改为后 8 个传感器
+                )
+
+    def dolly_timer_callback(self):
+        if self.qtSignalHandler.get_dolly_auto_mode():
+            updated_temp_data = {sensor: value for sensor, value in self.temp_data.items() if value != -1}
+            updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
+
+            if updated_temp_data or updated_humidity_data:
+                self.process_data(updated_humidity_data)
+
+    def process_data_zone1(self, temp_data, humidity_data):
+        if temp_data:
+            if any(temp < self.qtSignalHandler.temp_lower_limit for temp in temp_data.values()):
+                self.control_utils.turn_zone1_heater_on()
+            elif all(temp > self.qtSignalHandler.temp_upper_limit for temp in temp_data.values()):
+                self.control_utils.turn_zone1_heater_off()
+
+        if humidity_data:
+            if any(humidity < self.qtSignalHandler.humidity_lower_limit for humidity in humidity_data.values()):
+                self.control_utils.turn_zone1_humidifier_on()
+                self.qtSignalHandler.left_steam_status_updated.emit(True)
+            elif all(humidity > self.qtSignalHandler.humidity_upper_limit for humidity in humidity_data.values()):
+                self.control_utils.turn_zone1_humidifier_off()
+                self.qtSignalHandler.left_steam_status_updated.emit(False)
+
+    def process_data_zone2(self, temp_data, humidity_data):
+        if temp_data:
+            if any(temp < self.qtSignalHandler.temp_lower_limit for temp in temp_data.values()):
+                self.control_utils.turn_zone2_heater_on()
+            elif all(temp > self.qtSignalHandler.temp_upper_limit for temp in temp_data.values()):
+                self.control_utils.turn_zone2_heater_off()
+
+        if humidity_data:
+            if any(humidity < self.qtSignalHandler.humidity_lower_limit for humidity in humidity_data.values()):
+                self.control_utils.turn_zone2_humidifier_on()
+                self.qtSignalHandler.right_steam_status_updated.emit(True)
+            elif all(humidity > self.qtSignalHandler.humidity_upper_limit for humidity in humidity_data.values()):
+                self.control_utils.turn_zone2_humidifier_off()
+                self.qtSignalHandler.right_steam_status_updated.emit(False)
+
+    def process_data(self, humidity_data):
+        if humidity_data:
+            if any(humidity < self.qtSignalHandler.humidity_lower_limit for humidity in humidity_data.values()):
+                self.control_utils.turn_dolly_on()
+                self.qtSignalHandler.update_dolly_state.emit(True)
+            elif all(humidity > self.qtSignalHandler.humidity_upper_limit for humidity in humidity_data.values()):
+                self.control_utils.turn_dolly_off()
+                self.qtSignalHandler.update_dolly_state.emit(False)
 
     def timer_callback(self):
         # self.get_logger().info('开始请求数据...')
@@ -677,21 +766,21 @@ class SensorSubscriberNode(Node):
             response = future.result()  # 获取服务的响应
             if response.success:
                 data = json.loads(response.message)
-                with self.lock:
-                    self.temp_data = data["temperatures"]
-                    self.humidity_data = data["humidities"]
+                
+                self.temp_data = data["temperatures"]
+                self.humidity_data = data["humidities"]
                 # self.get_logger().info('接收到传感器数据:')
                 # self.get_logger().info(f'温度: {data["temperatures"]}, 湿度: {data["humidities"]}')
             else:
                 self.get_logger().warn(f'获取传感器数据失败: {response.message}')
-                with self.lock:
-                    self.temp_data = {sensor: -1 for sensor in self.temp_data}
-                    self.humidity_data = {sensor: -1 for sensor in self.humidity_data}
-        except Exception as e:
-            self.get_logger().error(f'获取传感器数据时出错: {str(e)}')
-            with self.lock:
+                
                 self.temp_data = {sensor: -1 for sensor in self.temp_data}
                 self.humidity_data = {sensor: -1 for sensor in self.humidity_data}
+        except Exception as e:
+            self.get_logger().error(f'获取传感器数据时出错: {str(e)}')
+            
+            self.temp_data = {sensor: -1 for sensor in self.temp_data}
+            self.humidity_data = {sensor: -1 for sensor in self.humidity_data}
 
         self.true_process()
 
@@ -715,72 +804,10 @@ class SensorSubscriberNode(Node):
                 sensor_data.append((f'湿感{i}', '未知'))
 
         if sensor_data:
-            self.ros2_thread.data_updated.emit(sensor_data)
+            self.qtSignalHandler.data_updated.emit(sensor_data)
             # 保存数据
             self.save_data_to_db(self.cursor, sensor_data)
             self.conn.commit()
-
-    def turn_zone1_heater_on(self):
-        if not self.zone1_heater_on:
-            self.zone1_heater_on = True
-            logger.info('Turning zone1 heater ON')
-
-    def turn_zone1_heater_off(self):
-        if self.zone1_heater_on:
-            self.zone1_heater_on = False
-            logger.info('Turning zone1 heater OFF')
-
-    def turn_zone2_heater_on(self):
-        if not self.zone2_heater_on:
-            self.zone2_heater_on = True
-            logger.info('Turning zone2 heater ON')
-
-    def turn_zone2_heater_off(self):
-        if self.zone2_heater_on:
-            self.zone2_heater_on = False
-            logger.info('Turning zone2 heater OFF')
-
-    def turn_zone1_humidifier_on(self):
-        if not self.zone1_humidifier_on:
-            self.zone1_humidifier_on = True
-            logger.info('Turning zone1 humidifier ON')
-            self.control_output(self.zone1_output_addr, True)
-            if self.ros2_thread.control_auto_mode:
-                self.ros2_thread.left_steam_status_updated.emit(True)
-
-    def turn_zone1_humidifier_off(self):
-        if self.zone1_humidifier_on:
-            self.zone1_humidifier_on = False
-            logger.info('Turning zone1 humidifier OFF')
-            self.control_output(self.zone1_output_addr, False)
-            if self.ros2_thread.control_auto_mode:
-                self.ros2_thread.left_steam_status_updated.emit(False)
-
-    def turn_zone2_humidifier_on(self):
-        if not self.zone2_humidifier_on:
-            self.zone2_humidifier_on = True
-            logger.info('Turning zone2 humidifier ON')
-            self.control_output(self.zone2_output_addr, True)
-            if self.ros2_thread.control_auto_mode:
-                self.ros2_thread.right_steam_status_updated.emit(True)
-
-    def turn_zone2_humidifier_off(self):
-        if self.zone2_humidifier_on:
-            self.zone2_humidifier_on = False
-            logger.info('Turning zone2 humidifier OFF')
-            self.control_output(self.zone2_output_addr, False)
-            if self.ros2_thread.control_auto_mode:
-                self.ros2_thread.right_steam_status_updated.emit(False)
-
-    def turn_dolly_on(self):
-        self.control_output(self.dolly_move_addr, True)
-        self.control_output(self.zone2_output_addr, True)
-        self.control_output(self.zone1_output_addr, True)
-
-    def turn_dolly_off(self):
-        self.control_output(self.dolly_move_addr, False)
-        self.control_output(self.zone2_output_addr, False)
-        self.control_output(self.zone1_output_addr, False)
 
     @staticmethod
     def create_table(cursor):
@@ -858,135 +885,42 @@ class SensorSubscriberNode(Node):
         else:
             self.save_to_db_count += 1
 
-    def export_tables_to_excel(self, db_name):
-        # 检查并获取U盘挂载点
-        usb_mount = SensorSubscriberNode.check_and_find_usb_drive()
-        if not usb_mount:
-            self.ros2_thread.export_completed.emit(0)  # 发射信号
-            return
-
-        # 发射导出开始信号
-        self.ros2_thread.export_started.emit()
-
-        result_queue = Queue()
-        export_thread = ExportThread(db_name, usb_mount, result_queue)
-        export_thread.start()
-
-        def check_export_finished():
-            if not export_thread.is_alive():
-                success, message = result_queue.get()
-                logger.info(message)
-                if success:
-                    self.ros2_thread.export_completed.emit(1)
-                else:
-                    self.ros2_thread.export_completed.emit(-2)
-            else:
-                QTimer.singleShot(100, check_export_finished)
-
-        QTimer.singleShot(100, check_export_finished)
-
-    @staticmethod
-    def check_and_find_usb_drive():
-        context = pyudev.Context()
-        removable = [device for device in context.list_devices(subsystem='block', DEVTYPE='disk')
-                    if device.attributes.asstring('removable') == "1"]
-        
-        if not removable:
-            logger.info("没有检测到可移动设备")
-            return None
-
-        logger.info(f"检测到 {len(removable)} 个可移动设备")
-
-        for device in removable:
-            logger.info(f"检查设备: {device.device_node}")
-            
-            # 检查设备本身是否已挂载
-            mountpoint = SensorSubscriberNode.get_mountpoint(device.device_node)
-            if mountpoint:
-                logger.info(f"设备 {device.device_node} 已挂载于 {mountpoint}")
-                return mountpoint
-
-            # 检查设备的分区
-            partitions = [part for part in device.children if part.get('DEVTYPE') == 'partition']
-            logger.info(f"设备 {device.device_node} 有 {len(partitions)} 个分区")
-            
-            for partition in partitions:
-                logger.info(f"检查分区: {partition.device_node}")
-                mountpoint = partition.get('MOUNTPOINT')
-                if not mountpoint:
-                    mountpoint = SensorSubscriberNode.get_mountpoint(partition.device_node)
-                
-                if mountpoint:
-                    logger.info(f"分区 {partition.device_node} 已挂载于 {mountpoint}")
-                    return mountpoint
-                else:
-                    logger.info(f"分区 {partition.device_node} 未挂载")
-
-        logger.info("没有找到已挂载的 U 盘分区")
-        return None
-
-    @staticmethod
-    def get_mountpoint(device):
-        try:
-            result = subprocess.run(['findmnt', '-no', 'TARGET', device], capture_output=True, text=True)
-            mountpoint = result.stdout.strip()
-            return mountpoint if mountpoint else None
-        except subprocess.CalledProcessError:
-            return None
-
-    @staticmethod
-    def copy_file_to_usb(file_path):
-        usb_mount = SensorSubscriberNode.check_and_find_usb_drive()
-        if not usb_mount:
-            logger.info("未检测到已挂载的 U 盘")
-            return False
-
-        try:
-            if not os.path.exists(file_path):
-                logger.info(f"源文件不存在: {file_path}")
-                return False
-
-            file_name = os.path.basename(file_path)
-            destination = os.path.join(usb_mount, file_name)
-
-            shutil.copy2(file_path, destination)
-            logger.info(f"文件已成功复制到 U 盘: {destination}")
-            return True
-        except Exception as e:
-            logger.info(f"复制文件时发生错误: {e}")
-            return False
-
 def main():
     app = QApplication(sys.argv)
-    ros2_thread = ROS2Thread()
+    qtSignalHandler = QtSignalHandler()
+    
     # ex = IndustrialControlPanel(ros2_thread)
     ex = MainWindow()
-    ros2_thread.data_updated.connect(ex.update_sensor_data)
-    ex.bridge.limitSettingsUpdated.connect(ros2_thread.process_limit_settings)
-    ros2_thread.load_limit_settings.connect(ex.update_limit_settings)
-    ex.bridge.ControlAutoMode.connect(ros2_thread.process_control_mode)
-    ex.bridge.steamEngineState.connect(ros2_thread.process_steam_engine_state)
-    ex.bridge.sprinkerSettingsUpdated.connect(ros2_thread.process_sprinkler_settings)
-    ros2_thread.load_sprinkler_settings.connect(ex.update_sprinkler_settings)
-    ex.bridge.IsSystemStarted.connect(ros2_thread.process_system_state)
-    ex.bridge.sprinklerControl.connect(ros2_thread.sprinkler_manual_control)
-    ex.bridge.dollyControl.connect(ros2_thread.dolly_control)
-    ros2_thread.load_dolly_settings.connect(ex.update_dolly_settings)
+    qtSignalHandler.data_updated.connect(ex.update_sensor_data)
+    ex.bridge.limitSettingsUpdated.connect(qtSignalHandler.process_limit_settings)
+    qtSignalHandler.load_limit_settings.connect(ex.update_limit_settings)
+    
+    ex.bridge.steamEngineState.connect(qtSignalHandler.manual_steam_engine_state)
+    
+    qtSignalHandler.load_sprinkler_settings.connect(ex.update_sprinkler_settings)
+    
+    ex.bridge.dollyControl.connect(qtSignalHandler.dolly_control)
+    qtSignalHandler.load_dolly_settings.connect(ex.update_dolly_settings)
+    ex.bridge.sprinklerSystemControl.connect(qtSignalHandler.sprinkler_control)
     # ros2_thread.mode_chosen.connect(ros2_thread.process_mode_chosen)
-    # ros2_thread.export_completed.connect(ex.show_export_completed_dialog)
+    qtSignalHandler.export_completed.connect(ex.show_export_completed_dialog)
+    qtSignalHandler.export_started.connect(ex.show_export_progress)
+    qtSignalHandler.left_steam_status_updated.connect(ex.update_left_steam_status)
+    qtSignalHandler.right_steam_status_updated.connect(ex.update_right_steam_status)
 
-    # ros2_thread.export_started.connect(ex.show_export_progress)
-    ros2_thread.left_steam_status_updated.connect(ex.update_left_steam_status)
-    ros2_thread.right_steam_status_updated.connect(ex.update_right_steam_status)
-    ros2_thread.start()
+    qtSignalHandler.update_dolly_state.connect(ex.update_dolly_state)
+    ex.bridge.dataExport.connect(qtSignalHandler.export_data)
+
+    qtSignalHandler.ros2_thread.start()
 
     def signal_handler(sig, frame):
         logger.info("SIGINT received. Shutting down gracefully...")
         if 'ex' in globals():
             ex.close()
         if 'ros2_thread' in globals():
-            ros2_thread.stop()
-            ros2_thread.wait()
+            qtSignalHandler.ros2_thread.stop()
+            qtSignalHandler.ros2_thread.wait()
+
         QApplication.quit()
 
     # 设置信号处理器
@@ -998,8 +932,8 @@ def main():
     exit_code = app.exec()
 
     # 清理操作
-    ros2_thread.stop()
-    ros2_thread.wait()
+    qtSignalHandler.ros2_thread.stop()
+    qtSignalHandler.ros2_thread.wait()
 
     sys.exit(exit_code)
 

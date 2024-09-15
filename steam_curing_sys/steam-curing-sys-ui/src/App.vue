@@ -7,7 +7,7 @@
     <!-- <SteamEngineControl />
     <SprinklerSystem /> -->
     <IntegratedControlSystem />
-    <CartSystem />
+    <!-- <CartSystem /> -->
   </div>
 </template>
 

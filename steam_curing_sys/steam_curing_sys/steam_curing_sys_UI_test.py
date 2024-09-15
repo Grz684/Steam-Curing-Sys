@@ -5,23 +5,28 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtCore import QObject, pyqtSlot, QUrl, pyqtSignal
-from PyQt5.QtWebEngineWidgets import QWebEngineSettings
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QShortcut, QSizePolicy
 import logging
+
+from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt
+
+from PyQt5.QtWidgets import (
+    QLabel, QPushButton, QDesktopWidget, QDialog
+)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class Bridge(QObject):
     messageSignal = pyqtSignal(str)
-    ControlAutoMode = pyqtSignal(bool)
-    IsSystemStarted = pyqtSignal(bool)
     steamEngineState = pyqtSignal(dict)
     limitSettingsUpdated = pyqtSignal(float, float, float, float)  # 新增信号
-    sprinkerSettingsUpdated = pyqtSignal(dict)
-    sprinklerControl = pyqtSignal(dict)
+    sprinklerSystemControl = pyqtSignal(dict)
     dollyControl = pyqtSignal(dict)
+    dataExport = pyqtSignal(bool)
+
     def __init__(self):
         super().__init__()
         print("Bridge object initialized")
@@ -55,20 +60,16 @@ class Bridge(QObject):
             args = json.loads(args_json)
             if method_name == "updateLimitSettings":
                 self.updateLimitSettings(args)
-            elif method_name == "updateSprinklerSettings":
-                self.updateSprinklerSettings(args)
             elif method_name == "sendMessage":
                 self.sendMessage(args)
-            elif method_name == "setControlMode":
-                self.setControlMode(args)
             elif method_name == "setEngineState":
                 self.setSteamEngineState(args)
-            elif method_name == "startSystem":
-                self.startSystem(args)
-            elif method_name == "ManualControlSprinkler":
-                self.ManualControlSprinkler(args)
             elif method_name == "controlDolly":
                 self.controlDolly(args)
+            elif method_name == "controlSprinkler":
+                self.controlSprinkler(args)
+            elif method_name == "exportData":
+                self.exportData(args)
             else:
                 print(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
@@ -76,13 +77,16 @@ class Bridge(QObject):
         except Exception as e:
             print(f"Error processing method {method_name}: {str(e)}")
 
-    def ManualControlSprinkler(self, args):
-        print(f"Manual control sprinkler: {args}")
-        self.sprinklerControl.emit(args)
+    def exportData(self, args):
+        self.dataExport.emit(args)
 
     def controlDolly(self, args):
         print(f"Control dolly: {args}")
         self.dollyControl.emit(args)
+
+    def controlSprinkler(self, args):
+        print(f"Control sprinkler: {args}")
+        self.sprinklerSystemControl.emit(args)
 
     def updateLimitSettings(self, settings):
         print(f"Updating settings: {settings}")
@@ -92,28 +96,35 @@ class Bridge(QObject):
         humidity_lower = settings.get('humidity_lower', 0.0)
         self.limitSettingsUpdated.emit(temp_upper, temp_lower, humidity_upper, humidity_lower)  # 发射信号
 
-    def updateSprinklerSettings(self, settings):
-        print(f"Updating sprinkler settings: {settings}")
-        self.sprinkerSettingsUpdated.emit(settings)
-
-    def startSystem(self, flag):
-        print(f"Start system: {flag}")
-        self.IsSystemStarted.emit(flag)
-
     def sendMessage(self, message):
         print(f"Received message: {message}")
-
-    def setControlMode(self, mode):
-        print(f"Control mode: {mode}")
-        auto_mode = (mode['mode'] == 'auto')
-        if auto_mode:
-            self.ControlAutoMode.emit(True)
-        else:
-            self.ControlAutoMode.emit(False)
 
     def setSteamEngineState(self, state):
         print(f"Steam engine state: {state}")
         self.steamEngineState.emit(state)
+
+class ExportProgressDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("导出进行中")
+        self.setFixedSize(400, 200)  # 设置对话框的固定大小
+
+        layout = QVBoxLayout()
+
+        self.label = QLabel("正在导出数据到U盘,请稍候...")
+        self.label.setAlignment(Qt.AlignCenter)
+        
+        # 设置标签的字体
+        font = self.label.font()
+        font.setPointSize(16)  # 设置字体大小为20
+        self.label.setFont(font)
+
+        layout.addWidget(self.label)
+
+        self.setLayout(layout)
+
+    def closeEvent(self, event):
+        event.accept()
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -156,6 +167,92 @@ class MainWindow(QMainWindow):
         self.web_view.load(QUrl.fromLocalFile(html_path))
 
         self.web_view.loadFinished.connect(self.onLoadFinished)
+
+        self.export_progress_dialog = None
+    
+    def close_export_progress(self):
+        if self.export_progress_dialog and self.export_progress_dialog.isVisible():
+            self.export_progress_dialog.close()
+
+    def show_export_progress(self):
+        self.close_export_progress()  # 先关闭已有的对话框
+        self.export_progress_dialog = ExportProgressDialog(self)
+        self.export_progress_dialog.show()
+
+    def show_export_completed_dialog(self, success):
+        self.close_export_progress()
+        dialog = QDialog(self)
+        dialog.setWindowTitle("提示消息")
+        
+        # 获取屏幕尺寸
+        screen = QDesktopWidget().screenNumber(QDesktopWidget().cursor().pos())
+        screen_size = QDesktopWidget().screenGeometry(screen).size()
+        
+        # 设置对话框大小为屏幕的四分之一
+        dialog_width = screen_size.width() // 2
+        dialog_height = screen_size.height() // 2
+        dialog.resize(dialog_width, dialog_height)
+
+        layout = QVBoxLayout()
+
+        # 创建并设置消息标签
+        if success == 1:
+            message_label = QLabel("数据已成功导出")
+        elif success == 0:
+            message_label = QLabel("未检测到U盘，请插入U盘")
+        elif success == -2:
+            message_label = QLabel("数据导出失败，请重试")
+        elif success == -1:
+            message_label = QLabel("数字继电器模块未插入，系统故障")
+            dialog.setWindowFlags(Qt.Dialog | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
+        
+        message_label.setAlignment(Qt.AlignCenter)
+        message_label.setFont(QFont("Arial", 18, QFont.Bold))  # 消息字体大小
+        message_label.setStyleSheet("color: #4CAF50;")  # 绿色文本
+
+        # 创建确定按钮（仅在 success 不为 -1 时显示）
+        if success != -1:
+            ok_button = QPushButton("确定")
+            ok_button.setFont(QFont("Arial", 16))  # 增大按钮字体
+            ok_button.setStyleSheet("""
+                QPushButton {
+                    background-color: #4CAF50;
+                    color: white;
+                    border: none;
+                    padding: 15px 30px;
+                    border-radius: 5px;
+                }
+                QPushButton:hover {
+                    background-color: #45a049;
+                }
+            """)
+            ok_button.clicked.connect(dialog.accept)
+
+        # 将部件添加到布局中
+        layout.addStretch(1)
+        layout.addWidget(message_label)
+        layout.addStretch(1)
+        if success != -1:
+            layout.addWidget(ok_button, alignment=Qt.AlignCenter)
+            layout.addStretch(1)
+
+        dialog.setLayout(layout)
+
+        # 设置对话框的样式
+        dialog.setStyleSheet("""
+            QDialog {
+                background-color: #f0f0f0;
+                border: 2px solid #4CAF50;
+                border-radius: 10px;
+            }
+        """)
+
+        # 显示对话框
+        dialog.exec_()
+
+    def update_dolly_state(self, state):
+        msg_type = "update_dolly_state"
+        self.bridge.send_message(msg_type, state) 
 
     def update_sensor_data(self, sensor_data):
         # 将 sensor_data 转换为字典

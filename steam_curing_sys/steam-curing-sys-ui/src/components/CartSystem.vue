@@ -38,7 +38,7 @@
 
       <div v-else class="auto-mode-container">
         <div class="auto-mode-title">自动模式受传感器湿度控制</div>
-        <div class="auto-mode-status" :class="{ 'working': autoModeStatus === '小车正在工作' }">
+        <div class="auto-mode-status" :class="{ 'working': autoModeStatus === '小车正在运行' }">
           {{ autoModeStatus }}
         </div>
         <div class="auto-mode-placeholder"></div>
@@ -91,6 +91,14 @@ onMounted(() => {
           console.error('Failed to parse dolly settings data:', error);
         }
       }
+      else if (newMessage && newMessage.type === 'update_dolly_state') {
+        if (newMessage.content) {
+          updateAutoModeStatus("小车正在运行");
+        }
+        else {
+          updateAutoModeStatus("小车尚未工作");
+        }
+      }
     });
   } else {
     console.log('在普通网页环境中运行');
@@ -105,6 +113,8 @@ const setMode = (newMode) => {
       sendToPyQt('controlDolly', { target: 'setMode', mode: 'auto'});
     }
     else {
+      stopDolly();
+      updateAutoModeStatus("小车尚未工作");
       sendToPyQt('controlDolly', { target: 'setMode', mode: 'semi-auto' });
     }
   }

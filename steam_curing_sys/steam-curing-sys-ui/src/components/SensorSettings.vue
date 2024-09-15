@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="settings-container">
     <div class="setting-group">
       <h2>温度设置 (°C)</h2>
       <div class="setting-item">
@@ -159,28 +159,41 @@ const updateSettings = () => {
 </script>
 
 <style scoped>
+.settings-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+}
+
 .setting-group {
+  flex: 1;
   padding: 10px;
   margin-bottom: 10px;
 }
+
 .setting-group h2 {
   margin-bottom: 10px;
-  color: #555;
+  color: #2c3e50;
   font-size: 20px;
 }
+
 .setting-item {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
 }
+
 .setting-label {
   flex: 1;
   margin-right: 10px;
+  font-size: 18px;
 }
+
 .setting-controls {
   display: flex;
   align-items: center;
 }
+
 button {
   width: 30px;
   height: 30px;
@@ -191,23 +204,27 @@ button {
   cursor: pointer;
   border-radius: 4px;
 }
+
 button:hover {
   background-color: #0056b3;
 }
+
 input {
-  width: 60px;
-  height: 30px;
+  width: 80px;
+  height: 40px;
   text-align: center;
-  font-size: 16px;
+  font-size: 18px;
   margin: 0 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
 input[type="number"]::-webkit-inner-spin-button, 
 input[type="number"]::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
   margin: 0; 
 }
+
 input[type="number"] {
   -moz-appearance: textfield;
 }
