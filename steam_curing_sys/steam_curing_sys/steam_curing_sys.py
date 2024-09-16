@@ -203,7 +203,7 @@ class ControlUtils():
             except ConnectionException as e:
                 raise ModbusControlException(f"Modbus 连接错误: {e}")
             
-    def control_two_tank(self, state):
+    def control_one_tank(self, state):
         if state:
             if not self.tank_one_on:
                 self.tank_one_on = True
@@ -219,7 +219,7 @@ class ControlUtils():
                 self.tank_two_on = False
                 self.control_output(15, False)
 
-    def control_one_tank(self, state):
+    def control_two_tank(self, state):
         if state:
             if not self.tank_one_on:
                 self.tank_one_on = True
