@@ -164,8 +164,7 @@ class MainWindow(QMainWindow):
 
         # Load HTML file
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        parent_dir = os.path.dirname(current_dir)
-        html_path = os.path.join(parent_dir, 'steam-curing-sys-ui', 'dist', 'index.html')
+        html_path = os.path.join(current_dir, 'steam-curing-sys-ui', 'dist', 'index.html')
         self.web_view.load(QUrl.fromLocalFile(html_path))
 
         self.web_view.loadFinished.connect(self.onLoadFinished)

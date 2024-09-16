@@ -20,7 +20,7 @@
                 <div class="status-indicator"></div>
                 {{ leftEngineOn ? '开' : '关' }}
               </div>
-              <button @click="toggleLeftEngine" :disabled="isAutoMode" class="control-btn">
+              <button @click="click_toggleEngine" :disabled="isAutoMode" class="control-btn">
                 {{ leftEngineOn ? '关闭' : '开启' }}
               </button>
             </div>
@@ -30,7 +30,7 @@
                 <div class="status-indicator"></div>
                 {{ rightEngineOn ? '开' : '关' }}
               </div>
-              <button @click="toggleRightEngine" :disabled="isAutoMode" class="control-btn">
+              <button @click="click_toggleEngine" :disabled="isAutoMode" class="control-btn">
                 {{ rightEngineOn ? '关闭' : '开启' }}
               </button>
             </div>
@@ -72,7 +72,7 @@
         <div class="visualization">
           <div v-for="n in 12" :key="n" class="sprinkler" 
                :class="{ active: isAutoMode ? activeSprinkler === n : waterLevels[n-1] > 0 }"
-               @click="!isAutoMode && toggleManualSprinkler(n)">
+               @click="!isAutoMode && !leftEngineOn && toggleManualSprinkler(n)">
             <div class="water" :style="{ height: waterHeight(n) + '%' }"></div>
             <span>{{ n }}</span>
           </div>
@@ -192,12 +192,12 @@
 
         // 关闭所有引擎
         if (leftEngineOn.value) {
-          toggleLeftEngine();
+          toggleEngine();
         }
 
-        if (rightEngineOn.value) {
-          toggleRightEngine();
-        }
+        // if (rightEngineOn.value) {
+        //   toggleRightEngine();
+        // }
 
         // 找出当前激活的喷头（如果有）
         const activeIndex = waterLevels.value.findIndex(level => level === 100);
@@ -207,6 +207,9 @@
             sendToPyQt('controlSprinkler', { target: "manual", index: activeIndex+1, state: 0 });
           }
         }
+
+        // 停止两水泵
+        sendToPyQt('controlSprinkler', { target: "twoTank", state: 0 });
       }
       else {
         // 自动切换到手动模式时，关闭所有引擎
@@ -215,19 +218,47 @@
     }
   }
 
-  function toggleLeftEngine() {
+  function toggleEngine() {
     if (environment.isPyQtWebEngine) {
       sendToPyQt('setEngineState', { engine: 'left', state: !leftEngineOn.value });
-      leftEngineOn.value = !leftEngineOn.value;
-    }
-  }
-
-  function toggleRightEngine() {
-    if (environment.isPyQtWebEngine) {
       sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
+      leftEngineOn.value = !leftEngineOn.value;
       rightEngineOn.value = !rightEngineOn.value;
     }
   }
+
+  function click_toggleEngine() {
+    const activeIndex = waterLevels.value.findIndex(level => level === 100);
+
+    if (environment.isPyQtWebEngine && activeIndex === -1) {
+      // 点击模式，打开两个水泵
+      if (!leftEngineOn.value) {
+        sendToPyQt('controlSprinkler', { target: "twoTank" , state: 1 });
+      }
+      else {
+        sendToPyQt('controlSprinkler', { target: "twoTank" , state: 0 });
+      }
+      
+      sendToPyQt('setEngineState', { engine: 'left', state: !leftEngineOn.value });
+      sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
+      leftEngineOn.value = !leftEngineOn.value;
+      rightEngineOn.value = !rightEngineOn.value;
+    }
+  }
+
+  // function toggleLeftEngine() {
+  //   if (environment.isPyQtWebEngine) {
+  //     sendToPyQt('setEngineState', { engine: 'left', state: !leftEngineOn.value });
+  //     leftEngineOn.value = !leftEngineOn.value;
+  //   }
+  // }
+
+  // function toggleRightEngine() {
+  //   if (environment.isPyQtWebEngine) {
+  //     sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
+  //     rightEngineOn.value = !rightEngineOn.value;
+  //   }
+  // }
 
   function focusInput(inputName) {
     focusedInput.value = inputName;
@@ -304,12 +335,15 @@
 
     // 如果有引擎被后端激活，关闭它
     if (leftEngineOn.value) {
-      toggleLeftEngine();
+      toggleEngine();
     }
 
-    if (rightEngineOn.value) {
-      toggleRightEngine();
-    }
+    // 停止两水泵
+    sendToPyQt('controlSprinkler', { target: "twoTank" , state: 0 });
+
+    // if (rightEngineOn.value) {
+    //   toggleRightEngine();
+    // }
 
     stopSystemWithoutSend()
   }
@@ -327,6 +361,8 @@
 
   function runCycle() {
     activeSprinkler.value = 1;
+    // 开启水泵
+    sendToPyQt('controlSprinkler', { target: "oneTank" , state:1 });
     runSprinkler();
   }
 
@@ -363,6 +399,8 @@
       } else {
         sendToPyQt('controlSprinkler', { target: "manual", index: activeSprinkler.value, state: 0 });
         sendToPyQt('controlSprinkler', { target: 'setState', state: true });
+        // 停止水泵
+        sendToPyQt('controlSprinkler', { target: "oneTank" , state:0 });
         runLoopInterval();
       }
     }, currentSingleRunTime.value * 1000);
@@ -396,13 +434,15 @@
 
       sendToPyQt('controlSprinkler', { target: 'setState', state: false });
       if (leftEngineOn.value) {
-        toggleLeftEngine();
+        toggleEngine();
       }
 
-      if (rightEngineOn.value) {
-        toggleRightEngine();
-      }
+      // if (rightEngineOn.value) {
+      //   toggleRightEngine();
+      // }
 
+      // 停止两水泵
+      sendToPyQt('controlSprinkler', { target: "twoTank" , state: 0 });
       runCycle();
     }, currentLoopInterval.value * 1000);
   }
@@ -422,6 +462,8 @@
       // 如果已激活，则关闭它
       waterLevels.value[n - 1] = 0;
       if (environment.isPyQtWebEngine) {
+        // 关闭水泵
+        sendToPyQt('controlSprinkler', { target: "oneTank" , state:0 });
         sendToPyQt('controlSprinkler', { target: "manual", index: n, state: 0 });
       }
     } else {
@@ -431,12 +473,20 @@
         if (environment.isPyQtWebEngine) {
           sendToPyQt('controlSprinkler', { target: "manual", index: activeIndex+1, state: 0 });
         }
+        // 激活新的喷头
+        waterLevels.value[n - 1] = 100;
+        if (environment.isPyQtWebEngine) {
+          sendToPyQt('controlSprinkler', { target: "manual", index: n, state: 1 });
+        }
       }
-      
-      // 激活新的喷头
-      waterLevels.value[n - 1] = 100;
-      if (environment.isPyQtWebEngine) {
-        sendToPyQt('controlSprinkler', { target: "manual", index: n, state: 1 });
+      else {
+        // 激活新的喷头
+        // 开启水泵
+        sendToPyQt('controlSprinkler', { target: "oneTank" , state:1 });
+        waterLevels.value[n - 1] = 100;
+        if (environment.isPyQtWebEngine) {
+          sendToPyQt('controlSprinkler', { target: "manual", index: n, state: 1 });
+        }
       }
     }
   }

@@ -69,12 +69,12 @@ class TempHumidityPublisher(Node):
                         temperatures[f'temperature_sensor_{index+1}'] = round(temp, 2)
                         humidities[f'humidity_sensor_{index+1}'] = round(humi, 2)
                     else:
-                        temperatures[f'temperature_sensor_{index+1}'] = -1
-                        humidities[f'humidity_sensor_{index+1}'] = -1
+                        temperatures[f'temperature_sensor_{index+1}'] = None
+                        humidities[f'humidity_sensor_{index+1}'] = None
                 except Exception as exc:
                     # self.get_logger().error(f'设备 {index+1} 生成了异常: {exc}')
-                    temperatures[f'temperature_sensor_{index+1}'] = -1
-                    humidities[f'humidity_sensor_{index+1}'] = -1
+                    temperatures[f'temperature_sensor_{index+1}'] = None
+                    humidities[f'humidity_sensor_{index+1}'] = None
 
         return temperatures, humidities
 

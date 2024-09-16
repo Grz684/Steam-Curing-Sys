@@ -3,7 +3,10 @@ setup.cfg
 setup.py
 resource/temp_humidity_publisher
 temp_humidity_publisher/__init__.py
+temp_humidity_publisher/client.py
+temp_humidity_publisher/service.py
 temp_humidity_publisher/temp_humidity_publisher.py
+temp_humidity_publisher/temp_humidity_publisher_wait_for_test.py
 temp_humidity_publisher.egg-info/PKG-INFO
 temp_humidity_publisher.egg-info/SOURCES.txt
 temp_humidity_publisher.egg-info/dependency_links.txt

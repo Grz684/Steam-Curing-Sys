@@ -1,6 +1,6 @@
 <template>
   <div class="settings-container">
-    <h1>智能蒸汽养护系统</h1>
+    <h1>涪特智能养护台车控制系统</h1>
     <SensorDisplay />
     <DataExport />
     <SensorSettings />
