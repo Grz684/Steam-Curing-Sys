@@ -6,8 +6,8 @@
     <SensorSettings />
     <!-- <SteamEngineControl />
     <SprinklerSystem /> -->
-    <IntegratedControlSystem />
-    <!-- <CartSystem /> -->
+    <!-- <IntegratedControlSystem /> -->
+    <CartSystem />
   </div>
 </template>
 

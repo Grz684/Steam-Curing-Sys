@@ -175,7 +175,7 @@ class ControlUtils():
         self.sprinkler_base_addr = 2
 
         self.dolly_move_addr = 2
-        self.dolly_move_addr = 4
+        self.dolly_move_addr_back_up = 3
 
         self.dio_ip = "192.168.0.7"  # 替换为您设备的实际IP地址
         self.dio_port = 8234  # Modbus TCP默认端口
@@ -185,6 +185,8 @@ class ControlUtils():
 
         # debug时不连接Modbus服务器
         self.debug = False
+
+        self.output_num = 8 # 输出数量
 
         if not self.debug:
             try:
@@ -298,6 +300,7 @@ class ControlUtils():
                 
     def turn_dolly_on(self):
         if not self.dolly_on:
+            logger.info('Turning dolly ON')
             self.dolly_on = True
             self.control_output(self.dolly_move_addr, True)
             self.control_output(self.zone2_output_addr, True)
@@ -305,22 +308,24 @@ class ControlUtils():
 
     def turn_dolly_off(self):
         if self.dolly_on:
+            logger.info('Turning dolly OFF')
             self.dolly_on = False
             self.control_output(self.dolly_move_addr, False)
             self.control_output(self.zone2_output_addr, False)
             self.control_output(self.zone1_output_addr, False)
 
     def turn_all_off(self):
-        for i in range(16):
+        for i in range(self.output_num):
             self.control_output(i, False)
         
 class ExportThread(Thread):
-    def __init__(self, db_name, usb_mount, result_queue, timeout=30):
+    def __init__(self, db_name, usb_mount, result_queue, sensor_num, timeout=30):
         Thread.__init__(self)
         self.db_name = db_name
         self.usb_mount = usb_mount
         self.result_queue = result_queue
         self.timeout = timeout
+        self.sensor_num = sensor_num
 
     def run(self):
         conn = None
@@ -330,8 +335,8 @@ class ExportThread(Thread):
 
             column_mapping = {
                 'timestamp': '时间戳',
-                **{f'temp_{i}': f'温感{i}' for i in range(1, 17)},
-                **{f'hum_{i}': f'湿感{i}' for i in range(1, 17)}
+                **{f'temp_{i}': f'温感{i}' for i in range(1, self.sensor_num + 1)},
+                **{f'hum_{i}': f'湿感{i}' for i in range(1, self.sensor_num + 1)}
             }
             df.rename(columns=column_mapping, inplace=True)
             df = df.replace('unknown', '未知')
@@ -430,6 +435,8 @@ class QtSignalHandler(QObject):
         self.control_utils = None
         
         self.ros2_thread = ROS2Thread(self)
+
+        self.sensor_num = 4
 
     def process_limit_settings(self, temp_upper, temp_lower, humidity_upper, humidity_lower):
         # 在工作线程中处理接收到的限制设置
@@ -618,7 +625,7 @@ class QtSignalHandler(QObject):
         self.export_started.emit()
 
         result_queue = Queue()
-        export_thread = ExportThread(db_name, usb_mount, result_queue)
+        export_thread = ExportThread(db_name, usb_mount, result_queue, self.sensor_num)
         export_thread.start()
 
         def check_export_finished():
@@ -725,12 +732,13 @@ class SensorSubscriberNode(Node):
     def __init__(self, qtSignalHandler):
         Node.__init__(self, 'sensor_subscriber')
         self.qtSignalHandler = qtSignalHandler
+        self.sensor_num = qtSignalHandler.sensor_num
         
-        self.temp_data = {f'temperature_sensor_{i}': -1 for i in range(1, 17)}  # 修改为 16 个传感器
-        self.humidity_data = {f'humidity_sensor_{i}': -1 for i in range(1, 17)}  # 修改为 16 个传感器
+        self.temp_data = {f'temperature_sensor_{i}': -1 for i in range(1, self.sensor_num + 1)}  # 修改为 16 个传感器
+        self.humidity_data = {f'humidity_sensor_{i}': -1 for i in range(1, self.sensor_num + 1)}  # 修改为 16 个传感器
 
         self.db_name = 'sensor_data.db'
-        self.conn, self.cursor = SensorSubscriberNode.initialize_database(self.db_name)
+        self.conn, self.cursor = self.initialize_database(self.db_name)
 
         self.save_to_db_count = 0
 
@@ -857,7 +865,7 @@ class SensorSubscriberNode(Node):
     def true_process(self):
         sensor_data = []
 
-        for i in range(1, 17):  # 修改为 16 个传感器
+        for i in range(1, self.sensor_num + 1):  # 修改为 16 个传感器
             temp_sensor_name = f'temperature_sensor_{i}'
             temp_value = self.temp_data[temp_sensor_name]
             if temp_value != -1:
@@ -865,7 +873,7 @@ class SensorSubscriberNode(Node):
             else:
                 sensor_data.append((f'温感{i}', '未知'))
         
-        for i in range(1, 17):  # 修改为 16 个传感器
+        for i in range(1, self.sensor_num + 1):  # 修改为 16 个传感器
             humidity_sensor_name = f'humidity_sensor_{i}'
             humidity_value = self.humidity_data[humidity_sensor_name]
             if humidity_value != -1:
@@ -879,21 +887,29 @@ class SensorSubscriberNode(Node):
             self.save_data_to_db(self.cursor, sensor_data)
             self.conn.commit()
 
-    @staticmethod
-    def create_table(cursor):
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS sensor_data (
-            timestamp TEXT PRIMARY KEY,
-            temp_1 REAL, temp_2 REAL, temp_3 REAL, temp_4 REAL,
-            temp_5 REAL, temp_6 REAL, temp_7 REAL, temp_8 REAL,
-            temp_9 REAL, temp_10 REAL, temp_11 REAL, temp_12 REAL,
-            temp_13 REAL, temp_14 REAL, temp_15 REAL, temp_16 REAL,
-            hum_1 REAL, hum_2 REAL, hum_3 REAL, hum_4 REAL,
-            hum_5 REAL, hum_6 REAL, hum_7 REAL, hum_8 REAL,
-            hum_9 REAL, hum_10 REAL, hum_11 REAL, hum_12 REAL,
-            hum_13 REAL, hum_14 REAL, hum_15 REAL, hum_16 REAL
-        )
-        ''')
+    def create_table(self, cursor):
+        if self.sensor_num == 16:
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS sensor_data (
+                timestamp TEXT PRIMARY KEY,
+                temp_1 REAL, temp_2 REAL, temp_3 REAL, temp_4 REAL,
+                temp_5 REAL, temp_6 REAL, temp_7 REAL, temp_8 REAL,
+                temp_9 REAL, temp_10 REAL, temp_11 REAL, temp_12 REAL,
+                temp_13 REAL, temp_14 REAL, temp_15 REAL, temp_16 REAL,
+                hum_1 REAL, hum_2 REAL, hum_3 REAL, hum_4 REAL,
+                hum_5 REAL, hum_6 REAL, hum_7 REAL, hum_8 REAL,
+                hum_9 REAL, hum_10 REAL, hum_11 REAL, hum_12 REAL,
+                hum_13 REAL, hum_14 REAL, hum_15 REAL, hum_16 REAL
+            )
+            ''')
+        else:
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS sensor_data (
+                timestamp TEXT PRIMARY KEY,
+                temp_1 REAL, temp_2 REAL, temp_3 REAL, temp_4 REAL,
+                hum_1 REAL, hum_2 REAL, hum_3 REAL, hum_4 REAL
+            )
+            ''')
 
     @staticmethod
     def table_exists(cursor, table_name):
@@ -902,14 +918,13 @@ class SensorSubscriberNode(Node):
         """)
         return cursor.fetchone() is not None
 
-    @staticmethod
-    def initialize_database(db_name, days_to_keep=14):
+    def initialize_database(self, db_name, days_to_keep=14):
         conn = sqlite3.connect(db_name)
         cursor = conn.cursor()
 
         if not SensorSubscriberNode.table_exists(cursor, 'sensor_data'):
             logger.info("Creating sensor_data table")
-            SensorSubscriberNode.create_table(cursor)
+            self.create_table(cursor)
         else:
             logger.info("sensor_data table already exists.")
 
@@ -927,8 +942,8 @@ class SensorSubscriberNode(Node):
         if self.save_to_db_count == 11:
             self.save_to_db_count = 0
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            data = {f"temp_{i}": None for i in range(1, 17)}
-            data.update({f"hum_{i}": None for i in range(1, 17)})
+            data = {f"temp_{i}": None for i in range(1, self.sensor_num + 1)}
+            data.update({f"hum_{i}": None for i in range(1, self.sensor_num + 1)})
             
             for sensor, value in sensor_data:
                 if '温感' in sensor:

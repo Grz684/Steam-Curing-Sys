@@ -17,13 +17,15 @@ class TempHumidityPublisher(Node):
           
         self.srv = self.create_service(Trigger, 'get_sensor_data', self.get_sensor_data_callback)
 
-        self.ip_address = '192.168.3.7'  # 请替换为您的实际IP地址
-        self.base_port = 8001  # COM1 对应的起始端口号
+        self.ip_address = '192.168.166.8'  # 请替换为您的实际IP地址
+        self.base_port = 1024  # COM1 对应的起始端口号
+
+        self.sensor_num = 4
         
         # 创建16个ModbusTcpClient，每个对应一个传感器
         self.modbus_clients = [
             ModbusTcpClient(self.ip_address, port=self.base_port + i, timeout=0.1)
-            for i in range(16)
+            for i in range(self.sensor_num)
         ]
 
         self.get_logger().info('Temperature and Humidity Publisher node has been started')
@@ -56,8 +58,8 @@ class TempHumidityPublisher(Node):
             client.close()
 
     def read_all_sensors(self):
-        with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
-            future_to_index = {executor.submit(self.read_temperature_humidity, i): i for i in range(16)}
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.sensor_num) as executor:
+            future_to_index = {executor.submit(self.read_temperature_humidity, i): i for i in range(self.sensor_num)}
             
             temperatures = {}
             humidities = {}

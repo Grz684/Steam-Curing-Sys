@@ -10,11 +10,15 @@
         <div class="controls">
           <div class="input-group">
             <label>单次运行时间 (秒):</label>
-            <input type="number" v-model="tempRunTime" @blur="updateRunTime" min="1" />
+            <div class="input-wrapper" @click="showRunTimeKeyboard = true">
+              {{ tempRunTime }}
+            </div>
           </div>
           <div class="input-group">
             <label>循环间隔时间 (秒):</label>
-            <input type="number" v-model="tempIntervalTime" @blur="updateIntervalTime" min="0" />
+            <div class="input-wrapper" @click="showIntervalTimeKeyboard = true">
+              {{ tempIntervalTime }}
+            </div>
           </div>
           <div class="button-group">
             <button @click="startSystem" :disabled="isRunning">开始</button>
@@ -44,12 +48,24 @@
         <div class="auto-mode-placeholder"></div>
       </div>
     </div>
+
+    <NumericKeyboard
+      v-model="tempRunTime"
+      v-model:showKeyboard="showRunTimeKeyboard"
+      @update:modelValue="updateRunTime"
+    />
+    <NumericKeyboard
+      v-model="tempIntervalTime"
+      v-model:showKeyboard="showIntervalTimeKeyboard"
+      @update:modelValue="updateIntervalTime"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, watch, reactive, onMounted, onUnmounted } from 'vue';
 import { useWebChannel } from './useWebChannel';
+import NumericKeyboard from './NumericKeyboard.vue';
 
 const mode = ref('semi-auto');
 const currentRunTime = ref(6);
@@ -62,6 +78,8 @@ const isRunning = ref(false);
 const progress = ref(0);
 const statusMessage = ref('系统就绪');
 const autoModeStatus = ref('小车尚未工作');
+const showRunTimeKeyboard = ref(false);
+const showIntervalTimeKeyboard = ref(false);
 let animationFrame = null;
 
 const { sendToPyQt } = useWebChannel();
@@ -187,7 +205,7 @@ function startDolly() {
 
 const runCart = () => {
   startDolly();
-  statusMessage.value = '台车运行中';
+  statusMessage.value = '小车运行中';
   progress.value = 0;
   const startTime = Date.now();
   
@@ -197,7 +215,7 @@ const runCart = () => {
     const elapsed = (Date.now() - startTime) / 1000;
     const remaining = Math.max(0, currentRunTime.value - elapsed);
     progress.value = (elapsed / currentRunTime.value) * 100;
-    statusMessage.value = `台车运行中: 剩余 ${remaining.toFixed(1)} 秒`;
+    statusMessage.value = `小车运行中: 剩余 ${remaining.toFixed(1)} 秒`;
     
     if (elapsed < currentRunTime.value && isRunning.value) {
       animationFrame = requestAnimationFrame(updateProgress);
@@ -251,7 +269,7 @@ onUnmounted(() => {
 }
 
 .mode-content {
-  min-height: 250px; /* 设置一个固定的最小高度 */
+  min-height: 280px;
   display: flex;
   flex-direction: column;
 }
@@ -266,18 +284,25 @@ onUnmounted(() => {
 .input-group {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: center;  /* 添加这行来实现垂直居中对齐 */
 }
 
 .input-group label {
   flex-grow: 1;
   margin-right: 10px;
+  font-size: 18px;
 }
 
-.input-group input {
-  width: 60px;
+.input-wrapper {
+  width: 80px;
+  height: 40px;
+  text-align: center;
+  font-size: 18px;
+  margin: 0 5px;
   border: 1px solid #ccc;
-  padding: 5px;
+  border-radius: 4px;
+  line-height: 40px;
+  cursor: pointer;
 }
 
 .button-group {
@@ -384,6 +409,7 @@ button:disabled {
   background-color: #f0f0f0;
   border-radius: 5px;
   margin-top: 20px;
+  font-size: 1.2em;
 }
 
 .auto-mode-status.working {

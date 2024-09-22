@@ -17,47 +17,26 @@ class TempHumidityPublisher(Node):
           
         self.srv = self.create_service(Trigger, 'get_sensor_data', self.get_sensor_data_callback)
 
-        self.ip_address = '192.168.3.7'  # 请替换为您的实际IP地址
-        self.base_port = 8001  # COM1 对应的起始端口号
+        # self.ip_address = '192.168.3.7'  # 请替换为您的实际IP地址
+        # self.base_port = 8001  # COM1 对应的起始端口号
         
-        # 创建16个ModbusTcpClient，每个对应一个传感器
-        self.modbus_clients = [
-            ModbusTcpClient(self.ip_address, port=self.base_port + i, timeout=0.1)
-            for i in range(16)
-        ]
+        # # 创建16个ModbusTcpClient，每个对应一个传感器
+        # self.modbus_clients = [
+        #     ModbusTcpClient(self.ip_address, port=self.base_port + i, timeout=0.1)
+        #     for i in range(16)
+        # ]
+        self.sensor_num = 4
 
         self.get_logger().info('Temperature and Humidity Publisher node has been started')
 
     def read_temperature_humidity(self, client_index):
-        client = self.modbus_clients[client_index]
-        try:
-            if not client.connect():
-                # self.get_logger().error(f"无法连接到设备 {client_index+1}")
-                return None, None
-
-            # 读取两个寄存器，起始地址为0x0001
-            result = client.read_holding_registers(address=0x0001, count=2, slave=1)
-            
-            if not result.isError():
-                temp_raw = result.registers[0]
-                humi_raw = result.registers[1]
-                
-                temperature = temp_raw / 10.0
-                humidity = humi_raw / 10.0
-                
-                return temperature, humidity
-            else:
-                # self.get_logger().error(f"读取错误: {result}")
-                return None, None
-        except Exception as e:
-            # self.get_logger().error(f"通信异常: {e}")
-            return None, None
-        finally:
-            client.close()
+        temperature = round(random.uniform(38.0, 40.0), 2)
+        humidity = round(random.uniform(50.0, 60.0), 2)
+        return temperature, humidity
 
     def read_all_sensors(self):
-        with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
-            future_to_index = {executor.submit(self.read_temperature_humidity, i): i for i in range(16)}
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.sensor_num) as executor:
+            future_to_index = {executor.submit(self.read_temperature_humidity, i): i for i in range(self.sensor_num)}
             
             temperatures = {}
             humidities = {}
@@ -69,12 +48,12 @@ class TempHumidityPublisher(Node):
                         temperatures[f'temperature_sensor_{index+1}'] = round(temp, 2)
                         humidities[f'humidity_sensor_{index+1}'] = round(humi, 2)
                     else:
-                        temperatures[f'temperature_sensor_{index+1}'] = None
-                        humidities[f'humidity_sensor_{index+1}'] = None
+                        temperatures[f'temperature_sensor_{index+1}'] = -1
+                        humidities[f'humidity_sensor_{index+1}'] = -1
                 except Exception as exc:
                     # self.get_logger().error(f'设备 {index+1} 生成了异常: {exc}')
-                    temperatures[f'temperature_sensor_{index+1}'] = None
-                    humidities[f'humidity_sensor_{index+1}'] = None
+                    temperatures[f'temperature_sensor_{index+1}'] = -1
+                    humidities[f'humidity_sensor_{index+1}'] = -1
 
         return temperatures, humidities
 
@@ -92,9 +71,7 @@ class TempHumidityPublisher(Node):
         return response
     
     def close_all_connections(self):
-        for client in self.modbus_clients:
-            if client.is_socket_open():
-                client.close()
+        logger.info("关闭所有连接")
 
 def main(args=None):
     rclpy.init(args=args)
