@@ -209,7 +209,7 @@
         }
 
         // 停止两水泵
-        sendToPyQt('controlSprinkler', { target: "twoTank", state: 0 });
+        sendToPyQt('controlSprinkler', { target: "oneTank", state: 0 });
       }
       else {
         // 自动切换到手动模式时，关闭所有引擎
@@ -339,7 +339,7 @@
     }
 
     // 停止两水泵
-    sendToPyQt('controlSprinkler', { target: "twoTank" , state: 0 });
+    sendToPyQt('controlSprinkler', { target: "oneTank" , state: 0 });
 
     // if (rightEngineOn.value) {
     //   toggleRightEngine();
