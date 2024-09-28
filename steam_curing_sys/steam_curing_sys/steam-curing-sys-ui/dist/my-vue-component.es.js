@@ -1,56 +1,56 @@
-import { ref as d, onMounted as E, provide as L, readonly as q, inject as A, watch as K, openBlock as g, createElementBlock as b, createElementVNode as e, toDisplayString as Q, Fragment as U, renderList as F, normalizeClass as D, createCommentVNode as M, reactive as R, createVNode as k, onUnmounted as te, normalizeStyle as z } from "vue";
-const B = Symbol(), H = Symbol(), G = Symbol();
-function oe(m, l) {
+import { ref as d, onMounted as x, provide as I, readonly as q, inject as A, watch as K, openBlock as g, createElementBlock as f, createElementVNode as e, toDisplayString as $, Fragment as U, renderList as F, normalizeClass as W, createCommentVNode as N, reactive as R, createVNode as S, onUnmounted as se, normalizeStyle as B } from "vue";
+const H = Symbol(), G = Symbol(), X = Symbol();
+function ne(m, a) {
   m && m.messageSignal ? m.messageSignal.connect((i) => {
     try {
       const s = JSON.parse(i);
-      l.value = s, console.log("Received message from PyQt:", s);
+      a.value = s, console.log("Received message from PyQt:", s);
     } catch (s) {
-      console.error("Failed to parse message:", s), l.value = { type: "unknown", content: i };
+      console.error("Failed to parse message:", s), a.value = { type: "unknown", content: i };
     }
   }) : console.error("messageSignal not found on bridge");
 }
-function se() {
-  const m = d(null), l = d(null), i = d("");
+function le() {
+  const m = d(null), a = d(null), i = d("");
   function s() {
     window.QWebChannel ? new QWebChannel(window.qt.webChannelTransport, (o) => {
-      m.value = o, l.value = o.objects.bridge, console.log("QWebChannel initialized", o, o.objects.bridge), oe(l.value, i), l.value && typeof l.value.vueReady == "function" ? l.value.vueReady() : console.error("vueReady method not found on bridge");
+      m.value = o, a.value = o.objects.bridge, console.log("QWebChannel initialized", o, o.objects.bridge), ne(a.value, i), a.value && typeof a.value.vueReady == "function" ? a.value.vueReady() : console.error("vueReady method not found on bridge");
     }) : console.error("QWebChannel not found");
   }
-  E(() => {
+  x(() => {
     document.readyState === "complete" || document.readyState === "interactive" ? s() : document.addEventListener("DOMContentLoaded", s);
-  }), L(B, q(m)), L(H, q(l)), L(G, q(i));
+  }), I(H, q(m)), I(G, q(a)), I(X, q(i));
 }
-function W() {
-  const m = A(B), l = A(H), i = A(G);
-  return (!m || !l || !i) && console.error("WebChannel not properly provided. Make sure to call provideWebChannel in a parent component."), {
+function P() {
+  const m = A(H), a = A(G), i = A(X);
+  return (!m || !a || !i) && console.error("WebChannel not properly provided. Make sure to call provideWebChannel in a parent component."), {
     channel: m,
-    bridge: l,
+    bridge: a,
     message: i,
-    sendToPyQt: (o, n) => {
-      if (console.log(`Attempting to call ${o} with args:`, n), l && l.value)
-        if (typeof l.value.sendToPyQt == "function")
+    sendToPyQt: (o, l) => {
+      if (console.log(`Attempting to call ${o} with args:`, l), a && a.value)
+        if (typeof a.value.sendToPyQt == "function")
           try {
-            l.value.sendToPyQt(o, JSON.stringify(n));
-          } catch (u) {
-            console.error("Error calling sendToPyQt:", u);
+            a.value.sendToPyQt(o, JSON.stringify(l));
+          } catch (v) {
+            console.error("Error calling sendToPyQt:", v);
           }
         else
-          console.error("Method sendToPyQt not available on bridge"), console.log("Available methods:", Object.keys(l.value));
+          console.error("Method sendToPyQt not available on bridge"), console.log("Available methods:", Object.keys(a.value));
       else
         console.error("Bridge or bridge.value is undefined");
     }
   };
 }
-const x = (m, l) => {
+const T = (m, a) => {
   const i = m.__vccOpts || m;
-  for (const [s, o] of l)
+  for (const [s, o] of a)
     i[s] = o;
   return i;
-}, ne = {
+}, ae = {
   key: 0,
   class: "numeric-keyboard"
-}, le = { class: "keyboard" }, ae = { class: "current-value" }, ie = ["onClick"], ue = {
+}, ie = { class: "keyboard" }, ue = { class: "current-value" }, re = ["onClick"], de = {
   __name: "NumericKeyboard",
   props: {
     modelValue: {
@@ -63,177 +63,177 @@ const x = (m, l) => {
     }
   },
   emits: ["update:modelValue", "update:showKeyboard"],
-  setup(m, { emit: l }) {
-    const i = m, s = l, o = d([
+  setup(m, { emit: a }) {
+    const i = m, s = a, o = d([
       ["7", "8", "9"],
       ["4", "5", "6"],
       ["1", "2", "3"],
       ["清除", "0", "确定"]
-    ]), n = d("");
-    K(() => i.showKeyboard, (f) => {
-      f && (n.value = i.modelValue.toString());
+    ]), l = d("");
+    K(() => i.showKeyboard, (b) => {
+      b && (l.value = i.modelValue.toString());
     });
-    const u = (f) => {
-      f === "清除" ? n.value = "" : f === "确定" ? (s("update:modelValue", parseFloat(n.value) || 0), s("update:showKeyboard", !1)) : n.value += f;
+    const v = (b) => {
+      b === "清除" ? l.value = "" : b === "确定" ? (s("update:modelValue", parseFloat(l.value) || 0), s("update:showKeyboard", !1)) : l.value += b;
     };
-    return (f, y) => m.showKeyboard ? (g(), b("div", ne, [
-      e("div", le, [
-        e("div", ae, Q(n.value), 1),
-        (g(!0), b(U, null, F(o.value, (w) => (g(), b("div", {
+    return (b, y) => m.showKeyboard ? (g(), f("div", ae, [
+      e("div", ie, [
+        e("div", ue, $(l.value), 1),
+        (g(!0), f(U, null, F(o.value, (w) => (g(), f("div", {
           key: w.join(),
           class: "row"
         }, [
-          (g(!0), b(U, null, F(w, (c) => (g(), b("button", {
-            key: c,
-            onClick: (C) => u(c),
-            class: D({ "function-key": c === "清除" || c === "确定" })
-          }, Q(c), 11, ie))), 128))
+          (g(!0), f(U, null, F(w, (p) => (g(), f("button", {
+            key: p,
+            onClick: (C) => v(p),
+            class: W({ "function-key": p === "清除" || p === "确定" })
+          }, $(p), 11, re))), 128))
         ]))), 128))
       ])
-    ])) : M("", !0);
+    ])) : N("", !0);
   }
-}, N = /* @__PURE__ */ x(ue, [["__scopeId", "data-v-541feda2"]]), re = { class: "settings-container" }, de = { class: "setting-group" }, ve = { class: "setting-item" }, ce = { class: "setting-controls" }, pe = ["value"], me = { class: "setting-item" }, ye = { class: "setting-controls" }, ge = ["value"], be = { class: "setting-group" }, fe = { class: "setting-item" }, _e = { class: "setting-controls" }, we = ["value"], he = { class: "setting-item" }, $e = { class: "setting-controls" }, Qe = ["value"], Ce = {
+}, M = /* @__PURE__ */ T(de, [["__scopeId", "data-v-541feda2"]]), ve = { class: "settings-container" }, ce = { class: "setting-group" }, pe = { class: "setting-item" }, me = { class: "setting-controls" }, ye = ["value"], ge = { class: "setting-item" }, fe = { class: "setting-controls" }, be = ["value"], _e = { class: "setting-group" }, we = { class: "setting-item" }, he = { class: "setting-controls" }, $e = ["value"], Qe = { class: "setting-item" }, Ce = { class: "setting-controls" }, ke = ["value"], Se = {
   __name: "SensorSettings",
   setup(m) {
-    const { sendToPyQt: l } = W(), i = R({
+    const { sendToPyQt: a } = P(), i = R({
       isPyQtWebEngine: !1
-    }), s = d(30), o = d(10), n = d(80), u = d(20), f = d(!1), y = d(null), w = d("");
-    E(() => {
+    }), s = d(30), o = d(10), l = d(80), v = d(20), b = d(!1), y = d(null), w = d("");
+    x(() => {
       if (i.isPyQtWebEngine = typeof window.qt < "u" && window.qt.webChannelTransport, i.isPyQtWebEngine) {
         console.log("在PyQt QWebEngine环境中运行");
-        const { message: r } = W();
-        K(r, (t) => {
+        const { message: c } = P();
+        K(c, (t) => {
           if (t && t.type === "update_limit_settings")
             try {
-              const v = JSON.parse(t.content);
-              s.value = v.temp_upper, o.value = v.temp_lower, n.value = v.humidity_upper, u.value = v.humidity_lower, console.log("Sensor Settings updated:", v);
-            } catch (v) {
-              console.error("Failed to parse sensor settings data:", v);
+              const u = JSON.parse(t.content);
+              s.value = u.temp_upper, o.value = u.temp_lower, l.value = u.humidity_upper, v.value = u.humidity_lower, console.log("Sensor Settings updated:", u);
+            } catch (u) {
+              console.error("Failed to parse sensor settings data:", u);
             }
         });
       } else
         console.log("在普通网页环境中运行");
     });
-    const c = (r, t) => {
-      const v = r === "tempUpper" ? s : r === "tempLower" ? o : r === "humidityUpper" ? n : u;
-      v.value = (v.value || 0) + t, r.startsWith("temp") ? C(r === "tempUpper" ? "upper" : "lower") : S(r === "humidityUpper" ? "upper" : "lower");
-    }, C = (r) => {
-      s.value === "" && (s.value = o.value + 1), o.value === "" && (o.value = s.value - 1), r === "upper" ? s.value = Math.max(o.value + 1, s.value) : o.value = Math.min(s.value - 1, o.value), h();
-    }, S = (r) => {
-      n.value === "" && (n.value = u.value + 1), u.value === "" && (u.value = n.value - 1), r === "upper" ? n.value = Math.min(100, Math.max(u.value + 1, n.value)) : u.value = Math.max(0, Math.min(n.value - 1, u.value)), h();
+    const p = (c, t) => {
+      const u = c === "tempUpper" ? s : c === "tempLower" ? o : c === "humidityUpper" ? l : v;
+      u.value = (u.value || 0) + t, c.startsWith("temp") ? C(c === "tempUpper" ? "upper" : "lower") : k(c === "humidityUpper" ? "upper" : "lower");
+    }, C = (c) => {
+      s.value === "" && (s.value = o.value + 1), o.value === "" && (o.value = s.value - 1), c === "upper" ? s.value = Math.max(o.value + 1, s.value) : o.value = Math.min(s.value - 1, o.value), h();
+    }, k = (c) => {
+      l.value === "" && (l.value = v.value + 1), v.value === "" && (v.value = l.value - 1), c === "upper" ? l.value = Math.min(100, Math.max(v.value + 1, l.value)) : v.value = Math.max(0, Math.min(l.value - 1, v.value)), h();
     }, h = () => {
-      if (s.value !== "" && o.value !== "" && n.value !== "" && u.value !== "") {
-        const r = {
+      if (s.value !== "" && o.value !== "" && l.value !== "" && v.value !== "") {
+        const c = {
           temp_upper: s.value,
           temp_lower: o.value,
-          humidity_upper: n.value,
-          humidity_lower: u.value
+          humidity_upper: l.value,
+          humidity_lower: v.value
         };
-        console.log("设置已更新:", r), i.isPyQtWebEngine ? (console.log("在PyQt QWebEngine环境中执行更新设置"), l("updateLimitSettings", r)) : console.log("在普通网页环境中执行更新设置");
+        console.log("设置已更新:", c), i.isPyQtWebEngine ? (console.log("在PyQt QWebEngine环境中执行更新设置"), a("updateLimitSettings", c)) : console.log("在普通网页环境中执行更新设置");
       }
-    }, $ = (r) => {
-      y.value = r, f.value = !0, w.value = r.startsWith("temp") ? r === "tempUpper" ? s.value : o.value : r === "humidityUpper" ? n.value : u.value;
-    }, P = (r) => {
-      const t = parseFloat(r);
-      isNaN(t) || (y.value === "tempUpper" ? (s.value = t, C("upper")) : y.value === "tempLower" ? (o.value = t, C("lower")) : y.value === "humidityUpper" ? (n.value = t, S("upper")) : y.value === "humidityLower" && (u.value = t, S("lower"))), y.value = null;
+    }, Q = (c) => {
+      y.value = c, b.value = !0, w.value = c.startsWith("temp") ? c === "tempUpper" ? s.value : o.value : c === "humidityUpper" ? l.value : v.value;
+    }, E = (c) => {
+      const t = parseFloat(c);
+      isNaN(t) || (y.value === "tempUpper" ? (s.value = t, C("upper")) : y.value === "tempLower" ? (o.value = t, C("lower")) : y.value === "humidityUpper" ? (l.value = t, k("upper")) : y.value === "humidityLower" && (v.value = t, k("lower"))), y.value = null;
     };
-    return (r, t) => (g(), b("div", re, [
-      e("div", de, [
+    return (c, t) => (g(), f("div", ve, [
+      e("div", ce, [
         t[15] || (t[15] = e("h2", null, "温度设置 (°C)", -1)),
-        e("div", ve, [
+        e("div", pe, [
           t[13] || (t[13] = e("span", { class: "setting-label" }, "上限：", -1)),
-          e("div", ce, [
+          e("div", me, [
             e("button", {
-              onClick: t[0] || (t[0] = (v) => c("tempUpper", -1))
+              onClick: t[0] || (t[0] = (u) => p("tempUpper", -1))
             }, "-"),
             e("input", {
               type: "text",
               value: s.value,
-              onFocus: t[1] || (t[1] = (v) => $("tempUpper")),
+              onFocus: t[1] || (t[1] = (u) => Q("tempUpper")),
               readonly: ""
-            }, null, 40, pe),
+            }, null, 40, ye),
             e("button", {
-              onClick: t[2] || (t[2] = (v) => c("tempUpper", 1))
+              onClick: t[2] || (t[2] = (u) => p("tempUpper", 1))
             }, "+")
           ])
         ]),
-        e("div", me, [
+        e("div", ge, [
           t[14] || (t[14] = e("span", { class: "setting-label" }, "下限：", -1)),
-          e("div", ye, [
+          e("div", fe, [
             e("button", {
-              onClick: t[3] || (t[3] = (v) => c("tempLower", -1))
+              onClick: t[3] || (t[3] = (u) => p("tempLower", -1))
             }, "-"),
             e("input", {
               type: "text",
               value: o.value,
-              onFocus: t[4] || (t[4] = (v) => $("tempLower")),
+              onFocus: t[4] || (t[4] = (u) => Q("tempLower")),
               readonly: ""
-            }, null, 40, ge),
+            }, null, 40, be),
             e("button", {
-              onClick: t[5] || (t[5] = (v) => c("tempLower", 1))
+              onClick: t[5] || (t[5] = (u) => p("tempLower", 1))
             }, "+")
           ])
         ])
       ]),
-      e("div", be, [
+      e("div", _e, [
         t[18] || (t[18] = e("h2", null, "湿度设置 (%)", -1)),
-        e("div", fe, [
+        e("div", we, [
           t[16] || (t[16] = e("span", { class: "setting-label" }, "上限：", -1)),
-          e("div", _e, [
+          e("div", he, [
             e("button", {
-              onClick: t[6] || (t[6] = (v) => c("humidityUpper", -1))
+              onClick: t[6] || (t[6] = (u) => p("humidityUpper", -1))
             }, "-"),
             e("input", {
               type: "text",
-              value: n.value,
-              onFocus: t[7] || (t[7] = (v) => $("humidityUpper")),
+              value: l.value,
+              onFocus: t[7] || (t[7] = (u) => Q("humidityUpper")),
               readonly: ""
-            }, null, 40, we),
+            }, null, 40, $e),
             e("button", {
-              onClick: t[8] || (t[8] = (v) => c("humidityUpper", 1))
+              onClick: t[8] || (t[8] = (u) => p("humidityUpper", 1))
             }, "+")
           ])
         ]),
-        e("div", he, [
+        e("div", Qe, [
           t[17] || (t[17] = e("span", { class: "setting-label" }, "下限：", -1)),
-          e("div", $e, [
+          e("div", Ce, [
             e("button", {
-              onClick: t[9] || (t[9] = (v) => c("humidityLower", -1))
+              onClick: t[9] || (t[9] = (u) => p("humidityLower", -1))
             }, "-"),
             e("input", {
               type: "text",
-              value: u.value,
-              onFocus: t[10] || (t[10] = (v) => $("humidityLower")),
+              value: v.value,
+              onFocus: t[10] || (t[10] = (u) => Q("humidityLower")),
               readonly: ""
-            }, null, 40, Qe),
+            }, null, 40, ke),
             e("button", {
-              onClick: t[11] || (t[11] = (v) => c("humidityLower", 1))
+              onClick: t[11] || (t[11] = (u) => p("humidityLower", 1))
             }, "+")
           ])
         ])
       ]),
-      k(N, {
+      S(M, {
         modelValue: w.value,
-        showKeyboard: f.value,
-        "onUpdate:modelValue": P,
-        "onUpdate:showKeyboard": t[12] || (t[12] = (v) => f.value = v)
+        showKeyboard: b.value,
+        "onUpdate:modelValue": E,
+        "onUpdate:showKeyboard": t[12] || (t[12] = (u) => b.value = u)
       }, null, 8, ["modelValue", "showKeyboard"])
     ]));
   }
-}, Se = /* @__PURE__ */ x(Ce, [["__scopeId", "data-v-22394ea0"]]), Pe = { class: "sensor-data-group" }, ke = { class: "sensor-section" }, We = { class: "sensor-container" }, Ee = { class: "sensor-grid" }, xe = { class: "sensor-title" }, Te = { class: "sensor-value" }, De = { class: "sensor-section" }, Ue = { class: "sensor-container" }, Fe = { class: "sensor-grid" }, Ke = { class: "sensor-title" }, Ve = { class: "sensor-value" }, Ie = {
+}, We = /* @__PURE__ */ T(Se, [["__scopeId", "data-v-22394ea0"]]), Pe = { class: "sensor-data-group" }, Ee = { class: "sensor-section" }, xe = { class: "sensor-container" }, Te = { class: "sensor-grid" }, De = { class: "sensor-title" }, Ue = { class: "sensor-value" }, Fe = { class: "sensor-section" }, Ke = { class: "sensor-container" }, Ve = { class: "sensor-grid" }, Le = { class: "sensor-title" }, Ie = { class: "sensor-value" }, qe = {
   __name: "SensorDisplay",
   setup(m) {
-    const l = d({ temperature: {}, humidity: {} });
-    E(() => {
+    const a = d({ temperature: {}, humidity: {} });
+    x(() => {
       if (typeof window.qt < "u" && window.qt.webChannelTransport) {
         console.log("在PyQt QWebEngine环境中执行");
-        const { message: s } = W();
+        const { message: s } = P();
         K(s, (o) => {
           if (o && o.type === "update_sensor_data")
             try {
-              l.value = JSON.parse(o.content);
-            } catch (n) {
-              console.error("Failed to parse sensor data:", n);
+              a.value = JSON.parse(o.content);
+            } catch (l) {
+              console.error("Failed to parse sensor data:", l);
             }
         });
       } else
@@ -245,259 +245,275 @@ const x = (m, l) => {
         if (!s.ok)
           throw new Error(`HTTP error! status: ${s.status}`);
         const o = await s.json();
-        l.value = o;
+        a.value = o;
       } catch (s) {
         console.error("Error fetching sensor data:", s);
       }
     };
-    return (s, o) => (g(), b("div", Pe, [
-      e("div", ke, [
+    return (s, o) => (g(), f("div", Pe, [
+      e("div", Ee, [
         o[0] || (o[0] = e("h2", null, "温度传感器", -1)),
-        e("div", We, [
-          e("div", Ee, [
-            (g(!0), b(U, null, F(l.value.temperature, (n, u) => (g(), b("div", {
-              key: u,
+        e("div", xe, [
+          e("div", Te, [
+            (g(!0), f(U, null, F(a.value.temperature, (l, v) => (g(), f("div", {
+              key: v,
               class: "sensor-card"
             }, [
-              e("div", xe, Q(u), 1),
-              e("div", Te, Q(n), 1)
+              e("div", De, $(v), 1),
+              e("div", Ue, $(l), 1)
             ]))), 128))
           ])
         ])
       ]),
-      e("div", De, [
+      e("div", Fe, [
         o[1] || (o[1] = e("h2", null, "湿度传感器", -1)),
-        e("div", Ue, [
-          e("div", Fe, [
-            (g(!0), b(U, null, F(l.value.humidity, (n, u) => (g(), b("div", {
-              key: u,
+        e("div", Ke, [
+          e("div", Ve, [
+            (g(!0), f(U, null, F(a.value.humidity, (l, v) => (g(), f("div", {
+              key: v,
               class: "sensor-card"
             }, [
-              e("div", Ke, Q(u), 1),
-              e("div", Ve, Q(n), 1)
+              e("div", Le, $(v), 1),
+              e("div", Ie, $(l), 1)
             ]))), 128))
           ])
         ])
       ])
     ]));
   }
-}, Le = /* @__PURE__ */ x(Ie, [["__scopeId", "data-v-947b9192"]]), qe = { class: "cart-system" }, Ae = { class: "mode-group" }, Me = { class: "mode-content" }, Ne = { key: 0 }, Re = { class: "controls" }, Oe = { class: "input-group" }, je = { class: "input-group" }, Je = { class: "button-group" }, ze = ["disabled"], Be = ["disabled"], He = { class: "visualization" }, Ge = { class: "progress-bar" }, Xe = { class: "status" }, Ye = {
+}, Ae = /* @__PURE__ */ T(qe, [["__scopeId", "data-v-947b9192"]]), Ne = { class: "cart-system" }, Me = { class: "water-protection" }, Re = { class: "mode-group" }, Oe = { class: "mode-content" }, je = { key: 0 }, Je = { class: "controls" }, ze = { class: "input-group" }, Be = { class: "input-group" }, He = { class: "button-group" }, Ge = ["disabled"], Xe = ["disabled"], Ye = { class: "visualization" }, Ze = { class: "progress-bar" }, et = { class: "status" }, tt = {
   key: 1,
   class: "auto-mode-container"
-}, Ze = {
+}, ot = {
   __name: "CartSystem",
   setup(m) {
-    const l = d("semi-auto"), i = d(6), s = d(12), o = d(i.value), n = d(s.value), u = d(i.value), f = d(s.value), y = d(!1), w = d(0), c = d("系统就绪"), C = d("小车尚未工作"), S = d(!1), h = d(!1);
-    let $ = null;
-    const { sendToPyQt: P } = W(), r = R({
+    const a = d("semi-auto"), i = d(6), s = d(12), o = d(i.value), l = d(s.value), v = d(i.value), b = d(s.value), y = d(!1), w = d(0), p = d("系统就绪"), C = d("小车尚未工作"), k = d(!1), h = d(!1);
+    let Q = null;
+    const E = d(!1), c = d(!1), { sendToPyQt: t } = P(), u = R({
       isPyQtWebEngine: !1
     });
-    E(() => {
-      if (r.isPyQtWebEngine = typeof window.qt < "u" && window.qt.webChannelTransport, r.isPyQtWebEngine) {
+    x(() => {
+      if (u.isPyQtWebEngine = typeof window.qt < "u" && window.qt.webChannelTransport, u.isPyQtWebEngine) {
         console.log("在PyQt QWebEngine环境中运行");
-        const { message: _ } = W();
-        K(_, (a) => {
-          if (a && a.type === "update_dolly_settings")
+        const { message: _ } = P();
+        K(_, (n) => {
+          if (n && n.type === "update_dolly_settings")
             try {
-              const p = JSON.parse(a.content);
-              o.value = p.dolly_single_run_time, n.value = p.dolly_run_interval_time, u.value = o.value, f.value = n.value, console.log("dolly Settings updated:", p);
-            } catch (p) {
-              console.error("Failed to parse dolly settings data:", p);
+              const r = JSON.parse(n.content);
+              o.value = r.dolly_single_run_time, l.value = r.dolly_run_interval_time, v.value = o.value, b.value = l.value, console.log("dolly Settings updated:", r);
+            } catch (r) {
+              console.error("Failed to parse dolly settings data:", r);
             }
-          else a && a.type === "update_dolly_state" && (a.content ? I("小车正在运行") : I("小车尚未工作"));
+          else if (n && n.type === "update_dolly_state")
+            n.content ? L("小车正在运行") : L("小车尚未工作");
+          else if (n && n.type === "update_water_tank_status")
+            try {
+              const r = JSON.parse(n.content);
+              r.side === "left" ? E.value = r.low_water : r.side === "right" && (c.value = r.low_water), console.log("Water tank status updated:", r);
+            } catch (r) {
+              console.error("Failed to parse water tank status data:", r);
+            }
         });
       } else
         console.log("在普通网页环境中运行");
     });
-    const t = (_) => {
-      l.value = _, r.isPyQtWebEngine && (_ === "auto" ? (j(), P("controlDolly", { target: "setMode", mode: "auto" })) : (V(), I("小车尚未工作"), P("controlDolly", { target: "setMode", mode: "semi-auto" })));
-    }, v = () => {
-      o.value = Math.max(1, parseInt(o.value) || 1), u.value = o.value, O();
-    }, X = () => {
-      n.value = Math.max(0, parseInt(n.value) || 0), f.value = n.value, O();
+    const O = (_) => {
+      a.value = _, u.isPyQtWebEngine && (_ === "auto" ? (J(), t("controlDolly", { target: "setMode", mode: "auto" })) : (V(), L("小车尚未工作"), t("controlDolly", { target: "setMode", mode: "semi-auto" })));
+    }, Y = () => {
+      o.value = Math.max(1, parseInt(o.value) || 1), v.value = o.value, j();
+    }, Z = () => {
+      l.value = Math.max(0, parseInt(l.value) || 0), b.value = l.value, j();
     };
-    function O() {
-      if (r.isPyQtWebEngine) {
+    function j() {
+      if (u.isPyQtWebEngine) {
         console.log("在PyQt QWebEngine环境中执行更新设置");
         const _ = {
           target: "dolly_settings",
-          dolly_single_run_time: u.value,
-          dolly_run_interval_time: f.value
+          dolly_single_run_time: v.value,
+          dolly_run_interval_time: b.value
         };
-        P("controlDolly", _);
+        t("controlDolly", _);
       } else
         console.log("在普通网页环境中执行更新设置");
     }
-    const Y = () => {
-      y.value = !0, J();
-    }, j = () => {
-      V(), y.value = !1, cancelAnimationFrame($), w.value = 0, c.value = "系统就绪";
+    const ee = () => {
+      y.value = !0, z();
+    }, J = () => {
+      V(), y.value = !1, cancelAnimationFrame(Q), w.value = 0, p.value = "系统就绪";
     };
     function V() {
-      r.isPyQtWebEngine ? (console.log("在PyQt QWebEngine环境中执行更新设置"), P("controlDolly", {
+      u.isPyQtWebEngine ? (console.log("在PyQt QWebEngine环境中执行更新设置"), t("controlDolly", {
         target: "setState",
         dolly_state: !1
       })) : console.log("在普通网页环境中执行更新设置");
     }
-    function Z() {
-      r.isPyQtWebEngine ? (console.log("在PyQt QWebEngine环境中执行更新设置"), P("controlDolly", {
+    function te() {
+      u.isPyQtWebEngine ? (console.log("在PyQt QWebEngine环境中执行更新设置"), t("controlDolly", {
         target: "setState",
         dolly_state: !0
       })) : console.log("在普通网页环境中执行更新设置");
     }
-    const J = () => {
-      Z(), c.value = "小车运行中", w.value = 0;
+    const z = () => {
+      te(), p.value = "小车运行中", w.value = 0;
       const _ = Date.now();
-      i.value = u.value;
-      const a = () => {
-        const p = (Date.now() - _) / 1e3, T = Math.max(0, i.value - p);
-        w.value = p / i.value * 100, c.value = `小车运行中: 剩余 ${T.toFixed(1)} 秒`, p < i.value && y.value ? $ = requestAnimationFrame(a) : y.value && (w.value = 100, V(), ee());
+      i.value = v.value;
+      const n = () => {
+        const r = (Date.now() - _) / 1e3, D = Math.max(0, i.value - r);
+        w.value = r / i.value * 100, p.value = `小车运行中: 剩余 ${D.toFixed(1)} 秒`, r < i.value && y.value ? Q = requestAnimationFrame(n) : y.value && (w.value = 100, V(), oe());
       };
-      $ = requestAnimationFrame(a);
-    }, ee = () => {
-      c.value = "等待下次运行";
+      Q = requestAnimationFrame(n);
+    }, oe = () => {
+      p.value = "等待下次运行";
       const _ = Date.now();
-      s.value = f.value;
-      const a = () => {
-        const p = (Date.now() - _) / 1e3, T = Math.max(0, s.value - p);
-        c.value = `等待下次运行: ${T.toFixed(1)}秒`, T > 0 && y.value ? $ = requestAnimationFrame(a) : y.value && J();
+      s.value = b.value;
+      const n = () => {
+        const r = (Date.now() - _) / 1e3, D = Math.max(0, s.value - r);
+        p.value = `等待下次运行: ${D.toFixed(1)}秒`, D > 0 && y.value ? Q = requestAnimationFrame(n) : y.value && z();
       };
-      $ = requestAnimationFrame(a);
-    }, I = (_) => {
+      Q = requestAnimationFrame(n);
+    }, L = (_) => {
       C.value = _;
     };
-    return te(() => {
-      cancelAnimationFrame($);
-    }), (_, a) => (g(), b("div", qe, [
-      e("div", Ae, [
+    return se(() => {
+      cancelAnimationFrame(Q);
+    }), (_, n) => (g(), f("div", Ne, [
+      e("div", Me, [
+        e("div", {
+          class: W(["water-tank", { "low-water": E.value }])
+        }, " 左水箱: " + $(E.value ? "缺水" : "正常"), 3),
+        e("div", {
+          class: W(["water-tank", { "low-water": c.value }])
+        }, " 右水箱: " + $(c.value ? "缺水" : "正常"), 3)
+      ]),
+      e("div", Re, [
         e("button", {
-          class: D(["mode-button", { active: l.value === "semi-auto" }]),
-          onClick: a[0] || (a[0] = (p) => l.value === "auto" ? t("semi-auto") : () => {
+          class: W(["mode-button", { active: a.value === "semi-auto" }]),
+          onClick: n[0] || (n[0] = (r) => a.value === "auto" ? O("semi-auto") : () => {
           })
         }, "半自动模式", 2),
         e("button", {
-          class: D(["mode-button", { active: l.value === "auto" }]),
-          onClick: a[1] || (a[1] = (p) => l.value === "semi-auto" ? t("auto") : () => {
+          class: W(["mode-button", { active: a.value === "auto" }]),
+          onClick: n[1] || (n[1] = (r) => a.value === "semi-auto" ? O("auto") : () => {
           })
         }, "自动模式", 2)
       ]),
-      e("div", Me, [
-        l.value === "semi-auto" ? (g(), b("div", Ne, [
-          e("div", Re, [
-            e("div", Oe, [
-              a[8] || (a[8] = e("label", null, "单次运行时间 (秒):", -1)),
+      e("div", Oe, [
+        a.value === "semi-auto" ? (g(), f("div", je, [
+          e("div", Je, [
+            e("div", ze, [
+              n[8] || (n[8] = e("label", null, "单次运行时间 (秒):", -1)),
               e("div", {
                 class: "input-wrapper",
-                onClick: a[2] || (a[2] = (p) => S.value = !0)
-              }, Q(o.value), 1)
+                onClick: n[2] || (n[2] = (r) => k.value = !0)
+              }, $(o.value), 1)
             ]),
-            e("div", je, [
-              a[9] || (a[9] = e("label", null, "循环间隔时间 (秒):", -1)),
+            e("div", Be, [
+              n[9] || (n[9] = e("label", null, "循环间隔时间 (秒):", -1)),
               e("div", {
                 class: "input-wrapper",
-                onClick: a[3] || (a[3] = (p) => h.value = !0)
-              }, Q(n.value), 1)
+                onClick: n[3] || (n[3] = (r) => h.value = !0)
+              }, $(l.value), 1)
             ]),
-            e("div", Je, [
+            e("div", He, [
               e("button", {
-                onClick: Y,
+                onClick: ee,
                 disabled: y.value
-              }, "开始", 8, ze),
+              }, "开始", 8, Ge),
               e("button", {
-                onClick: j,
+                onClick: J,
                 disabled: !y.value
-              }, "停止", 8, Be)
+              }, "停止", 8, Xe)
             ])
           ]),
-          e("div", He, [
-            e("div", Ge, [
+          e("div", Ye, [
+            e("div", Ze, [
               e("div", {
                 class: "progress",
-                style: z({ width: w.value + "%" })
+                style: B({ width: w.value + "%" })
               }, null, 4),
               e("div", {
                 class: "cart",
-                style: z({ left: w.value + "%" })
-              }, a[10] || (a[10] = [
+                style: B({ left: w.value + "%" })
+              }, n[10] || (n[10] = [
                 e("span", { class: "cart-icon" }, "🚜", -1)
               ]), 4)
             ])
           ]),
-          e("div", Xe, Q(c.value), 1)
-        ])) : (g(), b("div", Ye, [
-          a[11] || (a[11] = e("div", { class: "auto-mode-title" }, "自动模式受传感器湿度控制", -1)),
+          e("div", et, $(p.value), 1)
+        ])) : (g(), f("div", tt, [
+          n[11] || (n[11] = e("div", { class: "auto-mode-title" }, "自动模式受传感器湿度控制", -1)),
           e("div", {
-            class: D(["auto-mode-status", { working: C.value === "小车正在运行" }])
-          }, Q(C.value), 3),
-          a[12] || (a[12] = e("div", { class: "auto-mode-placeholder" }, null, -1))
+            class: W(["auto-mode-status", { working: C.value === "小车正在运行" }])
+          }, $(C.value), 3),
+          n[12] || (n[12] = e("div", { class: "auto-mode-placeholder" }, null, -1))
         ]))
       ]),
-      k(N, {
+      S(M, {
         modelValue: o.value,
         "onUpdate:modelValue": [
-          a[4] || (a[4] = (p) => o.value = p),
-          v
+          n[4] || (n[4] = (r) => o.value = r),
+          Y
         ],
-        showKeyboard: S.value,
-        "onUpdate:showKeyboard": a[5] || (a[5] = (p) => S.value = p)
+        showKeyboard: k.value,
+        "onUpdate:showKeyboard": n[5] || (n[5] = (r) => k.value = r)
       }, null, 8, ["modelValue", "showKeyboard"]),
-      k(N, {
-        modelValue: n.value,
+      S(M, {
+        modelValue: l.value,
         "onUpdate:modelValue": [
-          a[6] || (a[6] = (p) => n.value = p),
-          X
+          n[6] || (n[6] = (r) => l.value = r),
+          Z
         ],
         showKeyboard: h.value,
-        "onUpdate:showKeyboard": a[7] || (a[7] = (p) => h.value = p)
+        "onUpdate:showKeyboard": n[7] || (n[7] = (r) => h.value = r)
       }, null, 8, ["modelValue", "showKeyboard"])
     ]));
   }
-}, et = /* @__PURE__ */ x(Ze, [["__scopeId", "data-v-6929ac4f"]]), tt = { class: "data-actions" }, ot = {
+}, st = /* @__PURE__ */ T(ot, [["__scopeId", "data-v-79e5d674"]]), nt = { class: "data-actions" }, lt = {
   key: 0,
   class: "modal-overlay"
-}, st = {
+}, at = {
   key: 1,
   class: "modal-overlay"
-}, nt = { class: "modal-content" }, lt = {
+}, it = { class: "modal-content" }, ut = {
   __name: "DataExport",
   setup(m) {
-    const { sendToPyQt: l } = W(), i = R({
+    const { sendToPyQt: a } = P(), i = R({
       isPyQtWebEngine: !1
-    }), s = d(!1), o = d(!1), n = d("");
-    E(() => {
+    }), s = d(!1), o = d(!1), l = d("");
+    x(() => {
       i.isPyQtWebEngine = typeof window.qt < "u" && window.qt.webChannelTransport, i.isPyQtWebEngine ? console.log("在PyQt QWebEngine环境中运行") : console.log("在普通网页环境中运行");
     });
-    const u = () => {
-      i.isPyQtWebEngine && (console.log("导出数据"), l("exportData", !0));
-    }, f = () => {
+    const v = () => {
+      i.isPyQtWebEngine && (console.log("导出数据"), a("exportData", !0));
+    }, b = () => {
       s.value = !0;
     }, y = () => {
       s.value = !1;
     }, w = () => {
-      console.log("清空数据"), s.value = !1, c("所有数据已清空！"), i.isPyQtWebEngine && l("exportData", !1);
-    }, c = (S) => {
-      n.value = S, o.value = !0;
+      console.log("清空数据"), s.value = !1, p("所有数据已清空！"), i.isPyQtWebEngine && a("exportData", !1);
+    }, p = (k) => {
+      l.value = k, o.value = !0;
     }, C = () => {
       o.value = !1;
     };
-    return (S, h) => (g(), b("div", tt, [
+    return (k, h) => (g(), f("div", nt, [
       e("div", { class: "action-buttons" }, [
         e("div", { class: "button-group" }, [
           h[0] || (h[0] = e("i", { class: "fas fa-file-excel" }, null, -1)),
           e("button", {
-            onClick: u,
+            onClick: v,
             class: "export-btn"
           }, "导出数据")
         ]),
         e("div", { class: "button-group" }, [
           h[1] || (h[1] = e("i", { class: "fas fa-trash-alt" }, null, -1)),
           e("button", {
-            onClick: f,
+            onClick: b,
             class: "clear-btn"
           }, "清空数据")
         ])
       ]),
-      s.value ? (g(), b("div", ot, [
+      s.value ? (g(), f("div", lt, [
         e("div", { class: "modal-content" }, [
           h[2] || (h[2] = e("p", null, "确定要清空所有数据吗？此操作不可撤销。", -1)),
           e("div", { class: "modal-buttons" }, [
@@ -511,10 +527,10 @@ const x = (m, l) => {
             }, "取消")
           ])
         ])
-      ])) : M("", !0),
-      o.value ? (g(), b("div", st, [
-        e("div", nt, [
-          e("p", null, Q(n.value), 1),
+      ])) : N("", !0),
+      o.value ? (g(), f("div", at, [
+        e("div", it, [
+          e("p", null, $(l.value), 1),
           e("div", { class: "modal-buttons" }, [
             e("button", {
               onClick: C,
@@ -522,21 +538,21 @@ const x = (m, l) => {
             }, "确定")
           ])
         ])
-      ])) : M("", !0)
+      ])) : N("", !0)
     ]));
   }
-}, at = /* @__PURE__ */ x(lt, [["__scopeId", "data-v-86824edf"]]), it = { class: "settings-container" }, rt = {
+}, rt = /* @__PURE__ */ T(ut, [["__scopeId", "data-v-86824edf"]]), dt = { class: "settings-container" }, ct = {
   __name: "App",
   setup(m) {
-    return se(), (l, i) => (g(), b("div", it, [
+    return le(), (a, i) => (g(), f("div", dt, [
       i[0] || (i[0] = e("h1", null, "涪特智能养护台车控制系统", -1)),
-      k(Le),
-      k(at),
-      k(Se),
-      k(et)
+      S(Ae),
+      S(rt),
+      S(We),
+      S(st)
     ]));
   }
 };
 export {
-  rt as default
+  ct as default
 };

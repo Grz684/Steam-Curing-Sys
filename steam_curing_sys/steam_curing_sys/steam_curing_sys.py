@@ -27,6 +27,7 @@ from threading import Thread
 import threading
 import logging
 from std_srvs.srv import Trigger
+from std_msgs.msg import String
 import asyncio
 
 logging.basicConfig(level=logging.INFO)
@@ -184,9 +185,9 @@ class ControlUtils():
         self.tank_two_on = False
 
         # debug时不连接Modbus服务器
-        self.debug = False
+        self.debug = True
 
-        self.output_num = 8 # 输出数量
+        self.output_num = 6 # 输出数量
 
         if not self.debug:
             try:
@@ -397,6 +398,7 @@ class QtSignalHandler(QObject):
     load_limit_settings = pyqtSignal(float, float, float, float)
     load_sprinkler_settings = pyqtSignal(dict)
     load_dolly_settings = pyqtSignal(dict)
+    update_water_tank_status = pyqtSignal(dict)
     
     left_steam_status_updated = pyqtSignal(bool)
     right_steam_status_updated = pyqtSignal(bool)
@@ -436,7 +438,7 @@ class QtSignalHandler(QObject):
         
         self.ros2_thread = ROS2Thread(self)
 
-        self.sensor_num = 4
+        self.sensor_num = 16
 
     def process_limit_settings(self, temp_upper, temp_lower, humidity_upper, humidity_lower):
         # 在工作线程中处理接收到的限制设置
@@ -737,6 +739,12 @@ class SensorSubscriberNode(Node):
         self.temp_data = {f'temperature_sensor_{i}': -1 for i in range(1, self.sensor_num + 1)}  # 修改为 16 个传感器
         self.humidity_data = {f'humidity_sensor_{i}': -1 for i in range(1, self.sensor_num + 1)}  # 修改为 16 个传感器
 
+        self.subscription = self.create_subscription(
+            String,
+            'water_protection_status',
+            self.listener_callback,
+            10)
+
         self.db_name = 'sensor_data.db'
         self.conn, self.cursor = self.initialize_database(self.db_name)
 
@@ -750,6 +758,29 @@ class SensorSubscriberNode(Node):
         self.sprinkler_timer = self.create_timer(2.0, self.sprinkler_timer_callback)
 
         self.control_utils = self.qtSignalHandler.control_utils
+
+    def listener_callback(self, msg):
+        self.process_water_protection_status(msg.data)
+
+    def process_water_protection_status(self, status):
+        if status == "Left side: Water shortage":
+            self.get_logger().warn("Left side water shortage detected!")
+            self.qtSignalHandler.update_water_tank_status.emit({"side": "left", "low_water": True})
+            # Add your custom actions here
+        elif status == "Left side: Water shortage resolved":
+            self.get_logger().info("Left side water shortage resolved.")
+            self.qtSignalHandler.update_water_tank_status.emit({"side": "left", "low_water": False})
+            # Add your custom actions here
+        elif status == "Right side: Water shortage":
+            self.qtSignalHandler.update_water_tank_status.emit({"side": "right", "low_water": True})
+            self.get_logger().warn("Right side water shortage detected!")
+            # Add your custom actions here
+        elif status == "Right side: Water shortage resolved":
+            self.qtSignalHandler.update_water_tank_status.emit({"side": "right", "low_water": False})
+            self.get_logger().info("Right side water shortage resolved.")
+            # Add your custom actions here
+        else:
+            self.get_logger().warn(f"Received unexpected status: {status}")
 
     def sprinkler_timer_callback(self):
         if self.qtSignalHandler.get_sprinkler_system_state():
@@ -994,6 +1025,7 @@ def main():
     qtSignalHandler.right_steam_status_updated.connect(ex.update_right_steam_status)
 
     qtSignalHandler.update_dolly_state.connect(ex.update_dolly_state)
+    qtSignalHandler.update_water_tank_status.connect(ex.update_water_tank_status)
     ex.bridge.dataExport.connect(qtSignalHandler.export_data)
 
     try:
@@ -1003,17 +1035,22 @@ def main():
 
     qtSignalHandler.ros2_thread.start()
 
-    def signal_handler(sig, frame):
-        nonlocal qtSignalHandler, ex
-        logger.info("SIGINT received. Shutting down gracefully...")
+    # 创建一个计时器来定期处理事件
+    timer = QTimer()
+    timer.start(500)  # 每500毫秒触发一次
+    timer.timeout.connect(lambda: None)  # 保持事件循环活跃
+
+    # 使用Qt的方式来处理UNIX信号
+    def qt_signal_handler():
+        logger.info("收到主程序关闭信号")
         qtSignalHandler.ros2_thread.stop()
         qtSignalHandler.ros2_thread.wait()
         qtSignalHandler.config_manager.conn.close()
         ex.close()
-        QApplication.quit()
+        app.quit()
 
     # 设置信号处理器
-    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGINT, lambda *args: QTimer.singleShot(0, qt_signal_handler))
 
     ex.showFullScreen()
     
@@ -1021,6 +1058,7 @@ def main():
     exit_code = app.exec()
 
     # 清理操作
+    logger.info("主程序退出")
     qtSignalHandler.ros2_thread.stop()
     qtSignalHandler.ros2_thread.wait()
     qtSignalHandler.config_manager.conn.close()

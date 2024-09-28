@@ -1,3 +1,5 @@
+import signal
+from pymodbus.exceptions import ModbusException, ConnectionException
 import rclpy
 from rclpy.node import Node
 from std_srvs.srv import Trigger
@@ -9,6 +11,7 @@ import concurrent.futures
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+logging.getLogger('pymodbus').setLevel(logging.CRITICAL)
 
 class TempHumidityPublisher(Node):
 
@@ -20,7 +23,7 @@ class TempHumidityPublisher(Node):
         self.ip_address = '192.168.166.8'  # 请替换为您的实际IP地址
         self.base_port = 1024  # COM1 对应的起始端口号
 
-        self.sensor_num = 4
+        self.sensor_num = 16
         
         # 创建16个ModbusTcpClient，每个对应一个传感器
         self.modbus_clients = [
@@ -33,9 +36,9 @@ class TempHumidityPublisher(Node):
     def read_temperature_humidity(self, client_index):
         client = self.modbus_clients[client_index]
         try:
-            if not client.connect():
-                # self.get_logger().error(f"无法连接到设备 {client_index+1}")
-                return None, None
+            if not client.is_socket_open():
+                if not client.connect():
+                    return None, None
 
             # 读取两个寄存器，起始地址为0x0001
             result = client.read_holding_registers(address=0x0001, count=2, slave=1)
@@ -54,8 +57,6 @@ class TempHumidityPublisher(Node):
         except Exception as e:
             # self.get_logger().error(f"通信异常: {e}")
             return None, None
-        finally:
-            client.close()
 
     def read_all_sensors(self):
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.sensor_num) as executor:
@@ -101,17 +102,43 @@ class TempHumidityPublisher(Node):
 def main(args=None):
     rclpy.init(args=args)
     temp_humidity_publisher = TempHumidityPublisher()
+    
+    # 添加标志来跟踪节点和 rclpy 是否已被关闭
+    node_destroyed = False
+    rclpy_shutdown = False
+
+    def signal_handler(sig, frame):
+        nonlocal node_destroyed, rclpy_shutdown
+        if not node_destroyed:
+            logger.info("收到传感器关闭信号")
+            temp_humidity_publisher.close_all_connections()
+            temp_humidity_publisher.destroy_node()
+            node_destroyed = True
+        if not rclpy_shutdown:
+            rclpy.shutdown()
+            rclpy_shutdown = True
+
+    # 设置信号处理器
+    signal.signal(signal.SIGINT, signal_handler)
 
     try:
         rclpy.spin(temp_humidity_publisher)
-    except KeyboardInterrupt:
-        logger.info("传感器节点已终止")
     except Exception as e:
         logger.error("传感器节点错误: %s", e)
     finally:
-        temp_humidity_publisher.close_all_connections()
-        temp_humidity_publisher.destroy_node()
-        rclpy.shutdown()
+        if not node_destroyed:
+            logger.info("传感器节点正在终止...")
+            temp_humidity_publisher.close_all_connections()
+            temp_humidity_publisher.destroy_node()
+            node_destroyed = True
+        else:
+            logger.info("传感器节点已经被信号处理器终止")
+        
+        if not rclpy_shutdown:
+            rclpy.shutdown()
+            rclpy_shutdown = True
+        
+        logger.info("传感器节点已全部终止")
 
 if __name__ == '__main__':
     main()

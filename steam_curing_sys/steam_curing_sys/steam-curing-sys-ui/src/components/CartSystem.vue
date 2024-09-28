@@ -1,5 +1,15 @@
 <template>
   <div class="cart-system">
+    <!-- 新增的缺水保护功能 -->
+    <div class="water-protection">
+      <div class="water-tank" :class="{ 'low-water': leftTankLowWater }">
+        左水箱: {{ leftTankLowWater ? '缺水' : '正常' }}
+      </div>
+      <div class="water-tank" :class="{ 'low-water': rightTankLowWater }">
+        右水箱: {{ rightTankLowWater ? '缺水' : '正常' }}
+      </div>
+    </div>
+
     <div class="mode-group">
       <button class="mode-button" :class="{ active: mode === 'semi-auto' }" @click="mode === 'auto' ? setMode('semi-auto') : () => {}">半自动模式</button>
       <button class="mode-button" :class="{ active: mode === 'auto' }" @click="mode === 'semi-auto' ? setMode('auto') : () => {}">自动模式</button>
@@ -82,6 +92,10 @@ const showRunTimeKeyboard = ref(false);
 const showIntervalTimeKeyboard = ref(false);
 let animationFrame = null;
 
+// 新增的缺水状态变量
+const leftTankLowWater = ref(false);
+const rightTankLowWater = ref(false);
+
 const { sendToPyQt } = useWebChannel();
   
 const environment = reactive({
@@ -115,6 +129,21 @@ onMounted(() => {
         }
         else {
           updateAutoModeStatus("小车尚未工作");
+        }
+      }
+      // 新增的水箱状态更新逻辑
+      else if (newMessage && newMessage.type === 'update_water_tank_status') {
+        try {
+          const status = JSON.parse(newMessage.content);
+          if (status.side === 'left') {
+            leftTankLowWater.value = status.low_water;
+          } else if (status.side === 'right') {
+            rightTankLowWater.value = status.low_water;
+          }
+
+          console.log('Water tank status updated:', status);
+        } catch (error) {
+          console.error('Failed to parse water tank status data:', error);
         }
       }
     });
@@ -261,11 +290,31 @@ onUnmounted(() => {
 
 <style scoped>
 .cart-system {
-  margin: 0 auto;
+  margin-top: 20px;
   background-color: white;
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 新增的水箱状态样式 */
+.water-protection {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.water-tank {
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #e0f2f1;
+  color: #00796b;
+  font-weight: bold;
+}
+
+.water-tank.low-water {
+  background-color: #ffcdd2;
+  color: #c62828;
 }
 
 .mode-content {
@@ -284,7 +333,7 @@ onUnmounted(() => {
 .input-group {
   display: flex;
   justify-content: space-between;
-  align-items: center;  /* 添加这行来实现垂直居中对齐 */
+  align-items: center;
 }
 
 .input-group label {

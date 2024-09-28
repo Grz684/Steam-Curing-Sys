@@ -272,6 +272,10 @@ class MainWindow(QMainWindow):
         msg_type = "update_sensor_data"
         self.bridge.send_message(msg_type, json.dumps(content)) 
 
+    def update_water_tank_status(self, status):
+        msg_type = "update_water_tank_status"
+        self.bridge.send_message(msg_type, json.dumps(status))
+
     def update_limit_settings(self, temp_upper, temp_lower, humidity_upper, humidity_lower):
         msg_type = "update_limit_settings"
         settings = {
