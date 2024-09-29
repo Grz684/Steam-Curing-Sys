@@ -1,0 +1,3 @@
+[console_scripts]
+input_publisher = optocoupler_input_publisher.optocoupler_input_publisher:main
+

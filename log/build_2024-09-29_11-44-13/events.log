@@ -1,0 +1,73 @@
+[0.000000] (-) TimerEvent: {}
+[0.001964] (-) JobUnselected: {'identifier': 'steam_curing_sys'}
+[0.002694] (-) JobUnselected: {'identifier': 'temp_humidity_publisher'}
+[0.003288] (optocoupler_input_publisher) JobQueued: {'identifier': 'optocoupler_input_publisher', 'dependencies': OrderedDict()}
+[0.003575] (optocoupler_input_publisher) JobStarted: {'identifier': 'optocoupler_input_publisher'}
+[0.099187] (-) TimerEvent: {}
+[0.200274] (-) TimerEvent: {}
+[0.300914] (-) TimerEvent: {}
+[0.401520] (-) TimerEvent: {}
+[0.502126] (-) TimerEvent: {}
+[0.602724] (-) TimerEvent: {}
+[0.703306] (-) TimerEvent: {}
+[0.803922] (-) TimerEvent: {}
+[0.904787] (-) TimerEvent: {}
+[1.005713] (-) TimerEvent: {}
+[1.106723] (-) TimerEvent: {}
+[1.207349] (-) TimerEvent: {}
+[1.307983] (-) TimerEvent: {}
+[1.408633] (-) TimerEvent: {}
+[1.509240] (-) TimerEvent: {}
+[1.609886] (-) TimerEvent: {}
+[1.710553] (-) TimerEvent: {}
+[1.811294] (-) TimerEvent: {}
+[1.912088] (-) TimerEvent: {}
+[2.012900] (-) TimerEvent: {}
+[2.113708] (-) TimerEvent: {}
+[2.214517] (-) TimerEvent: {}
+[2.315294] (-) TimerEvent: {}
+[2.416096] (-) TimerEvent: {}
+[2.437441] (optocoupler_input_publisher) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher/build', '--no-deps', 'symlink_data'], 'cwd': '/home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'grz', 'SSH_CLIENT': '10.111.248.76 5614 22', 'LC_TIME': 'zh_CN.UTF-8', 'XDG_SESSION_TYPE': 'tty', 'GIT_ASKPASS': '/home/grz/.vscode-server/cli/servers/Stable-38c31bc77e0dd6ae88a4e9cc93428cc27a56ba40/server/extensions/git/dist/askpass.sh', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib', 'BROWSER': '/home/grz/.vscode-server/cli/servers/Stable-38c31bc77e0dd6ae88a4e9cc93428cc27a56ba40/server/bin/helpers/browser.sh', 'MOTD_SHOWN': 'pam', 'HOME': '/home/grz', 'TERM_PROGRAM_VERSION': '1.93.1', 'VSCODE_IPC_HOOK_CLI': '/run/user/1000/vscode-ipc-f9b32eeb-2394-428f-afb0-dac556eac2a6.sock', 'ROS_PYTHON_VERSION': '3', 'VSCODE_GIT_ASKPASS_MAIN': '/home/grz/.vscode-server/cli/servers/Stable-38c31bc77e0dd6ae88a4e9cc93428cc27a56ba40/server/extensions/git/dist/askpass-main.js', 'LC_MONETARY': 'zh_CN.UTF-8', 'VSCODE_GIT_ASKPASS_NODE': '/home/grz/.vscode-server/cli/servers/Stable-38c31bc77e0dd6ae88a4e9cc93428cc27a56ba40/server/node', 'SSL_CERT_FILE': '/usr/lib/ssl/certs/ca-certificates.crt', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'ROS_DISTRO': 'foxy', 'LOGNAME': 'grz', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'TERM': 'xterm-256color', 'XDG_SESSION_ID': '59', 'ROS_LOCALHOST_ONLY': '0', 'PATH': '/home/grz/.vscode-server/cli/servers/Stable-38c31bc77e0dd6ae88a4e9cc93428cc27a56ba40/server/bin/remote-cli:/home/grz/.local/bin:/opt/ros/foxy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin', 'LC_ADDRESS': 'zh_CN.UTF-8', 'XDG_RUNTIME_DIR': '/run/user/1000', 'SSL_CERT_DIR': '/usr/lib/ssl/certs', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'LC_TELEPHONE': 'zh_CN.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-bbdea78734.sock', 'TERM_PROGRAM': 'vscode', 'ROSDISTRO_INDEX_URL': 'https://mirrors.tuna.tsinghua.edu.cn/rosdistro/index-v4.yaml', 'AMENT_PREFIX_PATH': '/opt/ros/foxy', 'SHELL': '/bin/bash', 'LC_NAME': 'zh_CN.UTF-8', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'LC_MEASUREMENT': 'zh_CN.UTF-8', 'LC_IDENTIFICATION': 'zh_CN.UTF-8', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'PWD': '/home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher', 'LC_ALL': 'en_US.UTF-8', 'SSH_CONNECTION': '10.111.248.76 5614 10.111.248.245 22', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/lib/python3.8/site-packages:/opt/ros/foxy/lib/python3.8/site-packages', 'LC_NUMERIC': 'zh_CN.UTF-8', 'LC_PAPER': 'zh_CN.UTF-8', 'COLCON': '1'}, 'shell': False}
+[2.516401] (-) TimerEvent: {}
+[2.617377] (-) TimerEvent: {}
+[2.718168] (-) TimerEvent: {}
+[2.818969] (-) TimerEvent: {}
+[2.919746] (-) TimerEvent: {}
+[3.020547] (-) TimerEvent: {}
+[3.121297] (-) TimerEvent: {}
+[3.221986] (-) TimerEvent: {}
+[3.322606] (-) TimerEvent: {}
+[3.360980] (optocoupler_input_publisher) StdoutLine: {'line': b'running develop\n'}
+[3.422748] (-) TimerEvent: {}
+[3.523379] (-) TimerEvent: {}
+[3.624040] (-) TimerEvent: {}
+[3.724717] (-) TimerEvent: {}
+[3.825383] (-) TimerEvent: {}
+[3.889336] (optocoupler_input_publisher) StdoutLine: {'line': b'running egg_info\n'}
+[3.890351] (optocoupler_input_publisher) StdoutLine: {'line': b'creating optocoupler_input_publisher.egg-info\n'}
+[3.891342] (optocoupler_input_publisher) StdoutLine: {'line': b'writing optocoupler_input_publisher.egg-info/PKG-INFO\n'}
+[3.892209] (optocoupler_input_publisher) StdoutLine: {'line': b'writing dependency_links to optocoupler_input_publisher.egg-info/dependency_links.txt\n'}
+[3.892968] (optocoupler_input_publisher) StdoutLine: {'line': b'writing entry points to optocoupler_input_publisher.egg-info/entry_points.txt\n'}
+[3.893690] (optocoupler_input_publisher) StdoutLine: {'line': b'writing requirements to optocoupler_input_publisher.egg-info/requires.txt\n'}
+[3.894214] (optocoupler_input_publisher) StdoutLine: {'line': b'writing top-level names to optocoupler_input_publisher.egg-info/top_level.txt\n'}
+[3.900845] (optocoupler_input_publisher) StdoutLine: {'line': b"writing manifest file 'optocoupler_input_publisher.egg-info/SOURCES.txt'\n"}
+[3.925550] (-) TimerEvent: {}
+[4.026340] (-) TimerEvent: {}
+[4.045660] (optocoupler_input_publisher) StdoutLine: {'line': b"reading manifest file 'optocoupler_input_publisher.egg-info/SOURCES.txt'\n"}
+[4.049043] (optocoupler_input_publisher) StdoutLine: {'line': b"writing manifest file 'optocoupler_input_publisher.egg-info/SOURCES.txt'\n"}
+[4.053196] (optocoupler_input_publisher) StdoutLine: {'line': b'running build_ext\n'}
+[4.056695] (optocoupler_input_publisher) StdoutLine: {'line': b'Creating /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/lib/python3.8/site-packages/site.py\n'}
+[4.066586] (optocoupler_input_publisher) StdoutLine: {'line': b'Creating /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/lib/python3.8/site-packages/optocoupler-input-publisher.egg-link (link to .)\n'}
+[4.069395] (optocoupler_input_publisher) StdoutLine: {'line': b'Installing input_publisher script to /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/lib/optocoupler_input_publisher\n'}
+[4.070462] (optocoupler_input_publisher) StdoutLine: {'line': b'\n'}
+[4.071560] (optocoupler_input_publisher) StdoutLine: {'line': b'Installed /home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher\n'}
+[4.072451] (optocoupler_input_publisher) StdoutLine: {'line': b'running symlink_data\n'}
+[4.073051] (optocoupler_input_publisher) StdoutLine: {'line': b'creating /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/share/ament_index\n'}
+[4.073601] (optocoupler_input_publisher) StdoutLine: {'line': b'creating /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/share/ament_index/resource_index\n'}
+[4.074153] (optocoupler_input_publisher) StdoutLine: {'line': b'creating /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/share/ament_index/resource_index/packages\n'}
+[4.074704] (optocoupler_input_publisher) StdoutLine: {'line': b'symbolically linking /home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher/resource/optocoupler_input_publisher -> /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/share/ament_index/resource_index/packages\n'}
+[4.075273] (optocoupler_input_publisher) StdoutLine: {'line': b'symbolically linking /home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher/package.xml -> /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/share/optocoupler_input_publisher\n'}
+[4.126535] (-) TimerEvent: {}
+[4.153723] (optocoupler_input_publisher) CommandEnded: {'returncode': 0}
+[4.213118] (optocoupler_input_publisher) JobEnded: {'identifier': 'optocoupler_input_publisher', 'rc': 0}
+[4.216473] (-) EventReactorShutdown: {}

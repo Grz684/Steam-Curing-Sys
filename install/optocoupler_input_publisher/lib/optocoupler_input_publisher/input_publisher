@@ -1,0 +1,12 @@
+#!/usr/bin/python3
+# EASY-INSTALL-ENTRY-SCRIPT: 'optocoupler-input-publisher','console_scripts','input_publisher'
+__requires__ = 'optocoupler-input-publisher'
+import re
+import sys
+from pkg_resources import load_entry_point
+
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
+    sys.exit(
+        load_entry_point('optocoupler-input-publisher', 'console_scripts', 'input_publisher')()
+    )

@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'input_publisher = optocoupler_input_publisher.optocoupler_input_publisher:main'
         ],
     },
 )

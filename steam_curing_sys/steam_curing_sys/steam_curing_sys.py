@@ -177,6 +177,7 @@ class ControlUtils():
 
         self.dolly_move_addr = 2
         self.dolly_move_addr_back_up = 3
+        self.pulse_addr = 4
 
         self.dio_ip = "192.168.0.7"  # 替换为您设备的实际IP地址
         self.dio_port = 8234  # Modbus TCP默认端口
@@ -185,7 +186,7 @@ class ControlUtils():
         self.tank_two_on = False
 
         # debug时不连接Modbus服务器
-        self.debug = True
+        self.debug = False
 
         self.output_num = 6 # 输出数量
 
@@ -235,6 +236,9 @@ class ControlUtils():
     def control_output(self, address, value):
         with self.lock:
             if not self.debug:
+                if not self.dio_client.is_socket_open():
+                    if not self.dio_client.connect():
+                        raise ModbusControlException("无法连接到 Modbus 服务器")
                 try:
                     result = self.dio_client.write_coil(address, value, slave=1)
                     # logger.info("写入操作返回值:")
@@ -254,6 +258,25 @@ class ControlUtils():
                     raise ModbusControlException(f"Modbus错误: {e}")
             else:
                 logger.info(f"模拟{'打开' if value else '关闭'}输出 {address}")
+
+    def read_input(self):
+        with self.lock:
+            if not self.debug:
+                if not self.dio_client.is_socket_open():
+                    if not self.dio_client.connect():
+                        raise ModbusControlException("无法连接到 Modbus 服务器")
+                try:
+                    result = self.dio_client.read_discrete_inputs(0, 2, slave=0xFE)
+
+                    if result.isError():
+                        logger.error(f"Read failed: {result}")
+                    else:
+                        current_states = result.bits[:2]
+                        return current_states
+                
+                except ModbusException as e:
+                    raise ModbusControlException(f"Modbus错误: {e}")
+        
 
     def turn_zone1_heater_on(self):
         if not self.zone1_heater_on:
@@ -304,14 +327,23 @@ class ControlUtils():
             logger.info('Turning dolly ON')
             self.dolly_on = True
             self.control_output(self.dolly_move_addr, True)
+            self.control_output(self.dolly_move_addr_back_up, True)
             self.control_output(self.zone2_output_addr, True)
             self.control_output(self.zone1_output_addr, True)
+            self.control_output(self.pulse_addr, True)
+            # 使用线程来处理延迟关闭pulse
+            threading.Thread(target=self._delayed_pulse_off, daemon=True).start()
+
+    def _delayed_pulse_off(self):
+        time.sleep(0.5)
+        self.control_output(self.pulse_addr, False)
 
     def turn_dolly_off(self):
         if self.dolly_on:
             logger.info('Turning dolly OFF')
             self.dolly_on = False
             self.control_output(self.dolly_move_addr, False)
+            self.control_output(self.dolly_move_addr_back_up, False)
             self.control_output(self.zone2_output_addr, False)
             self.control_output(self.zone1_output_addr, False)
 
@@ -712,6 +744,13 @@ class ROS2Thread(QThread):
             
             while self.running and rclpy.ok():
                 rclpy.spin_once(self.node, timeout_sec=0.1)
+            
+        except ModbusControlException as e:
+            self.qtSignalHandler.export_completed.emit(-1)  # 发送错误信号
+        except Exception as e:
+            logger.error(f"ros2节点运行故障: {e}")
+            
+        finally:
             # 关闭所有输出
             self.node.control_utils.turn_all_off()
             
@@ -719,9 +758,7 @@ class ROS2Thread(QThread):
             self.node.conn.close()
             self.node.destroy_node()
             rclpy.shutdown()
-        except ModbusControlException as e:
-            self.qtSignalHandler.export_completed.emit(-1)  # 发送错误信号
-        finally:
+
             self.running = False
         
     def stop(self):
@@ -739,12 +776,6 @@ class SensorSubscriberNode(Node):
         self.temp_data = {f'temperature_sensor_{i}': -1 for i in range(1, self.sensor_num + 1)}  # 修改为 16 个传感器
         self.humidity_data = {f'humidity_sensor_{i}': -1 for i in range(1, self.sensor_num + 1)}  # 修改为 16 个传感器
 
-        self.subscription = self.create_subscription(
-            String,
-            'water_protection_status',
-            self.listener_callback,
-            10)
-
         self.db_name = 'sensor_data.db'
         self.conn, self.cursor = self.initialize_database(self.db_name)
 
@@ -759,8 +790,11 @@ class SensorSubscriberNode(Node):
 
         self.control_utils = self.qtSignalHandler.control_utils
 
-    def listener_callback(self, msg):
-        self.process_water_protection_status(msg.data)
+        # Store previous states
+        self.previous_states = [False, False]
+
+        # Create timer, calling every 0.5 seconds
+        self.read_input_timer = self.create_timer(0.5, self.read_input_timer_callback)
 
     def process_water_protection_status(self, status):
         if status == "Left side: Water shortage":
@@ -861,6 +895,24 @@ class SensorSubscriberNode(Node):
             elif all(humidity > self.qtSignalHandler.humidity_upper_limit for humidity in humidity_data.values()):
                 self.control_utils.turn_dolly_off()
                 self.qtSignalHandler.update_dolly_state.emit(False)
+
+    def read_input_timer_callback(self):
+        current_states = self.control_utils.read_input()
+        
+        # Check if states have changed
+        if current_states:
+            for i, (prev, curr) in enumerate(zip(self.previous_states, current_states)):
+                if prev != curr:
+                    side = "Left" if i == 0 else "Right"
+                    status = "Water shortage" if curr else "Water shortage resolved"
+                    message = f"{side} side: {status}"
+                    self.process_water_protection_status(message)
+            
+            # Update states
+            self.previous_states = current_states
+        else:
+            # read_input raise了错误，但read_input_timer_callback会被执行一次然后节点才会停止
+            logger.error("光耦输入无返回值")
 
     def timer_callback(self):
         # self.get_logger().info('开始请求数据...')

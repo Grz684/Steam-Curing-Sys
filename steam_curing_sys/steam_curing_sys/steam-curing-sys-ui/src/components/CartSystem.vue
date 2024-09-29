@@ -11,8 +11,8 @@
     </div>
 
     <div class="mode-group">
-      <button class="mode-button" :class="{ active: mode === 'semi-auto' }" @click="mode === 'auto' ? setMode('semi-auto') : () => {}">半自动模式</button>
-      <button class="mode-button" :class="{ active: mode === 'auto' }" @click="mode === 'semi-auto' ? setMode('auto') : () => {}">自动模式</button>
+      <button class="mode-button" :class="{ active: mode === 'semi-auto' && !low_water}" :disabled="low_water" @click="mode === 'auto' ? setMode('semi-auto') : () => {}">半自动模式</button>
+      <button class="mode-button" :class="{ active: mode === 'auto' && !low_water}" :disabled="low_water" @click="mode === 'semi-auto' ? setMode('auto') : () => {}">自动模式</button>
     </div>
     
     <div class="mode-content">
@@ -31,8 +31,8 @@
             </div>
           </div>
           <div class="button-group">
-            <button @click="startSystem" :disabled="isRunning">开始</button>
-            <button @click="stopSystem" :disabled="!isRunning">停止</button>
+            <button @click="startSystem" :disabled="isRunning || low_water">开始</button>
+            <button @click="stopSystem" :disabled="!isRunning || low_water">停止</button>
           </div>
         </div>
         
@@ -90,6 +90,7 @@ const statusMessage = ref('系统就绪');
 const autoModeStatus = ref('小车尚未工作');
 const showRunTimeKeyboard = ref(false);
 const showIntervalTimeKeyboard = ref(false);
+const low_water = ref(false);
 let animationFrame = null;
 
 // 新增的缺水状态变量
@@ -139,6 +140,24 @@ onMounted(() => {
             leftTankLowWater.value = status.low_water;
           } else if (status.side === 'right') {
             rightTankLowWater.value = status.low_water;
+          }
+
+          if(leftTankLowWater.value || rightTankLowWater.value) {
+            low_water.value = true;
+            if (mode.value === 'auto') {
+              updateAutoModeStatus("小车尚未工作");
+              sendToPyQt('controlDolly', { target: 'setMode', mode: 'semi-auto' });
+              stopDolly();
+            }
+            else {
+              stopSystem();
+            }
+          }
+          else {
+            low_water.value = false;
+            if (mode.value === 'auto') {
+              sendToPyQt('controlDolly', { target: 'setMode', mode: 'auto' });
+            }
           }
 
           console.log('Water tank status updated:', status);

@@ -1,8 +1,13 @@
+import signal
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 from pymodbus.client import ModbusTcpClient
 from pymodbus.exceptions import ModbusException
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class OptocouplerInputNode(Node):
 
@@ -23,7 +28,7 @@ class OptocouplerInputNode(Node):
         # Store previous states
         self.previous_states = [False, False]
         
-        self.get_logger().info('Optocoupler Input Node has been started')
+        logger.info('Optocoupler Input Node has been started')
 
     def timer_callback(self):
         try:
@@ -31,11 +36,12 @@ class OptocouplerInputNode(Node):
                 self.client.connect()
             
             result = self.client.read_discrete_inputs(0, 2, slave=0xFE)
-            
+
             if result.isError():
-                self.get_logger().error(f"Read failed: {result}")
+                logger.error(f"Read failed: {result}")
             else:
                 current_states = result.bits[:2]
+                # logger.info(f"Read result: {current_states}")
                 
                 # Check if states have changed
                 for i, (prev, curr) in enumerate(zip(self.previous_states, current_states)):
@@ -49,16 +55,16 @@ class OptocouplerInputNode(Node):
                         msg.data = message
                         self.publisher_.publish(msg)
                         
-                        self.get_logger().info(message)
+                        logger.info(message)
                 
                 # Update states
                 self.previous_states = current_states
         
         except ModbusException as e:
-            self.get_logger().error(f"Modbus error: {e}")
+            logger.error(f"Modbus error: {e}")
         
         except Exception as e:
-            self.get_logger().error(f"Unknown error: {e}")
+            logger.error(f"Unknown error: {e}")
 
     def __del__(self):
         if self.client.is_socket_open():
@@ -68,14 +74,41 @@ def main(args=None):
     rclpy.init(args=args)
     
     optocoupler_input_node = OptocouplerInputNode()
+
+    # 添加标志来跟踪节点和 rclpy 是否已被关闭
+    node_destroyed = False
+    rclpy_shutdown = False
+
+    def signal_handler(sig, frame):
+        nonlocal node_destroyed, rclpy_shutdown
+        if not node_destroyed:
+            logger.info("收到输入关闭信号")
+            optocoupler_input_node.destroy_node()
+            node_destroyed = True
+        if not rclpy_shutdown:
+            rclpy.shutdown()
+            rclpy_shutdown = True
+
+    # 设置信号处理器
+    signal.signal(signal.SIGINT, signal_handler)
     
     try:
         rclpy.spin(optocoupler_input_node)
-    except KeyboardInterrupt:
-        pass
+    except Exception as e:
+        logger.error("输入节点错误: %s", e)
     finally:
-        optocoupler_input_node.destroy_node()
-        rclpy.shutdown()
+        if not node_destroyed:
+            logger.info("输入节点正在终止...")
+            optocoupler_input_node.destroy_node()
+            node_destroyed = True
+        else:
+            logger.info("输入节点已经被信号处理器终止")
+        
+        if not rclpy_shutdown:
+            rclpy.shutdown()
+            rclpy_shutdown = True
+        
+        logger.info("输入节点已全部终止")
 
 if __name__ == '__main__':
     main()
