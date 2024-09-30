@@ -470,7 +470,7 @@ class QtSignalHandler(QObject):
         
         self.ros2_thread = ROS2Thread(self)
 
-        self.sensor_num = 16
+        self.sensor_num = 4
 
     def process_limit_settings(self, temp_upper, temp_lower, humidity_upper, humidity_lower):
         # 在工作线程中处理接收到的限制设置

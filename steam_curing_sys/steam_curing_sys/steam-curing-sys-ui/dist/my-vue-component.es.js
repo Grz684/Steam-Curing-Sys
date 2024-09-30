@@ -281,7 +281,7 @@ const D = (m, l) => {
       ])
     ]));
   }
-}, Me = /* @__PURE__ */ D(Ae, [["__scopeId", "data-v-39bdb13c"]]), Ne = { class: "cart-system" }, Re = { class: "water-protection" }, Oe = { class: "mode-group" }, je = ["disabled"], Je = ["disabled"], ze = { class: "mode-content" }, Be = { key: 0 }, He = { class: "controls" }, Ge = { class: "input-group" }, Xe = { class: "input-group" }, Ye = { class: "button-group" }, Ze = ["disabled"], et = ["disabled"], tt = { class: "visualization" }, ot = { class: "progress-bar" }, st = { class: "status" }, nt = {
+}, Me = /* @__PURE__ */ D(Ae, [["__scopeId", "data-v-947b9192"]]), Ne = { class: "cart-system" }, Re = { class: "water-protection" }, Oe = { class: "mode-group" }, je = ["disabled"], Je = ["disabled"], ze = { class: "mode-content" }, Be = { key: 0 }, He = { class: "controls" }, Ge = { class: "input-group" }, Xe = { class: "input-group" }, Ye = { class: "button-group" }, Ze = ["disabled"], et = ["disabled"], tt = { class: "visualization" }, ot = { class: "progress-bar" }, st = { class: "status" }, nt = {
   key: 1,
   class: "auto-mode-container"
 }, lt = {
