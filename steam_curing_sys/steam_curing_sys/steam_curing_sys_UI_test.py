@@ -26,6 +26,7 @@ class Bridge(QObject):
     sprinklerSystemControl = pyqtSignal(dict)
     dollyControl = pyqtSignal(dict)
     dataExport = pyqtSignal(bool)
+    lockPasswordCheck = pyqtSignal(dict)
 
     def __init__(self):
         super().__init__()
@@ -70,12 +71,18 @@ class Bridge(QObject):
                 self.controlSprinkler(args)
             elif method_name == "exportData":
                 self.exportData(args)
+            elif method_name == "check_lock_password":
+                self.check_lock_password(args)
             else:
                 print(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
             print(f"Failed to parse JSON: {args_json}")
         except Exception as e:
             print(f"Error processing method {method_name}: {str(e)}")
+
+    def check_lock_password(self, args):
+        print(f"Check lock password: {args}")
+        self.lockPasswordCheck.emit(args)
 
     def exportData(self, args):
         self.dataExport.emit(args)
@@ -305,6 +312,10 @@ class MainWindow(QMainWindow):
     def update_right_steam_status(self, status):
         msg_type = "update_right_steam_status"
         self.bridge.send_message(msg_type, status)
+
+    def confirm_lock_password(self, result):
+        msg_type = "confirm_lock_password"
+        self.bridge.send_message(msg_type, json.dumps(result))
 
     def toggle_dev_tools(self):
         if self.dev_view.isVisible():

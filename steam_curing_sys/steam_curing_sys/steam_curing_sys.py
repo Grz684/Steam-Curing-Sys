@@ -29,6 +29,8 @@ import logging
 from std_srvs.srv import Trigger
 from std_msgs.msg import String
 import asyncio
+import hmac
+import hashlib
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -186,7 +188,7 @@ class ControlUtils():
         self.tank_two_on = False
 
         # debug时不连接Modbus服务器
-        self.debug = False
+        self.debug = True
 
         self.output_num = 6 # 输出数量
 
@@ -438,6 +440,8 @@ class QtSignalHandler(QObject):
     data_updated = pyqtSignal(list)
     export_completed = pyqtSignal(int)
     export_started = pyqtSignal()
+
+    confirm_lock_password = pyqtSignal(dict)
     
     # error_occurred = pyqtSignal(str)  # 添加错误信号
 
@@ -471,6 +475,51 @@ class QtSignalHandler(QObject):
         self.ros2_thread = ROS2Thread(self)
 
         self.sensor_num = 4
+
+    def check_password(self, pak):
+        if pak["password"] == self.generate_unlock_password(pak["deviceRandomCode"], "forever"):
+            logger.info("永久密码验证成功")
+            self.confirm_lock_password.emit({"target":pak["target"] ,"result": "forever_success"})
+        elif pak["password"] == self.generate_unlock_password(pak["deviceRandomCode"], pak["lockCount"]):
+            logger.info("临时密码验证成功")
+            self.confirm_lock_password.emit({"target":pak["target"] ,"result": "success"})
+        else:
+            logger.info("密码验证失败")
+            self.confirm_lock_password.emit({"target":pak["target"] ,"result": "fail"})
+
+    def generate_unlock_password(self, device_random_code, lock_count):
+        """
+        生成解锁密码。
+
+        Args:
+            device_random_code (str): 设备随机码。
+            lock_count (int): 锁定次数。
+
+        Returns:
+            str: 6位数字密码。
+        """
+        # 秘密密钥，请确保在实际应用中保护好这个密钥
+        secret_key = 'the_secret_key_of_fute_company'
+
+        # 组合输入
+        message = f"{device_random_code}:{lock_count}"
+
+        # 生成 HMAC-SHA256 哈希
+        hash_bytes = hmac.new(
+            key=secret_key.encode('utf-8'),
+            msg=message.encode('utf-8'),
+            digestmod=hashlib.sha256
+        ).hexdigest()
+
+        # 将哈希的前16个字符转换为整数
+        hash_int = int(hash_bytes[:16], 16)
+
+        # 映射到6位数字
+        password = str(hash_int % 1000000).zfill(6)
+
+        print('Expected password:', password)
+
+        return password
 
     def process_limit_settings(self, temp_upper, temp_lower, humidity_upper, humidity_lower):
         # 在工作线程中处理接收到的限制设置
@@ -912,7 +961,8 @@ class SensorSubscriberNode(Node):
             self.previous_states = current_states
         else:
             # read_input raise了错误，但read_input_timer_callback会被执行一次然后节点才会停止
-            logger.error("光耦输入无返回值")
+            # logger.error("光耦输入无返回值")
+            pass
 
     def timer_callback(self):
         # self.get_logger().info('开始请求数据...')
@@ -1079,6 +1129,9 @@ def main():
     qtSignalHandler.update_dolly_state.connect(ex.update_dolly_state)
     qtSignalHandler.update_water_tank_status.connect(ex.update_water_tank_status)
     ex.bridge.dataExport.connect(qtSignalHandler.export_data)
+    ex.bridge.lockPasswordCheck.connect(qtSignalHandler.check_password)
+
+    qtSignalHandler.confirm_lock_password.connect(ex.confirm_lock_password)
 
     try:
         qtSignalHandler.control_utils = ControlUtils()

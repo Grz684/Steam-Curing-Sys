@@ -1,5 +1,5 @@
 <template>
-  <div class="settings-container">
+  <div class="app-container">
     <h1>涪特智能养护台车控制系统</h1>
     <SensorDisplay />
     <DataExport />
@@ -8,6 +8,8 @@
     <SprinklerSystem /> -->
     <!-- <IntegratedControlSystem /> -->
     <CartSystem />
+    <WiFi />
+    <Lock />
   </div>
 </template>
 
@@ -21,24 +23,20 @@ import CartSystem from './components/CartSystem.vue';
 import SteamEngineControl from './components/SteamEngineControl.vue';
 import IntegratedControlSystem from './components/IntegratedControlSystem.vue';
 import DataExport from './components/DataExport.vue';
+import VirtualKeyBoard from './components/VirtualKeyBoard.vue';
+import WiFi from './components/WiFi.vue';
+import Lock from './components/Lock.vue';
 </script>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
-  margin: 0;
-  padding: 0px;
-}
-
-.settings-container {
+.app-container {
   background-color: white;
   border-radius: 8px;
   padding: 20px;
   width: 100%;
   margin: 0 auto;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  box-sizing: border-box; /* 确保padding不会增加总宽度 */
+  box-sizing: border-box;
 }
 
 h1 {
