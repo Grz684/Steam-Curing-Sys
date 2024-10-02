@@ -324,6 +324,7 @@ onUnmounted(() => {
 }
 
 .water-tank {
+  font-size: 18px;
   padding: 10px;
   border-radius: 5px;
   background-color: #e0f2f1;
@@ -465,7 +466,7 @@ button:disabled {
 }
 
 .auto-mode-title {
-  font-size: 1.2em;
+  font-size: 18px;
   font-weight: bold;
   margin-top: 20px;
   text-align: center;
@@ -477,7 +478,7 @@ button:disabled {
   background-color: #f0f0f0;
   border-radius: 5px;
   margin-top: 20px;
-  font-size: 1.2em;
+  font-size: 18px;
 }
 
 .auto-mode-status.working {

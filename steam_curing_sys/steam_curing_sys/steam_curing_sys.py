@@ -31,6 +31,7 @@ from std_msgs.msg import String
 import asyncio
 import hmac
 import hashlib
+import string
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -79,7 +80,11 @@ class ConfigManager:
             'trolley_single_run_time': 'REAL',
             'trolley_run_interval_time': 'REAL',
             'dolly_single_run_time': 'REAL',
-            'dolly_run_interval_time': 'REAL'
+            'dolly_run_interval_time': 'REAL',
+            'device_status': 'TEXT',
+            'device_random_code': 'TEXT',
+            'device_lock_count': 'INTEGER',
+            'device_base_time': 'DATETIME'
         }
         self.connect()
         self._create_table()
@@ -442,6 +447,8 @@ class QtSignalHandler(QObject):
     export_started = pyqtSignal()
 
     confirm_lock_password = pyqtSignal(dict)
+    device_activated = pyqtSignal(dict)
+    update_device_info = pyqtSignal(dict)
     
     # error_occurred = pyqtSignal(str)  # 添加错误信号
 
@@ -476,11 +483,62 @@ class QtSignalHandler(QObject):
 
         self.sensor_num = 4
 
+    def activate_device(self):
+        # 将当前时间保存进数据库
+        current_time = datetime.now().isoformat()
+        self.config_manager.update_config(device_base_time=current_time)
+        device_status = "已激活"
+        self.config_manager.update_config(device_status=device_status)
+
+        dolly_configs = self.config_manager.get_multiple_config([
+            'device_random_code',
+            'device_base_time'
+        ])
+        if dolly_configs:
+            self.device_activated.emit(dolly_configs)
+        else:
+            logger.error("激活消息返回失败")
+
+    def load_device_info(self):
+        if self.config_manager.get_config('device_random_code') is None:
+            device_status = "未激活"
+            self.config_manager.update_config(device_status=device_status)
+            self.config_manager.update_config(device_lock_count=1)
+
+            # 生成随机码
+            device_random_code = self.generate_random_code()
+            self.config_manager.update_config(device_random_code=device_random_code)
+            logger.info("设备随机码初始化")
+
+        dolly_configs = self.config_manager.get_multiple_config([
+            'device_status',
+            'device_random_code',
+            'device_lock_count',
+            'device_base_time'
+        ])
+        if dolly_configs:
+            self.update_device_info.emit(dolly_configs)
+        else:
+            logger.error("未找到设备信息")
+
+    # 随机码生成函数
+    @staticmethod
+    def generate_random_code():
+        # 生成一个8位的随机字符串，包含数字和大写字母
+        characters = string.ascii_uppercase + string.digits
+        return ''.join(random.choices(characters, k=8))
+    
     def check_password(self, pak):
         if pak["password"] == self.generate_unlock_password(pak["deviceRandomCode"], "forever"):
             logger.info("永久密码验证成功")
+            # 更新设备信息
+            self.config_manager.update_config(device_status="永久激活")
+
             self.confirm_lock_password.emit({"target":pak["target"] ,"result": "forever_success"})
         elif pak["password"] == self.generate_unlock_password(pak["deviceRandomCode"], pak["lockCount"]):
+            # 更新设备信息
+            self.config_manager.update_config(device_lock_count=pak["lockCount"]+1)
+
             logger.info("临时密码验证成功")
             self.confirm_lock_password.emit({"target":pak["target"] ,"result": "success"})
         else:
@@ -622,7 +680,7 @@ class QtSignalHandler(QObject):
             self.temp_upper_limit = temp_humidity_configs['temp_upper_limit']
             self.humidity_lower_limit = temp_humidity_configs['humidity_lower_limit']
             self.humidity_upper_limit = temp_humidity_configs['humidity_upper_limit']
-            logger.info(f"Loaded limits: Temp {self.temp_lower_limit}-{self.temp_upper_limit}°C, Humidity {self.humidity_lower_limit}-{self.humidity_upper_limit}%")
+            # logger.info(f"Loaded limits: Temp {self.temp_lower_limit}-{self.temp_upper_limit}°C, Humidity {self.humidity_lower_limit}-{self.humidity_upper_limit}%")
             self.load_limit_settings.emit(float(self.temp_upper_limit), float(self.temp_lower_limit), float(self.humidity_upper_limit), float(self.humidity_lower_limit))
         else:
             self.load_limit_settings.emit(float(self.temp_upper_limit), float(self.temp_lower_limit), float(self.humidity_upper_limit), float(self.humidity_lower_limit))
@@ -786,10 +844,6 @@ class ROS2Thread(QThread):
         try:
             rclpy.init()
             self.node = SensorSubscriberNode(self.qtSignalHandler)
-
-            self.qtSignalHandler.load_limits()
-            self.qtSignalHandler.load_sprinkler()
-            self.qtSignalHandler.load_dolly()
             
             while self.running and rclpy.ok():
                 rclpy.spin_once(self.node, timeout_sec=0.1)
@@ -1132,11 +1186,21 @@ def main():
     ex.bridge.lockPasswordCheck.connect(qtSignalHandler.check_password)
 
     qtSignalHandler.confirm_lock_password.connect(ex.confirm_lock_password)
+    ex.bridge.activateDevice.connect(qtSignalHandler.activate_device)
+
+    qtSignalHandler.update_device_info.connect(ex.update_device_info)
+    qtSignalHandler.device_activated.connect(ex.device_activated)
 
     try:
         qtSignalHandler.control_utils = ControlUtils()
     except ModbusControlException as e:
         qtSignalHandler.export_completed.emit(-1)  # 发送错误信号
+
+    # 信号连接完成后进行初始加载
+    qtSignalHandler.load_limits()
+    qtSignalHandler.load_sprinkler()
+    qtSignalHandler.load_dolly()
+    qtSignalHandler.load_device_info()
 
     qtSignalHandler.ros2_thread.start()
 

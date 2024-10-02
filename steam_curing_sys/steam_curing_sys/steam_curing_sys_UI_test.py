@@ -27,10 +27,11 @@ class Bridge(QObject):
     dollyControl = pyqtSignal(dict)
     dataExport = pyqtSignal(bool)
     lockPasswordCheck = pyqtSignal(dict)
+    activateDevice = pyqtSignal()
 
     def __init__(self):
         super().__init__()
-        print("Bridge object initialized")
+        logger.info("Bridge object initialized")
         self.is_vue_ready = False
         self.queue = []
 
@@ -54,8 +55,8 @@ class Bridge(QObject):
 
     @pyqtSlot(str, str)
     def sendToPyQt(self, method_name, args_json):
-        # print(f"Method name: {method_name}")
-        # print(f"Arguments: {args_json}")
+        # logger.info(f"Method name: {method_name}")
+        # logger.info(f"Arguments: {args_json}")
         
         try:
             args = json.loads(args_json)
@@ -73,30 +74,36 @@ class Bridge(QObject):
                 self.exportData(args)
             elif method_name == "check_lock_password":
                 self.check_lock_password(args)
+            elif method_name == "activate_device":
+                self.activate_device()
             else:
-                print(f"Unknown method: {method_name}")
+                logger.info(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
-            print(f"Failed to parse JSON: {args_json}")
+            logger.info(f"Failed to parse JSON: {args_json}")
         except Exception as e:
-            print(f"Error processing method {method_name}: {str(e)}")
+            logger.info(f"Error processing method {method_name}: {str(e)}")
+
+    def activate_device(self):
+        logger.info("Activate device")
+        self.activateDevice.emit()
 
     def check_lock_password(self, args):
-        print(f"Check lock password: {args}")
+        logger.info(f"Check lock password: {args}")
         self.lockPasswordCheck.emit(args)
 
     def exportData(self, args):
         self.dataExport.emit(args)
 
     def controlDolly(self, args):
-        print(f"Control dolly: {args}")
+        logger.info(f"Control dolly: {args}")
         self.dollyControl.emit(args)
 
     def controlSprinkler(self, args):
-        print(f"Control sprinkler: {args}")
+        logger.info(f"Control sprinkler: {args}")
         self.sprinklerSystemControl.emit(args)
 
     def updateLimitSettings(self, settings):
-        print(f"Updating settings: {settings}")
+        logger.info(f"Updating settings: {settings}")
         temp_upper = settings.get('temp_upper', 0.0)
         temp_lower = settings.get('temp_lower', 0.0)
         humidity_upper = settings.get('humidity_upper', 0.0)
@@ -104,10 +111,10 @@ class Bridge(QObject):
         self.limitSettingsUpdated.emit(temp_upper, temp_lower, humidity_upper, humidity_lower)  # 发射信号
 
     def sendMessage(self, message):
-        print(f"Received message: {message}")
+        logger.info(f"Received message: {message}")
 
     def setSteamEngineState(self, state):
-        print(f"Steam engine state: {state}")
+        logger.info(f"Steam engine state: {state}")
         self.steamEngineState.emit(state)
 
 class ExportProgressDialog(QDialog):
@@ -177,6 +184,16 @@ class MainWindow(QMainWindow):
         self.web_view.loadFinished.connect(self.onLoadFinished)
 
         self.export_progress_dialog = None
+
+    def update_device_info(self, device_info):
+        msg_type = "device_info"
+        logger.info(f"Send device info: {device_info}")
+        self.bridge.send_message(msg_type, json.dumps(device_info))
+
+    def device_activated(self, response):
+        msg_type = "device_activated"
+        logger.info(f"Send device activated response: {response}")
+        self.bridge.send_message(msg_type, json.dumps(response))
     
     def close_export_progress(self):
         if self.export_progress_dialog and self.export_progress_dialog.isVisible():
@@ -325,10 +342,10 @@ class MainWindow(QMainWindow):
 
     def onLoadFinished(self, ok):
         if ok:
-            print("PyQt: Page loaded successfully")
+            logger.info("PyQt: Page loaded successfully")
             self.web_view.page().runJavaScript("console.log('JavaScript is working'); window.pyqtReady = true;")
         else:
-            print("PyQt: Failed to load page")
+            logger.info("PyQt: Failed to load page")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

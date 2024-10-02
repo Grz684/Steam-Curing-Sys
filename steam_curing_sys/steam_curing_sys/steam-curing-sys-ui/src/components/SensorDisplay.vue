@@ -123,12 +123,13 @@ h2 {
 }
 
 .sensor-title {
+  font-size: 16px;
   font-weight: bold;
   margin-bottom: 5px;
 }
 
 .sensor-value {
-  font-size: 1.2em;
+  font-size: 16px;
   color: #007bff;
 }
 

@@ -15,7 +15,12 @@
       </button>
     </div>
     <div class="column">
-      <input v-model="unlockKey" placeholder="输入解锁密钥">
+      <input 
+        v-model="unlockKey" 
+        placeholder="输入解锁密钥"
+        readonly
+        @focus="showUnlockKeyboard = true"
+      >
       <button class="unlock-button" @click="attemptUnlock">解锁</button>
     </div>
     <div v-if="isLocked" class="modal">
@@ -23,18 +28,31 @@
         <h3>设备已锁定</h3>
         <h3>第 {{ lockCount }} 次锁定</h3>
         <h3>设备随机码: {{ deviceRandomCode }}</h3>
-        <input v-model="modalUnlockKey" placeholder="输入解锁密钥">
+        <input 
+          v-model="modalUnlockKey" 
+          placeholder="输入解锁密钥"
+          readonly
+          @focus="showModalUnlockKeyboard = true"
+        >
         <button class="unlock-button" @click="attemptModalUnlock">解锁</button>
       </div>
     </div>
+    <StrNumericKeyboard
+      v-model="unlockKey"
+      v-model:showKeyboard="showUnlockKeyboard"
+    />
+    <StrNumericKeyboard
+      v-model="modalUnlockKey"
+      v-model:showKeyboard="showModalUnlockKeyboard"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted } from 'vue';
-import CryptoJS from 'crypto-js';
-import { watch, onMounted, reactive } from 'vue';
+import { ref, computed, onUnmounted, onMounted, watch, reactive } from 'vue';
 import { useWebChannel } from './useWebChannel';
+import StrNumericKeyboard from './StrNumericKeyboard.vue';
+
 const { sendToPyQt } = useWebChannel();
 const environment = reactive({
   isPyQtWebEngine: false
@@ -46,11 +64,16 @@ const deviceRandomCode = ref('');
 const unlockKey = ref('');
 const modalUnlockKey = ref('');
 const isLocked = ref(false);
-const lockInterval = 10; // 10秒
+const lockInterval = 60; // 30秒
 let countdownInterval;
 let activationTimer;
 const progressWidth = ref(0);
 const lockCount = ref(1);
+const baseTime = ref(null);
+
+// 新增的状态来控制数字键盘的显示
+const showUnlockKeyboard = ref(false);
+const showModalUnlockKeyboard = ref(false);
 
 const statusText = computed(() => {
   if (deviceStatus.value === '未激活') {
@@ -58,14 +81,16 @@ const statusText = computed(() => {
   } else if (deviceStatus.value === '永久激活') {
     return '设备状态: 已永久激活';
   } else {
-    return `即将第 ${lockCount.value} 次锁定 - 试用时间还剩: ${formattedTimeToNextLock.value}`;
+    return `即将第 ${lockCount.value} 次锁定 - 剩余时间: ${formattedTimeToNextLock.value}`;
   }
 });
 
 const formattedTimeToNextLock = computed(() => {
-  const minutes = Math.floor(timeToNextLock.value / 60);
+  const days = Math.floor(timeToNextLock.value / (24 * 60 * 60));
+  const hours = Math.floor((timeToNextLock.value % (24 * 60 * 60)) / (60 * 60));
+  const minutes = Math.floor((timeToNextLock.value % (60 * 60)) / 60);
   const seconds = timeToNextLock.value % 60;
-  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  return `${days}天 ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 });
 
 const activationButtonText = computed(() => {
@@ -80,7 +105,7 @@ function startActivation(event) {
     progressWidth.value += 2;
     if (progressWidth.value >= 100) {
       clearInterval(activationTimer);
-      activateDevice();
+      requestActivation();
     }
   }, 30);
 }
@@ -95,14 +120,19 @@ function cancelActivation() {
   progressWidth.value = 0;
 }
 
-function activateDevice() {
+function requestActivation() {
+  sendToPyQt('activate_device', {});
+}
+
+function activateDevice(randomCode, time) {
   deviceStatus.value = '已激活';
-  deviceRandomCode.value = Math.random().toString(36).substr(2, 8).toUpperCase();
+  deviceRandomCode.value = randomCode;
+  baseTime.value = new Date(time);
   startCountdown();
 }
 
 function startCountdown() {
-  timeToNextLock.value = lockInterval;
+  updateTimeToNextLock();
   countdownInterval = setInterval(() => {
     if (timeToNextLock.value > 0) {
       timeToNextLock.value--;
@@ -112,37 +142,34 @@ function startCountdown() {
   }, 1000);
 }
 
+function updateTimeToNextLock() {
+  const now = new Date();
+  const lockTime = new Date(baseTime.value.getTime() + lockCount.value * lockInterval * 1000);
+  timeToNextLock.value = Math.max(0, Math.floor((lockTime - now) / 1000));
+}
+
 function lockDevice() {
   isLocked.value = true;
   clearInterval(countdownInterval);
 }
 
 function attemptUnlock() {
-  // if (unlockKey.value === '12345') {
-  //   permanentUnlock();
-  // } else if (validatePassword(unlockKey.value)) {
-  //   lockCount.value++;
-  //   extendLockTime();
-  // } else {
-  //   alert('密钥错误');
-  // }
-  sendToPyQt('check_lock_password', {target:"attemptUnlock", password: unlockKey.value, 
-    lockCount: lockCount.value, deviceRandomCode: deviceRandomCode.value});
+  sendToPyQt('check_lock_password', {
+    target: "attemptUnlock", 
+    password: unlockKey.value, 
+    lockCount: lockCount.value, 
+    deviceRandomCode: deviceRandomCode.value
+  });
   unlockKey.value = '';
 }
 
 function attemptModalUnlock() {
-  // if (modalUnlockKey.value === '12345') {
-  //   permanentUnlock();
-  // } else if (validatePassword(modalUnlockKey.value)) {
-  //   lockCount.value++;
-  //   isLocked.value = false;
-  //   startCountdown();
-  // } else {
-  //   alert('密钥错误');
-  // }
-  sendToPyQt('check_lock_password', {target:"attemptModalUnlock", password: modalUnlockKey.value, 
-    lockCount: lockCount.value, deviceRandomCode: deviceRandomCode.value});
+  sendToPyQt('check_lock_password', {
+    target: "attemptModalUnlock", 
+    password: modalUnlockKey.value, 
+    lockCount: lockCount.value, 
+    deviceRandomCode: deviceRandomCode.value
+  });
   modalUnlockKey.value = '';
 }
 
@@ -153,43 +180,11 @@ function permanentUnlock() {
 }
 
 function extendLockTime() {
-  timeToNextLock.value += lockInterval;
-  if (!countdownInterval) {
-    startCountdown();
+  lockCount.value++;
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
   }
-}
-
-function generateUnlockPassword() {
-  // 秘密密钥，请确保在实际应用中保护好这个密钥
-  const secretKey = 'the_secret_key_of_fute_company';
-
-  // 组合输入
-  const message = `${deviceRandomCode.value}:${lockCount.value}`;
-
-  // 生成 HMAC-SHA256 哈希
-  const hash = CryptoJS.HmacSHA256(message, secretKey).toString(CryptoJS.enc.Hex);
-
-  // 使用 BigInt 解析前16个十六进制字符
-  const hashInt = BigInt('0x' + hash.slice(0, 16));
-
-  // 映射到6位数字
-  const password = (hashInt % 1000000n).toString().padStart(6, '0');
-
-  console.log('Expected password:', password);
-
-  return password;
-}
-
-/**
- * 验证输入密码是否正确
- * @param {string} inputPassword - 用户输入的密码
- * @param {string} deviceRandomCode - 设备随机码
- * @param {number} lockCount - 锁定次数
- * @returns {boolean} 是否正确
- */
-function validatePassword(inputPassword) {
-  const expectedPassword = generateUnlockPassword();
-  return inputPassword === expectedPassword;
+  startCountdown();
 }
 
 onUnmounted(() => {
@@ -210,7 +205,6 @@ onMounted(() => {
           const result = JSON.parse(newMessage.content);
           if (result.target === 'attemptUnlock') {
             if (result.result === 'success') {
-              lockCount.value++;
               extendLockTime();
             }
             else if (result.result === 'forever_success') {
@@ -221,9 +215,8 @@ onMounted(() => {
             }
           } else if (result.target === 'attemptModalUnlock') {
             if (result.result === 'success') {
-              lockCount.value++;
               isLocked.value = false;
-              startCountdown();
+              extendLockTime();
             }
             else if (result.result === 'forever_success') {
               permanentUnlock();
@@ -232,9 +225,31 @@ onMounted(() => {
               alert('密钥错误');
             }
           }
-          
         } catch (error) {
           console.error('Failed to parse confirm lock password :', error);
+        }
+      } else if (newMessage && newMessage.type === 'device_activated') {
+        try {
+          const result = JSON.parse(newMessage.content);
+          activateDevice(result.device_random_code, result.device_base_time);
+        } catch (error) {
+          console.error('Failed to parse device activation result:', error);
+        }
+      } else if (newMessage && newMessage.type === 'device_info') {
+        try {
+          const status = JSON.parse(newMessage.content);
+          deviceStatus.value = status.device_status;
+          deviceRandomCode.value = status.device_random_code;
+          lockCount.value = status.device_lock_count;
+          baseTime.value = new Date(status.device_base_time);
+          
+          if (status.device_status === '已激活') {
+            startCountdown();
+          } else if (status.device_status === '永久激活') {
+            permanentUnlock();
+          }
+        } catch (error) {
+          console.error('Failed to parse device status:', error);
         }
       }
     });

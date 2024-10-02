@@ -45,24 +45,4 @@ h1 {
   font-size: 28px;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  body {
-    padding: 10px;
-  }
-  
-  .settings-container {
-    padding: 15px;
-  }
-}
-
-@media (max-width: 480px) {
-  body {
-    padding: 5px;
-  }
-  
-  .settings-container {
-    padding: 10px;
-  }
-}
 </style>
