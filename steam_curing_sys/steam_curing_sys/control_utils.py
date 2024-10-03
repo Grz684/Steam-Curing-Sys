@@ -1,0 +1,204 @@
+import threading
+import time
+from pymodbus.client import ModbusTcpClient
+from pymodbus.exceptions import ModbusException, ConnectionException
+from pymodbus.pdu import ExceptionResponse
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class ModbusControlException(Exception):
+    pass
+
+class ControlUtils():
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.zone1_heater_on = False
+        self.zone2_heater_on = False
+
+        self.zone1_humidifier_on = False
+        self.zone2_humidifier_on = False
+
+        self.dolly_on = False
+
+        self.zone1_output_addr = 0
+        self.zone2_output_addr = 1
+
+        self.sprinkler_base_addr = 2
+
+        self.dolly_move_addr = 2
+        self.dolly_move_addr_back_up = 3
+        self.pulse_addr = 4
+
+        self.dio_ip = "192.168.0.7"  # 替换为您设备的实际IP地址
+        self.dio_port = 8234  # Modbus TCP默认端口
+
+        self.tank_one_on = False
+        self.tank_two_on = False
+
+        # debug时不连接Modbus服务器
+        self.debug = True
+
+        self.output_num = 6 # 输出数量
+
+        if not self.debug:
+            try:
+                self.dio_client = ModbusTcpClient(self.dio_ip, port=self.dio_port)
+                if not self.dio_client.connect():
+                    raise ModbusControlException(f"无法连接到 Modbus 服务器 {self.dio_ip}:{self.dio_port}")
+                else:
+                    logger.info(f"成功连接到 Modbus 服务器 {self.dio_ip}:{self.dio_port}")
+                    # try:
+                    #     initial_data = self.dio_client.socket.recv(1024)
+                    #     if initial_data:
+                    #         logger.info(f"初始响应: {initial_data.hex()}")
+                    #         logger.info(f"初始响应 (ASCII): {initial_data.decode('ascii', errors='ignore')}")
+                    # except Exception as e:
+                    #     logger.error(f"读取初始响应时出错: {e}")
+            except ConnectionException as e:
+                raise ModbusControlException(f"Modbus 连接错误: {e}")
+            
+    def control_one_tank(self, state):
+        if state:
+            if not self.tank_one_on:
+                self.tank_one_on = True
+                self.control_output(14, True)
+            if not self.tank_two_on:
+                self.tank_two_on = True
+                self.control_output(15, True)
+        else:
+            if self.tank_one_on:
+                self.tank_one_on = False
+                self.control_output(14, False)
+            if self.tank_two_on:
+                self.tank_two_on = False
+                self.control_output(15, False)
+
+    def control_two_tank(self, state):
+        if state:
+            if not self.tank_one_on:
+                self.tank_one_on = True
+                self.control_output(14, True)
+        else:
+            if self.tank_one_on:
+                self.tank_one_on = False
+                self.control_output(14, False)
+
+    def control_output(self, address, value):
+        with self.lock:
+            if not self.debug:
+                if not self.dio_client.is_socket_open():
+                    if not self.dio_client.connect():
+                        raise ModbusControlException("无法连接到 Modbus 服务器")
+                try:
+                    result = self.dio_client.write_coil(address, value, slave=1)
+                    # logger.info("写入操作返回值:")
+                    # logger.info(f"  类型: {type(result)}")
+                    # logger.info(f"  内容: {result}")
+                    # if hasattr(result, 'function_code'):
+                    #     logger.info(f"  功能码: {result.function_code}")
+                    # if hasattr(result, 'address'):
+                    #     logger.info(f"  地址: {result.address}")
+                    # if hasattr(result, 'value'):
+                    #     logger.info(f"  值: {result.value}")
+                    if isinstance(result, ExceptionResponse):
+                        logger.info(f"Modbus异常: {result}")
+                    else:
+                        logger.info(f"成功{'打开' if value else '关闭'}输出 {address}")
+                except ModbusException as e:
+                    raise ModbusControlException(f"Modbus错误: {e}")
+            else:
+                logger.info(f"模拟{'打开' if value else '关闭'}输出 {address}")
+
+    def read_input(self):
+        with self.lock:
+            if not self.debug:
+                if not self.dio_client.is_socket_open():
+                    if not self.dio_client.connect():
+                        raise ModbusControlException("无法连接到 Modbus 服务器")
+                try:
+                    result = self.dio_client.read_discrete_inputs(0, 2, slave=0xFE)
+
+                    if result.isError():
+                        logger.error(f"Read failed: {result}")
+                    else:
+                        current_states = result.bits[:2]
+                        return current_states
+                
+                except ModbusException as e:
+                    raise ModbusControlException(f"Modbus错误: {e}")
+        
+
+    def turn_zone1_heater_on(self):
+        if not self.zone1_heater_on:
+            self.zone1_heater_on = True
+            logger.info('Turning zone1 heater ON')
+
+    def turn_zone1_heater_off(self):
+        if self.zone1_heater_on:
+            self.zone1_heater_on = False
+            logger.info('Turning zone1 heater OFF')
+
+    def turn_zone2_heater_on(self):
+        if not self.zone2_heater_on:
+            self.zone2_heater_on = True
+            logger.info('Turning zone2 heater ON')
+
+    def turn_zone2_heater_off(self):
+        if self.zone2_heater_on:
+            self.zone2_heater_on = False
+            logger.info('Turning zone2 heater OFF')
+
+    def turn_zone1_humidifier_on(self):
+        if not self.zone1_humidifier_on:
+            self.zone1_humidifier_on = True
+            logger.info('Turning zone1 humidifier ON')
+            self.control_output(self.zone1_output_addr, True)
+
+    def turn_zone1_humidifier_off(self):
+        if self.zone1_humidifier_on:
+            self.zone1_humidifier_on = False
+            logger.info('Turning zone1 humidifier OFF')
+            self.control_output(self.zone1_output_addr, False)
+
+    def turn_zone2_humidifier_on(self):
+        if not self.zone2_humidifier_on:
+            self.zone2_humidifier_on = True
+            logger.info('Turning zone2 humidifier ON')
+            self.control_output(self.zone2_output_addr, True)
+
+    def turn_zone2_humidifier_off(self):
+        if self.zone2_humidifier_on:
+            self.zone2_humidifier_on = False
+            logger.info('Turning zone2 humidifier OFF')
+            self.control_output(self.zone2_output_addr, False)
+                
+    def turn_dolly_on(self):
+        if not self.dolly_on:
+            logger.info('Turning dolly ON')
+            self.dolly_on = True
+            self.control_output(self.dolly_move_addr, True)
+            self.control_output(self.dolly_move_addr_back_up, True)
+            self.control_output(self.zone2_output_addr, True)
+            self.control_output(self.zone1_output_addr, True)
+            self.control_output(self.pulse_addr, True)
+            # 使用线程来处理延迟关闭pulse
+            threading.Thread(target=self._delayed_pulse_off, daemon=True).start()
+
+    def _delayed_pulse_off(self):
+        time.sleep(0.5)
+        self.control_output(self.pulse_addr, False)
+
+    def turn_dolly_off(self):
+        if self.dolly_on:
+            logger.info('Turning dolly OFF')
+            self.dolly_on = False
+            self.control_output(self.dolly_move_addr, False)
+            self.control_output(self.dolly_move_addr_back_up, False)
+            self.control_output(self.zone2_output_addr, False)
+            self.control_output(self.zone1_output_addr, False)
+
+    def turn_all_off(self):
+        for i in range(self.output_num):
+            self.control_output(i, False)
