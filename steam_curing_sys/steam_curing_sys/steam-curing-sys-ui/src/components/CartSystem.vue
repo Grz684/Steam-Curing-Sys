@@ -165,11 +165,50 @@ onMounted(() => {
           console.error('Failed to parse water tank status data:', error);
         }
       }
+      else if (newMessage && newMessage.type === 'CartSystem_init') {
+        console.log('Received CartSystem_init message');
+        sendInitialState();
+      }
+      else if (newMessage && newMessage.type === 'CartSystem_set') {
+        console.log('Received CartSystem_set message:', newMessage.content);
+        const set_pak = JSON.parse(newMessage.content);
+        if (set_pak.method === 'setMode') {
+          setMode(set_pak.args.newMode);
+        }
+        else if (set_pak.method === 'startSystem') {
+          startSystem();
+        }
+        else if (set_pak.method === 'stopSystem') {
+          stopSystem();
+        }
+      }
     });
   } else {
     console.log('在普通网页环境中运行');
   }
 });
+
+// 新增函数：收集并发送初始状态
+const sendInitialState = () => {
+  const initialState = {
+    mode: mode.value,
+    currentRunTime: currentRunTime.value,
+    currentIntervalTime: currentIntervalTime.value,
+    tempRunTime: tempRunTime.value,
+    tempIntervalTime: tempIntervalTime.value,
+    nextRunTime: nextRunTime.value,
+    nextIntervalTime: nextIntervalTime.value,
+    isRunning: isRunning.value,
+    progress: progress.value,
+    statusMessage: statusMessage.value,
+    autoModeStatus: autoModeStatus.value,
+    low_water: low_water.value,
+    leftTankLowWater: leftTankLowWater.value,
+    rightTankLowWater: rightTankLowWater.value
+  };
+
+  sendToPyQt('CartSystem_init_response', initialState);
+};
 
 const setMode = (newMode) => {
   mode.value = newMode;
@@ -238,6 +277,19 @@ function stopDolly() {
     }
 }
 
+function tempStopDolly() {
+  if (environment.isPyQtWebEngine) {
+      console.log('在PyQt QWebEngine环境中执行更新设置');
+      const settings = {
+        target: 'setState',
+        dolly_state: false,
+      };
+      sendToPyQt('tempControlDolly', settings);
+    } else {
+      console.log('在普通网页环境中执行更新设置');
+    }
+}
+
 function startDolly() {
   if (environment.isPyQtWebEngine) {
       console.log('在PyQt QWebEngine环境中执行更新设置');
@@ -269,7 +321,7 @@ const runCart = () => {
       animationFrame = requestAnimationFrame(updateProgress);
     } else if (isRunning.value) {
       progress.value = 100;
-      stopDolly();
+      tempStopDolly();
       startInterval();
     }
   };

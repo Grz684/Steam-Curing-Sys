@@ -15,6 +15,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QLabel, QPushButton, QDesktopWidget, QDialog
 )
+from .mqtt_client import MQTTClient
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -34,6 +35,8 @@ class Bridge(QObject):
         logger.info("Bridge object initialized")
         self.is_vue_ready = False
         self.queue = []
+        self.mqtt_client = MQTTClient(self)
+        self.mqtt_client.start()
 
     @pyqtSlot()
     def vueReady(self):
@@ -68,6 +71,8 @@ class Bridge(QObject):
                 self.setSteamEngineState(args)
             elif method_name == "controlDolly":
                 self.controlDolly(args)
+            elif method_name == "tempControlDolly":
+                self.tempControlDolly(args)
             elif method_name == "controlSprinkler":
                 self.controlSprinkler(args)
             elif method_name == "exportData":
@@ -76,12 +81,18 @@ class Bridge(QObject):
                 self.check_lock_password(args)
             elif method_name == "activate_device":
                 self.activate_device()
+            elif method_name == "CartSystem_init_response":
+                self.cartSystem_init_response(args)
             else:
                 logger.info(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
             logger.info(f"Failed to parse JSON: {args_json}")
         except Exception as e:
             logger.info(f"Error processing method {method_name}: {str(e)}")
+
+    def cartSystem_init_response(self, response):
+        logger.info(f"CartSystem init response: {response}")
+        self.mqtt_client.publish(json.dumps({"command": "CartSystem_init_response", "data": response}))
 
     def activate_device(self):
         logger.info("Activate device")
@@ -97,6 +108,13 @@ class Bridge(QObject):
     def controlDolly(self, args):
         logger.info(f"Control dolly: {args}")
         self.dollyControl.emit(args)
+        # 同步远程dolly控制指令
+        self.mqtt_client.publish(json.dumps({"command": "control_dolly", "data": args}))
+
+    def tempControlDolly(self, args):
+        logger.info(f"Temp control dolly: {args}")
+        self.dollyControl.emit(args)
+        # 这里不发指令，区分于controlDolly
 
     def controlSprinkler(self, args):
         logger.info(f"Control sprinkler: {args}")
@@ -109,6 +127,8 @@ class Bridge(QObject):
         humidity_upper = settings.get('humidity_upper', 0.0)
         humidity_lower = settings.get('humidity_lower', 0.0)
         self.limitSettingsUpdated.emit(temp_upper, temp_lower, humidity_upper, humidity_lower)  # 发射信号
+        # 同步远程温湿度设置
+        self.mqtt_client.publish(json.dumps({"command": "set_limit_settings", "data": settings}))
 
     def sendMessage(self, message):
         logger.info(f"Received message: {message}")
@@ -295,6 +315,8 @@ class MainWindow(QMainWindow):
         # 发送消息
         msg_type = "update_sensor_data"
         self.bridge.send_message(msg_type, json.dumps(content)) 
+        # 更新远程传感器数据
+        self.bridge.mqtt_client.publish(json.dumps({"command": msg_type, "data": content}))
 
     def update_water_tank_status(self, status):
         msg_type = "update_water_tank_status"
