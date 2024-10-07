@@ -178,6 +178,13 @@ class QtSignalHandler(QObject):
 
     def sprinkler_manual_control(self, index, state):
         # { sprinkler: n, state: 1 }
+        if state == 0:
+            # 使用 QTimer 来延迟执行
+            QTimer.singleShot(1000, lambda: self._delayed_control(index, state))
+        else:
+            self.control_utils.control_output(self.control_utils.sprinkler_base_addr + index -1, state)
+
+    def _delayed_control(self, index, state):
         self.control_utils.control_output(self.control_utils.sprinkler_base_addr + index -1, state)
 
     def manual_steam_engine_state(self, state):
