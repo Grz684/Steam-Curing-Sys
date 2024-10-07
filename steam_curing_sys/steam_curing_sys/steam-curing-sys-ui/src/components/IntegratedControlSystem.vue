@@ -3,10 +3,10 @@
     <h2>集成控制系统</h2>
     
     <div class="mode-controls">
-      <button @click="setMode('auto')" :class="{ active: isAutoMode }" class="mode-btn">自动模式</button>
-      <button @click="setMode('manual')" :class="{ active: !isAutoMode }" class="mode-btn">手动模式</button>
-      <button @click="startSystem" :disabled="isRunning || !isAutoMode" class="control-btn">开始</button>
-      <button @click="stopSystem" :disabled="!isRunning || !isAutoMode" class="control-btn">停止</button>
+      <button @click="setMode('auto')" :disabled="isSwitching" :class="{ active: isAutoMode }" class="mode-btn">自动模式</button>
+      <button @click="setMode('manual')" :disabled="isSwitching" :class="{ active: !isAutoMode }" class="mode-btn">手动模式</button>
+      <button @click="startSystem" :disabled="isRunning || !isAutoMode || isSwitching" class="control-btn">开始</button>
+      <button @click="stopSystem" :disabled="!isRunning || !isAutoMode || isSwitching" class="control-btn">停止</button>
     </div>
 
     <div class="systems-container">
@@ -20,7 +20,7 @@
                 <div class="status-indicator"></div>
                 {{ leftEngineOn ? '开' : '关' }}
               </div>
-              <button @click="click_toggleEngine" :disabled="isAutoMode" class="control-btn">
+              <button @click="click_toggleEngine" :disabled="isAutoMode || isSwitching" class="control-btn">
                 {{ leftEngineOn ? '关闭' : '开启' }}
               </button>
             </div>
@@ -30,7 +30,7 @@
                 <div class="status-indicator"></div>
                 {{ rightEngineOn ? '开' : '关' }}
               </div>
-              <button @click="click_toggleEngine" :disabled="isAutoMode" class="control-btn">
+              <button @click="click_toggleEngine" :disabled="isAutoMode || isSwitching" class="control-btn">
                 {{ rightEngineOn ? '关闭' : '开启' }}
               </button>
             </div>
@@ -72,7 +72,7 @@
         <div class="visualization">
           <div v-for="n in 12" :key="n" class="sprinkler" 
                :class="{ active: isAutoMode ? activeSprinkler === n : waterLevels[n-1] > 0 }"
-               @click="!isAutoMode && !leftEngineOn && toggleManualSprinkler(n)">
+               @click="!isSwitching && !isAutoMode && !leftEngineOn && toggleManualSprinkler(n)">
             <div class="water" :style="{ height: waterHeight(n) + '%' }"></div>
             <span>{{ n }}</span>
           </div>
@@ -376,6 +376,11 @@ async function runCycle() {
   runSprinkler();
 }
 
+async function runCycleWithoutWait() {
+  activeSprinkler.value = 1;
+  runSprinkler();
+}
+
 function updateRemainingTime() {
   if (!isRunning.value || !isAutoMode.value) return;
   remainingTime.value--;
@@ -408,10 +413,7 @@ function runSprinkler() {
       runInterval();
     } else {
       sendToPyQt('controlSprinkler', { target: "manual", index: activeSprinkler.value, state: 0 });
-      // 喷淋系统关闭
-      sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
-      await switchSystem(0);
-      sendToPyQt('controlSprinkler', { target: 'setState', state: true });
+      
       runLoopInterval();
     }
   }, currentSingleRunTime.value * 1000);
@@ -420,9 +422,13 @@ function runSprinkler() {
 function runInterval() {
   if (!isRunning.value || !isAutoMode.value) return;
 
-  currentPhase.value = 'interval';
   currentRunIntervalTime.value = nextRunIntervalTime.value;
   remainingTime.value = currentRunIntervalTime.value;
+
+  if(remainingTime.value > 0) {
+    currentPhase.value = 'interval';
+  }
+  
   updateRemainingTime();
 
   timer = setTimeout(() => {
@@ -434,24 +440,37 @@ function runInterval() {
 async function runLoopInterval() {
   if (!isRunning.value || !isAutoMode.value) return;
 
-  currentPhase.value = 'loop';
   currentLoopInterval.value = nextLoopInterval.value;
   remainingTime.value = currentLoopInterval.value;
-  updateRemainingTime();
 
-  activeSprinkler.value = 0;
-  timer = setTimeout(async () => {
-    waterLevels.value = Array(12).fill(0);
-
-    sendToPyQt('controlSprinkler', { target: 'setState', state: false });
-    if (leftEngineOn.value) {
-      await toggleEngine();
-    }
-
-    // 喷雾系统关闭
+  if(remainingTime.value > 0) {
     sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
-    await runCycle();
-  }, currentLoopInterval.value * 1000);
+    await switchSystem(0);
+    sendToPyQt('controlSprinkler', { target: 'setState', state: true });
+
+    currentPhase.value = 'loop';
+  
+    updateRemainingTime();
+
+    activeSprinkler.value = 0;
+    timer = setTimeout(async () => {
+      waterLevels.value = Array(12).fill(0);
+
+      sendToPyQt('controlSprinkler', { target: 'setState', state: false });
+      if (leftEngineOn.value) {
+        await toggleEngine();
+      }
+
+      // 喷雾系统关闭
+      sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
+      await runCycle();
+    }, currentLoopInterval.value * 1000);
+  }
+  else {
+    activeSprinkler.value = 0;
+    waterLevels.value = Array(12).fill(0);
+    await runCycleWithoutWait();
+  }
 }
 
 function waterHeight(n) {
@@ -470,9 +489,9 @@ async function toggleManualSprinkler(n) {
     waterLevels.value[n - 1] = 0;
     if (environment.isPyQtWebEngine) {
       // 喷淋系统关闭
+      sendToPyQt('controlSprinkler', { target: "manual", index: n, state: 0 });
       sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
       await switchSystem(0);
-      sendToPyQt('controlSprinkler', { target: "manual", index: n, state: 0 });
     }
   } else {
     // 如果未激活，关闭当前激活的喷头（如果有），然后激活新的喷头

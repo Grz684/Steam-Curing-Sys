@@ -169,6 +169,8 @@ class MainWindow(QMainWindow):
         # 设置为全屏
         self.showFullScreen()
         # self.setGeometry(100, 100, 1280, 720)
+        # 禁止调整窗口大小
+        # self.setFixedSize(self.size())
 
         layout = QVBoxLayout()
         container = QWidget()
