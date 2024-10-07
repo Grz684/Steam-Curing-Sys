@@ -7,7 +7,6 @@ steam_curing_sys/__init__.py
 steam_curing_sys/config_manager.py
 steam_curing_sys/control_utils.py
 steam_curing_sys/export_file.py
-steam_curing_sys/mqtt_client.py
 steam_curing_sys/password_gen.py
 steam_curing_sys/qtsignal_handler.py
 steam_curing_sys/ros2_handler_node.py

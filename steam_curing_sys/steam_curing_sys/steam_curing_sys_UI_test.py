@@ -15,7 +15,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QLabel, QPushButton, QDesktopWidget, QDialog
 )
-from .mqtt_client import MQTTClient
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

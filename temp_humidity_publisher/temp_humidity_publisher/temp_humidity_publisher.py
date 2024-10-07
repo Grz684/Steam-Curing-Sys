@@ -20,8 +20,8 @@ class TempHumidityPublisher(Node):
           
         self.srv = self.create_service(Trigger, 'get_sensor_data', self.get_sensor_data_callback)
 
-        self.ip_address = '192.168.166.8'  # 请替换为您的实际IP地址
-        self.base_port = 1024  # COM1 对应的起始端口号
+        self.ip_address = '192.168.3.7'  # 请替换为您的实际IP地址
+        self.base_port = 8001  # COM1 对应的起始端口号
 
         self.sensor_num = 15
         
