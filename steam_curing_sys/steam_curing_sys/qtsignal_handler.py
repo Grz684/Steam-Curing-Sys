@@ -239,13 +239,13 @@ class QtSignalHandler(QObject):
         elif control["target"] == "manual":
             self.sprinkler_manual_control(control["index"], control["state"])
 
-        elif control["target"] == "twoTank":
-            logger.info(f"Control twoTank: {control['state']}")
-            self.control_utils.control_two_tank(control["state"])
+        elif control["target"] == "tankWork":
+            logger.info(f"tankWork: {control['state']}")
+            self.control_utils.control_tank(control["state"])
 
-        elif control["target"] == "oneTank":
-            logger.info(f"Control oneTank: {control['state']}")
-            self.control_utils.control_one_tank(control["state"])
+        elif control["target"] == "switchToSprinkler":
+            logger.info(f"switchToSprinkler: {control['state']}")
+            self.control_utils.control_switch(control["state"])
 
     def get_sprinkler_system_state(self):
         with self.sprinkler_system_lock:

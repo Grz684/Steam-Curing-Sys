@@ -35,8 +35,8 @@ class Bridge(QObject):
         logger.info("Bridge object initialized")
         self.is_vue_ready = False
         self.queue = []
-        self.mqtt_client = MQTTClient(self)
-        self.mqtt_client.start()
+        # self.mqtt_client = MQTTClient(self)
+        # self.mqtt_client.start()
 
     @pyqtSlot()
     def vueReady(self):
@@ -92,7 +92,7 @@ class Bridge(QObject):
 
     def cartSystem_init_response(self, response):
         logger.info(f"CartSystem init response: {response}")
-        self.mqtt_client.publish(json.dumps({"command": "CartSystem_init_response", "data": response}))
+        # self.mqtt_client.publish(json.dumps({"command": "CartSystem_init_response", "data": response}))
 
     def activate_device(self):
         logger.info("Activate device")
@@ -109,7 +109,7 @@ class Bridge(QObject):
         logger.info(f"Control dolly: {args}")
         self.dollyControl.emit(args)
         # 同步远程dolly控制指令
-        self.mqtt_client.publish(json.dumps({"command": "control_dolly", "data": args}))
+        # self.mqtt_client.publish(json.dumps({"command": "control_dolly", "data": args}))
 
     def tempControlDolly(self, args):
         logger.info(f"Temp control dolly: {args}")
@@ -128,7 +128,7 @@ class Bridge(QObject):
         humidity_lower = settings.get('humidity_lower', 0.0)
         self.limitSettingsUpdated.emit(temp_upper, temp_lower, humidity_upper, humidity_lower)  # 发射信号
         # 同步远程温湿度设置
-        self.mqtt_client.publish(json.dumps({"command": "set_limit_settings", "data": settings}))
+        # self.mqtt_client.publish(json.dumps({"command": "set_limit_settings", "data": settings}))
 
     def sendMessage(self, message):
         logger.info(f"Received message: {message}")
@@ -316,7 +316,7 @@ class MainWindow(QMainWindow):
         msg_type = "update_sensor_data"
         self.bridge.send_message(msg_type, json.dumps(content)) 
         # 更新远程传感器数据
-        self.bridge.mqtt_client.publish(json.dumps({"command": msg_type, "data": content}))
+        # self.bridge.mqtt_client.publish(json.dumps({"command": msg_type, "data": content}))
 
     def update_water_tank_status(self, status):
         msg_type = "update_water_tank_status"
