@@ -284,7 +284,7 @@ const st = (Oe, oe) => {
 }, dn = /* @__PURE__ */ st(fn, [["__scopeId", "data-v-4414d3ef"]]), pn = { class: "integrated-control-system" }, vn = { class: "mode-controls" }, hn = ["disabled"], gn = ["disabled"], mn = ["disabled"], yn = ["disabled"], bn = { class: "systems-container" }, wn = { class: "steam-engine-control" }, xn = { class: "control-panel" }, kn = { class: "engine-status" }, Sn = { class: "engine left" }, On = ["disabled"], jn = { class: "engine right" }, En = ["disabled"], _n = { class: "sprinkler-system" }, Cn = { class: "controls" }, Tn = { class: "input-group" }, An = ["value"], Ln = { class: "input-group" }, Bn = ["value"], Pn = { class: "input-group" }, Nn = ["value"], Mn = { class: "visualization" }, Rn = ["onClick"], In = { class: "status" }, Un = {
   __name: "IntegratedControlSystem",
   setup(Oe) {
-    const oe = me(!1), fe = me(!1), a = me(5), f = me(2), e = me(10), n = me(a.value), r = me(f.value), o = me(e.value), t = me(a.value), u = me(f.value), c = me(e.value), i = me(0), s = me(""), l = me(Array(12).fill(0)), d = me(0), g = me(!0), v = me(!1), p = me(!1), h = me(null), y = me(""), m = me(!1), E = me(5), _ = me(""), { sendToPyQt: b } = ot(), k = gt({
+    const oe = me(!1), fe = me(!1), a = me(5), f = me(2), e = me(10), n = me(a.value), r = me(f.value), o = me(e.value), t = me(a.value), u = me(f.value), c = me(e.value), i = me(0), s = me(""), l = me(Array(12).fill(0)), d = me(0), g = me(!0), v = me(!1), p = me(!1), h = me(null), y = me(""), m = me(!1), E = me(15), _ = me(""), { sendToPyQt: b } = ot(), k = gt({
       isPyQtWebEngine: !1
     });
     ct(() => {
@@ -310,7 +310,7 @@ const st = (Oe, oe) => {
     const w = Et(() => m.value ? `${_.value}，还需${E.value}秒` : g.value ? v.value ? s.value === "run" ? `喷头 ${i.value} 正在运行，剩余 ${d.value + 1} 秒` : s.value === "interval" ? `运行间隔中，剩余 ${d.value + 1} 秒` : s.value === "loop" ? `循环间隔中，剩余 ${d.value + 1} 秒` : "" : "系统未运行" : "手动模式");
     let O, j;
     async function T(ve) {
-      m.value = !0, E.value = 5, _.value = ve ? "正在切换到喷淋管" : "正在切换到喷雾机", b("controlSprinkler", { target: "switchToSprinkler", state: ve });
+      m.value = !0, E.value = 15, _.value = ve ? "正在切换到喷淋管" : "正在切换到喷雾机", b("controlSprinkler", { target: "switchToSprinkler", state: ve });
       const Q = setInterval(() => {
         E.value--, E.value <= 0 && (clearInterval(Q), m.value = !1);
       }, 1e3);
@@ -527,7 +527,7 @@ const st = (Oe, oe) => {
       }, null, 8, ["modelValue", "showKeyboard"])
     ]));
   }
-}, $n = /* @__PURE__ */ st(Un, [["__scopeId", "data-v-93a1065e"]]), Dn = { class: "data-actions" }, Fn = {
+}, $n = /* @__PURE__ */ st(Un, [["__scopeId", "data-v-bb337f88"]]), Dn = { class: "data-actions" }, Fn = {
   key: 0,
   class: "modal-overlay"
 }, Vn = {

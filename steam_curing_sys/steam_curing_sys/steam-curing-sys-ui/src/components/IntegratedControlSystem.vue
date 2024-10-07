@@ -127,7 +127,7 @@ const currentValue = ref('');
 
 // Switching state
 const isSwitching = ref(false);
-const switchingTime = ref(5);
+const switchingTime = ref(15);
 const switchingMessage = ref('');
 
 const { sendToPyQt } = useWebChannel();
@@ -186,7 +186,7 @@ let waterTimer;
 
 async function switchSystem(state) {
   isSwitching.value = true;
-  switchingTime.value = 5; // 重置等待时间
+  switchingTime.value = 15; // 重置等待时间
   switchingMessage.value = state ? "正在切换到喷淋管" : "正在切换到喷雾机";
   
   sendToPyQt('controlSprinkler', { target: "switchToSprinkler", state: state });
