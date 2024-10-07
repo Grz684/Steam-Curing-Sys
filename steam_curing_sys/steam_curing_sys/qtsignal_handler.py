@@ -69,7 +69,7 @@ class QtSignalHandler(QObject):
         
         self.ros2_thread = ROS2Thread(self)
 
-        self.sensor_num = 4
+        self.sensor_num = 15
 
     def activate_device(self):
         # 将当前时间保存进数据库

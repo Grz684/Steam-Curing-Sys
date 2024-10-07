@@ -25,7 +25,7 @@ class TempHumidityPublisher(Node):
         #     ModbusTcpClient(self.ip_address, port=self.base_port + i, timeout=0.1)
         #     for i in range(16)
         # ]
-        self.sensor_num = 4
+        self.sensor_num = 15
 
         self.get_logger().info('Temperature and Humidity Publisher node has been started')
 

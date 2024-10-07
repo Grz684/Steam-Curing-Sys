@@ -6,10 +6,10 @@
     <SensorSettings />
     <!-- <SteamEngineControl />
     <SprinklerSystem /> -->
-    <!-- <IntegratedControlSystem /> -->
-    <CartSystem />
-    <WiFi />
-    <Lock />
+    <IntegratedControlSystem />
+    <!-- <CartSystem /> -->
+    <!-- <WiFi />
+    <Lock /> -->
   </div>
 </template>
 

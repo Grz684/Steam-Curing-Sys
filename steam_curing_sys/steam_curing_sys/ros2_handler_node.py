@@ -116,14 +116,14 @@ class SensorSubscriberNode(Node):
         if humidity_data:
             if any(humidity < self.qtSignalHandler.humidity_lower_limit for humidity in humidity_data.values()):
                 # 开启两水泵
-                self.control_utils.control_two_tank(True)
+                self.control_utils.control_tank(True)
                 self.control_utils.turn_zone1_humidifier_on()
                 self.qtSignalHandler.left_steam_status_updated.emit(True)
                 self.control_utils.turn_zone2_humidifier_on()
                 self.qtSignalHandler.right_steam_status_updated.emit(True)
             elif all(humidity > self.qtSignalHandler.humidity_upper_limit for humidity in humidity_data.values()):
                 # 关闭两水泵
-                self.control_utils.control_two_tank(False)
+                self.control_utils.control_tank(False)
                 self.control_utils.turn_zone1_humidifier_off()
                 self.qtSignalHandler.left_steam_status_updated.emit(False)
                 self.control_utils.turn_zone2_humidifier_off()
@@ -214,18 +214,18 @@ class SensorSubscriberNode(Node):
             self.conn.commit()
 
     def create_table(self, cursor):
-        if self.sensor_num == 16:
+        if self.sensor_num == 15:
             cursor.execute('''
             CREATE TABLE IF NOT EXISTS sensor_data (
                 timestamp TEXT PRIMARY KEY,
                 temp_1 REAL, temp_2 REAL, temp_3 REAL, temp_4 REAL,
                 temp_5 REAL, temp_6 REAL, temp_7 REAL, temp_8 REAL,
                 temp_9 REAL, temp_10 REAL, temp_11 REAL, temp_12 REAL,
-                temp_13 REAL, temp_14 REAL, temp_15 REAL, temp_16 REAL,
+                temp_13 REAL, temp_14 REAL, temp_15 REAL,
                 hum_1 REAL, hum_2 REAL, hum_3 REAL, hum_4 REAL,
                 hum_5 REAL, hum_6 REAL, hum_7 REAL, hum_8 REAL,
                 hum_9 REAL, hum_10 REAL, hum_11 REAL, hum_12 REAL,
-                hum_13 REAL, hum_14 REAL, hum_15 REAL, hum_16 REAL
+                hum_13 REAL, hum_14 REAL, hum_15 REAL
             )
             ''')
         else:

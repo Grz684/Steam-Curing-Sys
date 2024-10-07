@@ -40,7 +40,7 @@ class ControlUtils():
         # debug时不连接Modbus服务器
         self.debug = True
 
-        self.output_num = 6 # 输出数量
+        self.output_num = 16 # 输出数量
 
         if not self.debug:
             try:
