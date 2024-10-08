@@ -36,7 +36,7 @@ class SensorSubscriberNode(Node):
         self.previous_states = [False, False]
 
         # Create timer, calling every 0.5 seconds
-        self.read_input_timer = self.create_timer(0.5, self.read_input_timer_callback)
+        # self.read_input_timer = self.create_timer(0.5, self.read_input_timer_callback)
 
     def process_water_protection_status(self, status):
         if status == "Left side: Water shortage":
