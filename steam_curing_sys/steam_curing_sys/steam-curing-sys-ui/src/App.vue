@@ -29,6 +29,13 @@ import Lock from './components/Lock.vue';
 </script>
 
 <style>
+html, body {
+  touch-action: pan-x pan-y;
+  -ms-touch-action: pan-x pan-y;
+  user-zoom: fixed;
+  -ms-user-zoom: fixed;
+}
+
 .app-container {
   background-color: white;
   border-radius: 8px;

@@ -2,7 +2,7 @@ import sys
 import os
 import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
 from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtCore import QObject, pyqtSlot, QUrl, pyqtSignal
 from PyQt5.QtGui import QKeySequence
@@ -188,14 +188,14 @@ class MainWindow(QMainWindow):
         self.channel.registerObject("bridge", self.bridge)
         self.web_view.page().setWebChannel(self.channel)
 
-        # 使用 setDevToolsPage 来启用开发者工具
-        self.dev_view = QWebEngineView()
-        self.web_view.page().setDevToolsPage(self.dev_view.page())
-        self.web_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # # 使用 setDevToolsPage 来启用开发者工具
+        # self.dev_view = QWebEngineView()
+        # self.web_view.page().setDevToolsPage(self.dev_view.page())
+        # self.web_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        # 添加快捷键来切换开发者工具
-        self.shortcut = QShortcut(QKeySequence("F12"), self)
-        self.shortcut.activated.connect(self.toggle_dev_tools)
+        # # 添加快捷键来切换开发者工具
+        # self.shortcut = QShortcut(QKeySequence("F12"), self)
+        # self.shortcut.activated.connect(self.toggle_dev_tools)
 
         # Load HTML file
         current_dir = os.path.dirname(os.path.abspath(__file__))
