@@ -49,6 +49,9 @@ class TempHumidityPublisher(Node):
                 
                 temperature = temp_raw / 10.0
                 humidity = humi_raw / 10.0
+
+                # 传感器温度统一加3.0度
+                temperature = temperature + 3.0
                 
                 return temperature, humidity
             else:
