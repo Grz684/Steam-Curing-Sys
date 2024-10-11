@@ -70,6 +70,10 @@ class MQTTClient:
         elif payload.get("command") == "vue_component_set":
             msg_type = payload.get("target")
             self.bridge.send_message(msg_type, json.dumps(payload))
+        elif payload.get("command") == "get_sensor_data":
+            msg_type = "get_sensor_data"
+            self.bridge.send_message(msg_type, "")
+
             
     def on_disconnect(self, client, userdata, rc, properties=None):
         self.connected = False

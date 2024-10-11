@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Vue Component Dev</title>
-    <script type="module" src="/src/main.js"></script>
-    <script src="public/qwebchannel.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vue Component in PyQt</title>
+    <link rel="stylesheet" href="my-vue-component.css">
+    <script src="vue.global.prod.js"></script>
+    <script src="qwebchannel.js"></script>
+    <script src="my-vue-component.umd.js"></script>
 </head>
 <body>
     <div id="app"></div>
-    <!-- <script type="module">
-        import { createApp } from 'vue'
-        import App from '/src/main.js'
-
-        const app = createApp(App)
-        app.mount('#app')
-    </script> -->
+    <script>
+        const { createApp } = Vue;
+        const app = createApp(MyVueComponent);
+        app.mount('#app');
+    </script>
 </body>
 </html>

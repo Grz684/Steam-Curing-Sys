@@ -1,52 +1,52 @@
 import Lt, { ref as se, onMounted as ut, provide as mt, readonly as gt, inject as yt, watch as st, openBlock as Ae, createElementBlock as Le, createElementVNode as B, toDisplayString as De, Fragment as at, renderList as ct, normalizeClass as it, createCommentVNode as ft, reactive as vt, createVNode as He, onUnmounted as St, normalizeStyle as wt, defineComponent as Pt, withDirectives as dt, vModelText as pt, unref as Nt, computed as bt, createTextVNode as Bt } from "vue";
 const _t = Symbol(), jt = Symbol(), Et = Symbol();
-function Mt(ge, ne) {
-  ge && ge.messageSignal ? ge.messageSignal.connect((Z) => {
+function Mt(ge, Z) {
+  ge && ge.messageSignal ? ge.messageSignal.connect((ne) => {
     try {
-      const i = JSON.parse(Z);
-      ne.value = i, console.log("Received message from PyQt:", i);
+      const i = JSON.parse(ne);
+      Z.value = i, console.log("Received message from PyQt:", i);
     } catch (i) {
-      console.error("Failed to parse message:", i), ne.value = { type: "unknown", content: Z };
+      console.error("Failed to parse message:", i), Z.value = { type: "unknown", content: ne };
     }
   }) : console.error("messageSignal not found on bridge");
 }
 function Rt() {
-  const ge = se(null), ne = se(null), Z = se("");
+  const ge = se(null), Z = se(null), ne = se("");
   function i() {
     window.QWebChannel ? new QWebChannel(window.qt.webChannelTransport, (f) => {
-      ge.value = f, ne.value = f.objects.bridge, console.log("QWebChannel initialized", f, f.objects.bridge), Mt(ne.value, Z), ne.value && typeof ne.value.vueReady == "function" ? ne.value.vueReady() : console.error("vueReady method not found on bridge");
+      ge.value = f, Z.value = f.objects.bridge, console.log("QWebChannel initialized", f, f.objects.bridge), Mt(Z.value, ne), Z.value && typeof Z.value.vueReady == "function" ? Z.value.vueReady() : console.error("vueReady method not found on bridge");
     }) : console.error("QWebChannel not found");
   }
   ut(() => {
     document.readyState === "complete" || document.readyState === "interactive" ? i() : document.addEventListener("DOMContentLoaded", i);
-  }), mt(_t, gt(ge)), mt(jt, gt(ne)), mt(Et, gt(Z));
+  }), mt(_t, gt(ge)), mt(jt, gt(Z)), mt(Et, gt(ne));
 }
 function rt() {
-  const ge = yt(_t), ne = yt(jt), Z = yt(Et);
-  return (!ge || !ne || !Z) && console.error("WebChannel not properly provided. Make sure to call provideWebChannel in a parent component."), {
+  const ge = yt(_t), Z = yt(jt), ne = yt(Et);
+  return (!ge || !Z || !ne) && console.error("WebChannel not properly provided. Make sure to call provideWebChannel in a parent component."), {
     channel: ge,
-    bridge: ne,
-    message: Z,
+    bridge: Z,
+    message: ne,
     sendToPyQt: (f, e) => {
-      if (console.log(`Attempting to call ${f} with args:`, e), ne && ne.value)
-        if (typeof ne.value.sendToPyQt == "function")
+      if (console.log(`Attempting to call ${f} with args:`, e), Z && Z.value)
+        if (typeof Z.value.sendToPyQt == "function")
           try {
-            ne.value.sendToPyQt(f, JSON.stringify(e));
+            Z.value.sendToPyQt(f, JSON.stringify(e));
           } catch (n) {
             console.error("Error calling sendToPyQt:", n);
           }
         else
-          console.error("Method sendToPyQt not available on bridge"), console.log("Available methods:", Object.keys(ne.value));
+          console.error("Method sendToPyQt not available on bridge"), console.log("Available methods:", Object.keys(Z.value));
       else
         console.error("Bridge or bridge.value is undefined");
     }
   };
 }
-const ot = (ge, ne) => {
-  const Z = ge.__vccOpts || ge;
-  for (const [i, f] of ne)
-    Z[i] = f;
-  return Z;
+const ot = (ge, Z) => {
+  const ne = ge.__vccOpts || ge;
+  for (const [i, f] of Z)
+    ne[i] = f;
+  return ne;
 }, It = {
   key: 0,
   class: "numeric-keyboard"
@@ -63,15 +63,15 @@ const ot = (ge, ne) => {
     }
   },
   emits: ["update:modelValue", "update:showKeyboard"],
-  setup(ge, { emit: ne }) {
-    const Z = ge, i = ne, f = se([
+  setup(ge, { emit: Z }) {
+    const ne = ge, i = Z, f = se([
       ["7", "8", "9"],
       ["4", "5", "6"],
       ["1", "2", "3"],
       ["清除", "0", "确定"]
     ]), e = se("");
-    st(() => Z.showKeyboard, (r) => {
-      r && (e.value = Z.modelValue.toString());
+    st(() => ne.showKeyboard, (r) => {
+      r && (e.value = ne.modelValue.toString());
     });
     const n = (r) => {
       r === "清除" ? e.value = "" : r === "确定" ? (i("update:modelValue", parseFloat(e.value) || 0), i("update:showKeyboard", !1)) : e.value += r;
@@ -95,11 +95,11 @@ const ot = (ge, ne) => {
 }, xt = /* @__PURE__ */ ot(Ft, [["__scopeId", "data-v-541feda2"]]), Vt = { class: "settings-container" }, qt = { class: "setting-group" }, Wt = { class: "setting-item" }, zt = { class: "setting-controls" }, Kt = ["value"], Qt = { class: "setting-item" }, Ht = { class: "setting-controls" }, Gt = ["value"], Yt = { class: "setting-group" }, Xt = { class: "setting-item" }, Jt = { class: "setting-controls" }, Zt = ["value"], en = { class: "setting-item" }, tn = { class: "setting-controls" }, nn = ["value"], rn = {
   __name: "SensorSettings",
   setup(ge) {
-    const { sendToPyQt: ne } = rt(), Z = vt({
+    const { sendToPyQt: Z } = rt(), ne = vt({
       isPyQtWebEngine: !1
     }), i = se(30), f = se(10), e = se(80), n = se(20), r = se(!1), o = se(null), t = se("");
     ut(() => {
-      if (Z.isPyQtWebEngine = typeof window.qt < "u" && window.qt.webChannelTransport, Z.isPyQtWebEngine) {
+      if (ne.isPyQtWebEngine = typeof window.qt < "u" && window.qt.webChannelTransport, ne.isPyQtWebEngine) {
         console.log("在PyQt QWebEngine环境中运行");
         const { message: b } = rt();
         st(b, (v) => {
@@ -129,7 +129,7 @@ const ot = (ge, ne) => {
           humidity_upper: e.value,
           humidity_lower: n.value
         };
-        console.log("设置已更新:", b), Z.isPyQtWebEngine ? (console.log("在PyQt QWebEngine环境中执行更新设置"), ne("updateLimitSettings", b)) : console.log("在普通网页环境中执行更新设置");
+        console.log("设置已更新:", b), ne.isPyQtWebEngine ? (console.log("在PyQt QWebEngine环境中执行更新设置"), Z("updateLimitSettings", b)) : console.log("在普通网页环境中执行更新设置");
       }
     }, l = (b) => {
       o.value = b, r.value = !0, t.value = b.startsWith("temp") ? b === "tempUpper" ? i.value : f.value : b === "humidityUpper" ? e.value : n.value;
@@ -223,71 +223,72 @@ const ot = (ge, ne) => {
 }, on = /* @__PURE__ */ ot(rn, [["__scopeId", "data-v-22394ea0"]]), an = { class: "sensor-data-group" }, cn = { class: "sensor-section" }, un = { class: "sensor-container" }, sn = { class: "sensor-grid" }, ln = { class: "sensor-title" }, fn = { class: "sensor-value" }, dn = { class: "sensor-section" }, pn = { class: "sensor-container" }, vn = { class: "sensor-grid" }, hn = { class: "sensor-title" }, mn = { class: "sensor-value" }, gn = {
   __name: "SensorDisplay",
   setup(ge) {
-    const ne = se({ temperature: {}, humidity: {} });
+    const Z = se({ temperature: {}, humidity: {} }), { sendToPyQt: ne } = rt();
     ut(() => {
       if (typeof window.qt < "u" && window.qt.webChannelTransport) {
         console.log("在PyQt QWebEngine环境中执行");
-        const { message: i } = rt();
-        st(i, (f) => {
-          if (f && f.type === "update_sensor_data")
+        const { message: f } = rt();
+        st(f, (e) => {
+          if (e && e.type === "update_sensor_data")
             try {
-              ne.value = JSON.parse(f.content);
-            } catch (e) {
-              console.error("Failed to parse sensor data:", e);
+              Z.value = JSON.parse(e.content);
+            } catch (n) {
+              console.error("Failed to parse sensor data:", n);
             }
+          else e && e.type === "get_sensor_data" && ne("update_remote_sensor_data", Z.value);
         });
       } else
-        console.log("在普通网页环境中执行"), Z(), setInterval(Z, 5e3);
+        console.log("在普通网页环境中执行"), i(), setInterval(i, 5e3);
     });
-    const Z = async () => {
+    const i = async () => {
       try {
-        const i = await fetch("http://localhost:8000/api/sensor-data/");
-        if (!i.ok)
-          throw new Error(`HTTP error! status: ${i.status}`);
-        const f = await i.json();
-        ne.value = f;
-      } catch (i) {
-        console.error("Error fetching sensor data:", i);
+        const f = await fetch("http://localhost:8000/api/sensor-data/");
+        if (!f.ok)
+          throw new Error(`HTTP error! status: ${f.status}`);
+        const e = await f.json();
+        Z.value = e;
+      } catch (f) {
+        console.error("Error fetching sensor data:", f);
       }
     };
-    return (i, f) => (Ae(), Le("div", an, [
+    return (f, e) => (Ae(), Le("div", an, [
       B("div", cn, [
-        f[0] || (f[0] = B("h2", null, "温度传感器", -1)),
+        e[0] || (e[0] = B("h2", null, "温度传感器", -1)),
         B("div", un, [
           B("div", sn, [
-            (Ae(!0), Le(at, null, ct(ne.value.temperature, (e, n) => (Ae(), Le("div", {
-              key: n,
+            (Ae(!0), Le(at, null, ct(Z.value.temperature, (n, r) => (Ae(), Le("div", {
+              key: r,
               class: "sensor-card"
             }, [
-              B("div", ln, De(n), 1),
-              B("div", fn, De(e), 1)
+              B("div", ln, De(r), 1),
+              B("div", fn, De(n), 1)
             ]))), 128))
           ])
         ])
       ]),
       B("div", dn, [
-        f[1] || (f[1] = B("h2", null, "湿度传感器", -1)),
+        e[1] || (e[1] = B("h2", null, "湿度传感器", -1)),
         B("div", pn, [
           B("div", vn, [
-            (Ae(!0), Le(at, null, ct(ne.value.humidity, (e, n) => (Ae(), Le("div", {
-              key: n,
+            (Ae(!0), Le(at, null, ct(Z.value.humidity, (n, r) => (Ae(), Le("div", {
+              key: r,
               class: "sensor-card"
             }, [
-              B("div", hn, De(n), 1),
-              B("div", mn, De(e), 1)
+              B("div", hn, De(r), 1),
+              B("div", mn, De(n), 1)
             ]))), 128))
           ])
         ])
       ])
     ]));
   }
-}, yn = /* @__PURE__ */ ot(gn, [["__scopeId", "data-v-c19debcc"]]), bn = { class: "cart-system" }, wn = { class: "water-protection" }, xn = { class: "mode-group" }, kn = ["disabled"], On = ["disabled"], Sn = { class: "mode-content" }, _n = { key: 0 }, jn = { class: "controls" }, En = { class: "input-group" }, Cn = { class: "input-group" }, Tn = { class: "button-group" }, An = ["disabled"], Ln = ["disabled"], Pn = { class: "visualization" }, Nn = { class: "progress-bar" }, Bn = { class: "status" }, Mn = {
+}, yn = /* @__PURE__ */ ot(gn, [["__scopeId", "data-v-c811c689"]]), bn = { class: "cart-system" }, wn = { class: "water-protection" }, xn = { class: "mode-group" }, kn = ["disabled"], On = ["disabled"], Sn = { class: "mode-content" }, _n = { key: 0 }, jn = { class: "controls" }, En = { class: "input-group" }, Cn = { class: "input-group" }, Tn = { class: "button-group" }, An = ["disabled"], Ln = ["disabled"], Pn = { class: "visualization" }, Nn = { class: "progress-bar" }, Bn = { class: "status" }, Mn = {
   key: 1,
   class: "auto-mode-container"
 }, Rn = {
   __name: "CartSystem",
   setup(ge) {
-    const ne = se("semi-auto"), Z = se(6), i = se(12), f = se(Z.value), e = se(i.value), n = se(Z.value), r = se(i.value), o = se(!1), t = se(0), c = se("系统就绪"), u = se("小车尚未工作"), a = se(!1), s = se(!1), l = se(!1);
+    const Z = se("semi-auto"), ne = se(6), i = se(12), f = se(ne.value), e = se(i.value), n = se(ne.value), r = se(i.value), o = se(!1), t = se(0), c = se("系统就绪"), u = se("小车尚未工作"), a = se(!1), s = se(!1), l = se(!1);
     let d = null;
     const b = se(!1), v = se(!1), { sendToPyQt: p } = rt(), h = vt({
       isPyQtWebEngine: !1
@@ -309,7 +310,7 @@ const ot = (ge, ne) => {
           else if (U && U.type === "update_water_tank_status")
             try {
               const F = JSON.parse(U.content);
-              F.side === "left" ? b.value = F.low_water : F.side === "right" && (v.value = F.low_water), b.value || v.value ? (l.value = !0, ne.value === "auto" ? (T("小车尚未工作"), p("controlDolly", { target: "setMode", mode: "semi-auto" }), S()) : y()) : (l.value = !1, ne.value === "auto" && p("controlDolly", { target: "setMode", mode: "auto" })), console.log("Water tank status updated:", F);
+              F.side === "left" ? b.value = F.low_water : F.side === "right" && (v.value = F.low_water), b.value || v.value ? (l.value = !0, Z.value === "auto" ? (T("小车尚未工作"), p("controlDolly", { target: "setMode", mode: "semi-auto" }), S()) : y()) : (l.value = !1, Z.value === "auto" && p("controlDolly", { target: "setMode", mode: "auto" })), console.log("Water tank status updated:", F);
             } catch (F) {
               console.error("Failed to parse water tank status data:", F);
             }
@@ -326,8 +327,8 @@ const ot = (ge, ne) => {
     });
     const m = () => {
       const A = {
-        mode: ne.value,
-        currentRunTime: Z.value,
+        mode: Z.value,
+        currentRunTime: ne.value,
         currentIntervalTime: i.value,
         tempRunTime: f.value,
         tempIntervalTime: e.value,
@@ -343,7 +344,7 @@ const ot = (ge, ne) => {
       };
       p("CartSystem_init_response", A);
     }, g = (A) => {
-      ne.value = A, h.isPyQtWebEngine && (A === "auto" ? (y(), p("controlDolly", { target: "setMode", mode: "auto" })) : (S(), T("小车尚未工作"), p("controlDolly", { target: "setMode", mode: "semi-auto" })));
+      Z.value = A, h.isPyQtWebEngine && (A === "auto" ? (y(), p("controlDolly", { target: "setMode", mode: "auto" })) : (S(), T("小车尚未工作"), p("controlDolly", { target: "setMode", mode: "semi-auto" })));
     }, j = () => {
       f.value = Math.max(1, parseInt(f.value) || 1), n.value = f.value, w();
     }, E = () => {
@@ -387,10 +388,10 @@ const ot = (ge, ne) => {
     const k = () => {
       C(), c.value = "小车运行中", t.value = 0;
       const A = Date.now();
-      Z.value = n.value;
+      ne.value = n.value;
       const U = () => {
-        const F = (Date.now() - A) / 1e3, re = Math.max(0, Z.value - F);
-        t.value = F / Z.value * 100, c.value = `小车运行中: 剩余 ${re.toFixed(1)} 秒`, F < Z.value && o.value ? d = requestAnimationFrame(U) : o.value && (t.value = 100, _(), R());
+        const F = (Date.now() - A) / 1e3, re = Math.max(0, ne.value - F);
+        t.value = F / ne.value * 100, c.value = `小车运行中: 剩余 ${re.toFixed(1)} 秒`, F < ne.value && o.value ? d = requestAnimationFrame(U) : o.value && (t.value = 100, _(), R());
       };
       d = requestAnimationFrame(U);
     }, R = () => {
@@ -418,20 +419,20 @@ const ot = (ge, ne) => {
       ]),
       B("div", xn, [
         B("button", {
-          class: it(["mode-button", { active: ne.value === "semi-auto" && !l.value }]),
+          class: it(["mode-button", { active: Z.value === "semi-auto" && !l.value }]),
           disabled: l.value,
-          onClick: U[0] || (U[0] = (F) => ne.value === "auto" ? g("semi-auto") : () => {
+          onClick: U[0] || (U[0] = (F) => Z.value === "auto" ? g("semi-auto") : () => {
           })
         }, "半自动模式", 10, kn),
         B("button", {
-          class: it(["mode-button", { active: ne.value === "auto" && !l.value }]),
+          class: it(["mode-button", { active: Z.value === "auto" && !l.value }]),
           disabled: l.value,
-          onClick: U[1] || (U[1] = (F) => ne.value === "semi-auto" ? g("auto") : () => {
+          onClick: U[1] || (U[1] = (F) => Z.value === "semi-auto" ? g("auto") : () => {
           })
         }, "自动模式", 10, On)
       ]),
       B("div", Sn, [
-        ne.value === "semi-auto" ? (Ae(), Le("div", _n, [
+        Z.value === "semi-auto" ? (Ae(), Le("div", _n, [
           B("div", jn, [
             B("div", En, [
               U[8] || (U[8] = B("label", null, "单次运行时间 (秒):", -1)),
@@ -510,20 +511,20 @@ const ot = (ge, ne) => {
 }, Fn = { class: "modal-content" }, Vn = {
   __name: "DataExport",
   setup(ge) {
-    const { sendToPyQt: ne } = rt(), Z = vt({
+    const { sendToPyQt: Z } = rt(), ne = vt({
       isPyQtWebEngine: !1
     }), i = se(!1), f = se(!1), e = se("");
     ut(() => {
-      Z.isPyQtWebEngine = typeof window.qt < "u" && window.qt.webChannelTransport, Z.isPyQtWebEngine ? console.log("在PyQt QWebEngine环境中运行") : console.log("在普通网页环境中运行");
+      ne.isPyQtWebEngine = typeof window.qt < "u" && window.qt.webChannelTransport, ne.isPyQtWebEngine ? console.log("在PyQt QWebEngine环境中运行") : console.log("在普通网页环境中运行");
     });
     const n = () => {
-      Z.isPyQtWebEngine && (console.log("导出数据"), ne("exportData", !0));
+      ne.isPyQtWebEngine && (console.log("导出数据"), Z("exportData", !0));
     }, r = () => {
       i.value = !0;
     }, o = () => {
       i.value = !1;
     }, t = () => {
-      console.log("清空数据"), i.value = !1, c("所有数据已清空！"), Z.isPyQtWebEngine && ne("exportData", !1);
+      console.log("清空数据"), i.value = !1, c("所有数据已清空！"), ne.isPyQtWebEngine && Z("exportData", !1);
     }, c = (a) => {
       e.value = a, f.value = !0;
     }, u = () => {
@@ -580,10 +581,10 @@ function zn(ge) {
   return ge && ge.__esModule && Object.prototype.hasOwnProperty.call(ge, "default") ? ge.default : ge;
 }
 var Ct = { exports: {} };
-(function(ge, ne) {
-  (function(Z, i) {
+(function(ge, Z) {
+  (function(ne, i) {
     ge.exports = i(Lt);
-  })(typeof self < "u" ? self : Wn, function(Z) {
+  })(typeof self < "u" ? self : Wn, function(ne) {
     return function(i) {
       var f = {};
       function e(n) {
@@ -2077,7 +2078,7 @@ var Ct = { exports: {} };
         return o + (t ? n(r, o).length : 1);
       };
     }, "8bbf": function(i, f) {
-      i.exports = Z;
+      i.exports = ne;
     }, "8df4": function(i, f, e) {
       var n = e("7a77");
       function r(o) {
@@ -4240,8 +4241,8 @@ const Tt = /* @__PURE__ */ zn(Kn);
 Pt({
   components: { KeyBoard: Tt },
   setup() {
-    function ge(ne, Z) {
-      console.log("change value ---->", ne), console.log("change input dom ---->", Z);
+    function ge(Z, ne) {
+      console.log("change value ---->", Z), console.log("change input dom ---->", ne);
     }
     return {
       change: ge
@@ -4251,26 +4252,26 @@ Pt({
 const Qn = { class: "wifi-component" }, Hn = { class: "row" }, Gn = { class: "column" }, Yn = { class: "column" }, Xn = { class: "status" }, Jn = { class: "row" }, Zn = { class: "column" }, er = {
   __name: "WiFi",
   setup(ge) {
-    const ne = se("未连接"), Z = se(""), i = se(""), f = () => {
-      alert("验证 WiFi: " + Z.value);
+    const Z = se("未连接"), ne = se(""), i = se(""), f = () => {
+      alert("验证 WiFi: " + ne.value);
     }, e = () => {
-      alert("连接到 WiFi: " + Z.value), ne.value = "已连接到 " + Z.value;
+      alert("连接到 WiFi: " + ne.value), Z.value = "已连接到 " + ne.value;
     }, n = (r, o) => {
-      o.placeholder === "WiFi 名称" ? Z.value = r : o.placeholder === "WiFi 密码" && (i.value = r);
+      o.placeholder === "WiFi 名称" ? ne.value = r : o.placeholder === "WiFi 密码" && (i.value = r);
     };
     return (r, o) => (Ae(), Le("div", Qn, [
       B("div", Hn, [
         B("div", Gn, [
           dt(B("input", {
-            "onUpdate:modelValue": o[0] || (o[0] = (t) => Z.value = t),
+            "onUpdate:modelValue": o[0] || (o[0] = (t) => ne.value = t),
             placeholder: "WiFi 名称",
             "data-mode": ""
           }, null, 512), [
-            [pt, Z.value]
+            [pt, ne.value]
           ])
         ]),
         B("div", Yn, [
-          B("div", Xn, " WiFi 状态: " + De(ne.value), 1)
+          B("div", Xn, " WiFi 状态: " + De(Z.value), 1)
         ])
       ]),
       B("div", Jn, [
@@ -4315,15 +4316,15 @@ const Qn = { class: "wifi-component" }, Hn = { class: "row" }, Gn = { class: "co
     }
   },
   emits: ["update:modelValue", "update:showKeyboard"],
-  setup(ge, { emit: ne }) {
-    const Z = ge, i = ne, f = se([
+  setup(ge, { emit: Z }) {
+    const ne = ge, i = Z, f = se([
       ["7", "8", "9"],
       ["4", "5", "6"],
       ["1", "2", "3"],
       ["清除", "0", "确定"]
     ]), e = se("");
-    st(() => Z.showKeyboard, (r) => {
-      r && (e.value = Z.modelValue.toString());
+    st(() => ne.showKeyboard, (r) => {
+      r && (e.value = ne.modelValue.toString());
     });
     const n = (r) => {
       r === "清除" ? e.value = "" : r === "确定" ? (i("update:modelValue", e.value), i("update:showKeyboard", !1)) : e.value += r;
@@ -4350,7 +4351,7 @@ const Qn = { class: "wifi-component" }, Hn = { class: "row" }, Gn = { class: "co
 }, pr = { class: "modal-content" }, vr = 60, hr = {
   __name: "Lock",
   setup(ge) {
-    const { sendToPyQt: ne } = rt(), Z = vt({
+    const { sendToPyQt: Z } = rt(), ne = vt({
       isPyQtWebEngine: !1
     }), i = se("未激活"), f = se(0), e = se(""), n = se(""), r = se(""), o = se(!1);
     let t, c;
@@ -4370,7 +4371,7 @@ const Qn = { class: "wifi-component" }, Hn = { class: "row" }, Gn = { class: "co
       clearInterval(c), u.value = 0;
     }
     function j() {
-      ne("activate_device", {});
+      Z("activate_device", {});
     }
     function E(R, T) {
       i.value = "已激活", e.value = R, s.value = new Date(T), w();
@@ -4388,7 +4389,7 @@ const Qn = { class: "wifi-component" }, Hn = { class: "row" }, Gn = { class: "co
       o.value = !0, clearInterval(t);
     }
     function S() {
-      ne("check_lock_password", {
+      Z("check_lock_password", {
         target: "attemptUnlock",
         password: n.value,
         lockCount: a.value,
@@ -4396,7 +4397,7 @@ const Qn = { class: "wifi-component" }, Hn = { class: "row" }, Gn = { class: "co
       }), n.value = "";
     }
     function _() {
-      ne("check_lock_password", {
+      Z("check_lock_password", {
         target: "attemptModalUnlock",
         password: r.value,
         lockCount: a.value,
@@ -4412,7 +4413,7 @@ const Qn = { class: "wifi-component" }, Hn = { class: "row" }, Gn = { class: "co
     return St(() => {
       clearInterval(t), clearInterval(c);
     }), ut(() => {
-      if (Z.isPyQtWebEngine = typeof window.qt < "u" && window.qt.webChannelTransport, Z.isPyQtWebEngine) {
+      if (ne.isPyQtWebEngine = typeof window.qt < "u" && window.qt.webChannelTransport, ne.isPyQtWebEngine) {
         console.log("在PyQt QWebEngine环境中运行");
         const { message: R } = rt();
         st(R, (T) => {
@@ -4508,8 +4509,8 @@ const Qn = { class: "wifi-component" }, Hn = { class: "row" }, Gn = { class: "co
 }, mr = /* @__PURE__ */ ot(hr, [["__scopeId", "data-v-28624ff1"]]), gr = { class: "app-container" }, br = {
   __name: "App",
   setup(ge) {
-    return Rt(), (ne, Z) => (Ae(), Le("div", gr, [
-      Z[0] || (Z[0] = B("h1", null, "涪特智能养护台车控制系统", -1)),
+    return Rt(), (Z, ne) => (Ae(), Le("div", gr, [
+      ne[0] || (ne[0] = B("h1", null, "涪特智能养护台车控制系统", -1)),
       He(yn),
       He(qn),
       He(on),

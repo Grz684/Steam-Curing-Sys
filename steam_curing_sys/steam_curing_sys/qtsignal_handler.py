@@ -69,7 +69,7 @@ class QtSignalHandler(QObject):
         
         self.ros2_thread = ROS2Thread(self)
 
-        self.sensor_num = 4
+        self.sensor_num = 15
 
     def activate_device(self):
         # 将当前时间保存进数据库
@@ -178,6 +178,13 @@ class QtSignalHandler(QObject):
 
     def sprinkler_manual_control(self, index, state):
         # { sprinkler: n, state: 1 }
+        if state == 0:
+            # 使用 QTimer 来延迟执行
+            QTimer.singleShot(1000, lambda: self._delayed_control(index, state))
+        else:
+            self.control_utils.control_output(self.control_utils.sprinkler_base_addr + index -1, state)
+
+    def _delayed_control(self, index, state):
         self.control_utils.control_output(self.control_utils.sprinkler_base_addr + index -1, state)
 
     def manual_steam_engine_state(self, state):
@@ -239,13 +246,13 @@ class QtSignalHandler(QObject):
         elif control["target"] == "manual":
             self.sprinkler_manual_control(control["index"], control["state"])
 
-        elif control["target"] == "twoTank":
-            logger.info(f"Control twoTank: {control['state']}")
-            self.control_utils.control_two_tank(control["state"])
+        elif control["target"] == "tankWork":
+            logger.info(f"tankWork: {control['state']}")
+            self.control_utils.control_tank(control["state"])
 
-        elif control["target"] == "oneTank":
-            logger.info(f"Control oneTank: {control['state']}")
-            self.control_utils.control_one_tank(control["state"])
+        elif control["target"] == "switchToSprinkler":
+            logger.info(f"switchToSprinkler: {control['state']}")
+            self.control_utils.control_switch(control["state"])
 
     def get_sprinkler_system_state(self):
         with self.sprinkler_system_lock:

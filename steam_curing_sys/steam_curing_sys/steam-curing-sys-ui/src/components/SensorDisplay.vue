@@ -6,6 +6,7 @@ import { ref, onMounted, watch } from 'vue'
 const sensorData = ref({ temperature: {}, humidity: {} })
 
 import { useWebChannel } from './useWebChannel.js'
+const { sendToPyQt } = useWebChannel();
 
 onMounted(() => {
   if (typeof window.qt !== 'undefined' && window.qt.webChannelTransport) {
@@ -18,6 +19,10 @@ onMounted(() => {
         } catch (error) {
           console.error('Failed to parse sensor data:', error)
         }
+      }
+      else if (newMessage && newMessage.type === 'get_sensor_data') {
+        sendToPyQt('update_remote_sensor_data', sensorData.value)
+  
       }
     })
   } else {
@@ -111,7 +116,7 @@ h2 {
 
 .sensor-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  grid-template-columns: repeat(8, minmax(150px, 1fr));
   gap: 10px;
 }
 

@@ -34,13 +34,13 @@ class ControlUtils():
         self.dio_ip = "192.168.0.7"  # 替换为您设备的实际IP地址
         self.dio_port = 8234  # Modbus TCP默认端口
 
-        self.tank_one_on = False
-        self.tank_two_on = False
+        self.tank_is_work = False
+        self.switch_to_sprinkler = False
 
         # debug时不连接Modbus服务器
         self.debug = True
 
-        self.output_num = 6 # 输出数量
+        self.output_num = 16 # 输出数量
 
         if not self.debug:
             try:
@@ -59,30 +59,30 @@ class ControlUtils():
             except ConnectionException as e:
                 raise ModbusControlException(f"Modbus 连接错误: {e}")
             
-    def control_one_tank(self, state):
+    def control_switch(self, state):
         if state:
-            if not self.tank_one_on:
-                self.tank_one_on = True
-                self.control_output(14, True)
-            if not self.tank_two_on:
-                self.tank_two_on = True
+            # if not self.tank_one_on:
+            #     self.tank_one_on = True
+            #     self.control_output(14, True)
+            if not self.switch_to_sprinkler:
+                self.switch_to_sprinkler = True
                 self.control_output(15, True)
         else:
-            if self.tank_one_on:
-                self.tank_one_on = False
-                self.control_output(14, False)
-            if self.tank_two_on:
-                self.tank_two_on = False
+            # if self.tank_one_on:
+            #     self.tank_one_on = False
+            #     self.control_output(14, False)
+            if self.switch_to_sprinkler:
+                self.switch_to_sprinkler = False
                 self.control_output(15, False)
 
-    def control_two_tank(self, state):
+    def control_tank(self, state):
         if state:
-            if not self.tank_one_on:
-                self.tank_one_on = True
+            if not self.tank_is_work:
+                self.tank_is_work = True
                 self.control_output(14, True)
         else:
-            if self.tank_one_on:
-                self.tank_one_on = False
+            if self.tank_is_work:
+                self.tank_is_work = False
                 self.control_output(14, False)
 
     def control_output(self, address, value):

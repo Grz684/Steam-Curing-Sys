@@ -83,6 +83,8 @@ class Bridge(QObject):
                 self.activate_device()
             elif method_name == "CartSystem_init_response":
                 self.cartSystem_init_response(args)
+            elif method_name == "update_remote_sensor_data":
+                self.update_remote_sensor_data(args)
             else:
                 logger.info(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
@@ -93,6 +95,10 @@ class Bridge(QObject):
     def cartSystem_init_response(self, response):
         logger.info(f"CartSystem init response: {response}")
         self.mqtt_client.publish(json.dumps({"command": "CartSystem_init_response", "data": response}))
+
+    def update_remote_sensor_data(self, sensor_data):
+        # logger.info(f"Update remote sensor data: {sensor_data}")
+        self.mqtt_client.publish(json.dumps({"command": "update_remote_sensor_data", "data": sensor_data}))
 
     def activate_device(self):
         logger.info("Activate device")
@@ -188,13 +194,13 @@ class MainWindow(QMainWindow):
         self.web_view.page().setWebChannel(self.channel)
 
         # 使用 setDevToolsPage 来启用开发者工具
-        self.dev_view = QWebEngineView()
-        self.web_view.page().setDevToolsPage(self.dev_view.page())
-        self.web_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # self.dev_view = QWebEngineView()
+        # self.web_view.page().setDevToolsPage(self.dev_view.page())
+        # self.web_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         # 添加快捷键来切换开发者工具
-        self.shortcut = QShortcut(QKeySequence("F12"), self)
-        self.shortcut.activated.connect(self.toggle_dev_tools)
+        # self.shortcut = QShortcut(QKeySequence("F12"), self)
+        # self.shortcut.activated.connect(self.toggle_dev_tools)
 
         # Load HTML file
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -314,9 +320,7 @@ class MainWindow(QMainWindow):
 
         # 发送消息
         msg_type = "update_sensor_data"
-        self.bridge.send_message(msg_type, json.dumps(content)) 
-        # 更新远程传感器数据
-        self.bridge.mqtt_client.publish(json.dumps({"command": msg_type, "data": content}))
+        self.bridge.send_message(msg_type, json.dumps(content))
 
     def update_water_tank_status(self, status):
         msg_type = "update_water_tank_status"
