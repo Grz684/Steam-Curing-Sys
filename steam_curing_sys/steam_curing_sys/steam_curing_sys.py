@@ -176,8 +176,9 @@ class ControlUtils():
         self.sprinkler_base_addr = 2
 
         self.dolly_move_addr = 2
-        self.dolly_move_addr_back_up = 3
-        self.pulse_addr = 4
+        self.dolly_move_addr_back_up_1 = 3
+        self.dolly_move_addr_back_up_2 = 4
+        self.pulse_addr = 5
 
         self.dio_ip = "192.168.0.7"  # 替换为您设备的实际IP地址
         self.dio_port = 8234  # Modbus TCP默认端口
@@ -327,7 +328,8 @@ class ControlUtils():
             logger.info('Turning dolly ON')
             self.dolly_on = True
             self.control_output(self.dolly_move_addr, True)
-            self.control_output(self.dolly_move_addr_back_up, True)
+            self.control_output(self.dolly_move_addr_back_up_1, True)
+            self.control_output(self.dolly_move_addr_back_up_2, True)
             self.control_output(self.zone2_output_addr, True)
             self.control_output(self.zone1_output_addr, True)
             self.control_output(self.pulse_addr, True)
@@ -343,7 +345,8 @@ class ControlUtils():
             logger.info('Turning dolly OFF')
             self.dolly_on = False
             self.control_output(self.dolly_move_addr, False)
-            self.control_output(self.dolly_move_addr_back_up, False)
+            self.control_output(self.dolly_move_addr_back_up_1, False)
+            self.control_output(self.dolly_move_addr_back_up_2, False)
             self.control_output(self.zone2_output_addr, False)
             self.control_output(self.zone1_output_addr, False)
 
