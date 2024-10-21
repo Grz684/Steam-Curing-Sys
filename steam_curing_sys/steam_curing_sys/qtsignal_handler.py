@@ -61,8 +61,6 @@ class QtSignalHandler(QObject):
         
         self.config_manager = ConfigManager()  # 这将默认使用 'sensor_data.db'
 
-        # 加载配置
-        self.config_manager.load_config()
         # 加载控制工具
 
         self.control_utils = None
@@ -88,16 +86,6 @@ class QtSignalHandler(QObject):
             logger.error("激活消息返回失败")
 
     def load_device_info(self):
-        if self.config_manager.get_config('device_random_code') is None:
-            device_status = "未激活"
-            self.config_manager.update_config(device_status=device_status)
-            self.config_manager.update_config(device_lock_count=1)
-
-            # 生成随机码
-            device_random_code = self.generate_random_code()
-            self.config_manager.update_config(device_random_code=device_random_code)
-            logger.info("设备随机码初始化")
-
         dolly_configs = self.config_manager.get_multiple_config([
             'device_status',
             'device_random_code',
@@ -108,13 +96,6 @@ class QtSignalHandler(QObject):
             self.update_device_info.emit(dolly_configs)
         else:
             logger.error("未找到设备信息")
-
-    # 随机码生成函数
-    @staticmethod
-    def generate_random_code():
-        # 生成一个8位的随机字符串，包含数字和大写字母
-        characters = string.ascii_uppercase + string.digits
-        return ''.join(random.choices(characters, k=8))
     
     def check_password(self, pak):
         if pak["password"] == self.generate_unlock_password(pak["deviceRandomCode"], "forever"):

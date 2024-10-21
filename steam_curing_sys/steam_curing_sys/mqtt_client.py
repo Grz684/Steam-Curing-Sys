@@ -1,3 +1,4 @@
+import string
 import paho.mqtt.client as mqtt
 from paho.mqtt.properties import Properties, PacketTypes
 import time
@@ -26,7 +27,17 @@ class MQTTClient:
 
         # 加载配置
         self.config_manager = ConfigManager()
-        self.config_manager.load_config()
+
+        if self.config_manager.get_config('device_random_code') is None:
+            device_status = "未激活"
+            self.config_manager.update_config(device_status=device_status)
+            self.config_manager.update_config(device_lock_count=1)
+
+            # 生成随机码
+            device_random_code = self.generate_random_code()
+            self.config_manager.update_config(device_random_code=device_random_code)
+            logger.info("设备随机码初始化")
+
         self.device_random_code = self.config_manager.get_config("device_random_code")
         self.response_topic = f"device/response/{self.device_random_code}"
 
@@ -34,15 +45,14 @@ class MQTTClient:
 
         # 设置遗嘱消息
         self.device_status_topic = f"device/status/{self.device_random_code}"
-        will_qos = 0
-        will_retain = True
+        will_qos = 2
 
         # 创建遗嘱消息的属性
         # will_properties = Properties(PacketTypes.WILLMESSAGE)
         # will_properties.MessageExpiryInterval = 3600  # 消息过期时间，单位为秒
 
         # 对于遗嘱消息，retain 确保设备的最后已知状态（例如离线状态）被保留，直到设备重新上线
-        self.client.will_set(self.device_status_topic, "offline", will_qos, will_retain)
+        self.client.will_set(self.device_status_topic, "offline", will_qos, retain=True)
 
         self.client.username_pw_set(self.mqtt_user, self.mqtt_password)
         self.client.on_connect = self.on_connect
@@ -50,12 +60,19 @@ class MQTTClient:
         self.client.on_disconnect = self.on_disconnect
         self.connected = False
 
+    # 随机码生成函数，旧蒸汽开头标识为001
+    @staticmethod
+    def generate_random_code():
+        # 生成一个8位的随机字符串，包含数字和大写字母
+        characters = string.ascii_uppercase + string.digits
+        return '001'+''.join(random.choices(characters, k=7))
+
     def on_connect(self, client, userdata, flags, rc, properties=None):
         if rc == 0:
             self.connected = True
             logger.info("Connected to MQTT broker")
             # 发送上线消息
-            client.publish(self.device_status_topic, "online", retain=True)
+            client.publish(self.device_status_topic, "online", 2, retain=True)
             client.subscribe(self.response_topic)
         else:
             logger.error(f"Failed to connect, return code {rc}")
@@ -80,7 +97,7 @@ class MQTTClient:
         if rc == 0:
             logger.info("Disconnected successfully")
             # 正常断开时，主动发送离线状态
-            self.client.publish(self.device_status_topic, "offline", retain=True)
+            self.client.publish(self.device_status_topic, "offline", 2, retain=True)
         else:
             logger.info(f"Unexpected disconnection, return code {rc}")
             # 意外断开时，不需要做任何事，因为遗嘱消息会自动发送

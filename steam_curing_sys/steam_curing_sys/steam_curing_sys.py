@@ -53,6 +53,8 @@ def main():
     qtSignalHandler.load_limits()
     qtSignalHandler.load_sprinkler()
     qtSignalHandler.load_dolly()
+
+    # 第一次调用load_device_info会因为随机码生成后还没完全保存到数据库中而失败
     qtSignalHandler.load_device_info()
 
     qtSignalHandler.ros2_thread.start()

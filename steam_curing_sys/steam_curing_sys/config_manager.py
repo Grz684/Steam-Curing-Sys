@@ -6,35 +6,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class ConfigManager:
-    # config_manager = ConfigManager()  # 这将默认使用 'sensor_data.db'
-
-    # # 加载配置
-    # config_manager.load_config()
-
-    # # 更新单个配置项
-    # config_manager.update_config(temp_lower_limit=18.5)
-
-    # # 更新多个配置项
-    # new_configs = {
-    #     'sprinkler_single_run_time': 180,
-    #     'sprinkler_run_interval_time': 3600,
-    # }
-    # config_manager.update_multiple_config(new_configs)
-
-    # # 获取所有配置，包括时间戳
-    # all_configs = config_manager.get_all_config()
-    # print("All configs:", all_configs)
-
-    # # 获取最后更新时间
-    # last_update = config_manager.get_last_update_time()
-    # print("Last update time:", last_update)
-
     def __init__(self, db_file='sensor_data.db'):
         self.db_file = db_file
         self.conn = None
         self.cursor = None
-        self.config = {}
-        self.load_config_settings = None  # Assuming this is a signal, initialize it properly
         self.config_schema = {
             'temp_lower_limit': 'REAL',
             'temp_upper_limit': 'REAL',
@@ -75,51 +50,52 @@ class ConfigManager:
             self.cursor.execute(f"ALTER TABLE config ADD COLUMN {name} {data_type}")
             self.conn.commit()
 
-    def load_config(self):
-        self.cursor.execute('SELECT * FROM config ORDER BY timestamp DESC LIMIT 1')
-        row = self.cursor.fetchone()
-        if row:
-            columns = [description[0] for description in self.cursor.description]
-            self.config = dict(zip(columns, row))
-            if self.load_config_settings:
-                self.load_config_settings.emit(self.config)
-
-    def save_config(self):
+    def update_config(self, **kwargs):
         current_time = datetime.now().isoformat()
-        self.config['timestamp'] = current_time
-        
-        # Delete existing config
-        self.cursor.execute('DELETE FROM config')
-        
-        # Insert new config
-        columns = ', '.join(self.config.keys())
-        placeholders = ', '.join('?' * len(self.config))
-        query = f'INSERT INTO config ({columns}) VALUES ({placeholders})'
-        self.cursor.execute(query, tuple(self.config.values()))
-        
+        kwargs['timestamp'] = current_time
+
+        self.cursor.execute('SELECT * FROM config')
+        if self.cursor.fetchone() is None:
+            # If table is empty, insert a new row
+            columns = ', '.join(kwargs.keys())
+            placeholders = ', '.join('?' * len(kwargs))
+            query = f'INSERT INTO config ({columns}) VALUES ({placeholders})'
+        else:
+            # If row exists, update it
+            set_clause = ', '.join([f"{key} = ?" for key in kwargs.keys()])
+            query = f'UPDATE config SET {set_clause}'
+
+        self.cursor.execute(query, tuple(kwargs.values()))
         self.conn.commit()
 
-    def update_config(self, **kwargs):
-        self.config.update(kwargs)
-        self.save_config()
-
     def get_config(self, key, default=None):
-        return self.config.get(key, default)
+        self.cursor.execute(f'SELECT {key} FROM config')
+        result = self.cursor.fetchone()
+        return result[0] if result else default
 
     def get_multiple_config(self, keys):
-        return {key: value for key, value in 
-                ((key, self.config.get(key)) for key in keys) 
-                if value is not None}
+        keys_str = ', '.join(keys)
+        self.cursor.execute(f'SELECT {keys_str} FROM config')
+        result = self.cursor.fetchone()
+        if result:
+            return {key: value for key, value in zip(keys, result) if value is not None}
+        return {}
 
     def update_multiple_config(self, config_dict):
-        self.config.update(config_dict)
-        self.save_config()
+        self.update_config(**config_dict)
 
     def get_all_config(self):
-        return self.config.copy()
+        self.cursor.execute('SELECT * FROM config')
+        result = self.cursor.fetchone()
+        if result:
+            columns = [description[0] for description in self.cursor.description]
+            return {key: value for key, value in zip(columns, result) if value is not None}
+        return {}
 
     def get_last_update_time(self):
-        return self.config.get('timestamp')
+        self.cursor.execute('SELECT timestamp FROM config')
+        result = self.cursor.fetchone()
+        return result[0] if result else None
 
     def clear_sensor_data(self):
         """
