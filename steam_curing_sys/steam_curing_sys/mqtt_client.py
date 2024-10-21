@@ -79,18 +79,18 @@ class MQTTClient:
 
     def on_message(self, client, userdata, msg):
         payload = json.loads(msg.payload.decode())
-        logger.info(f"Received message on topic {msg.topic}: {payload}")
         
         if payload.get("command") == "vue_component_init":
+            logger.info(f"Received message on topic {msg.topic}: {payload}")
             msg_type = payload.get("data")
             self.bridge.send_message(msg_type, "")
         elif payload.get("command") == "vue_component_set":
+            logger.info(f"Received message on topic {msg.topic}: {payload}")
             msg_type = payload.get("target")
             self.bridge.send_message(msg_type, json.dumps(payload))
         elif payload.get("command") == "get_sensor_data":
             msg_type = "get_sensor_data"
             self.bridge.send_message(msg_type, "")
-
             
     def on_disconnect(self, client, userdata, rc, properties=None):
         self.connected = False

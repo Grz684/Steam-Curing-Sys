@@ -111,6 +111,20 @@ onMounted(() => {
           console.error('Failed to parse sensor settings data:', error)
         }
       }
+      else if (newMessage && newMessage.type === 'SensorSettings_init') {
+        console.log('Received SensorSettings_init message');
+        updateSettings();
+      }
+      else if (newMessage && newMessage.type === 'SensorSettings_set') {
+        console.log('Received SensorSettings_set message:', newMessage.content);
+        const set_pak = JSON.parse(newMessage.content);
+        const settings = set_pak.args;
+        tempUpper.value = settings['temp_upper'];
+        tempLower.value = settings['temp_lower'];
+        humidityUpper.value = settings['humidity_upper'];
+        humidityLower.value = settings['humidity_lower'];
+        updateSettings();
+      }
     })
   } else {
     console.log('在普通网页环境中运行')

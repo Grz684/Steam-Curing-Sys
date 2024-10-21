@@ -83,6 +83,8 @@ class Bridge(QObject):
                 self.activate_device()
             elif method_name == "CartSystem_init_response":
                 self.cartSystem_init_response(args)
+            elif method_name == "SensorSettings_init_response":
+                self.sensorSettings_init_response(args)
             elif method_name == "update_remote_sensor_data":
                 self.update_remote_sensor_data(args)
             else:
@@ -91,6 +93,10 @@ class Bridge(QObject):
             logger.info(f"Failed to parse JSON: {args_json}")
         except Exception as e:
             logger.info(f"Error processing method {method_name}: {str(e)}")
+
+    def sensorSettings_init_response(self, response):
+        logger.info(f"SensorSettings init response: {response}")
+        self.mqtt_client.publish(json.dumps({"command": "update_limit_settings", "data": response}))
 
     def cartSystem_init_response(self, response):
         logger.info(f"CartSystem init response: {response}")
@@ -134,7 +140,7 @@ class Bridge(QObject):
         humidity_lower = settings.get('humidity_lower', 0.0)
         self.limitSettingsUpdated.emit(temp_upper, temp_lower, humidity_upper, humidity_lower)  # 发射信号
         # 同步远程温湿度设置
-        self.mqtt_client.publish(json.dumps({"command": "set_limit_settings", "data": settings}))
+        self.mqtt_client.publish(json.dumps({"command": "update_limit_settings", "data": settings}))
 
     def sendMessage(self, message):
         logger.info(f"Received message: {message}")

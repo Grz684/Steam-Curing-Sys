@@ -207,6 +207,7 @@ const sendInitialState = () => {
     rightTankLowWater: rightTankLowWater.value
   };
 
+  console.log('Sending initial cart system state:', initialState);
   sendToPyQt('CartSystem_init_response', initialState);
 };
 
