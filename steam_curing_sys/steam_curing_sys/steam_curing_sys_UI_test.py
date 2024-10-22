@@ -85,6 +85,8 @@ class Bridge(QObject):
                 self.cartSystem_init_response(args)
             elif method_name == "SensorSettings_init_response":
                 self.sensorSettings_init_response(args)
+            elif method_name == "IntegratedControlSystem_init_response":
+                self.integratedControlSystem_init_response(args)
             elif method_name == "update_remote_sensor_data":
                 self.update_remote_sensor_data(args)
             else:
@@ -101,6 +103,10 @@ class Bridge(QObject):
     def cartSystem_init_response(self, response):
         logger.info(f"CartSystem init response: {response}")
         self.mqtt_client.publish(json.dumps({"command": "CartSystem_init_response", "data": response}))
+
+    def integratedControlSystem_init_response(self, response):
+        logger.info(f"IntegratedControlSystem init response: {response}")
+        self.mqtt_client.publish(json.dumps({"command": "IntegratedControlSystem_init_response", "data": response}))
 
     def update_remote_sensor_data(self, sensor_data):
         # logger.info(f"Update remote sensor data: {sensor_data}")

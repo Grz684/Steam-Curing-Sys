@@ -132,6 +132,9 @@ const switchingMessage = ref('');
 
 const { sendToPyQt } = useWebChannel();
 
+const phaseStartTime = ref(0);
+const currentTotalTime = ref(0);
+
 const environment = reactive({
   isPyQtWebEngine: false
 });
@@ -146,6 +149,10 @@ onMounted(() => {
     watch(message, (newMessage) => {
       if (newMessage && newMessage.type === 'update_left_steam_status') {
         leftEngineOn.value = newMessage.content;
+      }
+      else if (newMessage && newMessage.type === 'IntegratedControlSystem_init') {
+        console.log('Received IntegratedControlSystem_init message');
+        sendInitialState();
       }
       else if (newMessage && newMessage.type === 'update_right_steam_status') {
         rightEngineOn.value = newMessage.content;
@@ -170,6 +177,48 @@ onMounted(() => {
     console.log('在普通网页环境中运行');
   }
 });
+
+function calculateElapsedTime() {
+  if (!isRunning.value) return 0;
+  
+  const now = Date.now();
+  return Math.floor((now - phaseStartTime.value) / 1000);
+}
+
+function calculateTotalTime() {
+  if (!isRunning.value) return 0;
+  
+  return currentTotalTime.value;
+}
+
+const sendInitialState = () => {
+  const initialState = {
+    leftEngineOn: leftEngineOn.value,
+    rightEngineOn: rightEngineOn.value,
+    currentSingleRunTime: currentSingleRunTime.value,
+    currentRunIntervalTime: currentRunIntervalTime.value,
+    currentLoopInterval: currentLoopInterval.value,
+    nextSingleRunTime: nextSingleRunTime.value,
+    nextRunIntervalTime: nextRunIntervalTime.value,
+    nextLoopInterval: nextLoopInterval.value,
+    tempSingleRunTime: tempSingleRunTime.value,
+    tempRunIntervalTime: tempRunIntervalTime.value,
+    tempLoopInterval: tempLoopInterval.value,
+    activeSprinkler: activeSprinkler.value,
+    currentPhase: currentPhase.value,
+    waterLevels: waterLevels.value,
+    remainingTime: remainingTime.value,
+    isAutoMode: isAutoMode.value,
+    isRunning: isRunning.value,
+    isSwitching: isSwitching.value,
+    switchingTime: switchingTime.value,
+    switchingMessage: switchingMessage.value,
+    elapsedTime: calculateElapsedTime(),
+    totalTime: calculateTotalTime()
+  };
+
+  sendToPyQt('IntegratedControlSystem_init_response', initialState);
+};
 
 const statusMessage = computed(() => {
   if (isSwitching.value) return `${switchingMessage.value}，还需${switchingTime.value}秒`;
@@ -235,7 +284,6 @@ async function setMode(mode) {
 
       // 喷淋系统关闭
       sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
-      await switchSystem(0);
     }
     else {
       // 自动切换到手动模式时，关闭所有引擎
@@ -259,6 +307,7 @@ async function click_toggleEngine() {
   if (environment.isPyQtWebEngine && activeIndex === -1) {
     // 切换到喷雾系统
     if (!leftEngineOn.value) {
+      await switchSystem(0);
       sendToPyQt('controlSprinkler', { target: "tankWork" , state: 1 });
     }
     else {
@@ -354,7 +403,6 @@ async function stopSystem() {
 
   // 喷淋系统关闭
   sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
-  await switchSystem(0);
 }
 
 function stopSystemWithoutSend() {
@@ -395,6 +443,8 @@ function runSprinkler() {
   currentPhase.value = 'run';
   currentSingleRunTime.value = nextSingleRunTime.value;
   remainingTime.value = currentSingleRunTime.value;
+  phaseStartTime.value = Date.now();
+  currentTotalTime.value = currentSingleRunTime.value;
   updateRemainingTime();
 
   let startTime = Date.now();
@@ -409,9 +459,11 @@ function runSprinkler() {
   timer = setTimeout(async () => {
     clearInterval(waterTimer);
     if (activeSprinkler.value < 12) {
+      waterLevels.value[activeSprinkler.value - 1] = 0;
       sendToPyQt('controlSprinkler', { target: "manual", index: activeSprinkler.value, state: 0 });
       runInterval();
     } else {
+      waterLevels.value[activeSprinkler.value - 1] = 0;
       sendToPyQt('controlSprinkler', { target: "manual", index: activeSprinkler.value, state: 0 });
       
       runLoopInterval();
@@ -424,6 +476,8 @@ function runInterval() {
 
   currentRunIntervalTime.value = nextRunIntervalTime.value;
   remainingTime.value = currentRunIntervalTime.value;
+  phaseStartTime.value = Date.now();
+  currentTotalTime.value = currentRunIntervalTime.value;
 
   if(remainingTime.value > 0) {
     currentPhase.value = 'interval';
@@ -442,6 +496,8 @@ async function runLoopInterval() {
 
   currentLoopInterval.value = nextLoopInterval.value;
   remainingTime.value = currentLoopInterval.value;
+  phaseStartTime.value = Date.now();
+  currentTotalTime.value = currentLoopInterval.value;
 
   if(remainingTime.value > 0) {
     sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
@@ -491,7 +547,6 @@ async function toggleManualSprinkler(n) {
       // 喷淋系统关闭
       sendToPyQt('controlSprinkler', { target: "manual", index: n, state: 0 });
       sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
-      await switchSystem(0);
     }
   } else {
     // 如果未激活，关闭当前激活的喷头（如果有），然后激活新的喷头
