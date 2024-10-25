@@ -116,18 +116,22 @@ class SensorSubscriberNode(Node):
         if humidity_data:
             if any(humidity < self.qtSignalHandler.humidity_lower_limit for humidity in humidity_data.values()):
                 # 开启两水泵
-                self.control_utils.control_tank(True)
+                result = self.control_utils.control_tank(True)
                 self.control_utils.turn_zone1_humidifier_on()
-                self.qtSignalHandler.left_steam_status_updated.emit(True)
+                if result:
+                    self.qtSignalHandler.left_steam_status_updated.emit(True)
                 self.control_utils.turn_zone2_humidifier_on()
-                self.qtSignalHandler.right_steam_status_updated.emit(True)
+                if result:
+                    self.qtSignalHandler.right_steam_status_updated.emit(True)
             elif all(humidity > self.qtSignalHandler.humidity_upper_limit for humidity in humidity_data.values()):
                 # 关闭两水泵
-                self.control_utils.control_tank(False)
+                result = self.control_utils.control_tank(False)
                 self.control_utils.turn_zone1_humidifier_off()
-                self.qtSignalHandler.left_steam_status_updated.emit(False)
+                if result:
+                    self.qtSignalHandler.left_steam_status_updated.emit(False)
                 self.control_utils.turn_zone2_humidifier_off()
-                self.qtSignalHandler.right_steam_status_updated.emit(False)
+                if result:
+                    self.qtSignalHandler.right_steam_status_updated.emit(False)
 
     def process_data(self, humidity_data):
         if humidity_data:

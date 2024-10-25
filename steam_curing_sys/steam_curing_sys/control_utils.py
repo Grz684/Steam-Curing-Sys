@@ -80,10 +80,14 @@ class ControlUtils():
             if not self.tank_is_work:
                 self.tank_is_work = True
                 self.control_output(14, True)
+                return True
+            return False
         else:
             if self.tank_is_work:
                 self.tank_is_work = False
                 self.control_output(14, False)
+                return True
+            return False
 
     def control_output(self, address, value):
         with self.lock:

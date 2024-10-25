@@ -87,6 +87,8 @@ class Bridge(QObject):
                 self.sensorSettings_init_response(args)
             elif method_name == "IntegratedControlSystem_init_response":
                 self.integratedControlSystem_init_response(args)
+            elif method_name == "IntegratedControlSystem_set_response":
+                self.integratedControlSystem_set_response(args)
             elif method_name == "update_remote_sensor_data":
                 self.update_remote_sensor_data(args)
             else:
@@ -97,15 +99,19 @@ class Bridge(QObject):
             logger.info(f"Error processing method {method_name}: {str(e)}")
 
     def sensorSettings_init_response(self, response):
-        logger.info(f"SensorSettings init response: {response}")
+        # logger.info(f"SensorSettings init response: {response}")
         self.mqtt_client.publish(json.dumps({"command": "update_limit_settings", "data": response}))
 
+    def integratedControlSystem_set_response(self, response):
+        # logger.info(f"IntegratedControlSystem set response: {response}")
+        self.mqtt_client.publish(json.dumps({"command": "IntegratedControlSystem_set_response", "data": response}))
+
     def cartSystem_init_response(self, response):
-        logger.info(f"CartSystem init response: {response}")
+        # logger.info(f"CartSystem init response: {response}")
         self.mqtt_client.publish(json.dumps({"command": "CartSystem_init_response", "data": response}))
 
     def integratedControlSystem_init_response(self, response):
-        logger.info(f"IntegratedControlSystem init response: {response}")
+        # logger.info(f"IntegratedControlSystem init response: {response}")
         self.mqtt_client.publish(json.dumps({"command": "IntegratedControlSystem_init_response", "data": response}))
 
     def update_remote_sensor_data(self, sensor_data):
@@ -137,6 +143,9 @@ class Bridge(QObject):
     def controlSprinkler(self, args):
         logger.info(f"Control sprinkler: {args}")
         self.sprinklerSystemControl.emit(args)
+        # 同步远程sprinkler控制指令
+        if args.get('target') == 'settings':
+            self.mqtt_client.publish(json.dumps({"command": "SprinklerSettings_set_response", "data": args.get('settings')}))
 
     def updateLimitSettings(self, settings):
         logger.info(f"Updating settings: {settings}")
@@ -363,10 +372,12 @@ class MainWindow(QMainWindow):
         msg_type = "update_left_steam_status"
         # status为bool类型
         self.bridge.send_message(msg_type, status)
+        self.bridge.mqtt_client.publish(json.dumps({"command": "update_steam_status", "data": status}))
 
     def update_right_steam_status(self, status):
         msg_type = "update_right_steam_status"
         self.bridge.send_message(msg_type, status)
+        # self.bridge.mqtt_client.publish(json.dumps({"command": "update_right_steam_status", "data": status}))
 
     def confirm_lock_password(self, result):
         msg_type = "confirm_lock_password"

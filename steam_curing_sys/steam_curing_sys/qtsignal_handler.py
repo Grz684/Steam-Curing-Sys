@@ -157,7 +157,7 @@ class QtSignalHandler(QObject):
         self.humidity_upper_limit = humidity_upper
         self.save_limits()  # 保存新的限制值
 
-    def sprinkler_manual_control(self, index, state):
+    def sprayer_control(self, index, state):
         # { sprinkler: n, state: 1 }
         if state == 0:
             # 使用 QTimer 来延迟执行
@@ -224,8 +224,8 @@ class QtSignalHandler(QObject):
             loop_time = settings["sprinkler_loop_interval"]
             self.save_sprinkler_settings(run_time, run_interval_time, loop_time)
 
-        elif control["target"] == "manual":
-            self.sprinkler_manual_control(control["index"], control["state"])
+        elif control["target"] in ["manual_control_sprayer", "auto_control_sprayer"]:
+            self.sprayer_control(control["index"], control["state"])
 
         elif control["target"] == "tankWork":
             logger.info(f"tankWork: {control['state']}")

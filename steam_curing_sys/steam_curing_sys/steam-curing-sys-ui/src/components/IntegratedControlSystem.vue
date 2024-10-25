@@ -3,10 +3,10 @@
     <h2>集成控制系统</h2>
     
     <div class="mode-controls">
-      <button @click="setMode('auto')" :disabled="isSwitching" :class="{ active: isAutoMode }" class="mode-btn">自动模式</button>
-      <button @click="setMode('manual')" :disabled="isSwitching" :class="{ active: !isAutoMode }" class="mode-btn">手动模式</button>
-      <button @click="startSystem" :disabled="isRunning || !isAutoMode || isSwitching" class="control-btn">开始</button>
-      <button @click="stopSystem" :disabled="!isRunning || !isAutoMode || isSwitching" class="control-btn">停止</button>
+      <button @click="setMode('auto')" :class="{ active: isAutoMode }" class="mode-btn">自动模式</button>
+      <button @click="setMode('manual')" :class="{ active: !isAutoMode }" class="mode-btn">手动模式</button>
+      <button @click="startSystem" :disabled="isRunning || !isAutoMode" class="control-btn">开始</button>
+      <button @click="stopSystem" :disabled="!isRunning || !isAutoMode" class="control-btn">停止</button>
     </div>
 
     <div class="systems-container">
@@ -93,7 +93,7 @@
 </template>
 
 <script setup>
-import { ref, watch, reactive, onMounted, computed } from 'vue';
+import { ref, watch, reactive, onMounted, computed, onUnmounted } from 'vue';
 import { useWebChannel } from './useWebChannel';
 import NumericKeyboard from './NumericKeyboard.vue';
 
@@ -141,6 +141,12 @@ const environment = reactive({
   isPyQtWebEngine: false
 });
 
+// 用于存储定时器的数组
+const timers = ref([]);
+let timer;
+let waterTimer;
+let switchingInterval;
+
 onMounted(() => {
   environment.isPyQtWebEngine = typeof window.qt !== 'undefined' && window.qt.webChannelTransport;
 
@@ -174,17 +180,62 @@ onMounted(() => {
           console.error('Failed to parse sprinkler settings data:', error);
         }
       }
+      else if (newMessage && newMessage.type === 'SprinklerSettings_set') {
+        console.log('Received SprinklerSettings_set message:', newMessage.content);
+        const set_pak = JSON.parse(newMessage.content);
+        const settings = set_pak.args;
+        tempSingleRunTime.value = settings.sprinkler_single_run_time;
+        tempRunIntervalTime.value = settings.sprinkler_run_interval_time;
+        tempLoopInterval.value = settings.sprinkler_loop_interval;
+
+        nextRunIntervalTime.value = tempRunIntervalTime.value;
+        nextSingleRunTime.value = tempSingleRunTime.value;
+        nextLoopInterval.value = tempLoopInterval.value;
+        updateSprinklerSettings();
+      }
+      else if (newMessage && newMessage.type === 'IntegratedControlSystem_set') {
+        console.log('Received IntegratedControlSystem_set message:', newMessage.content);
+        const set_pak = JSON.parse(newMessage.content);
+        if (set_pak.method === 'startSystem') {
+          startSystem();
+        }
+        else if (set_pak.method === 'stopSystem') {
+          stopSystem();
+        }
+        else if (set_pak.method === 'setMode') {
+          setMode(set_pak.args.mode);
+        }
+        else if (set_pak.method === 'click_toggleEngine') {
+          click_toggleEngine();
+        }
+        else if (set_pak.method === 'toggleManualSprinkler') {
+          toggleManualSprinkler(set_pak.args.n);
+        }
+      }
     });
   } else {
     console.log('在普通网页环境中运行');
   }
 });
 
-function calculateElapsedTime() {
-  // if (!isRunning.value) return 0;
-  
-  const now = Date.now();
-  return Math.floor((now - phaseStartTime.value) / 1000);
+onUnmounted(() => {
+  clearInterval(switchingInterval);
+  clearInterval(waterTimer);
+  clearAllTimers();
+});
+
+const clearTimer = (t) => {  // 添加参数 t
+  if (t !== undefined) {     // 使用参数 t 而不是 timer
+    clearTimeout(t)
+  }
+}
+
+// 清理所有定时器
+const clearAllTimers = () => {
+  timers.value.forEach(timer => {
+    clearTimer(timer)  // 现在可以正确传入 timer 参数
+  })
+  timers.value = []
 }
 
 const sendInitialState = () => {
@@ -210,7 +261,7 @@ const sendInitialState = () => {
     switchingTime: switchingTime.value,
     switchingMessage: switchingMessage.value,
     switchPhase: switchPhase.value,
-    elapsedTime: calculateElapsedTime(),
+    phaseStartTime: phaseStartTime.value,
     chose_n : chose_n.value
   };
 
@@ -227,9 +278,6 @@ const statusMessage = computed(() => {
   return '';
 });
 
-let timer;
-let waterTimer;
-
 async function switchSystem(state, phase) {
   switchPhase.value = phase;
   isSwitching.value = true;
@@ -241,7 +289,7 @@ async function switchSystem(state, phase) {
   
   sendToPyQt('controlSprinkler', { target: "switchToSprinkler", state: state });
   
-  const switchingInterval = setInterval(() => {
+  switchingInterval = setInterval(() => {
     switchingTime.value--;
     if (switchingTime.value <= 0) {
       clearInterval(switchingInterval);
@@ -250,10 +298,11 @@ async function switchSystem(state, phase) {
   }, 1000);
 
   return new Promise(resolve => {
-    setTimeout(() => {
+    timer = setTimeout(() => {
       isSwitching.value = false;
       resolve();
     }, switchingTime.value * 1000);
+    timers.value.push(timer);
   });
 }
 
@@ -263,11 +312,15 @@ async function setMode(mode) {
 
   if (oldMode !== isAutoMode.value) {
     if (environment.isPyQtWebEngine) {
+      sendToPyQt('IntegratedControlSystem_set_response', { method: 'setMode', args: { mode: mode } });
       sendToPyQt('controlSprinkler', { target:'setMode', mode: isAutoMode.value ? 'auto' : 'manual' });
     }
 
     if (isAutoMode.value) {
       // 手动切换到自动模式时
+      clearInterval(switchingInterval);
+      clearAllTimers();
+      isSwitching.value = false;
 
       // 关闭所有引擎
       if (leftEngineOn.value) {
@@ -279,7 +332,7 @@ async function setMode(mode) {
       if (activeIndex !== -1) {
         waterLevels.value[activeIndex] = 0;
         if (environment.isPyQtWebEngine) {
-          sendToPyQt('controlSprinkler', { target: "manual", index: activeIndex+1, state: 0 });
+          sendToPyQt('controlSprinkler', { target: "manual_control_sprayer", index: activeIndex+1, state: 0 });
         }
       }
 
@@ -306,6 +359,7 @@ async function click_toggleEngine() {
   const activeIndex = waterLevels.value.findIndex(level => level === 100);
 
   if (environment.isPyQtWebEngine && activeIndex === -1) {
+    sendToPyQt('IntegratedControlSystem_set_response', { method: 'click_toggleEngine', args: {} });
     // 切换到喷雾系统
     if (!leftEngineOn.value) {
       await switchSystem(0, "click_toggleEngine");
@@ -380,6 +434,7 @@ function updateSprinklerSettings() {
 }
 
 async function startSystem() {
+  sendToPyQt('IntegratedControlSystem_set_response', { method: 'startSystem', args: {} });
   if (isRunning.value || !isAutoMode.value) return;
   isRunning.value = true;
   waterLevels.value = Array(12).fill(0);
@@ -387,10 +442,11 @@ async function startSystem() {
 }
 
 async function stopSystem() {
+  sendToPyQt('IntegratedControlSystem_set_response', { method: 'stopSystem', args: {} });
   // 停止自动系统时，关闭当前喷头，停止喷雾循环
   if (environment.isPyQtWebEngine) {
     if (activeSprinkler.value > 0) {
-      sendToPyQt('controlSprinkler', { target: "manual", index: activeSprinkler.value, state: 0 });
+      sendToPyQt('controlSprinkler', { target: "auto_control_sprayer", index: activeSprinkler.value, state: 0 });
     }
     sendToPyQt('controlSprinkler', { target: 'setState', state: false });
   }
@@ -408,8 +464,10 @@ async function stopSystem() {
 
 function stopSystemWithoutSend() {
   isRunning.value = false;
-  clearTimeout(timer);
+  isSwitching.value = false;
+  clearInterval(switchingInterval);
   clearInterval(waterTimer);
+  clearAllTimers();
 
   activeSprinkler.value = 0;
   currentPhase.value = '';
@@ -418,9 +476,9 @@ function stopSystemWithoutSend() {
 }
 
 async function runCycle() {
-  activeSprinkler.value = 1;
   // 喷淋系统打开
   await switchSystem(1, "runCycle");
+  activeSprinkler.value = 1;
   sendToPyQt('controlSprinkler', { target: "tankWork" , state: 1 });
   runSprinkler();
 }
@@ -434,7 +492,8 @@ function updateRemainingTime() {
   if (!isRunning.value || !isAutoMode.value) return;
   remainingTime.value--;
   if (remainingTime.value > 0) {
-    setTimeout(updateRemainingTime, 1000);
+    timer = setTimeout(updateRemainingTime, 1000);
+    timers.value.push(timer);
   }
 }
 
@@ -448,7 +507,7 @@ function runSprinkler() {
   updateRemainingTime();
 
   let startTime = Date.now();
-  sendToPyQt('controlSprinkler', { target: "manual", index: activeSprinkler.value, state: 1 });
+  sendToPyQt('controlSprinkler', { target: "auto_control_sprayer", index: activeSprinkler.value, state: 1 });
 
   waterTimer = setInterval(() => {
     let elapsedTime = Date.now() - startTime;
@@ -460,15 +519,17 @@ function runSprinkler() {
     clearInterval(waterTimer);
     if (activeSprinkler.value < 12) {
       waterLevels.value[activeSprinkler.value - 1] = 0;
-      sendToPyQt('controlSprinkler', { target: "manual", index: activeSprinkler.value, state: 0 });
+      sendToPyQt('controlSprinkler', { target: "auto_control_sprayer", index: activeSprinkler.value, state: 0 });
       runInterval();
     } else {
       waterLevels.value[activeSprinkler.value - 1] = 0;
-      sendToPyQt('controlSprinkler', { target: "manual", index: activeSprinkler.value, state: 0 });
+      sendToPyQt('controlSprinkler', { target: "auto_control_sprayer", index: activeSprinkler.value, state: 0 });
       
       runLoopInterval();
     }
   }, currentSingleRunTime.value * 1000);
+
+  timers.value.push(timer);
 }
 
 function runInterval() {
@@ -488,6 +549,8 @@ function runInterval() {
     activeSprinkler.value++;
     runSprinkler();
   }, currentRunIntervalTime.value * 1000);
+
+  timers.value.push(timer);
 }
 
 async function runLoopInterval() {
@@ -499,6 +562,7 @@ async function runLoopInterval() {
   if(remainingTime.value > 0) {
     sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
     await switchSystem(0, "runLoopInterval");
+    // setState是为标识喷雾系统是否工作
     sendToPyQt('controlSprinkler', { target: 'setState', state: true });
 
     // 切换完成后，才开始喷雾工作时间
@@ -520,6 +584,8 @@ async function runLoopInterval() {
       sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
       await runCycle();
     }, currentLoopInterval.value * 1000);
+
+    timers.value.push(timer);
   }
   else {
     activeSprinkler.value = 0;
@@ -534,6 +600,8 @@ function waterHeight(n) {
 
 async function toggleManualSprinkler(n) {
   if (isAutoMode.value) return;
+
+  sendToPyQt('IntegratedControlSystem_set_response', { method: 'toggleManualSprinkler', args: { n: n } });
   
   // 找出当前激活的喷头（如果有）
   const activeIndex = waterLevels.value.findIndex(level => level === 100);
@@ -544,7 +612,7 @@ async function toggleManualSprinkler(n) {
     waterLevels.value[n - 1] = 0;
     if (environment.isPyQtWebEngine) {
       // 喷淋系统关闭
-      sendToPyQt('controlSprinkler', { target: "manual", index: n, state: 0 });
+      sendToPyQt('controlSprinkler', { target: "manual_control_sprayer", index: n, state: 0 });
       sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
     }
   } else {
@@ -552,12 +620,12 @@ async function toggleManualSprinkler(n) {
     if (activeIndex !== -1) {
       waterLevels.value[activeIndex] = 0;
       if (environment.isPyQtWebEngine) {
-        sendToPyQt('controlSprinkler', { target: "manual", index: activeIndex+1, state: 0 });
+        sendToPyQt('controlSprinkler', { target: "manual_control_sprayer", index: activeIndex+1, state: 0 });
       }
       // 激活新的喷头
       waterLevels.value[n - 1] = 100;
       if (environment.isPyQtWebEngine) {
-        sendToPyQt('controlSprinkler', { target: "manual", index: n, state: 1 });
+        sendToPyQt('controlSprinkler', { target: "manual_control_sprayer", index: n, state: 1 });
       }
     }
     else {
@@ -568,7 +636,7 @@ async function toggleManualSprinkler(n) {
       sendToPyQt('controlSprinkler', { target: "tankWork" , state: 1 });
       waterLevels.value[n - 1] = 100;
       if (environment.isPyQtWebEngine) {
-        sendToPyQt('controlSprinkler', { target: "manual", index: n, state: 1 });
+        sendToPyQt('controlSprinkler', { target: "manual_control_sprayer", index: n, state: 1 });
       }
     }
   }
@@ -667,6 +735,7 @@ label {
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  min-height: 30px;
 }
 
 .status.on {
