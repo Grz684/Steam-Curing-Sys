@@ -36,4 +36,4 @@ def generate_unlock_password(device_random_code, lock_count):
 
         return password
 
-generate_unlock_password('LGAUIT4I', 3)
+generate_unlock_password('001O8K5ZWT', 4)

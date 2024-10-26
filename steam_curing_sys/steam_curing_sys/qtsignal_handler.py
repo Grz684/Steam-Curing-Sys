@@ -71,7 +71,7 @@ class QtSignalHandler(QObject):
 
     def activate_device(self):
         # 将当前时间保存进数据库
-        current_time = datetime.now().isoformat()
+        current_time = int(datetime.now().timestamp() * 1000)
         self.config_manager.update_config(device_base_time=current_time)
         device_status = "已激活"
         self.config_manager.update_config(device_status=device_status)
@@ -406,3 +406,8 @@ class QtSignalHandler(QObject):
             return mountpoint if mountpoint else None
         except subprocess.CalledProcessError:
             return None
+        
+    def update_baseTime(self, base_time):
+        # base_time为int类型
+        base_time = int(base_time)
+        self.config_manager.update_config(device_base_time=base_time)

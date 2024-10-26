@@ -29,12 +29,12 @@
         <h3>第 {{ lockCount }} 次锁定</h3>
         <h3>设备随机码: {{ deviceRandomCode }}</h3>
         <input 
-          v-model="modalUnlockKey" 
+          v-model="unlockKey"
           placeholder="输入解锁密钥"
           readonly
           @focus="showModalUnlockKeyboard = true"
         >
-        <button class="unlock-button" @click="attemptModalUnlock">解锁</button>
+        <button class="unlock-button" @click="attemptUnlock">解锁</button>
       </div>
     </div>
     <StrNumericKeyboard
@@ -42,7 +42,7 @@
       v-model:showKeyboard="showUnlockKeyboard"
     />
     <StrNumericKeyboard
-      v-model="modalUnlockKey"
+      v-model="unlockKey"
       v-model:showKeyboard="showModalUnlockKeyboard"
     />
   </div>
@@ -62,9 +62,9 @@ const deviceStatus = ref('未激活');
 const timeToNextLock = ref(0);
 const deviceRandomCode = ref('');
 const unlockKey = ref('');
-const modalUnlockKey = ref('');
+// const modalUnlockKey = ref('');
 const isLocked = ref(false);
-const lockInterval = 60; // 30秒
+const lockInterval = ref(60); // 30秒
 let countdownInterval;
 let activationTimer;
 const progressWidth = ref(0);
@@ -125,9 +125,10 @@ function requestActivation() {
 }
 
 function activateDevice(randomCode, time) {
+  sendToPyQt('Lock_set_response', { method: 'activateDevice', args: { randomCode:randomCode, time:time } });
   deviceStatus.value = '已激活';
   deviceRandomCode.value = randomCode;
-  baseTime.value = new Date(time);
+  baseTime.value = time;
   startCountdown();
 }
 
@@ -135,7 +136,7 @@ function startCountdown() {
   updateTimeToNextLock();
   countdownInterval = setInterval(() => {
     if (timeToNextLock.value > 0) {
-      timeToNextLock.value--;
+      updateTimeToNextLock();
     } else {
       lockDevice();
     }
@@ -143,8 +144,8 @@ function startCountdown() {
 }
 
 function updateTimeToNextLock() {
-  const now = new Date();
-  const lockTime = new Date(baseTime.value.getTime() + lockCount.value * lockInterval * 1000);
+  const now = Date.now();
+  const lockTime = baseTime.value + lockInterval.value * 1000;
   timeToNextLock.value = Math.max(0, Math.floor((lockTime - now) / 1000));
 }
 
@@ -154,24 +155,28 @@ function lockDevice() {
 }
 
 function attemptUnlock() {
+  attemptUnlock_withPassword(unlockKey.value);
+}
+
+function attemptUnlock_withPassword(password) {
   sendToPyQt('check_lock_password', {
     target: "attemptUnlock", 
-    password: unlockKey.value, 
+    password: password,
     lockCount: lockCount.value, 
     deviceRandomCode: deviceRandomCode.value
   });
   unlockKey.value = '';
 }
 
-function attemptModalUnlock() {
-  sendToPyQt('check_lock_password', {
-    target: "attemptModalUnlock", 
-    password: modalUnlockKey.value, 
-    lockCount: lockCount.value, 
-    deviceRandomCode: deviceRandomCode.value
-  });
-  modalUnlockKey.value = '';
-}
+// function attemptModalUnlock() {
+//   sendToPyQt('check_lock_password', {
+//     target: "attemptModalUnlock", 
+//     password: modalUnlockKey.value, 
+//     lockCount: lockCount.value, 
+//     deviceRandomCode: deviceRandomCode.value
+//   });
+//   modalUnlockKey.value = '';
+// }
 
 function permanentUnlock() {
   deviceStatus.value = '永久激活';
@@ -180,6 +185,7 @@ function permanentUnlock() {
 }
 
 function extendLockTime() {
+  isLocked.value = false;
   lockCount.value++;
   if (countdownInterval) {
     clearInterval(countdownInterval);
@@ -205,24 +211,25 @@ onMounted(() => {
           const result = JSON.parse(newMessage.content);
           if (result.target === 'attemptUnlock') {
             if (result.result === 'success') {
+              // 重置basetime为解锁后的时间
+              if (isLocked.value) {
+                // 已被锁定，解锁后重置baseTime
+                baseTime.value = Date.now();
+              }
+              else {
+                baseTime.value = baseTime.value + lockInterval.value * 1000;
+              }
+              sendToPyQt('update_baseTime', baseTime.value);
               extendLockTime();
+              sendToPyQt('Lock_set_response', { method: 'extendLockTime', args: {baseTime: baseTime.value} });
             }
             else if (result.result === 'forever_success') {
               permanentUnlock();
+              sendToPyQt('Lock_set_response', { method: 'permanentUnlock', args: {} });
             }
             else {
-              alert('密钥错误');
-            }
-          } else if (result.target === 'attemptModalUnlock') {
-            if (result.result === 'success') {
-              isLocked.value = false;
-              extendLockTime();
-            }
-            else if (result.result === 'forever_success') {
-              permanentUnlock();
-            }
-            else if (result.result === 'fail') {
-              alert('密钥错误');
+              // showToast('密钥错误');
+              sendToPyQt('Lock_set_response', { method: 'unlockFailed', args: {} });
             }
           }
         } catch (error) {
@@ -241,7 +248,7 @@ onMounted(() => {
           deviceStatus.value = status.device_status;
           deviceRandomCode.value = status.device_random_code;
           lockCount.value = status.device_lock_count;
-          baseTime.value = new Date(status.device_base_time);
+          baseTime.value = status.device_base_time;
           
           if (status.device_status === '已激活') {
             startCountdown();
@@ -252,17 +259,75 @@ onMounted(() => {
           console.error('Failed to parse device status:', error);
         }
       }
+      else if (newMessage && newMessage.type === 'Lock_init') {
+        sendInitialState();
+      }
+      else if (newMessage && newMessage.type === 'Lock_set')
+      {
+        console.log('Lock_set:', newMessage.content);
+        const set_pak = JSON.parse(newMessage.content);
+        if (set_pak.method === 'requestActivation')
+        {
+          requestActivation();
+        }
+        else if (set_pak.method === 'attemptUnlock')
+        {
+          attemptUnlock_withPassword(set_pak.args.password);
+        }
+      }
     });
 
   } else {
     console.log('在普通网页环境中运行');
   }
 });
+
+const sendInitialState = () => {
+  const initialState = {
+    deviceStatus: deviceStatus.value,
+    timeToNextLock: timeToNextLock.value,
+    deviceRandomCode: deviceRandomCode.value,
+    unlockKey: unlockKey.value,
+    isLocked: isLocked.value,
+    lockInterval: lockInterval.value,
+    lockCount: lockCount.value,
+    baseTime: baseTime.value,
+    progressWidth: progressWidth.value,
+    showUnlockKeyboard: showUnlockKeyboard.value,
+    showModalUnlockKeyboard: showModalUnlockKeyboard.value
+  };
+  console.log('Sending Lock initial state:', initialState);
+  sendToPyQt('Lock_init_response', initialState);
+
+};
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'custom-toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 3000); // 3秒后自动消失
+}
 </script>
 
 <style scoped>
 h3 {
   font-size: 18px;
+}
+
+.custom-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  z-index: 9999;
 }
 
 .container {
@@ -353,6 +418,7 @@ input {
   justify-content: center;
   align-items: center;
   backdrop-filter: blur(5px);
+  z-index: 1000; /* 给 modal 设置基础 z-index */
 }
 
 .modal-content {

@@ -25,7 +25,7 @@ class ConfigManager:
             'device_status': 'TEXT',
             'device_random_code': 'TEXT',
             'device_lock_count': 'INTEGER',
-            'device_base_time': 'DATETIME'
+            'device_base_time': 'INTEGER'
         }
         self.connect()
         self._create_table()

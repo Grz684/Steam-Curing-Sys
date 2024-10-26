@@ -43,6 +43,7 @@ def main():
 
     qtSignalHandler.update_device_info.connect(ex.update_device_info)
     qtSignalHandler.device_activated.connect(ex.device_activated)
+    ex.bridge.updataBaseTime.connect(qtSignalHandler.update_baseTime)
 
     try:
         qtSignalHandler.control_utils = ControlUtils()

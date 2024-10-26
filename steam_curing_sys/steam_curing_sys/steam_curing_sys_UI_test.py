@@ -29,6 +29,7 @@ class Bridge(QObject):
     dataExport = pyqtSignal(bool)
     lockPasswordCheck = pyqtSignal(dict)
     activateDevice = pyqtSignal()
+    updataBaseTime = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -87,16 +88,34 @@ class Bridge(QObject):
                 self.sensorSettings_init_response(args)
             elif method_name == "IntegratedControlSystem_init_response":
                 self.integratedControlSystem_init_response(args)
+            elif method_name == "Lock_init_response":
+                self.lock_init_response(args)
             elif method_name == "IntegratedControlSystem_set_response":
                 self.integratedControlSystem_set_response(args)
+            elif method_name == "Lock_set_response":
+                self.lock_set_response(args)
             elif method_name == "update_remote_sensor_data":
                 self.update_remote_sensor_data(args)
+            elif method_name == "update_baseTime":
+                self.update_baseTime(args)
             else:
                 logger.info(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
             logger.info(f"Failed to parse JSON: {args_json}")
         except Exception as e:
             logger.info(f"Error processing method {method_name}: {str(e)}")
+
+    def update_baseTime(self, baseTime):
+        logger.info(f"Update baseTime: {baseTime}")
+        self.updataBaseTime.emit(str(baseTime))
+
+    def lock_set_response(self, response):
+        # logger.info(f"Lock set response: {response}")
+        self.mqtt_client.publish(json.dumps({"command": "Lock_set_response", "data": response}))
+
+    def lock_init_response(self, response):
+        # logger.info(f"Lock init response: {response}")
+        self.mqtt_client.publish(json.dumps({"command": "Lock_init_response", "data": response}))
 
     def sensorSettings_init_response(self, response):
         # logger.info(f"SensorSettings init response: {response}")
