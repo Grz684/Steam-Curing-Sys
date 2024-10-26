@@ -31,7 +31,7 @@ class TempHumidityPublisher(Node):
 
     def read_temperature_humidity(self, client_index):
         temperature = round(random.uniform(38.0, 40.0), 2)
-        humidity = round(random.uniform(50.0, 60.0), 2)
+        humidity = round(random.uniform(58.0, 60.0), 2)
         return temperature, humidity
 
     def read_all_sensors(self):

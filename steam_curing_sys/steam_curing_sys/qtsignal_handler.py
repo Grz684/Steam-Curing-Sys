@@ -37,6 +37,7 @@ class QtSignalHandler(QObject):
     confirm_lock_password = pyqtSignal(dict)
     device_activated = pyqtSignal(dict)
     update_device_info = pyqtSignal(dict)
+    update_adjust_settings = pyqtSignal(dict)
     
     # error_occurred = pyqtSignal(str)  # 添加错误信号
 
@@ -69,6 +70,11 @@ class QtSignalHandler(QObject):
 
         self.sensor_num = 15
 
+        # 为数据作弊提供的
+        self.temp_adjust = 0
+        self.humidity_adjust = 0
+        self.adjust_sensor_data_lock = threading.Lock()
+
     def activate_device(self):
         # 将当前时间保存进数据库
         current_time = int(datetime.now().timestamp() * 1000)
@@ -96,6 +102,17 @@ class QtSignalHandler(QObject):
             self.update_device_info.emit(dolly_configs)
         else:
             logger.error("未找到设备信息")
+
+    def load_adjust_settings(self):
+        adjust_configs = self.config_manager.get_multiple_config([
+            'temp_adjust',
+            'humidity_adjust'
+        ])
+        if adjust_configs:
+            self.update_adjust_settings.emit(adjust_configs)
+            self.set_adjust_settings(adjust_configs)
+        else:
+            logger.info("尚未设置数据调整信息")
     
     def check_password(self, pak):
         if pak["password"] == self.generate_unlock_password(pak["deviceRandomCode"], "forever"):
@@ -411,3 +428,18 @@ class QtSignalHandler(QObject):
         # base_time为int类型
         base_time = int(base_time)
         self.config_manager.update_config(device_base_time=base_time)
+
+    def save_adjust_settings(self, settings):
+        # settings为字典
+        self.config_manager.update_multiple_config(settings)
+        self.set_adjust_settings(settings)
+
+    def set_adjust_settings(self, settings):
+        # settings为字典
+        with self.adjust_sensor_data_lock:
+            self.temp_adjust = settings['temp_adjust']
+            self.humidity_adjust = settings['humidity_adjust']
+
+    def read_adjust_settings(self):
+        with self.adjust_sensor_data_lock:
+            return self.temp_adjust, self.humidity_adjust

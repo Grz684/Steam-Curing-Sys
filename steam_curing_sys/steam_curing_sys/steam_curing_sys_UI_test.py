@@ -30,6 +30,7 @@ class Bridge(QObject):
     lockPasswordCheck = pyqtSignal(dict)
     activateDevice = pyqtSignal()
     updataBaseTime = pyqtSignal(str)
+    adjustSettingsSaved = pyqtSignal(dict)
 
     def __init__(self):
         super().__init__()
@@ -98,12 +99,18 @@ class Bridge(QObject):
                 self.update_remote_sensor_data(args)
             elif method_name == "update_baseTime":
                 self.update_baseTime(args)
+            elif method_name == "saveAdjustSettings":
+                self.saveAdjustSettings(args)
             else:
                 logger.info(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
             logger.info(f"Failed to parse JSON: {args_json}")
         except Exception as e:
             logger.info(f"Error processing method {method_name}: {str(e)}")
+
+    def saveAdjustSettings(self, args):
+        logger.info(f"Save adjust settings: {args}")
+        self.adjustSettingsSaved.emit(args)
 
     def update_baseTime(self, baseTime):
         logger.info(f"Update baseTime: {baseTime}")
@@ -255,6 +262,11 @@ class MainWindow(QMainWindow):
         msg_type = "device_info"
         logger.info(f"Send device info: {device_info}")
         self.bridge.send_message(msg_type, json.dumps(device_info))
+
+    def update_adjust_settings(self, settings):
+        msg_type = "update_adjust_settings"
+        logger.info(f"Send adjust settings: {settings}")
+        self.bridge.send_message(msg_type, json.dumps(settings))
 
     def device_activated(self, response):
         msg_type = "device_activated"

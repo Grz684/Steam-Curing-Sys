@@ -44,6 +44,8 @@ def main():
     qtSignalHandler.update_device_info.connect(ex.update_device_info)
     qtSignalHandler.device_activated.connect(ex.device_activated)
     ex.bridge.updataBaseTime.connect(qtSignalHandler.update_baseTime)
+    ex.bridge.adjustSettingsSaved.connect(qtSignalHandler.save_adjust_settings)
+    qtSignalHandler.update_adjust_settings.connect(ex.update_adjust_settings)
 
     try:
         qtSignalHandler.control_utils = ControlUtils()
@@ -57,6 +59,7 @@ def main():
 
     # 第一次调用load_device_info会因为随机码生成后还没完全保存到数据库中而失败
     qtSignalHandler.load_device_info()
+    qtSignalHandler.load_adjust_settings()
 
     qtSignalHandler.ros2_thread.start()
 

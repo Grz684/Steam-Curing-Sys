@@ -169,6 +169,15 @@ class SensorSubscriberNode(Node):
         future = self.cli.call_async(request)
         future.add_done_callback(self.service_response_callback)
 
+    def adjust_data(self):
+        temp_adjust, humidity_adjust = self.qtSignalHandler.read_adjust_settings()
+        for sensor in self.temp_data:
+            if self.temp_data[sensor] != -1:
+                self.temp_data[sensor] += temp_adjust
+        for sensor in self.humidity_data:
+            if self.humidity_data[sensor] != -1:
+                self.humidity_data[sensor] += humidity_adjust
+
     def service_response_callback(self, future):
         try:
             response = future.result()  # 获取服务的响应
@@ -177,6 +186,8 @@ class SensorSubscriberNode(Node):
                 
                 self.temp_data = data["temperatures"]
                 self.humidity_data = data["humidities"]
+
+                self.adjust_data()
                 # self.get_logger().info('接收到传感器数据:')
                 # logger.info(f'温度: {data["temperatures"]}, 湿度: {data["humidities"]}')
             else:
