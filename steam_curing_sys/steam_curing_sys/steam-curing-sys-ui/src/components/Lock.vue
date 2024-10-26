@@ -152,6 +152,7 @@ function updateTimeToNextLock() {
 function lockDevice() {
   isLocked.value = true;
   clearInterval(countdownInterval);
+  sendLockMessage();
 }
 
 function attemptUnlock() {
@@ -310,6 +311,15 @@ function showToast(message) {
     setTimeout(() => {
       document.body.removeChild(toast);
     }, 3000); // 3秒后自动消失
+}
+
+const emit = defineEmits(['messageFromA'])
+
+const sendLockMessage = () => {
+  emit('messageFromA', {
+    content: 'hello',  // 消息内容
+    timestamp: Date.now()  // 时间戳
+  })
 }
 </script>
 

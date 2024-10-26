@@ -144,7 +144,7 @@ class QtSignalHandler(QObject):
         # 映射到6位数字
         password = str(hash_int % 1000000).zfill(6)
 
-        print('Expected password:', password)
+        # print('Expected password:', password)
 
         return password
 

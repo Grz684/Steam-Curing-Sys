@@ -147,6 +147,25 @@ let timer;
 let waterTimer;
 let switchingInterval;
 
+const props = defineProps({
+  message: {
+    type: Object,  // 改为Object类型
+    default: () => ({})
+  }
+})
+
+// 监听Lock组件发来的消息，锁生效则通过setMode来关闭系统
+watch(() => props.message, (newMsg) => {
+  if (newMsg?.content) {  // 检查是否有content
+    if (isAutoMode.value) {
+      setMode('manual');
+    }
+    else {
+      setMode('auto');
+    }
+  }
+})
+
 onMounted(() => {
   environment.isPyQtWebEngine = typeof window.qt !== 'undefined' && window.qt.webChannelTransport;
 

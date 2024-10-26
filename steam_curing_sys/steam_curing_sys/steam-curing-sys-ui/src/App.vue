@@ -6,10 +6,10 @@
     <SensorSettings />
     <!-- <SteamEngineControl />
     <SprinklerSystem /> -->
-    <IntegratedControlSystem />
+    <IntegratedControlSystem :message="messageForB"/>
     <!-- <CartSystem /> -->
     <WiFi />
-    <Lock />
+    <Lock @messageFromA="handleMessage"/>
   </div>
 </template>
 
@@ -26,6 +26,13 @@ import DataExport from './components/DataExport.vue';
 import VirtualKeyBoard from './components/VirtualKeyBoard.vue';
 import WiFi from './components/WiFi.vue';
 import Lock from './components/Lock.vue';
+import { ref } from 'vue'
+
+const messageForB = ref('')
+
+const handleMessage = (msg) => {
+  messageForB.value = msg  // msg现在是一个对象，包含content和timestamp
+}
 </script>
 
 <style>
