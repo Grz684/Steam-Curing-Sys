@@ -101,6 +101,8 @@ class Bridge(QObject):
                 self.update_baseTime(args)
             elif method_name == "saveAdjustSettings":
                 self.saveAdjustSettings(args)
+            elif method_name == "DataExport_init_response":
+                self.dataExport_init_response(args)
             else:
                 logger.info(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
@@ -108,9 +110,14 @@ class Bridge(QObject):
         except Exception as e:
             logger.info(f"Error processing method {method_name}: {str(e)}")
 
+    def dataExport_init_response(self, response):
+        logger.info(f"Data export init response: {response}")
+        self.mqtt_client.publish(json.dumps({"command": "DataExport_init_response", "data": response}))
+
     def saveAdjustSettings(self, args):
         logger.info(f"Save adjust settings: {args}")
         self.adjustSettingsSaved.emit(args)
+        self.mqtt_client.publish(json.dumps({"command": "saveAdjustSettings", "data": args}))
 
     def update_baseTime(self, baseTime):
         logger.info(f"Update baseTime: {baseTime}")

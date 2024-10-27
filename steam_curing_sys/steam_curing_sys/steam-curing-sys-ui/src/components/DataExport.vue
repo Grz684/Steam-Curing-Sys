@@ -71,6 +71,7 @@
 import { reactive, ref, onMounted, watch } from 'vue';
 import { useWebChannel } from './useWebChannel';
 
+
 const { sendToPyQt } = useWebChannel();
 const environment = reactive({
   isPyQtWebEngine: false
@@ -123,13 +124,22 @@ onMounted(() => {
     const { message } = useWebChannel();
 
     watch(message, (newMessage) => {
-      if (newMessage && newMessage.type === 'update_adjust_settings') {
-        try {
-          const settings = JSON.parse(newMessage.content);
-          tempAdjust.value = settings['temp_adjust'];
-          humidityAdjust.value = settings['humidity_adjust'];
-        } catch (error) {
-          console.error('Failed to parse adjust settings:', error);
+      if (newMessage && newMessage.type === 'DataExport_init') {
+        const initialState = {
+          tempAdjust: tempAdjust.value,
+          humidityAdjust: humidityAdjust.value
+        };
+
+        console.log('Sending initial DataExport state:', initialState);
+        sendToPyQt('DataExport_init_response', initialState);
+      }
+      else if (newMessage && newMessage.type === 'DataExport_set')
+      {
+        const set_pak = JSON.parse(newMessage.content);
+        if (set_pak.method === 'saveAdjustSettings') {
+          tempTempAdjust.value = set_pak.args.tempAdjust
+          tempHumidityAdjust.value = set_pak.args.humidityAdjust
+          saveAdjustSettings()
         }
       }
     });
