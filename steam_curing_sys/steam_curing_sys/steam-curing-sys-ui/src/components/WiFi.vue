@@ -16,7 +16,7 @@
       </div>
       <div class="column">
         <div class="button-group">
-          <button @click="validateWifi">验证 WiFi</button>
+          <button @click="validateWifi">搜索可用 WiFi</button>
           <button @click="connectWifi">连接 WiFi</button>
         </div>
       </div>

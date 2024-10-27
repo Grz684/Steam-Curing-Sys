@@ -3,6 +3,7 @@ import os
 import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
 from PyQt5.QtWebEngineWidgets import QWebEngineView
+sys.argv.append("--no-sandbox")  # 添加在导入 QWebEngineView 之后，创建 QApplication 之前
 from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtCore import QObject, pyqtSlot, QUrl, pyqtSignal
 from PyQt5.QtGui import QKeySequence

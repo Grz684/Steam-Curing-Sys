@@ -124,7 +124,16 @@ onMounted(() => {
     const { message } = useWebChannel();
 
     watch(message, (newMessage) => {
-      if (newMessage && newMessage.type === 'DataExport_init') {
+      if (newMessage && newMessage.type === 'update_adjust_settings') {
+        try {
+          const settings = JSON.parse(newMessage.content);
+          tempAdjust.value = settings['temp_adjust'];
+          humidityAdjust.value = settings['humidity_adjust'];
+        } catch (error) {
+          console.error('Failed to parse adjust settings:', error);
+        }
+      }
+      else if (newMessage && newMessage.type === 'DataExport_init') {
         const initialState = {
           tempAdjust: tempAdjust.value,
           humidityAdjust: humidityAdjust.value

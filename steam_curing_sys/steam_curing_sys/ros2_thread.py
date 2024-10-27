@@ -3,6 +3,7 @@ from PyQt5.QtCore import QThread
 from .ros2_handler_node import SensorSubscriberNode
 from .control_utils import ModbusControlException
 import logging
+import sys
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -17,6 +18,9 @@ class ROS2Thread(QThread):
         
     def run(self):
         try:
+            # 在初始化 ROS2 之前移除 --no-sandbox 参数
+            ros_args = [arg for arg in sys.argv if arg != "--no-sandbox"]
+            sys.argv = ros_args
             rclpy.init()
             self.node = SensorSubscriberNode(self.qtSignalHandler)
             
