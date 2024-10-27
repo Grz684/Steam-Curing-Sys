@@ -6,7 +6,7 @@
       </div>
       <div class="column">
         <div class="status">
-          WiFi 状态: {{ wifiStatus }}
+          WiFi: {{ wifiName }} | 网络: {{ internetStatus }}
         </div>
       </div>
     </div>
@@ -56,18 +56,49 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 import "vue-keyboard-virtual-next/keyboard.min.css";
 import KeyBoard from "vue-keyboard-virtual-next";
 import { useWebChannel } from './useWebChannel';
 
 const { sendToPyQt, message } = useWebChannel();
 
-const wifiStatus = ref('未连接');
+const wifiName = ref('未连接');
+const internetStatus = ref('无网络');
 const ssid = ref('');
 const password = ref('');
 const showWifiList = ref(false);
 const wifiList = ref([]);
+
+// 定时器引用
+const statusCheckTimer = ref(null);
+
+// 检查 WiFi 状态
+const checkWifiStatus = () => {
+  sendToPyQt('check_wifi_status', {});
+};
+
+// 启动定时检查
+const startStatusCheck = () => {
+  // checkWifiStatus(); // 立即检查一次
+  statusCheckTimer.value = setInterval(checkWifiStatus, 5000); // 每5秒检查一次
+};
+
+// 停止定时检查
+const stopStatusCheck = () => {
+  if (statusCheckTimer.value) {
+    clearInterval(statusCheckTimer.value);
+    statusCheckTimer.value = null;
+  }
+};
+
+onMounted(() => {
+  startStatusCheck();
+});
+
+onUnmounted(() => {
+  stopStatusCheck();
+});
 
 const validateWifi = async () => {
   // 先设置显示弹窗
@@ -118,8 +149,9 @@ watch(message, (newMessage) => {
   const content = JSON.parse(newMessage?.content);
   if (newMessage?.type === 'wifi_list') {
     wifiList.value = content;
-  } else if (newMessage?.type === 'wifi_connection') {
-    wifiStatus.value = content.status;
+  } else if (newMessage?.type === 'wifi_status') {
+      wifiName.value = content.wifi_name;
+      internetStatus.value = content.internet_status;
   }
 });
 </script>

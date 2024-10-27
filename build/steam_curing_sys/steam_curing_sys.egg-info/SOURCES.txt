@@ -15,6 +15,7 @@ steam_curing_sys/ros2_thread.py
 steam_curing_sys/steam_curing_sys.py
 steam_curing_sys/steam_curing_sys_UI.py
 steam_curing_sys/steam_curing_sys_UI_test.py
+steam_curing_sys/wifi_manager.py
 steam_curing_sys.egg-info/PKG-INFO
 steam_curing_sys.egg-info/SOURCES.txt
 steam_curing_sys.egg-info/dependency_links.txt
