@@ -9,7 +9,7 @@ from PyQt5.QtCore import QObject, pyqtSlot, QUrl, pyqtSignal
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QShortcut, QSizePolicy
 import logging
-
+from wifi import Cell
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 
@@ -17,6 +17,8 @@ from PyQt5.QtWidgets import (
     QLabel, QPushButton, QDesktopWidget, QDialog
 )
 from .mqtt_client import MQTTClient
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -104,12 +106,120 @@ class Bridge(QObject):
                 self.saveAdjustSettings(args)
             elif method_name == "DataExport_init_response":
                 self.dataExport_init_response(args)
+            elif method_name == "search_wifi":
+                self.start_wifi_search()
             else:
                 logger.info(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
             logger.info(f"Failed to parse JSON: {args_json}")
         except Exception as e:
             logger.info(f"Error processing method {method_name}: {str(e)}")
+
+    def start_wifi_search(self):
+        """启动异步WiFi搜索"""
+        self.thread_pool = ThreadPoolExecutor(max_workers=1)
+        future = self.thread_pool.submit(self.search_wifi_worker)
+        future.add_done_callback(self.wifi_search_completed)
+
+    @staticmethod
+    def decode_ssid(ssid):
+        """解码SSID的辅助函数"""
+        if not ssid:
+            return None
+            
+        try:
+            # 如果是bytes类型，直接解码
+            if isinstance(ssid, bytes):
+                return ssid.decode('utf-8')
+                
+            # 如果是字符串类型
+            if isinstance(ssid, str):
+                # 检查是否包含转义序列
+                if '\\x' in ssid:
+                    # 分割普通文本和编码部分
+                    parts = []
+                    current_text = ''
+                    i = 0
+                    while i < len(ssid):
+                        if ssid[i:i+2] == '\\x':
+                            if current_text:
+                                parts.append(current_text)
+                                current_text = ''
+                            # 收集所有连续的十六进制转义序列
+                            hex_str = ''
+                            while i < len(ssid) and ssid[i:i+2] == '\\x':
+                                hex_str += ssid[i+2:i+4]
+                                i += 4
+                            try:
+                                decoded = bytes.fromhex(hex_str).decode('utf-8')
+                                parts.append(decoded)
+                            except:
+                                parts.append(ssid[i-len(hex_str)-2:i])
+                        else:
+                            current_text += ssid[i]
+                            i += 1
+                    if current_text:
+                        parts.append(current_text)
+                    return ''.join(parts)
+                return ssid
+        except Exception as e:
+            logger.warning(f"Failed to decode SSID: {e}")
+            return ssid
+        return None
+
+    def search_wifi_worker(self):
+        """在后台线程中执行WiFi搜索"""
+        try:
+            networks = Cell.all('wls2')
+            wifi_list = []
+
+            for network in networks:
+                try:
+                    decoded_ssid = self.decode_ssid(network.ssid)
+                    if not decoded_ssid or decoded_ssid.strip() == '' or '\x00' in decoded_ssid:
+                        continue
+
+                    signal_strength = min(100, max(0, int(((network.signal + 100) / 60) * 100)))
+
+                    wifi_info = {
+                        'ssid': decoded_ssid,
+                        'signal': f"{signal_strength}%",
+                        'encrypted': network.encrypted
+                    }
+                    wifi_list.append(wifi_info)
+                except Exception as e:
+                    logger.warning(f"Skip WiFi with invalid SSID: {str(e)}")
+                    continue
+
+            # 先去重，保留信号最强的
+            seen_ssids = {}
+            for wifi in wifi_list:
+                ssid = wifi['ssid']
+                current_signal = int(wifi['signal'].rstrip('%'))
+                
+                if ssid not in seen_ssids or current_signal > int(seen_ssids[ssid]['signal'].rstrip('%')):
+                    seen_ssids[ssid] = wifi
+
+            # 转换回列表并排序
+            unique_wifi_list = list(seen_ssids.values())
+            unique_wifi_list.sort(key=lambda x: int(x['signal'].rstrip('%')), reverse=True)
+
+            return unique_wifi_list
+
+        except Exception as e:
+            logger.error(f"Failed to search WiFi networks: {e}")
+            return []
+
+    def wifi_search_completed(self, future):
+        """WiFi搜索完成后的回调"""
+        try:
+            wifi_list = future.result()
+            logger.info(f"WiFi networks found: {wifi_list}")
+            self.send_message("wifi_list", json.dumps(wifi_list))
+        except Exception as e:
+            logger.error(f"Error in wifi search completion: {e}")
+        finally:
+            self.thread_pool.shutdown(wait=False)
 
     def dataExport_init_response(self, response):
         logger.info(f"Data export init response: {response}")

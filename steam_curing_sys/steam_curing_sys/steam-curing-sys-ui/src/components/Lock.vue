@@ -151,6 +151,8 @@ function updateTimeToNextLock() {
 
 function lockDevice() {
   isLocked.value = true;
+  // 禁止背景滚动
+  document.body.style.overflow = 'hidden';
   clearInterval(countdownInterval);
   sendLockMessage();
 }
@@ -182,11 +184,15 @@ function attemptUnlock_withPassword(password) {
 function permanentUnlock() {
   deviceStatus.value = '永久激活';
   isLocked.value = false;
+  // 恢复背景滚动
+  document.body.style.overflow = 'auto';
   clearInterval(countdownInterval);
 }
 
 function extendLockTime() {
   isLocked.value = false;
+  // 恢复背景滚动
+  document.body.style.overflow = 'auto';
   lockCount.value++;
   if (countdownInterval) {
     clearInterval(countdownInterval);

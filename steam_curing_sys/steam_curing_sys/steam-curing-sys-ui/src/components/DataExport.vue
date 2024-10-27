@@ -2,15 +2,12 @@
   <div class="data-actions">
     <div class="action-buttons">
       <div class="button-group">
-        <i class="fas fa-file-excel"></i>
         <button @click="exportData" class="export-btn">导出数据</button>
       </div>
       <div class="button-group">
-        <i class="fas fa-trash-alt"></i>
         <button @click="showConfirmDialog" class="clear-btn">清空数据</button>
       </div>
       <div class="button-group">
-        <i class="fas fa-cog"></i>
         <button @click="showSettingsDialog" class="settings-btn">传感器设置</button>
       </div>
     </div>
@@ -92,6 +89,8 @@ const showSettingsDialog = () => {
   tempTempAdjust.value = tempAdjust.value
   tempHumidityAdjust.value = humidityAdjust.value
   showSettings.value = true
+  // 禁止背景滚动
+  document.body.style.overflow = 'hidden';
 }
 
 const closeAdjustSettings = () => {
@@ -99,12 +98,16 @@ const closeAdjustSettings = () => {
   tempHumidityAdjust.value = humidityAdjust.value
   tempTempAdjust.value = tempAdjust.value
   showSettings.value = false
+  // 恢复背景滚动
+  document.body.style.overflow = 'auto';
 }
 
 const saveAdjustSettings = () => {
   tempAdjust.value = tempTempAdjust.value
   humidityAdjust.value = tempHumidityAdjust.value
   showSettings.value = false
+  // 恢复背景滚动
+  document.body.style.overflow = 'auto';
   sendToPyQt("saveAdjustSettings", { temp_adjust: tempAdjust.value, humidity_adjust: humidityAdjust.value });
 }
 
@@ -166,16 +169,22 @@ const exportData = () => {
 
 const showConfirmDialog = () => {
   showConfirm.value = true;
+  // 禁止背景滚动
+  document.body.style.overflow = 'hidden';
 };
 
 const cancelClearData = () => {
   showConfirm.value = false;
+  // 恢复背景滚动
+  document.body.style.overflow = 'auto';
 };
 
 const clearData = () => {
   console.log('清空数据');
   showConfirm.value = false;
   showCustomAlert('所有数据已清空！');
+  // 恢复背景滚动
+  document.body.style.overflow = 'auto';
   // 这里添加实际的数据清空逻辑
   if (environment.isPyQtWebEngine) {
     sendToPyQt("exportData", false);
