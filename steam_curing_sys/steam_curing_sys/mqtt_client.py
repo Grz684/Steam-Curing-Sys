@@ -1,3 +1,4 @@
+import os
 import string
 import paho.mqtt.client as mqtt
 from paho.mqtt.properties import Properties, PacketTypes
@@ -19,11 +20,18 @@ class MQTTClient:
         # MQTT配置
         self.bridge = bridge
         self.mqtt_broker = "8.137.17.72"
-        self.mqtt_port = 1883
+        self.mqtt_port = 8883
         self.mqtt_user = "fute"
         self.mqtt_password = "zhinengxitong"
         self.mqtt_keepalive = 10
         self.mqtt_topic_publish = "device/request"
+
+        # 证书路径配置
+        CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+        CERT_PATH = os.path.join(CURRENT_DIR, "certs")
+        ca_cert = f"{CERT_PATH}/ca.crt"
+        client_cert = f"{CERT_PATH}/client.crt"
+        client_key = f"{CERT_PATH}/client.key"
 
         # 加载配置
         self.config_manager = ConfigManager()
@@ -50,6 +58,14 @@ class MQTTClient:
         # 创建遗嘱消息的属性
         # will_properties = Properties(PacketTypes.WILLMESSAGE)
         # will_properties.MessageExpiryInterval = 3600  # 消息过期时间，单位为秒
+        # SSL配置
+        self.client.tls_set(ca_certs=ca_cert,
+                            certfile=client_cert,
+                            keyfile=client_key,
+                            cert_reqs=mqtt.ssl.CERT_REQUIRED,
+                            tls_version=mqtt.ssl.PROTOCOL_TLS)
+        # 如果连接地址与证书CN不同，则需要设置
+        self.client.tls_insecure_set(True)
 
         # 对于遗嘱消息，retain 确保设备的最后已知状态（例如离线状态）被保留，直到设备重新上线
         self.client.will_set(self.device_status_topic, "offline", will_qos, retain=True)

@@ -5,6 +5,7 @@ import subprocess
 import requests
 from wifi import Cell, Scheme
 import logging
+import netifaces
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,26 @@ class WifiManager:
             if ssid_match:
                 wifi_name = ssid_match.group(1)
         return wifi_name
+
+    @staticmethod
+    def get_zerotier_ip():
+        # 获取所有网络接口
+        interfaces = netifaces.interfaces()
+        
+        # 筛选出以zt开头的接口
+        zt_interfaces = [iface for iface in interfaces if iface.startswith('zt')]
+        
+        if not zt_interfaces:
+            return None
+            
+        # 获取第一个zt接口的地址信息
+        addrs = netifaces.ifaddresses(zt_interfaces[0])
+        
+        # 获取IPv4地址
+        if netifaces.AF_INET in addrs:
+            return addrs[netifaces.AF_INET][0]['addr']
+            
+        return None
 
     @staticmethod
     def check_internet():
@@ -104,11 +125,15 @@ class WifiManager:
             wifi_name = self.get_wifi_name()
             internet_result = self.check_internet()
             internet_status = "已联网" if internet_result else "无网络"
+            zerotier_ip = self.get_zerotier_ip()
+            zerotier_ip_status = f"{zerotier_ip}" if zerotier_ip else "未知"
+
                 
             return {
                 "success": True,
                 "wifi_name": wifi_name,
                 "internet_status": internet_status,
+                "zerotier_ip": zerotier_ip_status
             }
             
         except Exception as e:
@@ -127,6 +152,7 @@ class WifiManager:
                     json.dumps({
                         "wifi_name": result["wifi_name"],
                         "internet_status": result["internet_status"], 
+                        "zerotier_ip": result["zerotier_ip"]
                     })
                 )
             else:
@@ -230,11 +256,15 @@ class WifiManager:
           
           internet_result = self.check_internet()
           internet_status = "已联网" if internet_result else "无网络"
+
+          zerotier_ip = self.get_zerotier_ip()
+          zerotier_ip_status = f"{zerotier_ip}" if zerotier_ip else "未知"
           
           return {
               "success": True,
               "wifi_name": ssid,
-              "internet_status": internet_status
+              "internet_status": internet_status,
+              "zerotier_ip": zerotier_ip_status
           }
           
       except Exception as e:
@@ -253,6 +283,7 @@ class WifiManager:
                     json.dumps({
                         "wifi_name": result["wifi_name"],
                         "internet_status": result["internet_status"], 
+                        "zerotier_ip": result["zerotier_ip"]
                     })
                 )
             else:

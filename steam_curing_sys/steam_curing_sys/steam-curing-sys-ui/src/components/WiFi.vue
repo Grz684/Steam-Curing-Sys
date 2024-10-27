@@ -6,7 +6,8 @@
       </div>
       <div class="column">
         <div class="status">
-          WiFi: {{ wifiName }} | 网络: {{ internetStatus }}
+          WiFi: {{ wifiName }} | 网络: {{ internetStatus }} <br>
+          zerotier ip地址: {{  zerotierIP }}
         </div>
       </div>
     </div>
@@ -61,10 +62,11 @@ import "vue-keyboard-virtual-next/keyboard.min.css";
 import KeyBoard from "vue-keyboard-virtual-next";
 import { useWebChannel } from './useWebChannel';
 
-const { sendToPyQt, message } = useWebChannel();
+const { sendToPyQt } = useWebChannel();
 
 const wifiName = ref('未连接');
 const internetStatus = ref('无网络');
+const zerotierIP = ref('未知');
 const ssid = ref('');
 const password = ref('');
 const showWifiList = ref(false);
@@ -94,6 +96,18 @@ const stopStatusCheck = () => {
 
 onMounted(() => {
   startStatusCheck();
+  const { message } = useWebChannel();
+  watch(message, (newMessage) => {
+    if (newMessage && newMessage.type === 'wifi_list') {
+      const content = newMessage.content;
+      wifiList.value = content;
+    } else if (newMessage && newMessage.type === 'wifi_status') {
+        const content = JSON.parse(newMessage?.content);
+        wifiName.value = content.wifi_name;
+        internetStatus.value = content.internet_status;
+        zerotierIP.value = content.zerotier_ip;
+    }
+  });
 });
 
 onUnmounted(() => {
@@ -144,16 +158,6 @@ const change = (value, inputEl) => {
     password.value = value;
   }
 };
-
-watch(message, (newMessage) => {
-  const content = JSON.parse(newMessage?.content);
-  if (newMessage?.type === 'wifi_list') {
-    wifiList.value = content;
-  } else if (newMessage?.type === 'wifi_status') {
-      wifiName.value = content.wifi_name;
-      internetStatus.value = content.internet_status;
-  }
-});
 </script>
 
 <style scoped>
@@ -162,7 +166,7 @@ watch(message, (newMessage) => {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  width: 100%;
+  width: calc(100% - 20px); /* 减少20px (左右各10px) */
   margin: 10px auto;
   box-sizing: border-box;
 }

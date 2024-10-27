@@ -354,7 +354,9 @@ h3 {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 600px;
+  width: calc(100% - 20px); /* 减少20px (左右各10px) */
+  margin: 20px auto;
+  box-sizing: border-box;
 }
 
 .column {
