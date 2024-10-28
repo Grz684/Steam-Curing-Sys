@@ -55,7 +55,7 @@
     <!-- 自定义提示弹窗 -->
     <div v-if="showAlert" class="modal-overlay">
       <div class="modal-content">
-        <p>{{ alertMessage }}</p>
+        <h2>{{ alertMessage }}</h2>
         <div class="modal-buttons">
           <button @click="closeAlert" class="confirm-btn">确定</button>
         </div>

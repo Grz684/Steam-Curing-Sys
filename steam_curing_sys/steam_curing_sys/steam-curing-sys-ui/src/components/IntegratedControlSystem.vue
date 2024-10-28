@@ -54,7 +54,8 @@
             <label>喷淋头-喷淋头运行间隔时间 (秒):</label>
             <input 
               type="text" 
-              :value="tempRunIntervalTime" 
+              :value="tempRunIntervalTime"
+              disabled
               @focus="focusInput('runIntervalTime')"
               readonly
             />
@@ -783,6 +784,12 @@ label {
   justify-content: space-between;
   align-items: center;  /* 添加这行来实现垂直居中对齐 */
   margin-bottom: 10px;
+}
+
+.disabled-input {
+  background-color: #f0f0f0;
+  color: #666;
+  cursor: not-allowed;
 }
 
 .input-group input {

@@ -550,6 +550,7 @@ const ut = (be, te) => {
               C("input", {
                 type: "text",
                 value: u.value,
+                disabled: "",
                 onFocus: P[3] || (P[3] = (Y) => U("runIntervalTime")),
                 readonly: ""
               }, null, 40, Rn)
@@ -588,7 +589,7 @@ const ut = (be, te) => {
       }, null, 8, ["modelValue", "showKeyboard"])
     ]));
   }
-}, Wn = /* @__PURE__ */ ut(Vn, [["__scopeId", "data-v-f873a73c"]]), qn = { class: "data-actions" }, zn = {
+}, Wn = /* @__PURE__ */ ut(Vn, [["__scopeId", "data-v-14890316"]]), qn = { class: "data-actions" }, zn = {
   key: 0,
   class: "modal-overlay"
 }, Qn = { class: "modal-content settings-modal" }, Kn = { class: "setting-group" }, Hn = { class: "setting-item" }, Gn = { class: "setting-controls" }, Yn = { class: "value-display" }, Jn = { class: "setting-item" }, Xn = { class: "setting-controls" }, Zn = { class: "value-display" }, er = {
@@ -729,7 +730,7 @@ const ut = (be, te) => {
       ])) : ct("", !0),
       d.value ? (Oe(), je("div", tr, [
         C("div", nr, [
-          C("p", null, Ne(e.value), 1),
+          C("h2", null, Ne(e.value), 1),
           C("div", { class: "modal-buttons" }, [
             C("button", {
               onClick: g,
@@ -740,7 +741,7 @@ const ut = (be, te) => {
       ])) : ct("", !0)
     ]));
   }
-}, or = /* @__PURE__ */ ut(rr, [["__scopeId", "data-v-b5ef3dba"]]);
+}, or = /* @__PURE__ */ ut(rr, [["__scopeId", "data-v-d0a112d7"]]);
 var ir = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : typeof global < "u" ? global : typeof self < "u" ? self : {};
 function ar(be) {
   return be && be.__esModule && Object.prototype.hasOwnProperty.call(be, "default") ? be.default : be;

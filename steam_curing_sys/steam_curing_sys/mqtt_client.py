@@ -140,7 +140,8 @@ class MQTTClient:
                         self.client.connect(self.mqtt_broker, self.mqtt_port, self.mqtt_keepalive)
                         self.client.loop_start()
                     except Exception as e:
-                        logger.error(f"Connection failed: {e}")
+                        # logger.error(f"Connection failed: {e}")
+                        pass
                 time.sleep(5)  # 每5秒检查一次连接状态
 
         threading.Thread(target=run, daemon=True).start()
