@@ -64,7 +64,7 @@ const deviceRandomCode = ref('');
 const unlockKey = ref('');
 // const modalUnlockKey = ref('');
 const isLocked = ref(false);
-const lockInterval = ref(60); // 30秒
+const lockInterval = ref(7776000); // 30秒
 let countdownInterval;
 let activationTimer;
 const progressWidth = ref(0);

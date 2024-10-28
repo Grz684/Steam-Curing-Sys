@@ -4583,7 +4583,7 @@ const sr = { class: "wifi-component" }, cr = { class: "row" }, lr = { class: "co
   setup(be, { emit: te }) {
     const { sendToPyQt: oe } = Ge(), a = mt({
       isPyQtWebEngine: !1
-    }), d = Z("未激活"), e = Z(0), n = Z(""), r = Z(""), o = Z(!1), t = Z(60);
+    }), d = Z("未激活"), e = Z(0), n = Z(""), r = Z(""), o = Z(!1), t = Z(7776e3);
     let u, s;
     const i = Z(0), l = Z(1), c = Z(null), f = Z(!1), b = Z(!1), p = pt(() => d.value === "未激活" ? "设备状态: 未激活" : d.value === "永久激活" ? "设备状态: 已永久激活" : `即将第 ${l.value} 次锁定 - 剩余时间: ${v.value}`), v = pt(() => {
       const G = Math.floor(e.value / 86400), W = Math.floor(e.value % (24 * 60 * 60) / (60 * 60)), F = Math.floor(e.value % (60 * 60) / 60), A = e.value % 60;
@@ -4762,7 +4762,7 @@ const sr = { class: "wifi-component" }, cr = { class: "row" }, lr = { class: "co
       }, null, 8, ["modelValue", "showKeyboard"])
     ]));
   }
-}, $r = /* @__PURE__ */ ut(Rr, [["__scopeId", "data-v-48a11dc9"]]), Ur = { class: "app-container" }, Dr = {
+}, $r = /* @__PURE__ */ ut(Rr, [["__scopeId", "data-v-3d3fd364"]]), Ur = { class: "app-container" }, Dr = {
   __name: "App",
   setup(be) {
     Rt();
