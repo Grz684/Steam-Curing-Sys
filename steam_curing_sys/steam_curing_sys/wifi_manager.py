@@ -32,6 +32,7 @@ class WifiManager:
             ssid_match = re.search(r'ESSID:"(.*?)"', wifi_result.stdout)
             if ssid_match:
                 wifi_name = ssid_match.group(1)
+                wifi_name = WifiManager.decode_ssid(wifi_name)
         return wifi_name
 
     @staticmethod

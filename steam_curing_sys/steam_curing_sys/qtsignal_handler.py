@@ -43,12 +43,12 @@ class QtSignalHandler(QObject):
 
     def __init__(self):
         super().__init__() 
-        self.temp_lower_limit = 70.0
-        self.temp_upper_limit = 80.0
-        self.humidity_lower_limit = 80.0
-        self.humidity_upper_limit = 90.0
-        self.sprinkler_single_run_time = 5
-        self.sprinkler_run_interval_time = 2
+        self.temp_lower_limit = 25.0
+        self.temp_upper_limit = 35.0
+        self.humidity_lower_limit = 90.0
+        self.humidity_upper_limit = 95.0
+        self.sprinkler_single_run_time = 10
+        self.sprinkler_run_interval_time = 0
         self.sprinkler_loop_interval = 10
 
         self.dolly_single_run_time = 4

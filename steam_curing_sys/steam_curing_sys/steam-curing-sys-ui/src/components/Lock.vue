@@ -94,7 +94,7 @@ const formattedTimeToNextLock = computed(() => {
 });
 
 const activationButtonText = computed(() => {
-  return deviceStatus.value === '未激活' ? '按住以激活设备' : deviceRandomCode.value;
+  return deviceStatus.value === '未激活' ? '按住以激活设备' : `设备码：${deviceRandomCode.value}`
 });
 
 function startActivation(event) {
@@ -360,6 +360,7 @@ h3 {
 }
 
 .column {
+  padding: 20px;
   width: 48%;
   display: flex;
   flex-direction: column;

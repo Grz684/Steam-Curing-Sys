@@ -79,10 +79,10 @@ const environment = reactive({
   isPyQtWebEngine: false
 })
 
-const tempUpper = ref(30)
-const tempLower = ref(10)
-const humidityUpper = ref(80)
-const humidityLower = ref(20)
+const tempUpper = ref(35)
+const tempLower = ref(25)
+const humidityUpper = ref(95)
+const humidityLower = ref(90)
 
 const showKeyboard = ref(false)
 const focusedInput = ref(null)

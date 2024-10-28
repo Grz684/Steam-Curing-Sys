@@ -1,6 +1,6 @@
 <template>
   <div class="integrated-control-system">
-    <h2>集成控制系统</h2>
+    <h2>集成控制系统（支持自动/手动两种模式，自动模式下喷淋->喷雾->喷淋循环运行）</h2>
     
     <div class="mode-controls">
       <button @click="setMode('auto')" :class="{ active: isAutoMode }" class="mode-btn">自动模式</button>
@@ -11,7 +11,7 @@
 
     <div class="systems-container">
       <div class="steam-engine-control">
-        <h3>雾化机控制系统</h3>
+        <h3>雾化机系统（自动模式下，喷雾受湿度上下限控制）</h3>
         <div class="control-panel">
           <div class="engine-status">
             <div class="engine left">
@@ -42,7 +42,7 @@
         <h3>喷淋系统</h3>
         <div class="controls">
           <div class="input-group">
-            <label>单次运行时间 (秒):</label>
+            <label>单个喷淋头工作时间 (秒):</label>
             <input 
               type="text" 
               :value="tempSingleRunTime" 
@@ -51,7 +51,7 @@
             />
           </div>
           <div class="input-group">
-            <label>运行时间间隔 (秒):</label>
+            <label>喷淋头-喷淋头运行间隔时间 (秒):</label>
             <input 
               type="text" 
               :value="tempRunIntervalTime" 
@@ -60,7 +60,7 @@
             />
           </div>
           <div class="input-group">
-            <label>循环时间间隔 (秒):</label>
+            <label>喷雾时间 (秒):</label>
             <input 
               type="text" 
               :value="tempLoopInterval" 
@@ -102,8 +102,8 @@ const leftEngineOn = ref(false);
 const rightEngineOn = ref(false);
 
 // Sprinkler System
-const currentSingleRunTime = ref(5);
-const currentRunIntervalTime = ref(2);
+const currentSingleRunTime = ref(10);
+const currentRunIntervalTime = ref(0);
 const currentLoopInterval = ref(10);
 const nextSingleRunTime = ref(currentSingleRunTime.value);
 const nextRunIntervalTime = ref(currentRunIntervalTime.value);
@@ -675,6 +675,11 @@ h2, h4 {
 
 h4 {
   font-size: 18px;
+}
+
+h2 {
+  font-size: 20px;
+  margin-bottom: 30px; /* 增加这行，数值可以根据需要调整 */
 }
 
 h3 {

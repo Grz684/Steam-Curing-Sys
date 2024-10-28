@@ -99,10 +99,10 @@ onMounted(() => {
   const { message } = useWebChannel();
   watch(message, (newMessage) => {
     if (newMessage && newMessage.type === 'wifi_list') {
-      const content = newMessage.content;
+      const content = JSON.parse(newMessage.content);
       wifiList.value = content;
     } else if (newMessage && newMessage.type === 'wifi_status') {
-        const content = JSON.parse(newMessage?.content);
+        const content = JSON.parse(newMessage.content);
         wifiName.value = content.wifi_name;
         internetStatus.value = content.internet_status;
         zerotierIP.value = content.zerotier_ip;
@@ -179,7 +179,7 @@ const change = (value, inputEl) => {
 
 .column {
   flex: 1;
-  padding: 0 5px;
+  padding: 0 20px;
 }
 
 .wifi-ssid {
