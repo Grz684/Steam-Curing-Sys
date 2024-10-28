@@ -154,6 +154,12 @@ onMounted(() => {
           saveAdjustSettings()
         }
       }
+      else if (newMessage && newMessage.type === 'clearData')
+      {
+        // 让后端清空数据
+        sendToPyQt("exportData", false);
+        sendToPyQt("clearData_response", "")
+      }
     });
   } else {
     console.log('在普通网页环境中运行');

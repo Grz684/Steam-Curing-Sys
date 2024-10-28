@@ -359,7 +359,7 @@ class QtSignalHandler(QObject):
         self.export_started.emit()
 
         result_queue = Queue()
-        export_thread = ExportThread(db_name, usb_mount, result_queue, self.sensor_num)
+        export_thread = ExportThread(db_name=db_name, result_queue=result_queue, sensor_num=self.sensor_num, usb_mount=usb_mount)
         export_thread.start()
 
         def check_export_finished():

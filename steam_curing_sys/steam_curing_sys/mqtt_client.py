@@ -1,4 +1,5 @@
 import os
+import queue
 import string
 import paho.mqtt.client as mqtt
 from paho.mqtt.properties import Properties, PacketTypes
@@ -10,6 +11,7 @@ import threading
 from .config_manager import ConfigManager
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtCore import QObject
+from .export_file import ExportThread
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -107,6 +109,18 @@ class MQTTClient:
         elif payload.get("command") == "get_sensor_data":
             msg_type = "get_sensor_data"
             self.bridge.send_message(msg_type, "")
+        elif payload.get("command") == "exportData":
+            logger.info(f"Received message on topic {msg.topic}: {payload}")
+            export_thread = ExportThread(
+                db_name="sensor_data.db",
+                result_queue=queue.Queue(),
+                sensor_num=15,
+                mqtt_client=self
+            )
+            export_thread.start()
+        elif payload.get("command") == "clearData":
+            logger.info(f"Received message on topic {msg.topic}: {payload}")
+            self.bridge.send_message("clearData", "")
             
     def on_disconnect(self, client, userdata, rc, properties=None):
         self.connected = False
@@ -135,7 +149,7 @@ class MQTTClient:
         self.client.loop_stop()
         self.client.disconnect()
 
-    def publish(self, payload):
+    def publish(self, payload, topic="device/request"):
         if not self.connected:
             logger.warning("Not connected. Message not sent.")
             return False
@@ -143,7 +157,7 @@ class MQTTClient:
             properties = Properties(PacketTypes.PUBLISH)
             # Properties类期望先创建对象，然后通过属性赋值来设置特定的 MQTT 属性
             properties.ResponseTopic = self.response_topic
-            self.client.publish(self.mqtt_topic_publish, payload, properties=properties)
+            self.client.publish(topic=topic, payload=payload, properties=properties)
             
             return True
         except Exception as e:

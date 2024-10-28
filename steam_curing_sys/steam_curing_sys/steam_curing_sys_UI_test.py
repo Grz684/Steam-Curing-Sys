@@ -123,12 +123,18 @@ class Bridge(QObject):
                 self.wifi_manager.connect_wifi(args)
             elif method_name == "check_wifi_status":
                 self.wifi_manager.check_wifi_status()
+            elif method_name == "clearData_response":
+                self.clearData_response()
             else:
                 logger.info(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
             logger.info(f"Failed to parse JSON: {args_json}")
         except Exception as e:
             logger.info(f"Error processing method {method_name}: {str(e)}")
+
+    def clearData_response(self):
+        logger.info("Clear data response")
+        self.mqtt_client.publish(json.dumps({"command": "clearData_response", "data": ""}))
 
     def dataExport_init_response(self, response):
         logger.info(f"Data export init response: {response}")
