@@ -5,6 +5,7 @@ from datetime import datetime
 from datetime import timedelta
 import json
 import logging
+from std_msgs.msg import String
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -36,7 +37,20 @@ class SensorSubscriberNode(Node):
         self.previous_states = [False, False]
 
         # Create timer, calling every 0.5 seconds
-        # self.read_input_timer = self.create_timer(0.5, self.read_input_timer_callback)
+        self.read_input_timer = self.create_timer(0.5, self.read_input_timer_callback)
+
+        # 用于测试
+        self.water_protection_sub = self.create_subscription(
+            String,
+            'water_protection_status',
+            self.water_protection_callback,
+            10
+        )
+
+    # 测试用
+    def water_protection_callback(self, msg):
+        # logger.info(f"Received Water Protection test message: {msg.data}")
+        self.process_water_protection_status(msg.data)
 
     def process_water_protection_status(self, status):
         if status == "Left side: Water shortage":

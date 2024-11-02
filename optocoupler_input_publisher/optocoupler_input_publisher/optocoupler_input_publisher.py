@@ -9,6 +9,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# 废案
 class OptocouplerInputNode(Node):
 
     def __init__(self):

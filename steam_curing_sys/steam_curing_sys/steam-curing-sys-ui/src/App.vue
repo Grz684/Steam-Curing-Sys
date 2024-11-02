@@ -6,8 +6,8 @@
     <SensorSettings />
     <!-- <SteamEngineControl />
     <SprinklerSystem /> -->
-    <IntegratedControlSystem :message="messageForB"/>
-    <!-- <CartSystem /> -->
+    <!-- <IntegratedControlSystem :message="messageForB"/> -->
+    <CartSystem :message="messageForB"/>
     <WiFi />
     <Lock @messageFromA="handleMessage"/>
   </div>

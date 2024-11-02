@@ -388,7 +388,8 @@ class MainWindow(QMainWindow):
 
     def update_dolly_state(self, state):
         msg_type = "update_dolly_state"
-        self.bridge.send_message(msg_type, state) 
+        self.bridge.send_message(msg_type, state)
+        self.bridge.mqtt_client.publish(json.dumps({"command": "update_dolly_state", "data": state}))
 
     def update_sensor_data(self, sensor_data):
         # 将 sensor_data 转换为字典
@@ -410,6 +411,7 @@ class MainWindow(QMainWindow):
     def update_water_tank_status(self, status):
         msg_type = "update_water_tank_status"
         self.bridge.send_message(msg_type, json.dumps(status))
+        self.bridge.mqtt_client.publish(json.dumps({"command": "update_water_tank_status", "data": status}))
 
     def update_limit_settings(self, temp_upper, temp_lower, humidity_upper, humidity_lower):
         msg_type = "update_limit_settings"

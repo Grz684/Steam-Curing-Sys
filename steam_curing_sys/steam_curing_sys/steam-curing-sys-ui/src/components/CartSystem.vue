@@ -97,6 +97,8 @@ let animationFrame = null;
 const leftTankLowWater = ref(false);
 const rightTankLowWater = ref(false);
 
+const phaseStartTime = ref(0);
+
 const { sendToPyQt } = useWebChannel();
   
 const environment = reactive({
@@ -145,9 +147,7 @@ onMounted(() => {
           if(leftTankLowWater.value || rightTankLowWater.value) {
             low_water.value = true;
             if (mode.value === 'auto') {
-              updateAutoModeStatus("小车尚未工作");
-              sendToPyQt('controlDolly', { target: 'setMode', mode: 'semi-auto' });
-              stopDolly();
+              setMode('semi-auto');
             }
             else {
               stopSystem();
@@ -155,9 +155,6 @@ onMounted(() => {
           }
           else {
             low_water.value = false;
-            if (mode.value === 'auto') {
-              sendToPyQt('controlDolly', { target: 'setMode', mode: 'auto' });
-            }
           }
 
           console.log('Water tank status updated:', status);
@@ -180,6 +177,16 @@ onMounted(() => {
         }
         else if (set_pak.method === 'stopSystem') {
           stopSystem();
+        }
+        else if (set_pak.method === 'updateDollySettings') {
+          const settings = set_pak.args;
+          tempRunTime.value = settings.dolly_single_run_time;
+          tempIntervalTime.value = settings.dolly_run_interval_time;
+
+          nextRunTime.value = tempRunTime.value;
+          nextIntervalTime.value = tempIntervalTime.value
+          console.log('dolly Settings received:', settings);
+          updateDollySettings();
         }
       }
     });
@@ -204,12 +211,32 @@ const sendInitialState = () => {
     autoModeStatus: autoModeStatus.value,
     low_water: low_water.value,
     leftTankLowWater: leftTankLowWater.value,
-    rightTankLowWater: rightTankLowWater.value
+    rightTankLowWater: rightTankLowWater.value, 
+    phaseStartTime: phaseStartTime.value,
   };
 
   console.log('Sending initial cart system state:', initialState);
   sendToPyQt('CartSystem_init_response', initialState);
 };
+
+const props = defineProps({
+  message: {
+    type: Object,  // 改为Object类型
+    default: () => ({})
+  }
+})
+
+// 监听Lock组件发来的消息，锁生效则通过setMode来关闭系统
+watch(() => props.message, (newMsg) => {
+  if (newMsg?.content) {  // 检查是否有content
+    if (mode.value === 'auto') {
+      setMode('semi-auto');
+    }
+    else {
+      stopSystem();
+    }
+  }
+})
 
 const setMode = (newMode) => {
   mode.value = newMode;
@@ -309,6 +336,7 @@ const runCart = () => {
   statusMessage.value = '小车运行中';
   progress.value = 0;
   const startTime = Date.now();
+  phaseStartTime.value = startTime;
   
   currentRunTime.value = nextRunTime.value;
   
@@ -333,6 +361,7 @@ const runCart = () => {
 const startInterval = () => {
   statusMessage.value = '等待下次运行';
   const startTime = Date.now();
+  phaseStartTime.value = startTime;
   
   currentIntervalTime.value = nextIntervalTime.value;
   

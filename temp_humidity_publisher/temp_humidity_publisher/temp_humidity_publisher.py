@@ -23,7 +23,7 @@ class TempHumidityPublisher(Node):
         self.ip_address = '192.168.3.7'  # 请替换为您的实际IP地址
         self.base_port = 8001  # COM1 对应的起始端口号
 
-        self.sensor_num = 15
+        self.sensor_num = 4
         
         # 创建16个ModbusTcpClient，每个对应一个传感器
         self.modbus_clients = [
