@@ -350,7 +350,9 @@ const runCart = () => {
       animationFrame = requestAnimationFrame(updateProgress);
     } else if (isRunning.value) {
       progress.value = 100;
-      tempStopDolly();
+      if (nextIntervalTime.value > 0) {
+        tempStopDolly();
+      }
       startInterval();
     }
   };

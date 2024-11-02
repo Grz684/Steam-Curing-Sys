@@ -419,7 +419,7 @@ const it = (ge, Z) => {
       p.value = I, oe.value = n.value;
       const T = () => {
         const A = (Date.now() - I) / 1e3, L = Math.max(0, oe.value - A);
-        t.value = A / oe.value * 100, s.value = `小车运行中: 剩余 ${L.toFixed(1)} 秒`, A < oe.value && r.value ? f = requestAnimationFrame(T) : r.value && (t.value = 100, S(), H());
+        t.value = A / oe.value * 100, s.value = `小车运行中: 剩余 ${L.toFixed(1)} 秒`, A < oe.value && r.value ? f = requestAnimationFrame(T) : r.value && (t.value = 100, o.value > 0 && S(), H());
       };
       f = requestAnimationFrame(T);
     }, H = () => {
@@ -530,7 +530,7 @@ const it = (ge, Z) => {
       }, null, 8, ["modelValue", "showKeyboard"])
     ]));
   }
-}, $n = /* @__PURE__ */ it(In, [["__scopeId", "data-v-53db5915"]]), Un = { class: "data-actions" }, Dn = {
+}, $n = /* @__PURE__ */ it(In, [["__scopeId", "data-v-cbf223bf"]]), Un = { class: "data-actions" }, Dn = {
   key: 0,
   class: "modal-overlay"
 }, Mn = { class: "modal-content settings-modal" }, Fn = { class: "setting-group" }, Vn = { class: "setting-item" }, qn = { class: "setting-controls" }, Wn = { class: "value-display" }, zn = { class: "setting-item" }, Kn = { class: "setting-controls" }, Qn = { class: "value-display" }, Hn = {
