@@ -573,4 +573,12 @@ button:disabled {
 .auto-mode-placeholder {
   flex-grow: 1;
 }
+
+.cart-icon {
+  position: relative;
+  top: -15px;
+  font-size: 40px; /* 增大图标尺寸 */
+  color: #2196F3; 
+  filter: grayscale(0); /* 移除黑白滤镜 */
+}
 </style>

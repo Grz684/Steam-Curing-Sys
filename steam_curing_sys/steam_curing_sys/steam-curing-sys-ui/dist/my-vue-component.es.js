@@ -530,7 +530,7 @@ const it = (ge, Z) => {
       }, null, 8, ["modelValue", "showKeyboard"])
     ]));
   }
-}, $n = /* @__PURE__ */ it(In, [["__scopeId", "data-v-cbf223bf"]]), Un = { class: "data-actions" }, Dn = {
+}, $n = /* @__PURE__ */ it(In, [["__scopeId", "data-v-c94fccdc"]]), Un = { class: "data-actions" }, Dn = {
   key: 0,
   class: "modal-overlay"
 }, Mn = { class: "modal-content settings-modal" }, Fn = { class: "setting-group" }, Vn = { class: "setting-item" }, qn = { class: "setting-controls" }, Wn = { class: "value-display" }, zn = { class: "setting-item" }, Kn = { class: "setting-controls" }, Qn = { class: "value-display" }, Hn = {
