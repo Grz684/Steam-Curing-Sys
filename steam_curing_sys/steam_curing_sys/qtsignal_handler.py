@@ -75,6 +75,10 @@ class QtSignalHandler(QObject):
         self.humidity_adjust = 0
         self.adjust_sensor_data_lock = threading.Lock()
 
+        # 水箱工作模式
+        self.one_side_flag = True
+        self.dolly_state = False
+
     def activate_device(self):
         # 将当前时间保存进数据库
         current_time = int(datetime.now().timestamp() * 1000)
@@ -197,8 +201,10 @@ class QtSignalHandler(QObject):
             # 半自动模式下控制dolly
             dolly_state = control["dolly_state"]
             if dolly_state:
-                self.control_utils.turn_dolly_on()
+                self.dolly_state = True
+                self.control_utils.turn_dolly_on(self.one_side_flag)
             else:
+                self.dolly_state = False
                 self.control_utils.turn_dolly_off()
 
         elif control["target"] == "dolly_settings":
@@ -210,6 +216,15 @@ class QtSignalHandler(QObject):
             else:
                 with self.dolly_mode_lock:
                     self.dolly_auto_mode = False
+        elif control["target"] == "setTankMode":
+            if control['mode'] == "one-side":
+                if not self.one_side_flag:
+                    self.one_side_flag = True
+                    self.control_utils.adjust_dolly_to_one_side()
+            else:
+                if self.one_side_flag:
+                    self.one_side_flag = False
+                    self.control_utils.adjust_dolly_to_both_side()
             
         logger.info(f"Control dolly: {control}")
 

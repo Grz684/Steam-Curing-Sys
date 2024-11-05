@@ -11,8 +11,14 @@
     </div>
 
     <div class="mode-group">
-      <button class="mode-button" :class="{ active: mode === 'semi-auto' && !low_water}" :disabled="low_water" @click="mode === 'auto' ? setMode('semi-auto') : () => {}">半自动模式</button>
-      <button class="mode-button" :class="{ active: mode === 'auto' && !low_water}" :disabled="low_water" @click="mode === 'semi-auto' ? setMode('auto') : () => {}">自动模式</button>
+      <div class="mode-group-left">
+        <button class="mode-button" :class="{ active: mode === 'semi-auto' && !low_water}" :disabled="low_water" @click="mode === 'auto' ? setMode('semi-auto') : () => {}">半自动模式</button>
+        <button class="mode-button" :class="{ active: mode === 'auto' && !low_water}" :disabled="low_water" @click="mode === 'semi-auto' ? setMode('auto') : () => {}">自动模式</button>
+      </div>
+      <div class="mode-group-right">
+        <button class="mode-button" :class="{ active: tankmode === 'one-side' && !low_water}" :disabled="low_water" @click="tankmode === 'both-side' ? setTankMode('one-side') : () => {}">单边交替养护</button>
+        <button class="mode-button" :class="{ active: tankmode === 'both-side' && !low_water}" :disabled="low_water" @click="tankmode === 'one-side' ? setTankMode('both-side') : () => {}">双边养护</button>
+      </div>
     </div>
     
     <div class="mode-content">
@@ -78,6 +84,7 @@ import { useWebChannel } from './useWebChannel';
 import NumericKeyboard from './NumericKeyboard.vue';
 
 const mode = ref('semi-auto');
+const tankmode = ref('one-side');
 const currentRunTime = ref(6);
 const currentIntervalTime = ref(12);
 const tempRunTime = ref(currentRunTime.value);
@@ -237,6 +244,16 @@ watch(() => props.message, (newMsg) => {
     }
   }
 })
+
+const setTankMode = (newMode) => {
+  tankmode.value = newMode;
+  if (newMode === 'one-side') {
+    sendToPyQt('controlDolly', { target: 'setTankMode', mode: 'one-side'});
+  }
+  else {
+    sendToPyQt('controlDolly', { target: 'setTankMode', mode: 'both-side' });
+  }
+};
 
 const setMode = (newMode) => {
   mode.value = newMode;
@@ -522,9 +539,15 @@ button:disabled {
 
 .mode-group {
   display: flex;
+  gap: 60px; /* 按钮组之间的间距 */
   justify-content: center;
-  gap: 10px;
   margin-bottom: 20px;
+}
+
+/* 创建两个子组来分隔按钮 */
+.mode-group-left, .mode-group-right {
+  display: flex;
+  gap: 10px; /* 同组按钮之间的间距 */
 }
 
 .mode-button {

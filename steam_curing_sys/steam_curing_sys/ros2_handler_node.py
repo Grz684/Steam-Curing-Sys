@@ -35,6 +35,7 @@ class SensorSubscriberNode(Node):
 
         # Store previous states
         self.previous_states = [False, False]
+        self.previous_direction_states = None
 
         # Create timer, calling every 0.5 seconds
         self.read_input_timer = self.create_timer(0.5, self.read_input_timer_callback)
@@ -150,14 +151,17 @@ class SensorSubscriberNode(Node):
     def process_data(self, humidity_data):
         if humidity_data:
             if any(humidity < self.qtSignalHandler.humidity_lower_limit for humidity in humidity_data.values()):
-                self.control_utils.turn_dolly_on()
+                self.control_utils.turn_dolly_on(self.qtSignalHandler.one_side_flag)
                 self.qtSignalHandler.update_dolly_state.emit(True)
             elif all(humidity > self.qtSignalHandler.humidity_upper_limit for humidity in humidity_data.values()):
                 self.control_utils.turn_dolly_off()
                 self.qtSignalHandler.update_dolly_state.emit(False)
 
     def read_input_timer_callback(self):
-        current_states = self.control_utils.read_input()
+        result = self.control_utils.read_input()
+        if result is None:
+            return
+        current_states, direction_states = result
         
         # Check if states have changed
         if current_states:
@@ -170,10 +174,16 @@ class SensorSubscriberNode(Node):
             
             # Update states
             self.previous_states = current_states
-        else:
-            # read_input raise了错误，但read_input_timer_callback会被执行一次然后节点才会停止
-            # logger.error("光耦输入无返回值")
-            pass
+
+        if direction_states:
+            if (self.previous_direction_states != [1,0] and direction_states == [1,0]) or (self.previous_direction_states != [0,1] and direction_states == [0,1]):
+                if self.previous_direction_states is None:
+                    self.previous_direction_states = direction_states
+                else:
+                    # 处理方向改变的逻辑
+                    self.control_utils.exchange_dolly_side()
+
+                    self.previous_direction_states = direction_states
 
     def timer_callback(self):
         # self.get_logger().info('开始请求数据...')

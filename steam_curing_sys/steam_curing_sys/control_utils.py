@@ -38,9 +38,12 @@ class ControlUtils():
         self.switch_to_sprinkler = False
 
         # debug时不连接Modbus服务器
-        self.debug = True
+        self.debug = False
 
         self.output_num = 6 # 输出数量
+
+        self.one_side_flag = True
+        self.single_zone2_open = True
 
         if not self.debug:
             try:
@@ -122,18 +125,24 @@ class ControlUtils():
                     if not self.dio_client.connect():
                         raise ModbusControlException("无法连接到 Modbus 服务器")
                 try:
-                    result = self.dio_client.read_discrete_inputs(0, 2, slave=0xFE)
+                    # 读取4个寄存器 (0-3)
+                    result = self.dio_client.read_discrete_inputs(0, 4, slave=0xFE)
 
                     if result.isError():
                         logger.error(f"Read failed: {result}")
                     else:
-                        current_states = result.bits[:2]
-                        return current_states
+                        # 获取4个bit的状态
+                        all_bits = result.bits[:4]
+                        # 将4个bit分成两组,每组2bit
+                        value1 = [all_bits[0], all_bits[1]]  # 第1组的2bit
+                        value2 = [all_bits[2], all_bits[3]]  # 第2组的2bit
+
+                        # logger.info(f"成功读取输入: {value1}, {value2}")
+                        return value1, value2
                 
                 except ModbusException as e:
                     raise ModbusControlException(f"Modbus错误: {e}")
         
-
     def turn_zone1_heater_on(self):
         if not self.zone1_heater_on:
             self.zone1_heater_on = True
@@ -178,17 +187,56 @@ class ControlUtils():
             logger.info('Turning zone2 humidifier OFF')
             self.control_output(self.zone2_output_addr, False)
                 
-    def turn_dolly_on(self):
+    def turn_dolly_on(self, one_side_flag):
         if not self.dolly_on:
             logger.info('Turning dolly ON')
             self.dolly_on = True
-            self.control_output(self.dolly_move_addr, True)
-            self.control_output(self.dolly_move_addr_back_up, True)
-            self.control_output(self.zone2_output_addr, True)
+            if one_side_flag:
+                self.one_side_flag = True
+                self.control_output(self.dolly_move_addr, True)
+                self.control_output(self.dolly_move_addr_back_up, True)
+                if self.single_zone2_open:
+                    self.control_output(self.zone2_output_addr, True)
+                    self.control_output(self.zone1_output_addr, False)
+                else:
+                    self.control_output(self.zone2_output_addr, False)
+                    self.control_output(self.zone1_output_addr, True)
+            else:
+                self.one_side_flag = False
+                self.control_output(self.dolly_move_addr, True)
+                self.control_output(self.dolly_move_addr_back_up, True)
+                self.control_output(self.zone2_output_addr, True)
+                self.control_output(self.zone1_output_addr, True)
+            # self.control_output(self.pulse_addr, True)
+            # # 使用线程来处理延迟关闭pulse
+            # threading.Thread(target=self._delayed_pulse_off, daemon=True).start()
+    
+    def adjust_dolly_to_one_side(self):
+        if not self.one_side_flag and self.dolly_on:
+            self.one_side_flag = True
+            if self.single_zone2_open:
+                self.control_output(self.zone2_output_addr, True)
+                self.control_output(self.zone1_output_addr, False)
+            else:
+                self.control_output(self.zone2_output_addr, False)
+                self.control_output(self.zone1_output_addr, True)
+
+    def adjust_dolly_to_both_side(self):
+        if self.one_side_flag and self.dolly_on:
+            self.one_side_flag = False
             self.control_output(self.zone1_output_addr, True)
-            self.control_output(self.pulse_addr, True)
-            # 使用线程来处理延迟关闭pulse
-            threading.Thread(target=self._delayed_pulse_off, daemon=True).start()
+            self.control_output(self.zone2_output_addr, True)
+
+    def exchange_dolly_side(self):
+        if self.one_side_flag and self.dolly_on:
+            if self.single_zone2_open:
+                self.single_zone2_open = False
+                self.control_output(self.zone2_output_addr, False)
+                self.control_output(self.zone1_output_addr, True)
+            else:
+                self.single_zone2_open = True
+                self.control_output(self.zone1_output_addr, False)
+                self.control_output(self.zone2_output_addr, True)
 
     def _delayed_pulse_off(self):
         time.sleep(0.5)
