@@ -42,7 +42,7 @@ class ControlUtils():
 
         self.output_num = 6 # 输出数量
 
-        self.one_side_flag = True
+        self.one_side_flag = False
         self.single_zone2_open = True
 
         if not self.debug:
@@ -195,12 +195,12 @@ class ControlUtils():
                 self.one_side_flag = True
                 self.control_output(self.dolly_move_addr, True)
                 self.control_output(self.dolly_move_addr_back_up, True)
-                if self.single_zone2_open:
-                    self.control_output(self.zone2_output_addr, True)
-                    self.control_output(self.zone1_output_addr, False)
-                else:
-                    self.control_output(self.zone2_output_addr, False)
-                    self.control_output(self.zone1_output_addr, True)
+                # if self.single_zone2_open:
+                #     self.control_output(self.zone2_output_addr, True)
+                #     self.control_output(self.zone1_output_addr, False)
+                # else:
+                #     self.control_output(self.zone2_output_addr, False)
+                #     self.control_output(self.zone1_output_addr, True)
             else:
                 self.one_side_flag = False
                 self.control_output(self.dolly_move_addr, True)
@@ -227,16 +227,29 @@ class ControlUtils():
             self.control_output(self.zone1_output_addr, True)
             self.control_output(self.zone2_output_addr, True)
 
-    def exchange_dolly_side(self):
-        if self.one_side_flag and self.dolly_on:
-            if self.single_zone2_open:
-                self.single_zone2_open = False
-                self.control_output(self.zone2_output_addr, False)
-                self.control_output(self.zone1_output_addr, True)
-            else:
-                self.single_zone2_open = True
-                self.control_output(self.zone1_output_addr, False)
+    # def exchange_dolly_side(self):
+    #     if self.one_side_flag and self.dolly_on:
+    #         if self.single_zone2_open:
+    #             self.single_zone2_open = False
+    #             self.control_output(self.zone2_output_addr, False)
+    #             self.control_output(self.zone1_output_addr, True)
+    #         else:
+    #             self.single_zone2_open = True
+    #             self.control_output(self.zone1_output_addr, False)
+    #             self.control_output(self.zone2_output_addr, True)
+
+    def control_dolly_side(self, side):
+        if side == "left":
+            self.single_zone2_open = True
+            if self.one_side_flag and self.dolly_on:
                 self.control_output(self.zone2_output_addr, True)
+                self.control_output(self.zone1_output_addr, False)
+        else:
+            self.single_zone2_open = False
+            if self.one_side_flag and self.dolly_on:
+                self.control_output(self.zone1_output_addr, True)
+                self.control_output(self.zone2_output_addr, False)
+        
 
     def _delayed_pulse_off(self):
         time.sleep(0.5)

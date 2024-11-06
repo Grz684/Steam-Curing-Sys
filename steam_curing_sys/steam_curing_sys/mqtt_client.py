@@ -78,12 +78,12 @@ class MQTTClient:
         self.client.on_disconnect = self.on_disconnect
         self.connected = False
 
-    # 随机码生成函数，旧蒸汽开头标识为001
+    # 随机码生成函数，旧蒸汽开头标识为001，喷淋开头标识为002
     @staticmethod
     def generate_random_code():
         # 生成一个8位的随机字符串，包含数字和大写字母
         characters = string.ascii_uppercase + string.digits
-        return '001'+''.join(random.choices(characters, k=7))
+        return '002'+''.join(random.choices(characters, k=7))
 
     def on_connect(self, client, userdata, flags, rc, properties=None):
         if rc == 0:

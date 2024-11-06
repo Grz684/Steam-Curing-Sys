@@ -16,8 +16,8 @@
         <button class="mode-button" :class="{ active: mode === 'auto' && !low_water}" :disabled="low_water" @click="mode === 'semi-auto' ? setMode('auto') : () => {}">自动模式</button>
       </div>
       <div class="mode-group-right">
-        <button class="mode-button" :class="{ active: tankmode === 'one-side' && !low_water}" :disabled="low_water" @click="tankmode === 'both-side' ? setTankMode('one-side') : () => {}">单边交替养护</button>
         <button class="mode-button" :class="{ active: tankmode === 'both-side' && !low_water}" :disabled="low_water" @click="tankmode === 'one-side' ? setTankMode('both-side') : () => {}">双边养护</button>
+        <button class="mode-button" :class="{ active: tankmode === 'one-side' && !low_water}" :disabled="low_water" @click="tankmode === 'both-side' ? setTankMode('one-side') : () => {}">单边交替养护</button>
       </div>
     </div>
     
@@ -25,13 +25,13 @@
       <div v-if="mode === 'semi-auto'">
         <div class="controls">
           <div class="input-group">
-            <label>单次运行时间 (秒):</label>
+            <label>小车运行时间 (秒):</label>
             <div class="input-wrapper" @click="showRunTimeKeyboard = true">
               {{ tempRunTime }}
             </div>
           </div>
           <div class="input-group">
-            <label>循环间隔时间 (秒):</label>
+            <label>小车暂停时间 (秒):</label>
             <div class="input-wrapper" @click="showIntervalTimeKeyboard = true">
               {{ tempIntervalTime }}
             </div>
@@ -84,9 +84,9 @@ import { useWebChannel } from './useWebChannel';
 import NumericKeyboard from './NumericKeyboard.vue';
 
 const mode = ref('semi-auto');
-const tankmode = ref('one-side');
-const currentRunTime = ref(6);
-const currentIntervalTime = ref(12);
+const tankmode = ref('both-side');
+const currentRunTime = ref(30);
+const currentIntervalTime = ref(30);
 const tempRunTime = ref(currentRunTime.value);
 const tempIntervalTime = ref(currentIntervalTime.value);
 const nextRunTime = ref(currentRunTime.value);
@@ -195,6 +195,9 @@ onMounted(() => {
           console.log('dolly Settings received:', settings);
           updateDollySettings();
         }
+        else if (set_pak.method === 'setTankMode') {
+          setTankMode(set_pak.args.newMode);
+        }
       }
     });
   } else {
@@ -220,6 +223,7 @@ const sendInitialState = () => {
     leftTankLowWater: leftTankLowWater.value,
     rightTankLowWater: rightTankLowWater.value, 
     phaseStartTime: phaseStartTime.value,
+    tankmode: tankmode.value,
   };
 
   console.log('Sending initial cart system state:', initialState);

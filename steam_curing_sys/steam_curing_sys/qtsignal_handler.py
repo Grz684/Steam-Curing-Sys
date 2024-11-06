@@ -51,8 +51,8 @@ class QtSignalHandler(QObject):
         self.sprinkler_run_interval_time = 0
         self.sprinkler_loop_interval = 10
 
-        self.dolly_single_run_time = 4
-        self.dolly_run_interval_time = 4
+        self.dolly_single_run_time = 30
+        self.dolly_run_interval_time = 30
 
         self.dolly_auto_mode = False
         self.dolly_mode_lock = threading.Lock()
@@ -76,7 +76,7 @@ class QtSignalHandler(QObject):
         self.adjust_sensor_data_lock = threading.Lock()
 
         # 水箱工作模式
-        self.one_side_flag = True
+        self.one_side_flag = False
         self.dolly_state = False
 
     def activate_device(self):
