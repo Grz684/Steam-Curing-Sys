@@ -1,0 +1,65 @@
+[0.000000] (-) TimerEvent: {}
+[0.001904] (-) JobUnselected: {'identifier': 'optocoupler_input_publisher'}
+[0.002951] (-) JobUnselected: {'identifier': 'steam_curing_sys'}
+[0.003463] (temp_humidity_publisher) JobQueued: {'identifier': 'temp_humidity_publisher', 'dependencies': OrderedDict()}
+[0.003636] (temp_humidity_publisher) JobStarted: {'identifier': 'temp_humidity_publisher'}
+[0.098830] (-) TimerEvent: {}
+[0.200309] (-) TimerEvent: {}
+[0.301023] (-) TimerEvent: {}
+[0.401667] (-) TimerEvent: {}
+[0.502244] (-) TimerEvent: {}
+[0.602817] (-) TimerEvent: {}
+[0.703400] (-) TimerEvent: {}
+[0.804017] (-) TimerEvent: {}
+[0.904793] (-) TimerEvent: {}
+[1.005740] (-) TimerEvent: {}
+[1.106683] (-) TimerEvent: {}
+[1.207294] (-) TimerEvent: {}
+[1.307935] (-) TimerEvent: {}
+[1.408600] (-) TimerEvent: {}
+[1.509515] (-) TimerEvent: {}
+[1.610313] (-) TimerEvent: {}
+[1.711094] (-) TimerEvent: {}
+[1.811860] (-) TimerEvent: {}
+[1.912875] (-) TimerEvent: {}
+[2.013514] (-) TimerEvent: {}
+[2.114105] (-) TimerEvent: {}
+[2.215071] (-) TimerEvent: {}
+[2.315645] (-) TimerEvent: {}
+[2.416276] (-) TimerEvent: {}
+[2.422143] (temp_humidity_publisher) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher/build', '--no-deps', 'symlink_data'], 'cwd': '/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'grz', 'SSH_CLIENT': '10.111.248.207 8725 22', 'LC_TIME': 'zh_CN.UTF-8', 'XDG_SESSION_TYPE': 'tty', 'GIT_ASKPASS': '/home/grz/.vscode-server/cli/servers/Stable-65edc4939843c90c34d61f4ce11704f09d3e5cb6/server/extensions/git/dist/askpass.sh', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib', 'BROWSER': '/home/grz/.vscode-server/cli/servers/Stable-65edc4939843c90c34d61f4ce11704f09d3e5cb6/server/bin/helpers/browser.sh', 'MOTD_SHOWN': 'pam', 'HOME': '/home/grz', 'TERM_PROGRAM_VERSION': '1.95.1', 'VSCODE_IPC_HOOK_CLI': '/run/user/1000/vscode-ipc-1c99f62e-af7e-4d38-83d0-90dd9d8dff85.sock', 'ROS_PYTHON_VERSION': '3', 'VSCODE_GIT_ASKPASS_MAIN': '/home/grz/.vscode-server/cli/servers/Stable-65edc4939843c90c34d61f4ce11704f09d3e5cb6/server/extensions/git/dist/askpass-main.js', 'LC_MONETARY': 'zh_CN.UTF-8', 'VSCODE_GIT_ASKPASS_NODE': '/home/grz/.vscode-server/cli/servers/Stable-65edc4939843c90c34d61f4ce11704f09d3e5cb6/server/node', 'SSL_CERT_FILE': '/usr/lib/ssl/certs/ca-certificates.crt', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'ROS_DISTRO': 'foxy', 'LOGNAME': 'grz', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'TERM': 'xterm-256color', 'XDG_SESSION_ID': '3', 'ROS_LOCALHOST_ONLY': '1', 'PATH': '/home/grz/.vscode-server/cli/servers/Stable-65edc4939843c90c34d61f4ce11704f09d3e5cb6/server/bin/remote-cli:/home/grz/.local/bin:/opt/ros/foxy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin', 'LC_ADDRESS': 'zh_CN.UTF-8', 'XDG_RUNTIME_DIR': '/run/user/1000', 'SSL_CERT_DIR': '/usr/lib/ssl/certs', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'LC_TELEPHONE': 'zh_CN.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-e75aec864a.sock', 'TERM_PROGRAM': 'vscode', 'ROSDISTRO_INDEX_URL': 'https://mirrors.tuna.tsinghua.edu.cn/rosdistro/index-v4.yaml', 'AMENT_PREFIX_PATH': '/opt/ros/foxy', 'SHELL': '/bin/bash', 'LC_NAME': 'zh_CN.UTF-8', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'LC_MEASUREMENT': 'zh_CN.UTF-8', 'LC_IDENTIFICATION': 'zh_CN.UTF-8', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'PWD': '/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher', 'LC_ALL': 'en_US.UTF-8', 'SSH_CONNECTION': '10.111.248.207 8725 10.111.248.37 22', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/lib/python3.8/site-packages:/opt/ros/foxy/lib/python3.8/site-packages', 'LC_NUMERIC': 'zh_CN.UTF-8', 'LC_PAPER': 'zh_CN.UTF-8', 'COLCON': '1'}, 'shell': False}
+[2.516554] (-) TimerEvent: {}
+[2.617299] (-) TimerEvent: {}
+[2.717891] (-) TimerEvent: {}
+[2.818476] (-) TimerEvent: {}
+[2.919069] (-) TimerEvent: {}
+[3.019640] (-) TimerEvent: {}
+[3.120236] (-) TimerEvent: {}
+[3.220934] (-) TimerEvent: {}
+[3.321698] (-) TimerEvent: {}
+[3.356026] (temp_humidity_publisher) StdoutLine: {'line': b'running develop\n'}
+[3.421876] (-) TimerEvent: {}
+[3.522681] (-) TimerEvent: {}
+[3.623528] (-) TimerEvent: {}
+[3.724313] (-) TimerEvent: {}
+[3.825893] (-) TimerEvent: {}
+[3.874458] (temp_humidity_publisher) StdoutLine: {'line': b'running egg_info\n'}
+[3.875485] (temp_humidity_publisher) StdoutLine: {'line': b'writing temp_humidity_publisher.egg-info/PKG-INFO\n'}
+[3.876911] (temp_humidity_publisher) StdoutLine: {'line': b'writing dependency_links to temp_humidity_publisher.egg-info/dependency_links.txt\n'}
+[3.877688] (temp_humidity_publisher) StdoutLine: {'line': b'writing entry points to temp_humidity_publisher.egg-info/entry_points.txt\n'}
+[3.878199] (temp_humidity_publisher) StdoutLine: {'line': b'writing requirements to temp_humidity_publisher.egg-info/requires.txt\n'}
+[3.878689] (temp_humidity_publisher) StdoutLine: {'line': b'writing top-level names to temp_humidity_publisher.egg-info/top_level.txt\n'}
+[3.926085] (-) TimerEvent: {}
+[4.026566] (temp_humidity_publisher) StdoutLine: {'line': b"reading manifest file 'temp_humidity_publisher.egg-info/SOURCES.txt'\n"}
+[4.027333] (-) TimerEvent: {}
+[4.029834] (temp_humidity_publisher) StdoutLine: {'line': b"writing manifest file 'temp_humidity_publisher.egg-info/SOURCES.txt'\n"}
+[4.034614] (temp_humidity_publisher) StdoutLine: {'line': b'running build_ext\n'}
+[4.037068] (temp_humidity_publisher) StdoutLine: {'line': b'Creating /home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/lib/python3.8/site-packages/temp-humidity-publisher.egg-link (link to .)\n'}
+[4.039276] (temp_humidity_publisher) StdoutLine: {'line': b'Installing sensor_publisher script to /home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/lib/temp_humidity_publisher\n'}
+[4.040320] (temp_humidity_publisher) StdoutLine: {'line': b'\n'}
+[4.041036] (temp_humidity_publisher) StdoutLine: {'line': b'Installed /home/grz/Steam-Curing-Sys/build/temp_humidity_publisher\n'}
+[4.041485] (temp_humidity_publisher) StdoutLine: {'line': b'running symlink_data\n'}
+[4.120147] (temp_humidity_publisher) CommandEnded: {'returncode': 0}
+[4.127777] (-) TimerEvent: {}
+[4.182110] (temp_humidity_publisher) JobEnded: {'identifier': 'temp_humidity_publisher', 'rc': 0}
+[4.185440] (-) EventReactorShutdown: {}

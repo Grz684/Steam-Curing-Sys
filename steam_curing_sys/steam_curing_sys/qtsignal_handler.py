@@ -68,7 +68,7 @@ class QtSignalHandler(QObject):
         
         self.ros2_thread = ROS2Thread(self)
 
-        self.sensor_num = 4
+        self.sensor_num = 15
 
         # 为数据作弊提供的
         self.temp_adjust = 0

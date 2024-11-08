@@ -116,7 +116,7 @@ h2 {
 
 .sensor-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  grid-template-columns: repeat(8, minmax(150px, 1fr));
   gap: 10px;
 }
 
