@@ -45,6 +45,9 @@ class ControlUtils():
         self.one_side_flag = False
         self.single_zone2_open = True
 
+        self.exchange_zone_time = 120
+        self.dolly_exchange_zone_thread = None
+
         if not self.debug:
             try:
                 self.dio_client = ModbusTcpClient(self.dio_ip, port=self.dio_port)
@@ -201,6 +204,10 @@ class ControlUtils():
                 # else:
                 #     self.control_output(self.zone2_output_addr, False)
                 #     self.control_output(self.zone1_output_addr, True)
+                if self.dolly_exchange_zone_thread is not None and self.dolly_exchange_zone_thread.is_alive():
+                    self.dolly_exchange_zone_thread.join()
+
+                self.dolly_exchange_zone_thread = threading.Thread(target=self.dolly_exchange_zone, daemon=True)
             else:
                 self.one_side_flag = False
                 self.control_output(self.dolly_move_addr, True)
@@ -210,20 +217,41 @@ class ControlUtils():
             # self.control_output(self.pulse_addr, True)
             # # 使用线程来处理延迟关闭pulse
             # threading.Thread(target=self._delayed_pulse_off, daemon=True).start()
+
+    def dolly_exchange_zone(self):
+        if self.single_zone2_open:
+            self.control_output(self.zone2_output_addr, True)
+            self.control_output(self.zone1_output_addr, False)
+            self.single_zone2_open = False
+        else:
+            self.control_output(self.zone2_output_addr, False)
+            self.control_output(self.zone1_output_addr, True)
+            self.single_zone2_open = True
+
+        time.sleep(self.exchange_zone_time)
+        self.dolly_exchange_zone()
     
     def adjust_dolly_to_one_side(self):
         if not self.one_side_flag and self.dolly_on:
             self.one_side_flag = True
-            if self.single_zone2_open:
-                self.control_output(self.zone2_output_addr, True)
-                self.control_output(self.zone1_output_addr, False)
-            else:
-                self.control_output(self.zone2_output_addr, False)
-                self.control_output(self.zone1_output_addr, True)
+            if self.dolly_exchange_zone_thread is not None and self.dolly_exchange_zone_thread.is_alive():
+                self.dolly_exchange_zone_thread.join()
+
+            self.dolly_exchange_zone_thread = threading.Thread(target=self.dolly_exchange_zone, daemon=True)
+            # if self.single_zone2_open:
+            #     self.control_output(self.zone2_output_addr, True)
+            #     self.control_output(self.zone1_output_addr, False)
+            # else:
+            #     self.control_output(self.zone2_output_addr, False)
+            #     self.control_output(self.zone1_output_addr, True)
 
     def adjust_dolly_to_both_side(self):
         if self.one_side_flag and self.dolly_on:
             self.one_side_flag = False
+
+            if self.dolly_exchange_zone_thread is not None and self.dolly_exchange_zone_thread.is_alive():
+                self.dolly_exchange_zone_thread.join()
+
             self.control_output(self.zone1_output_addr, True)
             self.control_output(self.zone2_output_addr, True)
 
@@ -238,18 +266,17 @@ class ControlUtils():
     #             self.control_output(self.zone1_output_addr, False)
     #             self.control_output(self.zone2_output_addr, True)
 
-    def control_dolly_side(self, side):
-        if side == "left":
-            self.single_zone2_open = True
-            if self.one_side_flag and self.dolly_on:
-                self.control_output(self.zone2_output_addr, True)
-                self.control_output(self.zone1_output_addr, False)
-        else:
-            self.single_zone2_open = False
-            if self.one_side_flag and self.dolly_on:
-                self.control_output(self.zone1_output_addr, True)
-                self.control_output(self.zone2_output_addr, False)
-        
+    # def control_dolly_side(self, side):
+    #     if side == "left":
+    #         self.single_zone2_open = True
+    #         if self.one_side_flag and self.dolly_on:
+    #             self.control_output(self.zone2_output_addr, True)
+    #             self.control_output(self.zone1_output_addr, False)
+    #     else:
+    #         self.single_zone2_open = False
+    #         if self.one_side_flag and self.dolly_on:
+    #             self.control_output(self.zone1_output_addr, True)
+    #             self.control_output(self.zone2_output_addr, False)
 
     def _delayed_pulse_off(self):
         time.sleep(0.5)
@@ -259,6 +286,10 @@ class ControlUtils():
         if self.dolly_on:
             logger.info('Turning dolly OFF')
             self.dolly_on = False
+
+            if self.dolly_exchange_zone_thread is not None and self.dolly_exchange_zone_thread.is_alive():
+                self.dolly_exchange_zone_thread.join()
+
             self.control_output(self.dolly_move_addr, False)
             self.control_output(self.dolly_move_addr_back_up, False)
             self.control_output(self.zone2_output_addr, False)

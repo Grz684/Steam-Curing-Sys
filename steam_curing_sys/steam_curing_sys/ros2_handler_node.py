@@ -175,15 +175,15 @@ class SensorSubscriberNode(Node):
             # Update states
             self.previous_states = current_states
 
-        if direction_states:
-            if (self.previous_direction_states != [1,0] and direction_states == [1,0]) or (self.previous_direction_states != [0,1] and direction_states == [0,1]):
-                # 处理方向改变的逻辑
-                if direction_states == [1,0]:
-                    self.control_utils.control_dolly_side("left")
-                else:
-                    self.control_utils.control_dolly_side("right")
+        # if direction_states:
+        #     if (self.previous_direction_states != [1,0] and direction_states == [1,0]) or (self.previous_direction_states != [0,1] and direction_states == [0,1]):
+        #         # 处理方向改变的逻辑
+        #         if direction_states == [1,0]:
+        #             self.control_utils.control_dolly_side("left")
+        #         else:
+        #             self.control_utils.control_dolly_side("right")
 
-            self.previous_direction_states = direction_states
+        #     self.previous_direction_states = direction_states
 
     def timer_callback(self):
         # self.get_logger().info('开始请求数据...')
