@@ -2,7 +2,11 @@
   <div class="integrated-control-system">
     <h2>集成控制系统</h2>
     <!-- <label> （支持自动/手动两种模式，自动模式下喷淋->喷雾->喷淋循环运行）</label> -->
-    
+    <div class="label-box" >
+      <label>支持自动/手动两种模式，自动模式下蒸汽机启停受温度上下限控制，</label><br>
+      <label>喷淋/喷雾系统沿喷淋->喷雾->喷淋循环运行，喷淋/喷雾时间由设置决定，其中在喷雾时间内雾化机启停受湿度上下限控制；</label><br>
+      <label>手动模式下可手动控制蒸汽机/喷淋头/雾化机的启停，注意喷淋头和雾化机同时只能工作一个</label>
+    </div>
     <div class="mode-controls">
       <button @click="setMode('auto')" :class="{ active: isAutoMode }" class="mode-btn">自动模式</button>
       <button @click="setMode('manual')" :class="{ active: !isAutoMode }" class="mode-btn">手动模式</button>
@@ -717,13 +721,18 @@ h4 {
 
 h2 {
   font-size: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
 
 h3 {
   margin-bottom: 10px;
   color: #2c3e50;
   font-size: 20px;
+}
+
+h5 {
+  font-size: 16px;
+  margin-bottom: 20px;
 }
 
 label {
@@ -734,6 +743,7 @@ label {
   display: flex;
   justify-content: center;
   gap: 10px;
+  margin-top: 20px;
   margin-bottom: 20px;
 }
 
@@ -773,6 +783,14 @@ label {
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-height: 400px;
+}
+
+.label-box {
+  background-color: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .time-control {
@@ -780,6 +798,7 @@ label {
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-height: 400px;
 }
 
 .sprinkler-section {
