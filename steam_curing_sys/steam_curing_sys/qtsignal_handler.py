@@ -58,7 +58,9 @@ class QtSignalHandler(QObject):
         self.dolly_mode_lock = threading.Lock()
 
         self.sprinkler_system_on = False
+        self.steam_system_on = False
         self.sprinkler_system_lock = threading.Lock()
+        self.steam_system_lock = threading.Lock()
         
         self.config_manager = ConfigManager()  # 这将默认使用 'sensor_data.db'
 
@@ -252,9 +254,24 @@ class QtSignalHandler(QObject):
             logger.info(f"switchToSprinkler: {control['state']}")
             self.control_utils.control_switch(control["state"])
 
+        elif control["target"] == "startSystem":
+            logger.info(f"startSystem")
+            with self.steam_system_lock:
+                self.steam_system_on = True
+
+        elif control["target"] == "stopSystem":
+            logger.info(f"stopSystem")
+            with self.steam_system_lock:
+                self.steam_system_on = False
+
+
     def get_sprinkler_system_state(self):
         with self.sprinkler_system_lock:
             return self.sprinkler_system_on
+
+    def get_steam_system_state(self):
+        with self.steam_system_lock:
+            return self.steam_system_on
 
     def get_dolly_auto_mode(self):
         with self.dolly_mode_lock:

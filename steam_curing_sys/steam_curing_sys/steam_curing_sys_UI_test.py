@@ -163,6 +163,10 @@ class Bridge(QObject):
 
     def integratedControlSystem_set_response(self, response):
         # logger.info(f"IntegratedControlSystem set response: {response}")
+        if response.get('method') == "startSystem":
+            self.sprinklerSystemControl.emit({"target": "startSystem"})
+        elif response.get('method') == "stopSystem":
+            self.sprinklerSystemControl.emit({"target": "stopSystem"})
         self.mqtt_client.publish(json.dumps({"command": "IntegratedControlSystem_set_response", "data": response}))
 
     def cartSystem_init_response(self, response):
@@ -436,12 +440,12 @@ class MainWindow(QMainWindow):
         msg_type = "update_left_steam_status"
         # status为bool类型
         self.bridge.send_message(msg_type, status)
-        self.bridge.mqtt_client.publish(json.dumps({"command": "update_steam_status", "data": status}))
+        self.bridge.mqtt_client.publish(json.dumps({"command": "update_fog_status", "data": status}))
 
     def update_right_steam_status(self, status):
         msg_type = "update_right_steam_status"
         self.bridge.send_message(msg_type, status)
-        # self.bridge.mqtt_client.publish(json.dumps({"command": "update_right_steam_status", "data": status}))
+        self.bridge.mqtt_client.publish(json.dumps({"command": "update_steam_status", "data": status}))
 
     def confirm_lock_password(self, result):
         msg_type = "confirm_lock_password"

@@ -1,6 +1,7 @@
 <template>
   <div class="integrated-control-system">
-    <h2>集成控制系统（支持自动/手动两种模式，自动模式下喷淋->喷雾->喷淋循环运行）</h2>
+    <h2>集成控制系统</h2>
+    <!-- <label> （支持自动/手动两种模式，自动模式下喷淋->喷雾->喷淋循环运行）</label> -->
     
     <div class="mode-controls">
       <button @click="setMode('auto')" :class="{ active: isAutoMode }" class="mode-btn">自动模式</button>
@@ -10,12 +11,41 @@
     </div>
 
     <div class="systems-container">
-      <div class="steam-engine-control">
-        <h3>雾化机系统（自动模式下，喷雾受湿度上下限控制）</h3>
-        <div class="control-panel">
-          <div class="engine-status">
-            <div class="engine left">
-              <h4>左雾化机</h4>
+      <!-- 左雾化机框 -->
+      <div class="steam-engine-control left-box">
+        <h3>蒸汽机</h3>
+        <div class="steam_engine">
+          <div class="status" :class="{ 'on': rightEngineOn }">
+            <div class="status-indicator"></div>
+            {{ rightEngineOn ? '开' : '关' }}
+          </div>
+          <button @click="click_toggleSteamEngine" :disabled="isAutoMode" class="control-btn">
+            {{ rightEngineOn ? '关闭' : '开启' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- 喷淋喷雾系统框 -->
+      <div class="sprinkler-system middle-box">
+        <h3>喷淋/喷雾系统</h3>
+        <div class="spray-container">
+          <div class="control-row">
+            <!-- 喷淋头显示 -->
+            <div class="sprinkler-section">
+              <h4>喷淋头</h4>
+              <div class="visualization">
+                <div v-for="n in 12" :key="n" class="sprinkler" 
+                     :class="{ active: isAutoMode ? activeSprinkler === n : waterLevels[n-1] > 0 }"
+                     @click="!isSwitching && !isAutoMode && !leftEngineOn && toggleManualSprinkler(n)">
+                  <div class="water" :style="{ height: waterHeight(n) + '%' }"></div>
+                  <span>{{ n }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 右雾化机 -->
+            <div class="ato_engine">
+              <h4>雾化机</h4>
               <div class="status" :class="{ 'on': leftEngineOn }">
                 <div class="status-indicator"></div>
                 {{ leftEngineOn ? '开' : '关' }}
@@ -24,22 +54,15 @@
                 {{ leftEngineOn ? '关闭' : '开启' }}
               </button>
             </div>
-            <div class="engine right">
-              <h4>右雾化机</h4>
-              <div class="status" :class="{ 'on': rightEngineOn }">
-                <div class="status-indicator"></div>
-                {{ rightEngineOn ? '开' : '关' }}
-              </div>
-              <button @click="click_toggleEngine" :disabled="isAutoMode || isSwitching" class="control-btn">
-                {{ rightEngineOn ? '关闭' : '开启' }}
-              </button>
-            </div>
           </div>
         </div>
+        <!-- 系统状态 -->
+        <div class="text_status">{{ statusMessage }}</div>
       </div>
 
-      <div class="sprinkler-system">
-        <h3>喷淋系统</h3>
+      <!-- 时间设置框 -->
+      <div class="time-control right-box">
+        <h3>喷淋/喷雾系统时间设置</h3>
         <div class="controls">
           <div class="input-group">
             <label>单个喷淋头工作时间 (秒):</label>
@@ -69,17 +92,6 @@
               readonly
             />
           </div>
-        </div>
-        <div class="visualization">
-          <div v-for="n in 12" :key="n" class="sprinkler" 
-               :class="{ active: isAutoMode ? activeSprinkler === n : waterLevels[n-1] > 0 }"
-               @click="!isSwitching && !isAutoMode && !leftEngineOn && toggleManualSprinkler(n)">
-            <div class="water" :style="{ height: waterHeight(n) + '%' }"></div>
-            <span>{{ n }}</span>
-          </div>
-        </div>
-        <div class="status">
-          {{ statusMessage }}
         </div>
       </div>
     </div>
@@ -228,6 +240,9 @@ onMounted(() => {
         else if (set_pak.method === 'click_toggleEngine') {
           click_toggleEngine();
         }
+        else if (set_pak.method === 'click_toggleSteamEngine') {
+          click_toggleSteamEngine();
+        }
         else if (set_pak.method === 'toggleManualSprinkler') {
           toggleManualSprinkler(set_pak.args.n);
         }
@@ -347,6 +362,10 @@ async function setMode(mode) {
         await toggleEngine();
       }
 
+      if (rightEngineOn.value) {
+        await toggleSteamEngine();
+      }
+
       // 找出当前激活的喷头（如果有）
       const activeIndex = waterLevels.value.findIndex(level => level === 100);
       if (activeIndex !== -1) {
@@ -369,8 +388,13 @@ async function setMode(mode) {
 async function toggleEngine() {
   if (environment.isPyQtWebEngine) {
     sendToPyQt('setEngineState', { engine: 'left', state: !leftEngineOn.value });
-    sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
     leftEngineOn.value = !leftEngineOn.value;
+  }
+}
+
+async function toggleSteamEngine() {
+  if (environment.isPyQtWebEngine) {
+    sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
     rightEngineOn.value = !rightEngineOn.value;
   }
 }
@@ -390,8 +414,16 @@ async function click_toggleEngine() {
     }
     
     sendToPyQt('setEngineState', { engine: 'left', state: !leftEngineOn.value });
-    sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
+    // sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
     leftEngineOn.value = !leftEngineOn.value;
+    // rightEngineOn.value = !rightEngineOn.value;
+  }
+}
+
+async function click_toggleSteamEngine() {
+  if (environment.isPyQtWebEngine) {
+    sendToPyQt('IntegratedControlSystem_set_response', { method: 'click_toggleSteamEngine', args: {} });
+    sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
     rightEngineOn.value = !rightEngineOn.value;
   }
 }
@@ -474,6 +506,10 @@ async function stopSystem() {
   // 如果有引擎被后端激活，关闭它
   if (leftEngineOn.value) {
     await toggleEngine();
+  }
+
+  if (rightEngineOn.value) {
+    await toggleSteamEngine();
   }
 
   stopSystemWithoutSend();
@@ -676,11 +712,12 @@ h2, h4 {
 
 h4 {
   font-size: 18px;
+  margin-bottom: 10px;
 }
 
 h2 {
   font-size: 20px;
-  margin-bottom: 30px; /* 增加这行，数值可以根据需要调整 */
+  margin-bottom: 30px;
 }
 
 h3 {
@@ -728,22 +765,58 @@ label {
 .systems-container {
   display: flex;
   gap: 20px;
+  align-items: flex-start;  /* 添加此行确保顶部对齐 */
 }
 
 .steam-engine-control, .sprinkler-system {
-  flex: 1;
   background-color: white;
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.engine-status {
+.time-control {
+  background-color: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sprinkler-section {
+  text-align: center;
+}
+
+.spray-container {
+  height: 100%;
+}
+
+.control-row {
   display: flex;
+  padding: 10px;
+  gap: 10px;
+  height: 100%;
   justify-content: space-between;
 }
 
-.engine {
+.steam-engine-control {
+  flex: 1;
+}
+
+.sprinkler-system {
+  flex: 3;  /* 修改为2，使中间框更宽 */
+}
+
+.time-control {
+  flex: 2;
+}
+
+.steam_engine {
+  margin-top: 20px;
+  text-align: center;
+  width: 100%;
+}
+
+.ato_engine {
   text-align: center;
   width: 45%;
 }
@@ -782,7 +855,7 @@ label {
 .input-group {
   display: flex;
   justify-content: space-between;
-  align-items: center;  /* 添加这行来实现垂直居中对齐 */
+  align-items: center;
   margin-bottom: 10px;
 }
 
@@ -804,23 +877,26 @@ label {
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
--webkit-appearance: none;
-margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 input[type="number"] {
--moz-appearance: textfield;
+  -moz-appearance: textfield;
 }
 
 .visualization {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   gap: 10px;
+  justify-content: flex-start;  /* 修改为左对齐 */
+  align-content: flex-start;  /* 添加此行确保从顶部开始排列 */
 }
 
 .sprinkler {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -847,10 +923,19 @@ input[type="number"] {
   transition: height 0.1s linear;
 }
 
-.sprinkler-system .status {
+.text_status {
+  /* margin: 10px 0; */
+  border-radius: 8px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  min-height: 30px;
+
   margin-top: 20px;
   font-weight: bold;
-  background-color: #3498db;  /* 更改喷淋系统状态标签的颜色 */
+  background-color: #3498db;
   font-size: 18px;
   padding: 10px;
 }
