@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'sensor_publisher = temp_humidity_publisher.temp_humidity_publisher:main'
+            'sensor_publisher = temp_humidity_publisher.temp_humidity_publisher_test:main'
         ],
     },
 )

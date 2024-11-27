@@ -39,6 +39,7 @@ class Bridge(QObject):
     activateDevice = pyqtSignal()
     updataBaseTime = pyqtSignal(str)
     adjustSettingsSaved = pyqtSignal(dict)
+    sensor_data_adjustments = pyqtSignal(dict)
 
     def __init__(self):
         super().__init__()
@@ -125,12 +126,18 @@ class Bridge(QObject):
                 self.wifi_manager.check_wifi_status()
             elif method_name == "clearData_response":
                 self.clearData_response()
+            elif method_name == "adjust_sensor":
+                self.adjust_sensor(args)
             else:
                 logger.info(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
             logger.info(f"Failed to parse JSON: {args_json}")
         except Exception as e:
             logger.info(f"Error processing method {method_name}: {str(e)}")
+
+    def adjust_sensor(self, args):
+        logger.info(f"Update adjustments: {args}")
+        self.sensor_data_adjustments.emit(args)
 
     def clearData_response(self):
         logger.info("Clear data response")

@@ -1,9 +1,17 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 
-// const temperatures = ref([])
-// const humidities = ref([])
 const sensorData = ref({ temperature: {}, humidity: {} })
+// 新增传感器调整值的存储结构
+const sensorAdjustments = ref({
+  temperature: {},
+  humidity: {}
+})
+
+const selectedSensor = ref(null)
+const showDialog = ref(false)
+const adjustmentType = ref('offset') // 'offset' or 'value'
+const sensorType = ref('') // 'temperature' or 'humidity'
 
 import { useWebChannel } from './useWebChannel.js'
 const { sendToPyQt } = useWebChannel();
@@ -20,16 +28,23 @@ onMounted(() => {
           console.error('Failed to parse sensor data:', error)
         }
       }
+      // 新增：处理调整值数据更新
+      else if (newMessage && newMessage.type === 'update_adjust_settings') {
+        try {
+          const adjustments = JSON.parse(newMessage.content)
+          sensorAdjustments.value.temperature = adjustments.temperature
+          sensorAdjustments.value.humidity = adjustments.humidity
+        } catch (error) {
+          console.error('Failed to parse adjustments data:', error)
+        }
+      }
       else if (newMessage && newMessage.type === 'get_sensor_data') {
         sendToPyQt('update_remote_sensor_data', sensorData.value)
-  
       }
     })
   } else {
     console.log('在普通网页环境中执行');
-    // 这里可以添加网页端特定的逻辑，比如发送AJAX请求
     fetchSensorData()
-    // 每5秒更新一次数据
     setInterval(fetchSensorData, 5000)
   }
 })
@@ -41,16 +56,68 @@ const fetchSensorData = async () => {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const data = await response.json()
-    
-    // 假设返回的数据结构与 sensorData 匹配
     sensorData.value = data
-
   } catch (error) {
     console.error('Error fetching sensor data:', error)
-    // 在这里可以添加错误处理逻辑，比如显示错误消息给用户
   }
 }
 
+// 添加数字键盘相关的代码
+import NumericKeyboard from './NumericKeyboardWithNeg.vue'
+const showNumericKeyboard = ref(false)
+
+// 将 adjustmentValue 的类型从 number 改为 string
+const adjustmentValue = ref('')
+
+// 修改 openAdjustDialog 函数，显示当前的调整值
+const openAdjustDialog = (type, sensor) => {
+  selectedSensor.value = sensor
+  sensorType.value = type
+  
+  // 从调整值存储中获取数据
+  const adjustment = sensorAdjustments.value[type][sensor]
+  if (adjustment) {
+    adjustmentType.value = adjustment.type
+    adjustmentValue.value = String(adjustment.value)
+  } else {
+    adjustmentType.value = 'offset'
+    adjustmentValue.value = ''
+  }
+  
+  showDialog.value = true
+  showNumericKeyboard.value = false
+}
+
+// 修改 applyAdjustment 函数
+const applyAdjustment = async () => {
+  try {
+    const payload = {
+      sensorType: sensorType.value,
+      sensorId: selectedSensor.value,
+      adjustmentType: adjustmentType.value,
+      value: parseFloat(adjustmentValue.value) || 0
+    }
+    
+    // 更新本地调整值存储
+    if (!sensorAdjustments.value[sensorType.value]) {
+      sensorAdjustments.value[sensorType.value] = {}
+    }
+    sensorAdjustments.value[sensorType.value][selectedSensor.value] = {
+      type: adjustmentType.value,
+      value: parseFloat(adjustmentValue.value) || 0
+    }
+    
+    if (typeof window.qt !== 'undefined' && window.qt.webChannelTransport) {
+      sendToPyQt('adjust_sensor', payload)
+    }
+    
+    showDialog.value = false
+    adjustmentValue.value = ''
+    showNumericKeyboard.value = false
+  } catch (error) {
+    console.error('Error applying adjustment:', error)
+  }
+}
 </script>
 
 <template>
@@ -59,23 +126,70 @@ const fetchSensorData = async () => {
       <h2>温度传感器</h2>
       <div class="sensor-container">
         <div class="sensor-grid">
-          <div v-for="(value, sensor) in sensorData.temperature" :key="sensor" class="sensor-card">
+          <div v-for="(value, sensor) in sensorData.temperature" 
+               :key="sensor" 
+               class="sensor-card"
+               @click="openAdjustDialog('temperature', sensor)">
             <div class="sensor-title">{{ sensor }}</div>
             <div class="sensor-value">{{ value }}</div>
           </div>
         </div>
       </div>
     </div>
+    
     <div class="sensor-section">
       <h2>湿度传感器</h2>
       <div class="sensor-container">
         <div class="sensor-grid">
-          <div v-for="(value, sensor) in sensorData.humidity" :key="sensor" class="sensor-card">
-            <div class="sensor-title">{{  sensor }}</div>
+          <div v-for="(value, sensor) in sensorData.humidity" 
+               :key="sensor" 
+               class="sensor-card"
+               @click="openAdjustDialog('humidity', sensor)">
+            <div class="sensor-title">{{ sensor }}</div>
             <div class="sensor-value">{{ value }}</div>
           </div>
         </div>
       </div>
+    </div>
+
+  <!-- 修改调整对话框部分 -->
+  <div v-if="showDialog" class="dialog-overlay">
+    <div class="dialog">
+      <h3>调整传感器: {{ selectedSensor }}</h3>
+      <div class="dialog-content">
+        <div class="radio-group">
+          <label>
+            <input type="radio" v-model="adjustmentType" value="offset">
+            调整偏移值
+          </label>
+          <label>
+            <input type="radio" v-model="adjustmentType" value="value">
+            直接设置值
+          </label>
+        </div>
+        
+        <div class="input-group">
+          <input 
+            type="text" 
+            v-model="adjustmentValue" 
+            readonly
+            @click="showNumericKeyboard = true"
+            :placeholder="adjustmentType === 'offset' ? '输入偏移值' : '输入设定值'"
+          >
+        </div>
+      </div>
+      
+      <div class="dialog-actions">
+        <button @click="showDialog = false">取消</button>
+        <button @click="applyAdjustment" class="primary">确定</button>
+      </div>
+    </div>
+
+    <!-- 添加数字键盘组件 -->
+    <NumericKeyboard
+      v-model="adjustmentValue"
+      v-model:showKeyboard="showNumericKeyboard"
+    />
     </div>
   </div>
 </template>
@@ -90,9 +204,8 @@ body {
 
 .sensor-data-group {
   display: flex;
-  flex-direction: column; /* 强制子元素垂直排列 */
+  flex-direction: column;
   max-width: 100%;
-  /* margin: 0 auto; */
   padding: 10px;
   box-sizing: border-box;
 }
@@ -106,11 +219,11 @@ h2 {
 .sensor-section {
   display: block;
   margin-bottom: 10px;
-  clear: both; /* 清除浮动 */
+  clear: both;
 }
 
 .sensor-container {
-  overflow-x: scroll; /* 始终显示水平滚动条 */
+  overflow-x: scroll;
   padding-bottom: 10px;
 }
 
@@ -125,6 +238,13 @@ h2 {
   border-radius: 8px;
   padding: 10px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sensor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 .sensor-title {
@@ -138,10 +258,86 @@ h2 {
   color: #007bff;
 }
 
+/* 对话框样式 */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.dialog {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dialog h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.dialog-content {
+  margin-bottom: 20px;
+}
+
+.radio-group {
+  margin-bottom: 15px;
+}
+
+.radio-group label {
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+.input-group input {
+  width: 90%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.dialog-actions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dialog-actions button.primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.dialog-actions button:not(.primary) {
+  background-color: #f0f0f0;
+}
+
 @media (max-width: 768px) {
   .sensor-grid {
     grid-template-rows: repeat(2, auto);
     grid-template-columns: repeat(8, minmax(100px, 1fr));
+  }
+  
+  .dialog {
+    width: 95%;
+    margin: 10px;
   }
 }
 </style>
