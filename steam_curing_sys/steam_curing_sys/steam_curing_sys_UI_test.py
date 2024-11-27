@@ -128,12 +128,21 @@ class Bridge(QObject):
                 self.clearData_response()
             elif method_name == "adjust_sensor":
                 self.adjust_sensor(args)
+            elif method_name == "saveDebugSettings":
+                self.sensor_debug_settings(args)
             else:
                 logger.info(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
             logger.info(f"Failed to parse JSON: {args_json}")
         except Exception as e:
             logger.info(f"Error processing method {method_name}: {str(e)}")
+
+    def sensor_debug_settings(self, args):
+        msg_type = "sensor_debug_mode"
+        if args["debug_mode"] == False:
+            self.send_message(msg_type, json.dumps(False))
+        else:
+            self.send_message(msg_type, json.dumps(True))
 
     def adjust_sensor(self, args):
         logger.info(f"Update adjustments: {args}")

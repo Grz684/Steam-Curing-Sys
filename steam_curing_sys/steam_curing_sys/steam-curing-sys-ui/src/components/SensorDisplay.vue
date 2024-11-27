@@ -12,6 +12,7 @@ const selectedSensor = ref(null)
 const showDialog = ref(false)
 const adjustmentType = ref('offset') // 'offset' or 'value'
 const sensorType = ref('') // 'temperature' or 'humidity'
+const sensor_debug_mode = ref(false)
 
 import { useWebChannel } from './useWebChannel.js'
 const { sendToPyQt } = useWebChannel();
@@ -40,6 +41,9 @@ onMounted(() => {
       }
       else if (newMessage && newMessage.type === 'get_sensor_data') {
         sendToPyQt('update_remote_sensor_data', sensorData.value)
+      }
+      else if (newMessage && newMessage.type === 'sensor_debug_mode') {
+        sensor_debug_mode.value = JSON.parse(newMessage.content)
       }
     })
   } else {
@@ -129,7 +133,7 @@ const applyAdjustment = async () => {
           <div v-for="(value, sensor) in sensorData.temperature" 
                :key="sensor" 
                class="sensor-card"
-               @click="openAdjustDialog('temperature', sensor)">
+               @click="sensor_debug_mode ? openAdjustDialog('temperature', sensor) : null">
             <div class="sensor-title">{{ sensor }}</div>
             <div class="sensor-value">{{ value }}</div>
           </div>
@@ -144,7 +148,7 @@ const applyAdjustment = async () => {
           <div v-for="(value, sensor) in sensorData.humidity" 
                :key="sensor" 
                class="sensor-card"
-               @click="openAdjustDialog('humidity', sensor)">
+               @click="sensor_debug_mode ? openAdjustDialog('humidity', sensor) : null">
             <div class="sensor-title">{{ sensor }}</div>
             <div class="sensor-value">{{ value }}</div>
           </div>

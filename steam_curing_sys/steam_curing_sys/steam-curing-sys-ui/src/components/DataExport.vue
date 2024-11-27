@@ -16,27 +16,22 @@
     <div v-if="showSettings" class="modal-overlay">
       <div class="modal-content settings-modal">
         <div class="setting-group">
-          <h2>传感器数据设置（设为正/负数使数据整体上/下调）</h2>
+          <h2>传感器调试模式</h2>
           <div class="setting-item">
-            <span class="setting-label">温度数据设置：</span>
-            <div class="setting-controls">
-              <button @click="adjustValue('tempAdjust', -1)">-</button>
-              <span class="value-display">{{ tempTempAdjust }}</span>
-              <button @click="adjustValue('tempAdjust', 1)">+</button>
+            <span class="setting-label">调试模式：</span>
+            <div class="toggle-switch">
+              <input 
+                type="checkbox" 
+                id="debug-toggle" 
+                v-model="tempDebugMode"
+              >
+              <label for="debug-toggle"></label>
             </div>
           </div>
-          <div class="setting-item">
-            <span class="setting-label">湿度数据设置：</span>
-            <div class="setting-controls">
-              <button @click="adjustValue('humidityAdjust', -1)">-</button>
-              <span class="value-display">{{ tempHumidityAdjust }}</span>
-              <button @click="adjustValue('humidityAdjust', 1)">+</button>
-            </div>
+          <div class="modal-buttons">
+            <button @click="saveDebugSettings" class="confirm-btn">保存</button>
+            <button @click="closeDebugSettings" class="cancel-btn">取消</button>
           </div>
-        </div>
-        <div class="modal-buttons">
-          <button @click="saveAdjustSettings" class="confirm-btn">保存</button>
-          <button @click="closeAdjustSettings" class="cancel-btn">取消</button>
         </div>
       </div>
     </div>
@@ -68,7 +63,6 @@
 import { reactive, ref, onMounted, watch } from 'vue';
 import { useWebChannel } from './useWebChannel';
 
-
 const { sendToPyQt } = useWebChannel();
 const environment = reactive({
   isPyQtWebEngine: false
@@ -77,45 +71,28 @@ const environment = reactive({
 const showConfirm = ref(false);
 const showAlert = ref(false);
 const alertMessage = ref('');
-
-const showSettings = ref(false)
-const tempAdjust = ref(0)
-const humidityAdjust = ref(0)
-const tempTempAdjust = ref(0)
-const tempHumidityAdjust = ref(0)
+const showSettings = ref(false);
+const debugMode = ref(false);
+const tempDebugMode = ref(false);
 
 const showSettingsDialog = () => {
-  // 打开时把显示值变成保存值
-  tempTempAdjust.value = tempAdjust.value
-  tempHumidityAdjust.value = humidityAdjust.value
-  showSettings.value = true
-  // 禁止背景滚动
+  tempDebugMode.value = debugMode.value;
+  showSettings.value = true;
   document.body.style.overflow = 'hidden';
 }
 
-const closeAdjustSettings = () => {
-  // 重置临时值为原始值
-  tempHumidityAdjust.value = humidityAdjust.value
-  tempTempAdjust.value = tempAdjust.value
-  showSettings.value = false
-  // 恢复背景滚动
+const closeDebugSettings = () => {
+  tempDebugMode.value = debugMode.value;
+  showSettings.value = false;
   document.body.style.overflow = 'auto';
 }
 
-const saveAdjustSettings = () => {
-  tempAdjust.value = tempTempAdjust.value
-  humidityAdjust.value = tempHumidityAdjust.value
-  showSettings.value = false
-  // 恢复背景滚动
+const saveDebugSettings = () => {
+  debugMode.value = tempDebugMode.value;
+  showSettings.value = false;
   document.body.style.overflow = 'auto';
-  sendToPyQt("saveAdjustSettings", { temp_adjust: tempAdjust.value, humidity_adjust: humidityAdjust.value });
-}
-
-const adjustValue = (type, change) => {
-  if (type === 'tempAdjust') {
-    tempTempAdjust.value = tempTempAdjust.value + change
-  } else if (type === 'humidityAdjust') {
-    tempHumidityAdjust.value = tempHumidityAdjust.value + change
+  if (environment.isPyQtWebEngine) {
+    sendToPyQt("saveDebugSettings", { debug_mode: debugMode.value });
   }
 }
 
@@ -127,36 +104,23 @@ onMounted(() => {
     const { message } = useWebChannel();
 
     watch(message, (newMessage) => {
-      if (newMessage && newMessage.type === 'update_adjust_settings') {
+      if (newMessage && newMessage.type === 'update_debug_mode') {
         try {
           const settings = JSON.parse(newMessage.content);
-          tempAdjust.value = settings['temp_adjust'];
-          humidityAdjust.value = settings['humidity_adjust'];
+          debugMode.value = settings['debug_mode'];
+          tempDebugMode.value = settings['debug_mode'];
         } catch (error) {
-          console.error('Failed to parse adjust settings:', error);
+          console.error('Failed to parse debug settings:', error);
         }
       }
       else if (newMessage && newMessage.type === 'DataExport_init') {
         const initialState = {
-          tempAdjust: tempAdjust.value,
-          humidityAdjust: humidityAdjust.value
+          debugMode: debugMode.value
         };
-
         console.log('Sending initial DataExport state:', initialState);
         sendToPyQt('DataExport_init_response', initialState);
       }
-      else if (newMessage && newMessage.type === 'DataExport_set')
-      {
-        const set_pak = JSON.parse(newMessage.content);
-        if (set_pak.method === 'saveAdjustSettings') {
-          tempTempAdjust.value = set_pak.args.tempAdjust
-          tempHumidityAdjust.value = set_pak.args.humidityAdjust
-          saveAdjustSettings()
-        }
-      }
-      else if (newMessage && newMessage.type === 'clearData')
-      {
-        // 让后端清空数据
+      else if (newMessage && newMessage.type === 'clearData') {
         sendToPyQt("exportData", false);
         sendToPyQt("clearData_response", "")
       }
@@ -175,13 +139,11 @@ const exportData = () => {
 
 const showConfirmDialog = () => {
   showConfirm.value = true;
-  // 禁止背景滚动
   document.body.style.overflow = 'hidden';
 };
 
 const cancelClearData = () => {
   showConfirm.value = false;
-  // 恢复背景滚动
   document.body.style.overflow = 'auto';
 };
 
@@ -189,9 +151,7 @@ const clearData = () => {
   console.log('清空数据');
   showConfirm.value = false;
   showCustomAlert('所有数据已清空！');
-  // 恢复背景滚动
   document.body.style.overflow = 'auto';
-  // 这里添加实际的数据清空逻辑
   if (environment.isPyQtWebEngine) {
     sendToPyQt("exportData", false);
   }
@@ -215,67 +175,74 @@ const closeAlert = () => {
 
 .settings-modal {
   min-width: 300px;
-}
-
-.settings-container {
-  display: flex;
-  justify-content: space-between;
-  gap: 40px;
+  padding: 30px;
 }
 
 .setting-group {
-  flex: 1;
-  padding: 10px;
-  margin-bottom: 10px;
+  padding: 20px;
 }
 
-h2 {
+.setting-group h2 {
+  text-align: center;
   margin-bottom: 30px;
   color: #2c3e50;
-  font-size: 18px;
+  font-size: 24px;
 }
 
 .setting-item {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  justify-content: center;
+  margin: 20px 0;
 }
 
 .setting-label {
-  flex: 1;
-  margin-right: 10px;
   font-size: 18px;
+  margin-right: 20px;
 }
 
-.setting-controls {
-  display: flex;
-  align-items: center;
+.toggle-switch {
+  position: relative;
+  width: 60px;
+  height: 34px;
 }
 
-.setting-controls button {
-  width: 30px;
-  height: 30px;
-  font-size: 18px;
-  border: none;
-  background-color: #007bff;
-  color: white;
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-switch label {
+  position: absolute;
   cursor: pointer;
-  border-radius: 4px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
 }
 
-.setting-controls button:hover {
-  background-color: #0056b3;
+.toggle-switch label:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
 }
 
-.value-display {
-  width: 80px;
-  height: 40px;
-  text-align: center;
-  font-size: 18px;
-  margin: 0 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  line-height: 40px;  /* 设置与height相同的值 */
+.toggle-switch input:checked + label {
+  background-color: #4CAF50;
+}
+
+.toggle-switch input:checked + label:before {
+  transform: translateX(26px);
 }
 
 .data-actions {
@@ -302,17 +269,6 @@ h2 {
   align-items: center;
   gap: 10px;
   flex: 1;
-}
-
-.modal-buttons button {
-  flex: 1;
-  padding: 10px 16px;
-  font-size: 16px;
-  color: #ffffff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
 .button-group button {
@@ -344,19 +300,6 @@ h2 {
   background-color: #c0392b;
 }
 
-.fas {
-  font-size: 20px;
-}
-
-.fa-file-excel {
-  color: #1D6F42;
-}
-
-.fa-trash-alt {
-  color: #e74c3c;
-}
-
-/* 模态框样式 */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -381,27 +324,26 @@ h2 {
 
 .modal-buttons {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 10px;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 30px;
 }
 
-.confirm-btn, .cancel-btn {
-  padding: 8px 16px;
+.modal-buttons button {
+  padding: 8px 30px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
+  color: white;
 }
 
 .confirm-btn {
   background-color: #4CAF50;
-  color: white;
 }
 
 .cancel-btn {
   background-color: #f44336;
-  color: white;
 }
 
 .confirm-btn:hover, .cancel-btn:hover {
