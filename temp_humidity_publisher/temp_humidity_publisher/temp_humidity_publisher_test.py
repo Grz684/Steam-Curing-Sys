@@ -16,22 +16,19 @@ class TempHumidityPublisher(Node):
         super().__init__('temp_humidity_publisher')
           
         self.srv = self.create_service(Trigger, 'get_sensor_data', self.get_sensor_data_callback)
-
-        # self.ip_address = '192.168.3.7'  # 请替换为您的实际IP地址
-        # self.base_port = 8001  # COM1 对应的起始端口号
-        
-        # # 创建16个ModbusTcpClient，每个对应一个传感器
-        # self.modbus_clients = [
-        #     ModbusTcpClient(self.ip_address, port=self.base_port + i, timeout=0.1)
-        #     for i in range(16)
-        # ]
         self.sensor_num = 15
 
         self.get_logger().info('Temperature and Humidity Publisher node has been started')
 
     def read_temperature_humidity(self, client_index):
-        temperature = round(random.uniform(38.0, 40.0), 2)
-        humidity = round(random.uniform(58.0, 60.0), 2)
+        # 传感器1-5和11-15的数据范围
+        if client_index < 5 or client_index >= 10:
+            temperature = round(random.uniform(20.0, 21.0), 2)
+            humidity = round(random.uniform(58.0, 60.0), 2)
+        # 传感器6-10的数据范围
+        else:
+            temperature = round(random.uniform(28.0, 29.0), 2)
+            humidity = round(random.uniform(55.0, 57.0), 2)
         return temperature, humidity
 
     def read_all_sensors(self):
@@ -51,14 +48,12 @@ class TempHumidityPublisher(Node):
                         temperatures[f'temperature_sensor_{index+1}'] = -1
                         humidities[f'humidity_sensor_{index+1}'] = -1
                 except Exception as exc:
-                    # self.get_logger().error(f'设备 {index+1} 生成了异常: {exc}')
                     temperatures[f'temperature_sensor_{index+1}'] = -1
                     humidities[f'humidity_sensor_{index+1}'] = -1
 
         return temperatures, humidities
 
     def get_sensor_data_callback(self, request, response):
-        # 模拟获取16个温度和16个湿度数据
         temperatures, humidities = self.read_all_sensors()
         
         data = {

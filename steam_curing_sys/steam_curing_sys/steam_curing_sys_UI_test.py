@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 class Bridge(QObject):
     messageSignal = pyqtSignal(str)
-    steamEngineState = pyqtSignal(dict)
+    engineStateSet = pyqtSignal(dict)
     limitSettingsUpdated = pyqtSignal(float, float, float, float)  # 新增信号
     sprinklerSystemControl = pyqtSignal(dict)
     dollyControl = pyqtSignal(dict)
@@ -85,7 +85,7 @@ class Bridge(QObject):
             elif method_name == "sendMessage":
                 self.sendMessage(args)
             elif method_name == "setEngineState":
-                self.setSteamEngineState(args)
+                self.setEngineState(args)
             elif method_name == "controlDolly":
                 self.controlDolly(args)
             elif method_name == "tempControlDolly":
@@ -239,9 +239,9 @@ class Bridge(QObject):
     def sendMessage(self, message):
         logger.info(f"Received message: {message}")
 
-    def setSteamEngineState(self, state):
-        logger.info(f"Steam engine state: {state}")
-        self.steamEngineState.emit(state)
+    def setEngineState(self, state):
+        logger.info(f"Set engine state: {state}")
+        self.engineStateSet.emit(state)
 
 class ExportProgressDialog(QDialog):
     def __init__(self, parent=None):
@@ -452,16 +452,21 @@ class MainWindow(QMainWindow):
         logger.info(f"Send dolly settings: {settings}")
         self.bridge.send_message(msg_type, json.dumps(settings))
 
-    def update_left_steam_status(self, status):
-        msg_type = "update_left_steam_status"
+    def update_spray_engine_status(self, status):
+        msg_type = "update_spray_engine_status"
         # status为bool类型
         self.bridge.send_message(msg_type, status)
-        self.bridge.mqtt_client.publish(json.dumps({"command": "update_fog_status", "data": status}))
+        self.bridge.mqtt_client.publish(json.dumps({"command": "update_spray_engine_status", "data": status}))
 
     def update_right_steam_status(self, status):
         msg_type = "update_right_steam_status"
         self.bridge.send_message(msg_type, status)
-        self.bridge.mqtt_client.publish(json.dumps({"command": "update_steam_status", "data": status}))
+        self.bridge.mqtt_client.publish(json.dumps({"command": "update_right_steam_status", "data": status}))
+
+    def update_left_steam_status(self, status):
+        msg_type = "update_left_steam_status"
+        self.bridge.send_message(msg_type, status)
+        self.bridge.mqtt_client.publish(json.dumps({"command": "update_left_steam_status", "data": status}))
 
     def confirm_lock_password(self, result):
         msg_type = "confirm_lock_password"

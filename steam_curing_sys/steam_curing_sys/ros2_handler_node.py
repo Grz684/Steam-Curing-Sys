@@ -5,6 +5,8 @@ from datetime import datetime
 from datetime import timedelta
 import json
 import logging
+from .state_machine import StateMachine
+from .state_machine import State
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -28,16 +30,19 @@ class SensorSubscriberNode(Node):
         self.timer = self.create_timer(5.0, self.timer_callback)
 
         self.dolly_timer = self.create_timer(2.0, self.dolly_timer_callback)
-        self.sprinkler_timer = self.create_timer(2.0, self.sprinkler_timer_callback)
-        self.steam_timer = self.create_timer(2.0, self.steam_timer_callback)
+        self.steam_engine_timer = self.create_timer(2.0, self.steam_engine_timer_callback)
+        # self.spray_timer = self.create_timer(2.0, self.spray_timer_callback)
 
         self.control_utils = self.qtSignalHandler.control_utils
+
+        self.spray_machine_state = False
 
         # Store previous states
         self.previous_states = [False, False]
 
         # Create timer, calling every 0.5 seconds
         # self.read_input_timer = self.create_timer(0.5, self.read_input_timer_callback)
+        self.state_machine = StateMachine(self)
 
     def process_water_protection_status(self, status):
         if status == "Left side: Water shortage":
@@ -59,13 +64,69 @@ class SensorSubscriberNode(Node):
         else:
             self.get_logger().warn(f"Received unexpected status: {status}")
 
-    def sprinkler_timer_callback(self):
+    def steam_engine_timer_callback(self):
+        # 喷淋完现在用蒸汽
         if self.qtSignalHandler.get_sprinkler_system_state():
             updated_temp_data = {sensor: value for sensor, value in self.temp_data.items() if value != -1}
             updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
+            # 更正后的代码
+            group1 = {sensor: value for sensor, value in updated_temp_data.items() if 1 <= int(sensor.split('_')[2]) <= 5}
+            group2 = {sensor: value for sensor, value in updated_temp_data.items() if 6 <= int(sensor.split('_')[2]) <= 10}
+            group3 = {sensor: value for sensor, value in updated_temp_data.items() if 11 <= int(sensor.split('_')[2]) <= 15}
+            
+            # flag_left_side_needheat = False
+            # flag_left_side_overheat = False
+            # flag_right_side_needheat = False
+            # flag_right_side_overheat = False
+            # flag_top_needheat = False
+            
+            # temperature_sensor_1~5分成一组，6~10分成一组，11~15分成一组，group1和3为左右拱腰，group2为拱顶
+            if group1 and group2 and group3 and updated_humidity_data:
+                group1_avg = sum(group1.values()) / len(group1)
+                group3_avg = sum(group3.values()) / len(group3)
+                group2_avg = sum(group2.values()) / len(group2)
+                top_temp_avg = group2_avg
+                side_temp_avg = (group1_avg + group3_avg) / 2
+                updated_humidity_data_avg = sum(updated_humidity_data.values()) / len(updated_humidity_data)
 
-            if updated_temp_data or updated_humidity_data:
-                self.process_sprinkler_data(updated_humidity_data)
+                self.state_machine.run(side_temp_avg, top_temp_avg, updated_humidity_data_avg)
+        else:
+            self.state_machine.state = State.S1
+
+            # if flag_top_needheat:
+            #     result1 = self.control_utils.turn_left_steam_on()
+            #     result2 = self.control_utils.turn_right_steam_on()
+            #     if result1:
+            #         self.qtSignalHandler.left_steam_status_updated.emit(True)
+            #     if result2:
+            #         self.qtSignalHandler.right_steam_status_updated.emit(True)
+            #     self.spray_machine_state = False
+            
+            # if flag_left_side_needheat and flag_right_side_needheat:
+            #     result = self.control_utils.turn_left_steam_on()
+            #     if result:
+            #         self.qtSignalHandler.left_steam_status_updated.emit(True)
+            #     self.spray_machine_state = False
+
+            # if flag_top_overheat:
+            #     result = self.control_utils.turn_left_steam_off()
+            #     if result:
+            #         self.qtSignalHandler.left_steam_status_updated.emit(False)
+
+            # if flag_left_side_overheat and flag_right_side_overheat:
+            #     result1 = self.control_utils.turn_left_steam_off()
+            #     result2 = self.control_utils.turn_right_steam_off()
+            #     if result1:
+            #         self.qtSignalHandler.left_steam_status_updated.emit(False)
+            #     if result2:
+            #         self.qtSignalHandler.right_steam_status_updated.emit(False)
+            #     self.spray_machine_state = True
+
+            # updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
+
+            # if updated_temp_data or updated_humidity_data:
+            #     self.process_sprinkler_data(updated_humidity_data)
+
                 # self.process_data_zone1(
                 #     {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(1, 9)]},  # 修改为前 8 个传感器
                 #     {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(1, 9)]}  # 修改为前 8 个传感器
@@ -75,13 +136,25 @@ class SensorSubscriberNode(Node):
                 #     {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(9, 17)]}  # 修改为后 8 个传感器
                 # )
 
-    def steam_timer_callback(self):
-        if self.qtSignalHandler.get_steam_system_state():
-            updated_temp_data = {sensor: value for sensor, value in self.temp_data.items() if value != -1}
-            updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
-
-            if updated_temp_data or updated_humidity_data:
-                self.process_steam_data(updated_temp_data)
+    def spray_timer_callback(self):
+        if self.qtSignalHandler.get_sprinkler_system_state():
+            if self.spray_machine_state:
+                updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
+                if updated_humidity_data:
+                    updated_humidity_data_avg = sum(updated_humidity_data.values()) / len(updated_humidity_data)
+                    if updated_humidity_data_avg < self.qtSignalHandler.humidity_lower_limit:
+                        result = self.control_utils.turn_spray_engine_on()
+                        if result:
+                            self.qtSignalHandler.spray_engine_status_updated.emit(True)
+                    elif updated_humidity_data_avg > self.qtSignalHandler.humidity_upper_limit:
+                        result = self.control_utils.turn_spray_engine_off()
+                        if result:
+                            self.qtSignalHandler.spray_engine_status_updated.emit(False)
+            else:
+                self.control_utils.turn_spray_engine_off()
+                self.qtSignalHandler.spray_engine_status_updated.emit(False)
+        # else:
+        #     self.spray_machine_state = False
 
     def dolly_timer_callback(self):
         if self.qtSignalHandler.get_dolly_auto_mode():

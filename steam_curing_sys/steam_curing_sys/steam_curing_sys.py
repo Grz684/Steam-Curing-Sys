@@ -20,7 +20,7 @@ def main():
     ex.bridge.limitSettingsUpdated.connect(qtSignalHandler.process_limit_settings)
     qtSignalHandler.load_limit_settings.connect(ex.update_limit_settings)
     
-    ex.bridge.steamEngineState.connect(qtSignalHandler.manual_steam_engine_state)
+    ex.bridge.engineStateSet.connect(qtSignalHandler.manual_engine_state)
     
     qtSignalHandler.load_sprinkler_settings.connect(ex.update_sprinkler_settings)
     
@@ -30,6 +30,7 @@ def main():
     # ros2_thread.mode_chosen.connect(ros2_thread.process_mode_chosen)
     qtSignalHandler.export_completed.connect(ex.show_export_completed_dialog)
     qtSignalHandler.export_started.connect(ex.show_export_progress)
+    qtSignalHandler.spray_engine_status_updated.connect(ex.update_spray_engine_status)
     qtSignalHandler.left_steam_status_updated.connect(ex.update_left_steam_status)
     qtSignalHandler.right_steam_status_updated.connect(ex.update_right_steam_status)
 

@@ -28,8 +28,10 @@ class QtSignalHandler(QObject):
     load_dolly_settings = pyqtSignal(dict)
     update_water_tank_status = pyqtSignal(dict)
     
+    spray_engine_status_updated = pyqtSignal(bool)
     left_steam_status_updated = pyqtSignal(bool)
     right_steam_status_updated = pyqtSignal(bool)
+
     mode_chosen = pyqtSignal(int)
     data_updated = pyqtSignal(list)
     export_completed = pyqtSignal(int)
@@ -195,12 +197,14 @@ class QtSignalHandler(QObject):
     def _delayed_control(self, index, state):
         self.control_utils.control_output(self.control_utils.sprinkler_base_addr + index -1, state)
 
-    def manual_steam_engine_state(self, state):
+    def manual_engine_state(self, state):
         logger.info(f"Steam engine state: {state}")
-        if state["engine"] == "left":
-            self.control_utils.turn_zone1_humidifier_on() if state["state"] else self.control_utils.turn_zone1_humidifier_off()
-        elif state["engine"] == "right":
-            self.control_utils.turn_zone2_humidifier_on() if state["state"] else self.control_utils.turn_zone2_humidifier_off()
+        if state["engine"] == "sprayEngine":
+            self.control_utils.turn_spray_engine_on() if state["state"] else self.control_utils.turn_spray_engine_off()
+        elif state["engine"] == "leftSteamEngine":
+            self.control_utils.turn_left_steam_on() if state["state"] else self.control_utils.turn_left_steam_off()
+        elif state["engine"] == "rightSteamEngine":
+            self.control_utils.turn_right_steam_on() if state["state"] else self.control_utils.turn_right_steam_off()
 
     def dolly_control(self, control):
         if control["target"] == "setState":

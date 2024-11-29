@@ -19,12 +19,22 @@
       <div class="steam-engine-control left-box">
         <h3>蒸汽机</h3>
         <div class="steam_engine">
-          <div class="status" :class="{ 'on': rightEngineOn }">
+          <div class="status" :class="{ 'on': leftSteamEngineOn }">
             <div class="status-indicator"></div>
-            {{ rightEngineOn ? '开' : '关' }}
+            {{ leftSteamEngineOn ? '开' : '关' }}
           </div>
-          <button @click="click_toggleSteamEngine" :disabled="isAutoMode" class="control-btn">
-            {{ rightEngineOn ? '关闭' : '开启' }}
+          <button @click="click_toggleLeftSteamEngine" :disabled="isAutoMode" class="control-btn">
+            {{ leftSteamEngineOn ? '关闭' : '开启' }}
+          </button>
+        </div>
+
+        <div class="steam_engine">
+          <div class="status" :class="{ 'on': rightSteamEngineOn }">
+            <div class="status-indicator"></div>
+            {{ rightSteamEngineOn ? '开' : '关' }}
+          </div>
+          <button @click="click_toggleRightSteamEngine" :disabled="isAutoMode" class="control-btn">
+            {{ rightSteamEngineOn ? '关闭' : '开启' }}
           </button>
         </div>
       </div>
@@ -40,7 +50,7 @@
               <div class="visualization">
                 <div v-for="n in 12" :key="n" class="sprinkler" 
                      :class="{ active: isAutoMode ? activeSprinkler === n : waterLevels[n-1] > 0 }"
-                     @click="!isSwitching && !isAutoMode && !leftEngineOn && toggleManualSprinkler(n)">
+                     @click="!isSwitching && !isAutoMode && !sprayEngineOn && toggleManualSprinkler(n)">
                   <div class="water" :style="{ height: waterHeight(n) + '%' }"></div>
                   <span>{{ n }}</span>
                 </div>
@@ -50,12 +60,12 @@
             <!-- 右雾化机 -->
             <div class="ato_engine">
               <h4>雾化机</h4>
-              <div class="status" :class="{ 'on': leftEngineOn }">
+              <div class="status" :class="{ 'on': sprayEngineOn }">
                 <div class="status-indicator"></div>
-                {{ leftEngineOn ? '开' : '关' }}
+                {{ sprayEngineOn ? '开' : '关' }}
               </div>
               <button @click="click_toggleEngine" :disabled="isAutoMode || isSwitching" class="control-btn">
-                {{ leftEngineOn ? '关闭' : '开启' }}
+                {{ sprayEngineOn ? '关闭' : '开启' }}
               </button>
             </div>
           </div>
@@ -115,8 +125,9 @@ import { useWebChannel } from './useWebChannel';
 import NumericKeyboard from './NumericKeyboard.vue';
 
 // Steam Engine Control
-const leftEngineOn = ref(false);
-const rightEngineOn = ref(false);
+const sprayEngineOn = ref(false);
+const leftSteamEngineOn = ref(false);
+const rightSteamEngineOn = ref(false);
 
 // Sprinkler System
 const currentSingleRunTime = ref(10);
@@ -191,15 +202,18 @@ onMounted(() => {
     const { message } = useWebChannel();
 
     watch(message, (newMessage) => {
-      if (newMessage && newMessage.type === 'update_left_steam_status') {
-        leftEngineOn.value = newMessage.content;
+      if (newMessage && newMessage.type === 'update_spray_engine_status') {
+        sprayEngineOn.value = newMessage.content;
       }
       else if (newMessage && newMessage.type === 'IntegratedControlSystem_init') {
         console.log('Received IntegratedControlSystem_init message');
         sendInitialState();
       }
+      else if (newMessage && newMessage.type === 'update_left_steam_status') {
+        leftSteamEngineOn.value = newMessage.content;
+      }
       else if (newMessage && newMessage.type === 'update_right_steam_status') {
-        rightEngineOn.value = newMessage.content;
+        rightSteamEngineOn.value = newMessage.content;
       }
       else if (newMessage && newMessage.type === 'update_sprinkler_settings') {
         try {
@@ -245,7 +259,7 @@ onMounted(() => {
           click_toggleEngine();
         }
         else if (set_pak.method === 'click_toggleSteamEngine') {
-          click_toggleSteamEngine();
+          click_toggleLeftSteamEngine();
         }
         else if (set_pak.method === 'toggleManualSprinkler') {
           toggleManualSprinkler(set_pak.args.n);
@@ -279,8 +293,8 @@ const clearAllTimers = () => {
 
 const sendInitialState = () => {
   const initialState = {
-    leftEngineOn: leftEngineOn.value,
-    rightEngineOn: rightEngineOn.value,
+    leftEngineOn: sprayEngineOn.value,
+    rightEngineOn: leftSteamEngineOn.value,
     currentSingleRunTime: currentSingleRunTime.value,
     currentRunIntervalTime: currentRunIntervalTime.value,
     currentLoopInterval: currentLoopInterval.value,
@@ -362,12 +376,16 @@ async function setMode(mode) {
       isSwitching.value = false;
 
       // 关闭所有引擎
-      if (leftEngineOn.value) {
-        await toggleEngine();
+      if (sprayEngineOn.value) {
+        await toggleSprayEngine();
       }
 
-      if (rightEngineOn.value) {
-        await toggleSteamEngine();
+      if (leftSteamEngineOn.value) {
+        await toggleLeftSteamEngine();
+      }
+
+      if (rightSteamEngineOn.value) {
+        await toggleRightSteamEngine();
       }
 
       // 找出当前激活的喷头（如果有）
@@ -389,17 +407,24 @@ async function setMode(mode) {
   }
 }
 
-async function toggleEngine() {
+async function toggleSprayEngine() {
   if (environment.isPyQtWebEngine) {
-    sendToPyQt('setEngineState', { engine: 'left', state: !leftEngineOn.value });
-    leftEngineOn.value = !leftEngineOn.value;
+    sendToPyQt('setEngineState', { engine: 'sprayEngine', state: !sprayEngineOn.value });
+    sprayEngineOn.value = !sprayEngineOn.value;
   }
 }
 
-async function toggleSteamEngine() {
+async function toggleLeftSteamEngine() {
   if (environment.isPyQtWebEngine) {
-    sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
-    rightEngineOn.value = !rightEngineOn.value;
+    sendToPyQt('setEngineState', { engine: 'leftSteamEngine', state: !leftSteamEngineOn.value });
+    leftSteamEngineOn.value = !leftSteamEngineOn.value;
+  }
+}
+
+async function toggleRightSteamEngine() {
+  if (environment.isPyQtWebEngine) {
+    sendToPyQt('setEngineState', { engine: 'rightSteamEngine', state: !rightSteamEngineOn.value });
+    rightSteamEngineOn.value = !rightSteamEngineOn.value;
   }
 }
 
@@ -407,9 +432,9 @@ async function click_toggleEngine() {
   const activeIndex = waterLevels.value.findIndex(level => level === 100);
 
   if (environment.isPyQtWebEngine && activeIndex === -1) {
-    sendToPyQt('IntegratedControlSystem_set_response', { method: 'click_toggleEngine', args: {} });
+    sendToPyQt('IntegratedControlSystem_set_response', { method: 'click_toggleSprayEngine', args: {} });
     // 切换到喷雾系统
-    if (!leftEngineOn.value) {
+    if (!sprayEngineOn.value) {
       await switchSystem(0, "click_toggleEngine");
       sendToPyQt('controlSprinkler', { target: "tankWork" , state: 1 });
     }
@@ -417,18 +442,26 @@ async function click_toggleEngine() {
       sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
     }
     
-    sendToPyQt('setEngineState', { engine: 'left', state: !leftEngineOn.value });
+    sendToPyQt('setEngineState', { engine: 'sprayEngine', state: !sprayEngineOn.value });
     // sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
-    leftEngineOn.value = !leftEngineOn.value;
+    sprayEngineOn.value = !sprayEngineOn.value;
     // rightEngineOn.value = !rightEngineOn.value;
   }
 }
 
-async function click_toggleSteamEngine() {
+async function click_toggleLeftSteamEngine() {
   if (environment.isPyQtWebEngine) {
-    sendToPyQt('IntegratedControlSystem_set_response', { method: 'click_toggleSteamEngine', args: {} });
-    sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
-    rightEngineOn.value = !rightEngineOn.value;
+    sendToPyQt('IntegratedControlSystem_set_response', { method: 'click_toggleLeftSteamEngine', args: {} });
+    sendToPyQt('setEngineState', { engine: 'leftSteamEngine', state: !leftSteamEngineOn.value });
+    leftSteamEngineOn.value = !leftSteamEngineOn.value;
+  }
+}
+
+async function click_toggleRightSteamEngine() {
+  if (environment.isPyQtWebEngine) {
+    sendToPyQt('IntegratedControlSystem_set_response', { method: 'click_toggleRightSteamEngine', args: {} });
+    sendToPyQt('setEngineState', { engine: 'rightSteamEngine', state: !rightSteamEngineOn.value });
+    rightSteamEngineOn.value = !rightSteamEngineOn.value;
   }
 }
 
@@ -508,12 +541,16 @@ async function stopSystem() {
   }
 
   // 如果有引擎被后端激活，关闭它
-  if (leftEngineOn.value) {
-    await toggleEngine();
+  if (sprayEngineOn.value) {
+    await toggleSprayEngine();
   }
 
-  if (rightEngineOn.value) {
-    await toggleSteamEngine();
+  if (leftSteamEngineOn.value) {
+    await toggleLeftSteamEngine();
+  }
+
+  if (rightSteamEngineOn.value) {
+    await toggleRightSteamEngine();
   }
 
   stopSystemWithoutSend();
@@ -636,8 +673,16 @@ async function runLoopInterval() {
       waterLevels.value = Array(12).fill(0);
 
       sendToPyQt('controlSprinkler', { target: 'setState', state: false });
-      if (leftEngineOn.value) {
-        await toggleEngine();
+      if (sprayEngineOn.value) {
+        await toggleSprayEngine();
+      }
+
+      if (leftSteamEngineOn.value) {
+        await toggleLeftSteamEngine();
+      }
+
+      if (rightSteamEngineOn.value) {
+        await toggleRightSteamEngine();
       }
 
       // 喷雾系统关闭

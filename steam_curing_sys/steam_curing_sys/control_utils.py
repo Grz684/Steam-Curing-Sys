@@ -14,12 +14,6 @@ class ModbusControlException(Exception):
 class ControlUtils():
     def __init__(self):
         self.lock = threading.Lock()
-        self.zone1_heater_on = False
-        self.zone2_heater_on = False
-
-        self.zone1_humidifier_on = False
-        self.zone2_humidifier_on = False
-
         self.dolly_on = False
 
         self.zone1_output_addr = 0
@@ -42,6 +36,14 @@ class ControlUtils():
 
         self.output_num = 16 # 输出数量
 
+        # 三设备情况
+        self.spray_engine_on = False
+        self.left_steam_on = False
+        self.right_steam_on = False
+        self.spray_engine_output_addr = 0
+        self.left_steam_output_addr = 1
+        self.right_steam_output_addr = 2
+
         if not self.debug:
             try:
                 self.dio_client = ModbusTcpClient(self.dio_ip, port=self.dio_port)
@@ -58,6 +60,62 @@ class ControlUtils():
                     #     logger.error(f"读取初始响应时出错: {e}")
             except ConnectionException as e:
                 raise ModbusControlException(f"Modbus 连接错误: {e}")
+            
+    def turn_spray_engine_on(self):
+        if not self.spray_engine_on:
+            logger.info('Turning spray engine ON')
+            self.spray_engine_on = True
+            self.control_output(self.spray_engine_output_addr, True)
+            return True
+        else:
+            return False
+
+    def turn_spray_engine_off(self):
+        if self.spray_engine_on:
+            logger.info('Turning spray engine OFF')
+            self.spray_engine_on = False
+            self.control_output(self.spray_engine_output_addr, False)
+            return True
+        else:
+            return False
+
+    def turn_left_steam_on(self):
+        if not self.left_steam_on:
+            logger.info('Turning left steam ON')
+            self.left_steam_on = True
+            self.control_output(self.left_steam_output_addr, True)
+            return True
+        else:
+            return False
+
+    def turn_left_steam_off(self):
+        if self.left_steam_on:
+            logger.info('Turning left steam OFF')
+            self.left_steam_on = False
+            self.control_output(self.left_steam_output_addr, False)
+            return True
+        else:
+            return False
+
+    def turn_right_steam_on(self):
+        if not self.right_steam_on:
+            logger.info('Turning right steam ON')
+            self.right_steam_on = True
+            self.control_output(self.right_steam_output_addr, True)
+            logger.info(f"成功，现在right_steam_on为{self.right_steam_on}")
+            return True
+        else:
+            return False
+
+    def turn_right_steam_off(self):
+        if self.right_steam_on:
+            logger.info('Turning right steam OFF')
+            self.right_steam_on = False
+            self.control_output(self.right_steam_output_addr, False)
+            return True
+        else:
+            logger.info(f"失败，因为现在right_steam_on为{self.right_steam_on}")
+            return False
             
     def control_switch(self, state):
         if state:
@@ -132,51 +190,6 @@ class ControlUtils():
                 
                 except ModbusException as e:
                     raise ModbusControlException(f"Modbus错误: {e}")
-        
-
-    def turn_zone1_heater_on(self):
-        if not self.zone1_heater_on:
-            self.zone1_heater_on = True
-            logger.info('Turning zone1 heater ON')
-
-    def turn_zone1_heater_off(self):
-        if self.zone1_heater_on:
-            self.zone1_heater_on = False
-            logger.info('Turning zone1 heater OFF')
-
-    def turn_zone2_heater_on(self):
-        if not self.zone2_heater_on:
-            self.zone2_heater_on = True
-            logger.info('Turning zone2 heater ON')
-
-    def turn_zone2_heater_off(self):
-        if self.zone2_heater_on:
-            self.zone2_heater_on = False
-            logger.info('Turning zone2 heater OFF')
-
-    def turn_zone1_humidifier_on(self):
-        if not self.zone1_humidifier_on:
-            self.zone1_humidifier_on = True
-            logger.info('Turning zone1 humidifier ON')
-            self.control_output(self.zone1_output_addr, True)
-
-    def turn_zone1_humidifier_off(self):
-        if self.zone1_humidifier_on:
-            self.zone1_humidifier_on = False
-            logger.info('Turning zone1 humidifier OFF')
-            self.control_output(self.zone1_output_addr, False)
-
-    def turn_zone2_humidifier_on(self):
-        if not self.zone2_humidifier_on:
-            self.zone2_humidifier_on = True
-            logger.info('Turning zone2 humidifier ON')
-            self.control_output(self.zone2_output_addr, True)
-
-    def turn_zone2_humidifier_off(self):
-        if self.zone2_humidifier_on:
-            self.zone2_humidifier_on = False
-            logger.info('Turning zone2 humidifier OFF')
-            self.control_output(self.zone2_output_addr, False)
                 
     def turn_dolly_on(self):
         if not self.dolly_on:
