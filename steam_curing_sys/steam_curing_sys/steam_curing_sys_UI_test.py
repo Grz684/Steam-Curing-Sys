@@ -311,6 +311,14 @@ class MainWindow(QMainWindow):
 
         self.export_progress_dialog = None
 
+    def update_state_machine(self, state):
+        msg_type = "update_state_machine"
+        self.bridge.send_message(msg_type, state)
+
+    def update_sensor_avg_data(self, sensor_avg_data):
+        msg_type = "update_sensor_avg_data"
+        self.bridge.send_message(msg_type, json.dumps(sensor_avg_data))
+
     def update_device_info(self, device_info):
         msg_type = "device_info"
         logger.info(f"Send device info: {device_info}")

@@ -5,6 +5,7 @@ from datetime import datetime
 from datetime import timedelta
 import json
 import logging
+import random
 from .state_machine import StateMachine
 from .state_machine import State
 
@@ -79,6 +80,10 @@ class SensorSubscriberNode(Node):
             # flag_right_side_needheat = False
             # flag_right_side_overheat = False
             # flag_top_needheat = False
+
+            top_temp_avg = -1
+            side_temp_avg = -1
+            updated_humidity_data_avg = -1
             
             # temperature_sensor_1~5分成一组，6~10分成一组，11~15分成一组，group1和3为左右拱腰，group2为拱顶
             if group1 and group2 and group3 and updated_humidity_data:
@@ -90,8 +95,27 @@ class SensorSubscriberNode(Node):
                 updated_humidity_data_avg = sum(updated_humidity_data.values()) / len(updated_humidity_data)
 
                 self.state_machine.run(side_temp_avg, top_temp_avg, updated_humidity_data_avg)
+            else:
+                if group1 and group3:
+                    group1_avg = sum(group1.values()) / len(group1)
+                    group3_avg = sum(group3.values()) / len(group3)
+                    side_temp_avg = (group1_avg + group3_avg) / 2
+                if group2:
+                    group2_avg = sum(group2.values()) / len(group2)
+                    top_temp_avg = group2_avg
+                if updated_humidity_data:
+                    updated_humidity_data_avg = sum(updated_humidity_data.values()) / len(updated_humidity_data)
+
+                self.qtSignalHandler.sensor_avg_data_updated.emit({
+                    "side_temperature": round(side_temp_avg, 1),
+                    "top_temperature": round(top_temp_avg, 1), 
+                    "humidity": round(updated_humidity_data_avg, 1)
+                })
+            
         else:
-            self.state_machine.state = State.S1
+            if self.state_machine.state != State.S0:
+                self.state_machine.state = State.S0
+                self.qtSignalHandler.state_machine_updated.emit(0)
 
             # if flag_top_needheat:
             #     result1 = self.control_utils.turn_left_steam_on()
@@ -270,7 +294,7 @@ class SensorSubscriberNode(Node):
                 
             adjustment = temp_adjust[sensor]
             if adjustment["type"] == "value":
-                self.temp_data[sensor] = adjustment["value"]
+                self.temp_data[sensor] = adjustment["value"] + random.uniform(-1, 1)
             elif self.temp_data[sensor] != -1 and adjustment["type"] == "offset":
                 self.temp_data[sensor] += adjustment["value"]
         

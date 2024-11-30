@@ -1,112 +1,162 @@
 <template>
   <div class="integrated-control-system">
     <h2>集成控制系统</h2>
-    <!-- <label> （支持自动/手动两种模式，自动模式下喷淋->喷雾->喷淋循环运行）</label> -->
-    <div class="label-box" >
-      <label>支持自动/手动两种模式，自动模式下蒸汽机启停受温度上下限控制，</label><br>
-      <label>喷淋/喷雾系统沿喷淋->喷雾->喷淋循环运行，喷淋/喷雾时间由设置决定，其中在喷雾时间内雾化机启停受湿度上下限控制；</label><br>
-      <label>手动模式下可手动控制蒸汽机/喷淋头/雾化机的启停，注意喷淋头和雾化机同时只能工作一个</label>
-    </div>
+    
     <div class="mode-controls">
-      <button @click="setMode('auto')" :class="{ active: isAutoMode }" class="mode-btn">自动模式</button>
-      <button @click="setMode('manual')" :class="{ active: !isAutoMode }" class="mode-btn">手动模式</button>
-      <button @click="startSystem" :disabled="isRunning || !isAutoMode" class="control-btn">开始</button>
-      <button @click="stopSystem" :disabled="!isRunning || !isAutoMode" class="control-btn">停止</button>
+      <div class="btn-group">
+        <button @click="setMode('auto')" :class="{ active: isAutoMode }" class="mode-btn">自动模式</button>
+        <button @click="setMode('manual')" :class="{ active: !isAutoMode }" class="mode-btn">手动模式</button>
+      </div>
+      <div class="btn-group">
+        <button @click="startSystem" :disabled="isRunning || !isAutoMode" class="control-btn">开始</button>
+        <button @click="stopSystem" :disabled="!isRunning || !isAutoMode" class="control-btn">停止</button>
+      </div>
     </div>
 
     <div class="systems-container">
-      <!-- 左雾化机框 -->
-      <div class="steam-engine-control left-box">
-        <h3>蒸汽机</h3>
-        <div class="steam_engine">
-          <div class="status" :class="{ 'on': leftSteamEngineOn }">
-            <div class="status-indicator"></div>
-            {{ leftSteamEngineOn ? '开' : '关' }}
+      <!-- 左侧栏 -->
+      <div class="side-controls">
+        <!-- Left Box - Sprinkler -->
+        <div class="left-box">
+          <h3>定时喷淋系统</h3>
+          <div class="steam_engine">
+            <div class="status" :class="{ 'on': sprinklerEngineOn }">
+              <div class="status-indicator"></div>
+              {{ sprinklerEngineOn ? '开' : '关' }}
+            </div>
+            <button @click="click_toggleSprinklerEngine" :disabled="isAutoMode" class="control-btn">
+              {{ sprinklerEngineOn ? '关闭' : '开启' }}
+            </button>
           </div>
-          <button @click="click_toggleLeftSteamEngine" :disabled="isAutoMode" class="control-btn">
-            {{ leftSteamEngineOn ? '关闭' : '开启' }}
-          </button>
+          <div class="text_status">{{ statusMessage }}</div>
         </div>
 
-        <div class="steam_engine">
-          <div class="status" :class="{ 'on': rightSteamEngineOn }">
-            <div class="status-indicator"></div>
-            {{ rightSteamEngineOn ? '开' : '关' }}
+        <!-- Right Box - Time Settings -->
+        <div class="right-box">
+          <h3>定时喷淋/循环养护系统时间设置</h3>
+          <div class="controls">
+            <div class="input-group">
+              <label>喷淋系统工作时间 (秒):</label>
+              <input 
+                type="text" 
+                :value="tempSingleRunTime" 
+                @focus="focusInput('singleRunTime')"
+                readonly
+              />
+            </div>
+            <div class="input-group">
+              <label>循环养护系统工作时间 (秒):</label>
+              <input 
+                type="text" 
+                :value="tempLoopInterval" 
+                @focus="focusInput('loopInterval')"
+                readonly
+              />
+            </div>
           </div>
-          <button @click="click_toggleRightSteamEngine" :disabled="isAutoMode" class="control-btn">
-            {{ rightSteamEngineOn ? '关闭' : '开启' }}
-          </button>
         </div>
       </div>
 
-      <!-- 喷淋喷雾系统框 -->
-      <div class="sprinkler-system middle-box">
-        <h3>喷淋/喷雾系统</h3>
-        <div class="spray-container">
+      <!-- Middle Box -->
+      <div class="middle-box">
+        <h3>循环养护系统</h3>
+        <!-- 状态机可视化 -->
+        <div class="state-machine-container">
+          <div class="state-machine">
+            <svg viewBox="0 0 800 400">
+              <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                        refX="9" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#2c3e50"/>
+                </marker>
+              </defs>
+
+              <!-- 转换路径和条件框 -->
+              <g v-for="(transition, index) in transitions" :key="'t'+index">
+                <path :d="transition.path" 
+                      class="transition-path" />
+                <line :x1="transition.lineStart.x" 
+                      :y1="transition.lineStart.y"
+                      :x2="transition.conditionX" 
+                      :y2="transition.conditionY"
+                      class="condition-line" />
+                <rect :x="transition.conditionX - 80" 
+                      :y="transition.conditionY - 25"
+                      width="160" height="50" rx="4"
+                      class="condition-box" />
+                <text :x="transition.conditionX" 
+                      :y="transition.conditionY - 8" 
+                      class="condition-text">{{transition.text1}}</text>
+                <text :x="transition.conditionX" 
+                      :y="transition.conditionY + 8" 
+                      class="condition-text">{{transition.text2}}</text>
+              </g>
+
+              <!-- 状态 -->
+              <g v-for="(state, index) in states" :key="index"
+                :class="{'active': currentState === state.label}">
+                <ellipse :cx="state.x" :cy="state.y" 
+                        rx="80" ry="40" 
+                        class="state"
+                        :class="{'active': currentState === state.label}"
+                        />
+                <text :x="state.x" 
+                      :y="state.y - 8" 
+                      class="state-text">{{state.text1}}</text>
+                <text :x="state.x" 
+                      :y="state.y + 8" 
+                      class="state-text">{{state.text2}}</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <div class="control-systems">
           <div class="control-row">
-            <!-- 喷淋头显示 -->
-            <div class="sprinkler-section">
-              <h4>喷淋头</h4>
-              <div class="visualization">
-                <div v-for="n in 12" :key="n" class="sprinkler" 
-                     :class="{ active: isAutoMode ? activeSprinkler === n : waterLevels[n-1] > 0 }"
-                     @click="!isSwitching && !isAutoMode && !sprayEngineOn && toggleManualSprinkler(n)">
-                  <div class="water" :style="{ height: waterHeight(n) + '%' }"></div>
-                  <span>{{ n }}</span>
+            <!-- Left Steam Engine -->
+            <div class="control-item">
+              <h4>蒸汽机（组1）</h4>
+              <div class="steam_engine">
+                <div class="status" :class="{ 'on': leftSteamEngineOn }">
+                  <div class="status-indicator"></div>
+                  {{ leftSteamEngineOn ? '开' : '关' }}
                 </div>
+                <button @click="click_toggleLeftSteamEngine" :disabled="isAutoMode" class="control-btn">
+                  {{ leftSteamEngineOn ? '关闭' : '开启' }}
+                </button>
               </div>
             </div>
 
-            <!-- 右雾化机 -->
-            <div class="ato_engine">
-              <h4>雾化机</h4>
-              <div class="status" :class="{ 'on': sprayEngineOn }">
-                <div class="status-indicator"></div>
-                {{ sprayEngineOn ? '开' : '关' }}
+            <!-- Right Steam Engine -->
+            <div class="control-item">
+              <h4>蒸汽机（组2）</h4>
+              <div class="steam_engine">
+                <div class="status" :class="{ 'on': rightSteamEngineOn }">
+                  <div class="status-indicator"></div>
+                  {{ rightSteamEngineOn ? '开' : '关' }}
+                </div>
+                <button @click="click_toggleRightSteamEngine" :disabled="isAutoMode" class="control-btn">
+                  {{ rightSteamEngineOn ? '关闭' : '开启' }}
+                </button>
               </div>
-              <button @click="click_toggleEngine" :disabled="isAutoMode || isSwitching" class="control-btn">
-                {{ sprayEngineOn ? '关闭' : '开启' }}
-              </button>
+            </div>
+
+            <!-- Spray Engine -->
+            <div class="control-item">
+              <h4>超声波造雾机</h4>
+              <div class="steam_engine">
+                <div class="status" :class="{ 'on': sprayEngineOn }">
+                  <div class="status-indicator"></div>
+                  {{ sprayEngineOn ? '开' : '关' }}
+                </div>
+                <button @click="click_toggleEngine" :disabled="isAutoMode" class="control-btn">
+                  {{ sprayEngineOn ? '关闭' : '开启' }}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-        <!-- 系统状态 -->
-        <div class="text_status">{{ statusMessage }}</div>
-      </div>
-
-      <!-- 时间设置框 -->
-      <div class="time-control right-box">
-        <h3>喷淋/喷雾系统时间设置</h3>
-        <div class="controls">
-          <div class="input-group">
-            <label>单个喷淋头工作时间 (秒):</label>
-            <input 
-              type="text" 
-              :value="tempSingleRunTime" 
-              @focus="focusInput('singleRunTime')"
-              readonly
-            />
-          </div>
-          <div class="input-group">
-            <label>喷淋头-喷淋头运行间隔时间 (秒):</label>
-            <input 
-              type="text" 
-              :value="tempRunIntervalTime"
-              disabled
-              @focus="focusInput('runIntervalTime')"
-              readonly
-            />
-          </div>
-          <div class="input-group">
-            <label>喷雾时间 (秒):</label>
-            <input 
-              type="text" 
-              :value="tempLoopInterval" 
-              @focus="focusInput('loopInterval')"
-              readonly
-            />
-          </div>
-        </div>
+        <div class="text_status">{{ newStatusMessage }}</div>
       </div>
     </div>
 
@@ -128,6 +178,7 @@ import NumericKeyboard from './NumericKeyboard.vue';
 const sprayEngineOn = ref(false);
 const leftSteamEngineOn = ref(false);
 const rightSteamEngineOn = ref(false);
+const sprinklerEngineOn = ref(false);
 
 // Sprinkler System
 const currentSingleRunTime = ref(10);
@@ -139,9 +190,7 @@ const nextLoopInterval = ref(currentLoopInterval.value);
 const tempSingleRunTime = ref(currentSingleRunTime.value);
 const tempRunIntervalTime = ref(currentRunIntervalTime.value);
 const tempLoopInterval = ref(currentLoopInterval.value);
-const activeSprinkler = ref(0);
 const currentPhase = ref('');
-const waterLevels = ref(Array(12).fill(0));
 const remainingTime = ref(0);
 
 // Shared state
@@ -153,13 +202,7 @@ const showKeyboard = ref(false);
 const focusedInput = ref(null);
 const currentValue = ref('');
 
-// Switching state
-const isSwitching = ref(false);
-const switchingTime = ref(15);
-const switchingMessage = ref('');
-const switchPhase = ref('');
-
-const chose_n = ref(0);
+const sensor_error = ref(false);
 
 const { sendToPyQt } = useWebChannel();
 
@@ -193,6 +236,73 @@ watch(() => props.message, (newMsg) => {
     }
   }
 })
+
+// 添加状态机相关的状态
+const currentState = ref('S0');
+const centerX = 400;
+const centerY = 200;
+const radius = 120;
+
+const states = ref([
+  { x: centerX, y: centerY - radius, label: 'S1', text1: '打开全部', text2: '四个蒸汽机' },
+  { x: centerX + radius, y: centerY, label: 'S2', text1: '关闭一半蒸汽机', text2: '只打开两个蒸汽机' },
+  { x: centerX, y: centerY + radius, label: 'S3', text1: '关闭全部蒸汽机', text2: '根据湿度开/关造雾机' },
+  { x: centerX - radius, y: centerY, label: 'S4', text1: '打开两个蒸汽机', text2: '自动关闭造雾机' }
+]);
+
+const transitions = ref([
+  {
+    path: `M ${centerX + 80} ${centerY - radius} Q ${centerX + radius} ${centerY - radius} ${centerX + radius} ${centerY - 40}`,
+    lineStart: { x: centerX + radius - 40, y: centerY - radius + 40 },
+    conditionX: centerX + radius + 100,
+    conditionY: centerY - radius + 40,
+    condition: 'C1',
+    text1: '拱顶平均温度',
+    text2: '高于温度上限'
+  },
+  {
+    path: `M ${centerX + radius} ${centerY + 40} Q ${centerX + radius} ${centerY + radius} ${centerX + 80} ${centerY + radius}`,
+    lineStart: { x: centerX + radius - 40, y: centerY + radius - 40 },
+    conditionX: centerX + radius + 100,
+    conditionY: centerY + radius - 40,
+    condition: 'C2',
+    text1: '拱腰平均温度',
+    text2: '高于温度上限'
+  },
+  {
+    path: `M ${centerX - 80} ${centerY + radius} Q ${centerX - radius} ${centerY + radius} ${centerX - radius} ${centerY + 40}`,
+    lineStart: { x: centerX - radius + 40, y: centerY + radius - 40 },
+    conditionX: centerX - radius - 100,
+    conditionY: centerY + radius - 40,
+    condition: 'C3',
+    text1: '拱腰平均温度',
+    text2: '低于温度下限'
+  },
+  {
+    path: `M ${centerX - radius} ${centerY - 40} Q ${centerX - radius} ${centerY - radius} ${centerX - 80} ${centerY - radius}`,
+    lineStart: { x: centerX - radius + 40, y: centerY - radius + 40 },
+    conditionX: centerX - radius - 100,
+    conditionY: centerY - radius + 40,
+    condition: 'C4',
+    text1: '拱顶平均温度',
+    text2: '低于温度上限'
+  }
+]);
+
+// 添加状态改变方法
+const changeState = (state) => {
+  if (state === 0) {
+    currentState.value = 'S0';
+  } else if (state === 1) {
+    currentState.value = 'S1';
+  } else if (state === 2) {
+    currentState.value = 'S2';
+  } else if (state === 3) {
+    currentState.value = 'S3';
+  } else if (state === 4) {
+    currentState.value = 'S4';
+  }
+};
 
 onMounted(() => {
   environment.isPyQtWebEngine = typeof window.qt !== 'undefined' && window.qt.webChannelTransport;
@@ -228,6 +338,43 @@ onMounted(() => {
           console.log('Sprinkler Settings updated:', settings);
         } catch (error) {
           console.error('Failed to parse sprinkler settings data:', error);
+        }
+      }
+      else if (newMessage && newMessage.type === 'update_state_machine') {
+        console.log('Received state machine update:', newMessage.content);
+        changeState(newMessage.content);
+      }
+      else if (newMessage && newMessage.type === 'update_sensor_avg_data') {
+        console.log('Received sensor avg data:', newMessage.content);
+        const data = JSON.parse(newMessage.content);
+        if (data.top_temperature !== -1 && data.side_temperature !== -1 && data.humidity !== -1) {
+          top_avg_temp.value = String(data.top_temperature);
+          side_avg_temp.value = String(data.side_temperature);
+          avg_humidity.value = String(data.humidity);
+          sensor_error.value = false;
+        }
+        else {
+          sensor_error.value = true;
+          if (data.top_temperature === -1) {
+            top_avg_temp.value = '未知';
+          }
+          else {
+            top_avg_temp.value = String(data.top_temperature);
+          }
+
+          if (data.side_temperature === -1) {
+            side_avg_temp.value = '未知';
+          }
+          else {
+            side_avg_temp.value = String(data.side_temperature);
+          }
+
+          if (data.humidity === -1) {
+            avg_humidity.value = '未知';
+          }
+          else {
+            avg_humidity.value = String(data.humidity);
+          }
         }
       }
       else if (newMessage && newMessage.type === 'SprinklerSettings_set') {
@@ -304,60 +451,36 @@ const sendInitialState = () => {
     tempSingleRunTime: tempSingleRunTime.value,
     tempRunIntervalTime: tempRunIntervalTime.value,
     tempLoopInterval: tempLoopInterval.value,
-    activeSprinkler: activeSprinkler.value,
     currentPhase: currentPhase.value,
-    waterLevels: waterLevels.value,
     remainingTime: remainingTime.value,
     isAutoMode: isAutoMode.value,
     isRunning: isRunning.value,
-    isSwitching: isSwitching.value,
-    switchingTime: switchingTime.value,
-    switchingMessage: switchingMessage.value,
-    switchPhase: switchPhase.value,
     phaseStartTime: phaseStartTime.value,
-    chose_n : chose_n.value
   };
 
   sendToPyQt('IntegratedControlSystem_init_response', initialState);
 };
 
 const statusMessage = computed(() => {
-  if (isSwitching.value) return `${switchingMessage.value}，还需${switchingTime.value}秒`;
   if (!isAutoMode.value) return '手动模式';
-  if (!isRunning.value) return '系统未运行';
-  if (currentPhase.value === 'run') return `喷头 ${activeSprinkler.value} 正在运行，剩余 ${remainingTime.value+1} 秒`;
+  if (!isRunning.value) return '喷淋系统未运行';
+  if (currentPhase.value === 'run') return `喷淋系统正在运行，剩余 ${remainingTime.value+1} 秒`;
   if (currentPhase.value === 'interval') return `运行间隔中，剩余 ${remainingTime.value+1} 秒`;
-  if (currentPhase.value === 'loop') return `循环间隔中，剩余 ${remainingTime.value+1} 秒`;
+  if (currentPhase.value === 'loop') return `循环养护系统工作中，离下次喷淋剩余 ${remainingTime.value+1} 秒`;
   return '';
 });
 
-async function switchSystem(state, phase) {
-  switchPhase.value = phase;
-  isSwitching.value = true;
-  switchingTime.value = 15; // 重置等待时间
+const top_avg_temp = ref("未知");
+const side_avg_temp = ref("未知");
+const avg_humidity = ref("未知");
 
-  phaseStartTime.value = Date.now();
-
-  switchingMessage.value = state ? "正在切换到喷淋管" : "正在切换到喷雾机";
-  
-  sendToPyQt('controlSprinkler', { target: "switchToSprinkler", state: state });
-  
-  switchingInterval = setInterval(() => {
-    switchingTime.value--;
-    if (switchingTime.value <= 0) {
-      clearInterval(switchingInterval);
-      isSwitching.value = false;
-    }
-  }, 1000);
-
-  return new Promise(resolve => {
-    timer = setTimeout(() => {
-      isSwitching.value = false;
-      resolve();
-    }, switchingTime.value * 1000);
-    timers.value.push(timer);
-  });
-}
+const newStatusMessage = computed(() => {
+  if (!isAutoMode.value) return '手动模式';
+  if (!isRunning.value) return '循环养护系统未运行';
+  if (currentPhase.value === 'loop' && sensor_error.value === false) return `拱顶平均温度: ${top_avg_temp.value}°C, 拱腰平均温度: ${side_avg_temp.value}°C, 平均湿度: ${avg_humidity.value}%`;
+  if (currentPhase.value === 'loop' && sensor_error.value === true) return `拱顶平均温度: ${top_avg_temp.value}°C, 拱腰平均温度: ${side_avg_temp.value}°C, 平均湿度: ${avg_humidity.value}%, 无法开启循环, 请检查异常传感器`;
+  return '循环养护系统未运行';
+});
 
 async function setMode(mode) {
   const oldMode = isAutoMode.value;
@@ -371,9 +494,7 @@ async function setMode(mode) {
 
     if (isAutoMode.value) {
       // 手动切换到自动模式时
-      clearInterval(switchingInterval);
       clearAllTimers();
-      isSwitching.value = false;
 
       // 关闭所有引擎
       if (sprayEngineOn.value) {
@@ -388,17 +509,9 @@ async function setMode(mode) {
         await toggleRightSteamEngine();
       }
 
-      // 找出当前激活的喷头（如果有）
-      const activeIndex = waterLevels.value.findIndex(level => level === 100);
-      if (activeIndex !== -1) {
-        waterLevels.value[activeIndex] = 0;
-        if (environment.isPyQtWebEngine) {
-          sendToPyQt('controlSprinkler', { target: "manual_control_sprayer", index: activeIndex+1, state: 0 });
-        }
+      if (sprinklerEngineOn.value) {
+        await toggleSprinklerEngine();
       }
-
-      // 喷淋系统关闭
-      sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
     }
     else {
       // 自动切换到手动模式时，关闭所有引擎
@@ -428,25 +541,20 @@ async function toggleRightSteamEngine() {
   }
 }
 
-async function click_toggleEngine() {
-  const activeIndex = waterLevels.value.findIndex(level => level === 100);
+async function toggleSprinklerEngine() {
+  if (environment.isPyQtWebEngine) {
+    sendToPyQt('setEngineState', { engine: 'sprinklerEngine', state: !sprinklerEngineOn.value });
+    sprinklerEngineOn.value = !sprinklerEngineOn.value;
+  }
+}
 
-  if (environment.isPyQtWebEngine && activeIndex === -1) {
+async function click_toggleEngine() {
     sendToPyQt('IntegratedControlSystem_set_response', { method: 'click_toggleSprayEngine', args: {} });
     // 切换到喷雾系统
-    if (!sprayEngineOn.value) {
-      await switchSystem(0, "click_toggleEngine");
-      sendToPyQt('controlSprinkler', { target: "tankWork" , state: 1 });
-    }
-    else {
-      sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
-    }
-    
     sendToPyQt('setEngineState', { engine: 'sprayEngine', state: !sprayEngineOn.value });
     // sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
     sprayEngineOn.value = !sprayEngineOn.value;
     // rightEngineOn.value = !rightEngineOn.value;
-  }
 }
 
 async function click_toggleLeftSteamEngine() {
@@ -462,6 +570,14 @@ async function click_toggleRightSteamEngine() {
     sendToPyQt('IntegratedControlSystem_set_response', { method: 'click_toggleRightSteamEngine', args: {} });
     sendToPyQt('setEngineState', { engine: 'rightSteamEngine', state: !rightSteamEngineOn.value });
     rightSteamEngineOn.value = !rightSteamEngineOn.value;
+  }
+}
+
+async function click_toggleSprinklerEngine() {
+  if (environment.isPyQtWebEngine) {
+    sendToPyQt('IntegratedControlSystem_set_response', { method: 'click_toggleSprinklerEngine', args: {} });
+    sendToPyQt('setEngineState', { engine: 'sprinklerEngine', state: !sprinklerEngineOn.value });
+    sprinklerEngineOn.value = !sprinklerEngineOn.value;
   }
 }
 
@@ -526,7 +642,6 @@ async function startSystem() {
   sendToPyQt('IntegratedControlSystem_set_response', { method: 'startSystem', args: {} });
   if (isRunning.value || !isAutoMode.value) return;
   isRunning.value = true;
-  waterLevels.value = Array(12).fill(0);
   await runCycle();
 }
 
@@ -534,9 +649,6 @@ async function stopSystem() {
   sendToPyQt('IntegratedControlSystem_set_response', { method: 'stopSystem', args: {} });
   // 停止自动系统时，关闭当前喷头，停止喷雾循环
   if (environment.isPyQtWebEngine) {
-    if (activeSprinkler.value > 0) {
-      sendToPyQt('controlSprinkler', { target: "auto_control_sprayer", index: activeSprinkler.value, state: 0 });
-    }
     sendToPyQt('controlSprinkler', { target: 'setState', state: false });
   }
 
@@ -553,35 +665,22 @@ async function stopSystem() {
     await toggleRightSteamEngine();
   }
 
-  stopSystemWithoutSend();
+  if (sprinklerEngineOn.value) {
+    await toggleSprinklerEngine();
+  }
 
-  // 喷淋系统关闭
-  sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
+  stopSystemWithoutSend();
 }
 
 function stopSystemWithoutSend() {
   isRunning.value = false;
-  isSwitching.value = false;
-  clearInterval(switchingInterval);
-  clearInterval(waterTimer);
   clearAllTimers();
 
-  activeSprinkler.value = 0;
   currentPhase.value = '';
-  waterLevels.value = Array(12).fill(0);
   remainingTime.value = 0;
 }
 
 async function runCycle() {
-  // 喷淋系统打开
-  await switchSystem(1, "runCycle");
-  activeSprinkler.value = 1;
-  sendToPyQt('controlSprinkler', { target: "tankWork" , state: 1 });
-  runSprinkler();
-}
-
-async function runCycleWithoutWait() {
-  activeSprinkler.value = 1;
   runSprinkler();
 }
 
@@ -603,49 +702,15 @@ function runSprinkler() {
   phaseStartTime.value = Date.now();
   updateRemainingTime();
 
-  let startTime = Date.now();
-  sendToPyQt('controlSprinkler', { target: "auto_control_sprayer", index: activeSprinkler.value, state: 1 });
-
-  waterTimer = setInterval(() => {
-    let elapsedTime = Date.now() - startTime;
-    let progress = Math.min(elapsedTime / (currentSingleRunTime.value * 1000), 1);
-    waterLevels.value[activeSprinkler.value - 1] = progress * 100;
-  }, 100);
+  sendToPyQt('setEngineState', { engine: 'sprinklerEngine', state: true });
+  sprinklerEngineOn.value = true;
 
   timer = setTimeout(async () => {
-    clearInterval(waterTimer);
-    if (activeSprinkler.value < 12) {
-      waterLevels.value[activeSprinkler.value - 1] = 0;
-      sendToPyQt('controlSprinkler', { target: "auto_control_sprayer", index: activeSprinkler.value, state: 0 });
-      runInterval();
-    } else {
-      waterLevels.value[activeSprinkler.value - 1] = 0;
-      sendToPyQt('controlSprinkler', { target: "auto_control_sprayer", index: activeSprinkler.value, state: 0 });
+    sendToPyQt('setEngineState', { engine: 'sprinklerEngine', state: false });
+    sprinklerEngineOn.value = false;
       
       runLoopInterval();
-    }
   }, currentSingleRunTime.value * 1000);
-
-  timers.value.push(timer);
-}
-
-function runInterval() {
-  if (!isRunning.value || !isAutoMode.value) return;
-
-  currentRunIntervalTime.value = nextRunIntervalTime.value;
-  remainingTime.value = currentRunIntervalTime.value;
-  phaseStartTime.value = Date.now();
-
-  if(remainingTime.value > 0) {
-    currentPhase.value = 'interval';
-  }
-  
-  updateRemainingTime();
-
-  timer = setTimeout(() => {
-    activeSprinkler.value++;
-    runSprinkler();
-  }, currentRunIntervalTime.value * 1000);
 
   timers.value.push(timer);
 }
@@ -656,21 +721,15 @@ async function runLoopInterval() {
   currentLoopInterval.value = nextLoopInterval.value;
   remainingTime.value = currentLoopInterval.value;
 
-  if(remainingTime.value > 0) {
-    sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
-    await switchSystem(0, "runLoopInterval");
     // setState是为标识喷雾系统是否工作
     sendToPyQt('controlSprinkler', { target: 'setState', state: true });
 
-    // 切换完成后，才开始喷雾工作时间
     phaseStartTime.value = Date.now();
     currentPhase.value = 'loop';
   
     updateRemainingTime();
 
-    activeSprinkler.value = 0;
     timer = setTimeout(async () => {
-      waterLevels.value = Array(12).fill(0);
 
       sendToPyQt('controlSprinkler', { target: 'setState', state: false });
       if (sprayEngineOn.value) {
@@ -685,111 +744,55 @@ async function runLoopInterval() {
         await toggleRightSteamEngine();
       }
 
-      // 喷雾系统关闭
-      sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
+      if (sprinklerEngineOn.value) {
+        await toggleSprinklerEngine();
+      }
+
       await runCycle();
     }, currentLoopInterval.value * 1000);
 
     timers.value.push(timer);
-  }
-  else {
-    activeSprinkler.value = 0;
-    waterLevels.value = Array(12).fill(0);
-    await runCycleWithoutWait();
-  }
-}
-
-function waterHeight(n) {
-  return waterLevels.value[n - 1];
-}
-
-async function toggleManualSprinkler(n) {
-  if (isAutoMode.value) return;
-
-  sendToPyQt('IntegratedControlSystem_set_response', { method: 'toggleManualSprinkler', args: { n: n } });
-  
-  // 找出当前激活的喷头（如果有）
-  const activeIndex = waterLevels.value.findIndex(level => level === 100);
-  
-  // 检查当前点击的喷头是否已经激活
-  if (waterLevels.value[n - 1] > 0) {
-    // 如果已激活，则关闭它
-    waterLevels.value[n - 1] = 0;
-    if (environment.isPyQtWebEngine) {
-      // 喷淋系统关闭
-      sendToPyQt('controlSprinkler', { target: "manual_control_sprayer", index: n, state: 0 });
-      sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
-    }
-  } else {
-    // 如果未激活，关闭当前激活的喷头（如果有），然后激活新的喷头
-    if (activeIndex !== -1) {
-      waterLevels.value[activeIndex] = 0;
-      if (environment.isPyQtWebEngine) {
-        sendToPyQt('controlSprinkler', { target: "manual_control_sprayer", index: activeIndex+1, state: 0 });
-      }
-      // 激活新的喷头
-      waterLevels.value[n - 1] = 100;
-      if (environment.isPyQtWebEngine) {
-        sendToPyQt('controlSprinkler', { target: "manual_control_sprayer", index: n, state: 1 });
-      }
-    }
-    else {
-      // 激活新的喷头
-      // 喷淋系统打开
-      chose_n.value = n;
-      await switchSystem(1, "toggleManualSprinkler");
-      sendToPyQt('controlSprinkler', { target: "tankWork" , state: 1 });
-      waterLevels.value[n - 1] = 100;
-      if (environment.isPyQtWebEngine) {
-        sendToPyQt('controlSprinkler', { target: "manual_control_sprayer", index: n, state: 1 });
-      }
-    }
-  }
 }
 </script>
   
 <style scoped>
+/* 基础布局 */
 .integrated-control-system {
   font-family: Arial, sans-serif;
   margin: 0 auto;
   padding: 10px;
 }
 
-h2, h4 {
+/* 标题样式 */
+h2, h3, h4, h5 {
   color: #2c3e50;
-}
-
-h4 {
-  font-size: 18px;
   margin-bottom: 10px;
 }
 
-h2 {
-  font-size: 20px;
-  margin-bottom: 10px;
+h2 { font-size: 20px; }
+h3 { font-size: 20px; }
+h4 { font-size: 18px; }
+h5 { font-size: 16px; }
+
+label {
+  font-size: 14px;
 }
 
-h3 {
-  margin-bottom: 10px;
-  color: #2c3e50;
-  font-size: 20px;
-}
-
-h5 {
-  font-size: 16px;
+/* 说明标签框 */
+.label-box {
+  background-color: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
-label {
-  font-size: 18px;
-}
-
+/* 模式控制按钮 */
 .mode-controls {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin: 20px 0;
 }
 
 .mode-btn, .control-btn {
@@ -803,12 +806,24 @@ label {
   color: #34495e;
 }
 
+/* 新增的按钮组样式 */
+.btn-group {
+  display: flex;
+  gap: 10px;
+}
+
+/* 给第二个按钮组添加左边距 */
+.btn-group + .btn-group {
+  margin-left: 30px;
+}
+
 .mode-btn.active {
   background-color: #3498db;
   color: white;
 }
 
-.mode-btn:hover:not(.active), .control-btn:hover:not(:disabled) {
+.mode-btn:hover:not(.active), 
+.control-btn:hover:not(:disabled) {
   background-color: #bdc3c7;
 }
 
@@ -817,61 +832,54 @@ label {
   cursor: not-allowed;
 }
 
+/* 主容器布局 */
 .systems-container {
   display: flex;
   gap: 20px;
-  align-items: flex-start;  /* 添加此行确保顶部对齐 */
 }
 
-.steam-engine-control, .sprinkler-system {
+/* 左侧面板样式 */
+.side-controls {
+  width: 350px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.left-box, .right-box {
   background-color: white;
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  min-height: 400px;
 }
 
-.label-box {
+/* 右侧主面板样式 */
+.middle-box {
+  flex-grow: 1;
   background-color: white;
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* 添加这行 */
+  max-width: 100%; /* 添加这行 */
 }
 
-.time-control {
-  background-color: white;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  min-height: 400px;
-}
-
-.sprinkler-section {
-  text-align: center;
-}
-
-.spray-container {
-  height: 100%;
+/* 控制系统布局 */
+.control-systems {
+  margin-top: 20px;
 }
 
 .control-row {
   display: flex;
-  padding: 10px;
-  gap: 10px;
-  height: 100%;
   justify-content: space-between;
+  gap: 20px;
 }
 
-.steam-engine-control {
+.control-item {
   flex: 1;
-}
-
-.sprinkler-system {
-  flex: 3;  /* 修改为2，使中间框更宽 */
-}
-
-.time-control {
-  flex: 2;
+  text-align: center;
+  min-width: 200px;
 }
 
 .steam_engine {
@@ -880,11 +888,7 @@ label {
   width: 100%;
 }
 
-.ato_engine {
-  text-align: center;
-  width: 45%;
-}
-
+/* 状态显示 */
 .status {
   font-size: 24px;
   font-weight: bold;
@@ -912,83 +916,31 @@ label {
   margin-right: 10px;
 }
 
-.controls {
-  margin-bottom: 20px;
-}
-
+/* 输入控件 */
 .input-group {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 15px;
 }
 
-.disabled-input {
-  background-color: #f0f0f0;
-  color: #666;
-  cursor: not-allowed;
+.input-group label {
+  font-size: 18px;
 }
 
 .input-group input {
-  width: 80px;
+  width: 100%;
   height: 40px;
   text-align: center;
   font-size: 18px;
-  margin: 0 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  margin-right: 40px;  /* 添加右边距 */
+  box-sizing: border-box;  /* 添加这行 */
 }
 
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
-.visualization {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 10px;
-  justify-content: flex-start;  /* 修改为左对齐 */
-  align-content: flex-start;  /* 添加此行确保从顶部开始排列 */
-}
-
-.sprinkler {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  color: black;
-  position: relative;
-  overflow: hidden;
-  background-color: #f0f0f0;
-  border: 2px solid #ccc;
-  cursor: pointer;
-}
-
-.sprinkler.active {
-  border-color: #4CAF50;
-}
-
-.water {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: rgba(33, 150, 243, 0.5);
-  transition: height 0.1s linear;
-}
-
+/* 状态文本 */
 .text_status {
-  /* margin: 10px 0; */
   border-radius: 8px;
   color: white;
   display: flex;
@@ -996,11 +948,126 @@ input[type="number"] {
   justify-content: center;
   transition: all 0.3s ease;
   min-height: 30px;
-
   margin-top: 20px;
   font-weight: bold;
   background-color: #3498db;
   font-size: 18px;
   padding: 10px;
+}
+
+/* 状态机容器样式 */
+.state-machine-container {
+  width: 100%;
+  /* margin: auto; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 8px;
+  /* padding: 20px; */
+  /* 添加最小高度确保有足够空间 */
+  min-height: 400px;
+  overflow: hidden; /* 添加这行 */
+  max-width: 100%; /* 添加这行 */
+}
+
+.state-machine {
+  width: 100%;
+  /* 移除max-width限制 */
+  height: 100%;
+  margin: 0 auto;
+}
+
+.state {
+  fill: #fff;
+  stroke: #2c3e50;
+  stroke-width: 2;
+  transition: all 0.3s ease;
+}
+
+.state.active {
+  fill: #3498db;
+  stroke: #2980b9;
+}
+
+.state-text {
+  text-anchor: middle;
+  dominant-baseline: middle;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  pointer-events: none;
+}
+
+.active .state-text {
+  fill: white;
+}
+
+.transition-path {
+  fill: none;
+  stroke: #2c3e50;
+  stroke-width: 2;
+  marker-end: url(#arrowhead);
+}
+
+.condition-line {
+  stroke: #2c3e50;
+  stroke-width: 1;
+  stroke-dasharray: 4 2;
+}
+
+.condition-box {
+  fill: #fff;
+  stroke: #2c3e50;
+  stroke-width: 1;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+}
+
+.condition-text {
+  text-anchor: middle;
+  dominant-baseline: middle;
+  font-size: 12px;
+  font-family: Arial, sans-serif;
+  pointer-events: none;
+}
+
+/* 响应式调整 */
+@media (max-width: 1200px) {
+  .systems-container {
+    flex-direction: column;
+  }
+  
+  .side-controls {
+    width: 100%;
+  }
+  
+  .control-row {
+    flex-wrap: wrap;
+  }
+  
+  .control-item {
+    flex: 1 1 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .state-machine {
+    max-width: 100%;
+  }
+  
+  .state-text {
+    font-size: 12px;
+  }
+  
+  .condition-text {
+    font-size: 10px;
+  }
+  
+  .control-row {
+    flex-direction: column;
+  }
+  
+  .control-item {
+    margin-bottom: 20px;
+  }
 }
 </style>

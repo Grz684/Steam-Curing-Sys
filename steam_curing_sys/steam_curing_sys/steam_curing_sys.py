@@ -50,6 +50,9 @@ def main():
 
     ex.bridge.sensor_data_adjustments.connect(qtSignalHandler.sensor_data_adjustments)
 
+    qtSignalHandler.state_machine_updated.connect(ex.update_state_machine)
+    qtSignalHandler.sensor_avg_data_updated.connect(ex.update_sensor_avg_data)
+
     try:
         qtSignalHandler.control_utils = ControlUtils()
     except ModbusControlException as e:

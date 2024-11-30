@@ -41,6 +41,9 @@ class QtSignalHandler(QObject):
     device_activated = pyqtSignal(dict)
     update_device_info = pyqtSignal(dict)
     update_adjust_settings = pyqtSignal(dict)
+
+    state_machine_updated = pyqtSignal(int)
+    sensor_avg_data_updated = pyqtSignal(dict)
     
     # error_occurred = pyqtSignal(str)  # 添加错误信号
 
@@ -205,6 +208,8 @@ class QtSignalHandler(QObject):
             self.control_utils.turn_left_steam_on() if state["state"] else self.control_utils.turn_left_steam_off()
         elif state["engine"] == "rightSteamEngine":
             self.control_utils.turn_right_steam_on() if state["state"] else self.control_utils.turn_right_steam_off()
+        elif state["engine"] == "sprinklerEngine":
+            self.control_utils.turn_sprinkler_on() if state["state"] else self.control_utils.turn_sprinkler_off()
 
     def dolly_control(self, control):
         if control["target"] == "setState":

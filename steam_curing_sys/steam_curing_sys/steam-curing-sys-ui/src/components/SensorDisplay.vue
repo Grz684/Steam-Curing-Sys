@@ -288,6 +288,7 @@ h2 {
 .dialog h3 {
   margin-top: 0;
   margin-bottom: 20px;
+  font-size: 18px;
 }
 
 .dialog-content {
@@ -296,6 +297,7 @@ h2 {
 
 .radio-group {
   margin-bottom: 15px;
+  font-size: 16px;
 }
 
 .radio-group label {
@@ -309,12 +311,14 @@ h2 {
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-top: 5px;
+  font-size: 16px;
 }
 
 .dialog-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  font-size: 16px;
 }
 
 .dialog-actions button {

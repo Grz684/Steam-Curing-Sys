@@ -27,7 +27,7 @@ class TempHumidityPublisher(Node):
             humidity = round(random.uniform(58.0, 60.0), 2)
         # 传感器6-10的数据范围
         else:
-            temperature = round(random.uniform(28.0, 29.0), 2)
+            temperature = None
             humidity = round(random.uniform(55.0, 57.0), 2)
         return temperature, humidity
 

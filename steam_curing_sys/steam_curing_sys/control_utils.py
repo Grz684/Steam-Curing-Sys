@@ -36,13 +36,15 @@ class ControlUtils():
 
         self.output_num = 16 # 输出数量
 
-        # 三设备情况
+        # 四设备情况
         self.spray_engine_on = False
         self.left_steam_on = False
         self.right_steam_on = False
+        self.sprinkler_on = False
         self.spray_engine_output_addr = 0
         self.left_steam_output_addr = 1
         self.right_steam_output_addr = 2
+        self.sprinkler_output_addr = 3
 
         if not self.debug:
             try:
@@ -102,7 +104,6 @@ class ControlUtils():
             logger.info('Turning right steam ON')
             self.right_steam_on = True
             self.control_output(self.right_steam_output_addr, True)
-            logger.info(f"成功，现在right_steam_on为{self.right_steam_on}")
             return True
         else:
             return False
@@ -114,7 +115,24 @@ class ControlUtils():
             self.control_output(self.right_steam_output_addr, False)
             return True
         else:
-            logger.info(f"失败，因为现在right_steam_on为{self.right_steam_on}")
+            return False
+
+    def turn_sprinkler_on(self):
+        if not self.sprinkler_on:
+            logger.info('Turning sprinkler ON')
+            self.sprinkler_on = True
+            self.control_output(self.sprinkler_output_addr, True)
+            return True
+        else:
+            return False
+
+    def turn_sprinkler_off(self):
+        if self.sprinkler_on:
+            logger.info('Turning sprinkler OFF')
+            self.sprinkler_on = False
+            self.control_output(self.sprinkler_output_addr, False)
+            return True
+        else:
             return False
             
     def control_switch(self, state):

@@ -8,7 +8,7 @@
         <button @click="showConfirmDialog" class="clear-btn">清空数据</button>
       </div>
       <div class="button-group">
-        <button @click="showSettingsDialog" class="settings-btn">传感器设置</button>
+        <button @click="showSettingsDialog" class="settings-btn">开发者模式</button>
       </div>
     </div>
 
@@ -16,7 +16,7 @@
     <div v-if="showSettings" class="modal-overlay">
       <div class="modal-content settings-modal">
         <div class="setting-group">
-          <h2>传感器调试模式</h2>
+          <h2>传感器调试模式【开发者测试用】</h2>
           <div class="setting-item">
             <span class="setting-label">调试模式：</span>
             <div class="toggle-switch">
@@ -186,7 +186,7 @@ const closeAlert = () => {
   text-align: center;
   margin-bottom: 30px;
   color: #2c3e50;
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .setting-item {
