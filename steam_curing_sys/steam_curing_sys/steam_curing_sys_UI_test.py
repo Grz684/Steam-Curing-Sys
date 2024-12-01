@@ -130,6 +130,8 @@ class Bridge(QObject):
                 self.adjust_sensor(args)
             elif method_name == "saveDebugSettings":
                 self.sensor_debug_settings(args)
+            elif method_name == "updateVersion":
+                self.updateVersion(args)
             else:
                 logger.info(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
@@ -143,6 +145,39 @@ class Bridge(QObject):
             self.send_message(msg_type, json.dumps(False))
         else:
             self.send_message(msg_type, json.dumps(True))
+
+    def updateVersion(self, args):
+        version = args.get("version")
+        try:
+            script_url = f"https://8.137.17.72/updates/update_{version}.sh"
+            
+            response = requests.get(script_url, verify=False)
+            
+            if response.status_code == 404:
+                result = {"status": "error", "message": f"版本 {version} 不存在"}
+            elif response.status_code == 200:
+                script_path = f"/tmp/update_{version}.sh"
+                with open(script_path, 'wb') as f:
+                    f.write(response.content)
+                
+                import os
+                os.chmod(script_path, 0o755)
+                
+                import subprocess
+                subprocess.Popen(f"nohup {script_path} > /tmp/update.log 2>&1 &", 
+                            shell=True,
+                            start_new_session=True)
+                
+                result = {"status": "success", "message": f"版本 {version} 更新程序已启动"}
+            else:
+                result = {"status": "error", "message": f"无法下载更新脚本（HTTP {response.status_code}）"}
+            
+            # 通过WebChannel发送结果回前端
+            self.send_message("updateVersion_response", json.dumps(result))
+                
+        except Exception as e:
+            result = {"status": "error", "message": f"更新过程出错: {str(e)}"}
+            self.send_message("updateVersion_response", json.dumps(result))
 
     def adjust_sensor(self, args):
         logger.info(f"Update adjustments: {args}")

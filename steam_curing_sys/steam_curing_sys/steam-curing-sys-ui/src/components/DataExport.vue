@@ -10,6 +10,9 @@
       <div class="button-group">
         <button @click="showSettingsDialog" class="settings-btn">开发者模式</button>
       </div>
+      <div class="button-group">
+        <button @click="showUpdateDialog" class="update-btn">更新</button>
+      </div>
     </div>
 
     <!-- 传感器设置弹窗 -->
@@ -47,6 +50,31 @@
       </div>
     </div>
 
+    <!-- 更新版本弹窗 -->
+    <div v-if="showUpdate" class="modal-overlay">
+      <div class="modal-content update-modal">
+        <h2>更新版本</h2>
+        <div class="update-input" @click="showNumericKeyboard = true">
+          <input 
+            type="text" 
+            v-model="updateVersion"
+            placeholder="请输入更新版号"
+            readonly
+          >
+        </div>
+        <div class="modal-buttons">
+          <button @click="confirmUpdate" class="confirm-btn">更新</button>
+          <button @click="cancelUpdate" class="cancel-btn">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 数字键盘 -->
+    <numeric-keyboard
+      v-model="updateVersion"
+      v-model:show-keyboard="showNumericKeyboard"
+    />
+
     <!-- 自定义提示弹窗 -->
     <div v-if="showAlert" class="modal-overlay">
       <div class="modal-content">
@@ -62,6 +90,7 @@
 <script setup>
 import { reactive, ref, onMounted, watch } from 'vue';
 import { useWebChannel } from './useWebChannel';
+import NumericKeyboard from './NumericKeyboard.vue';  // 导入数字键盘组件
 
 const { sendToPyQt } = useWebChannel();
 const environment = reactive({
@@ -74,6 +103,35 @@ const alertMessage = ref('');
 const showSettings = ref(false);
 const debugMode = ref(false);
 const tempDebugMode = ref(false);
+
+const showUpdate = ref(false);
+const updateVersion = ref('');
+const showNumericKeyboard = ref(false);
+
+const showUpdateDialog = () => {
+  showUpdate.value = true;
+  updateVersion.value = '';
+  document.body.style.overflow = 'hidden';
+};
+
+const confirmUpdate = () => {
+  if (!updateVersion.value) {
+    showCustomAlert('请输入更新版号！');
+    return;
+  }
+  if (environment.isPyQtWebEngine) {
+    sendToPyQt("updateVersion", { version: updateVersion.value });
+  }
+  showUpdate.value = false;
+  updateVersion.value = '';
+  document.body.style.overflow = 'auto';
+};
+
+const cancelUpdate = () => {
+  showUpdate.value = false;
+  updateVersion.value = '';
+  document.body.style.overflow = 'auto';
+};
 
 const showSettingsDialog = () => {
   tempDebugMode.value = debugMode.value;
@@ -123,6 +181,18 @@ onMounted(() => {
       else if (newMessage && newMessage.type === 'clearData') {
         sendToPyQt("exportData", false);
         sendToPyQt("clearData_response", "")
+      }
+      else if (newMessage && newMessage.type === 'updateVersion_response') {
+        try {
+          const response = JSON.parse(newMessage.content);
+          if (response.status === 'success') {
+            showCustomAlert(`${response.message}，系统即将重启...`);
+          } else {
+            showCustomAlert(response.message);
+          }
+        } catch (error) {
+          showCustomAlert('解析更新响应失败：' + error);
+        }
       }
     });
   } else {
@@ -348,5 +418,47 @@ const closeAlert = () => {
 
 .confirm-btn:hover, .cancel-btn:hover {
   opacity: 0.8;
+}
+
+.update-btn {
+  background-color: #2196F3;
+  font-size: 18px;
+}
+
+.update-btn:hover {
+  background-color: #1976D2;
+}
+
+.update-modal {
+  min-width: 300px;
+  padding: 30px;
+  text-align: center; /* 添加这行 */
+}
+
+.update-modal h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #2c3e50;
+  font-size: 20px;
+}
+
+.update-input {
+  margin: 20px auto;
+}
+
+.update-input input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  text-align: center; /* 添加这行，让输入的文字居中 */
+  box-sizing: border-box;
+}
+
+.update-input input:focus {
+  border-color: #2196F3;
 }
 </style>
