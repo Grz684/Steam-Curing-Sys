@@ -16,19 +16,19 @@ class TempHumidityPublisher(Node):
         super().__init__('temp_humidity_publisher')
           
         self.srv = self.create_service(Trigger, 'get_sensor_data', self.get_sensor_data_callback)
-        self.sensor_num = 15
+        self.sensor_num = 9
 
         self.get_logger().info('Temperature and Humidity Publisher node has been started')
 
     def read_temperature_humidity(self, client_index):
         # 传感器1-5和11-15的数据范围
-        if client_index < 5 or client_index >= 10:
+        if client_index in [0,3,6,2,5,8]:
             temperature = round(random.uniform(20.0, 21.0), 2)
-            humidity = round(random.uniform(58.0, 60.0), 2)
+            humidity = round(random.uniform(88.0, 90.0), 2)
         # 传感器6-10的数据范围
-        else:
-            temperature = None
-            humidity = round(random.uniform(55.0, 57.0), 2)
+        elif client_index in [1,4,7]:
+            temperature = round(random.uniform(26.0, 27.0), 2)
+            humidity = round(random.uniform(88.0, 90.0), 2)
         return temperature, humidity
 
     def read_all_sensors(self):

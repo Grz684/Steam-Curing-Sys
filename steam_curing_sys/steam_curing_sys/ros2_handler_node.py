@@ -71,9 +71,9 @@ class SensorSubscriberNode(Node):
             updated_temp_data = {sensor: value for sensor, value in self.temp_data.items() if value != -1}
             updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
             # 更正后的代码
-            group1 = {sensor: value for sensor, value in updated_temp_data.items() if 1 <= int(sensor.split('_')[2]) <= 5}
-            group2 = {sensor: value for sensor, value in updated_temp_data.items() if 6 <= int(sensor.split('_')[2]) <= 10}
-            group3 = {sensor: value for sensor, value in updated_temp_data.items() if 11 <= int(sensor.split('_')[2]) <= 15}
+            group1 = {sensor: value for sensor, value in updated_temp_data.items() if int(sensor.split('_')[2]) in [1,4,7]}
+            group2 = {sensor: value for sensor, value in updated_temp_data.items() if int(sensor.split('_')[2]) in [2,5,8]}
+            group3 = {sensor: value for sensor, value in updated_temp_data.items() if int(sensor.split('_')[2]) in [3,6,9]}
             
             # flag_left_side_needheat = False
             # flag_left_side_overheat = False
@@ -305,7 +305,7 @@ class SensorSubscriberNode(Node):
                 
             adjustment = humidity_adjust[sensor]
             if adjustment["type"] == "value":
-                self.humidity_data[sensor] = adjustment["value"]
+                self.humidity_data[sensor] = adjustment["value"] + random.uniform(-1, 1)
             elif self.humidity_data[sensor] != -1 and adjustment["type"] == "offset":
                 self.humidity_data[sensor] += adjustment["value"]
 
@@ -373,6 +373,16 @@ class SensorSubscriberNode(Node):
                 hum_5 REAL, hum_6 REAL, hum_7 REAL, hum_8 REAL,
                 hum_9 REAL, hum_10 REAL, hum_11 REAL, hum_12 REAL,
                 hum_13 REAL, hum_14 REAL, hum_15 REAL
+            )
+            ''')
+        elif self.sensor_num == 9:
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS sensor_data (
+                timestamp TEXT PRIMARY KEY,
+                temp_1 REAL, temp_2 REAL, temp_3 REAL, temp_4 REAL,
+                temp_5 REAL, temp_6 REAL, temp_7 REAL, temp_8 REAL, temp_9 REAL,
+                hum_1 REAL, hum_2 REAL, hum_3 REAL, hum_4 REAL,
+                hum_5 REAL, hum_6 REAL, hum_7 REAL, hum_8 REAL, hum_9 REAL
             )
             ''')
         else:

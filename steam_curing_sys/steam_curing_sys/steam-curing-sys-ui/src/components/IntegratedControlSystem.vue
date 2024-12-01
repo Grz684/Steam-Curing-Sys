@@ -1,6 +1,10 @@
 <template>
   <div class="integrated-control-system">
-    <h2>集成控制系统</h2>
+    <h2>集成控制系统【定时喷淋->循环养护->定时喷淋按时间设置交替运行】</h2>
+
+    <div class="label-box" >
+      <label>在数字开关上，output1控制造雾机开/关，output2控制蒸汽机（组1）开/关，output3控制（组2）蒸汽机开/关，output4控制喷淋系统开/关</label><br>
+    </div>
     
     <div class="mode-controls">
       <div class="btn-group">
@@ -785,6 +789,10 @@ label {
   border-radius: 15px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
+}
+
+.label-box label {
+  font-size: 16px;
 }
 
 /* 模式控制按钮 */

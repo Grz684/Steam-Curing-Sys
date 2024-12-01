@@ -127,7 +127,7 @@ const applyAdjustment = async () => {
 <template>
   <div class="sensor-data-group">
     <div class="sensor-section">
-      <h2>温度传感器</h2>
+      <h2>温度传感器【传感器1、4、7位于左拱腰，2、5、8位于拱顶，3、6、9位于右拱腰】</h2>
       <div class="sensor-container">
         <div class="sensor-grid">
           <div v-for="(value, sensor) in sensorData.temperature" 
@@ -233,7 +233,7 @@ h2 {
 
 .sensor-grid {
   display: grid;
-  grid-template-columns: repeat(8, minmax(150px, 1fr));
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
   gap: 10px;
 }
 
