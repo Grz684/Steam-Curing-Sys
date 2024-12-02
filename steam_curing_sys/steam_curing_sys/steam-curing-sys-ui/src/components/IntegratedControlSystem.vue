@@ -11,7 +11,8 @@
 
     <div class="systems-container">
       <div class="steam-engine-control">
-        <h3>雾化机系统（自动模式下，喷雾受湿度上下限控制）</h3>
+        <h3>雾化机系统</h3>
+        <label>自动模式喷雾时间里，若存在传感器湿度低于湿度下限，左右雾化机开启，若所有传感器湿度高于湿度上限，左右雾化机关闭</label>
         <div class="control-panel">
           <div class="engine-status">
             <div class="engine left">
@@ -294,7 +295,7 @@ const statusMessage = computed(() => {
   if (!isRunning.value) return '系统未运行';
   if (currentPhase.value === 'run') return `喷头 ${activeSprinkler.value} 正在运行，剩余 ${remainingTime.value+1} 秒`;
   if (currentPhase.value === 'interval') return `运行间隔中，剩余 ${remainingTime.value+1} 秒`;
-  if (currentPhase.value === 'loop') return `循环间隔中，剩余 ${remainingTime.value+1} 秒`;
+  if (currentPhase.value === 'loop') return `喷雾时间，距下次喷淋系统工作剩余 ${remainingTime.value+1} 秒`;
   return '';
 });
 

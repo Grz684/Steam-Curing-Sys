@@ -1,3 +1,4 @@
+import random
 from rclpy.node import Node
 from std_srvs.srv import Trigger  # Add this import
 import sqlite3
@@ -170,13 +171,29 @@ class SensorSubscriberNode(Node):
         future.add_done_callback(self.service_response_callback)
 
     def adjust_data(self):
-        temp_adjust, humidity_adjust = self.qtSignalHandler.read_adjust_settings()
-        for sensor in self.temp_data:
-            if self.temp_data[sensor] != -1:
-                self.temp_data[sensor] += temp_adjust
-        for sensor in self.humidity_data:
-            if self.humidity_data[sensor] != -1:
-                self.humidity_data[sensor] += humidity_adjust
+        temp_adjust, humidity_adjust = self.qtSignalHandler.read_sensor_data_adjustments()
+        
+        # 处理温度数据
+        for index, sensor in enumerate(self.temp_data):
+            if sensor not in temp_adjust:
+                continue
+                
+            adjustment = temp_adjust[sensor]
+            if adjustment["type"] == "value":
+                self.temp_data[sensor] = adjustment["value"] + random.uniform(-1, 1)
+            elif self.temp_data[sensor] != -1 and adjustment["type"] == "offset":
+                self.temp_data[sensor] += adjustment["value"]
+        
+        # 处理湿度数据
+        for index, sensor in enumerate(self.humidity_data):
+            if sensor not in humidity_adjust:
+                continue
+                
+            adjustment = humidity_adjust[sensor]
+            if adjustment["type"] == "value":
+                self.humidity_data[sensor] = adjustment["value"] + random.uniform(-1, 1)
+            elif self.humidity_data[sensor] != -1 and adjustment["type"] == "offset":
+                self.humidity_data[sensor] += adjustment["value"]
 
     def service_response_callback(self, future):
         try:
