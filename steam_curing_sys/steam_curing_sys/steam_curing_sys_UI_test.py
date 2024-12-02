@@ -39,6 +39,7 @@ class Bridge(QObject):
     activateDevice = pyqtSignal()
     updataBaseTime = pyqtSignal(str)
     adjustSettingsSaved = pyqtSignal(dict)
+    sensor_data_adjustments = pyqtSignal(dict)
 
     def __init__(self):
         super().__init__()
@@ -125,12 +126,66 @@ class Bridge(QObject):
                 self.wifi_manager.check_wifi_status()
             elif method_name == "clearData_response":
                 self.clearData_response()
+            elif method_name == "updateVersion":
+                self.updateVersion(args)
+            elif method_name == "adjust_sensor":
+                self.adjust_sensor(args)
+            elif method_name == "saveDebugSettings":
+                self.sensor_debug_settings(args)
             else:
                 logger.info(f"Unknown method: {method_name}")
         except json.JSONDecodeError:
             logger.info(f"Failed to parse JSON: {args_json}")
         except Exception as e:
             logger.info(f"Error processing method {method_name}: {str(e)}")
+
+    def sensor_debug_settings(self, args):
+        msg_type = "sensor_debug_mode"
+        if args["debug_mode"] == False:
+            self.send_message(msg_type, json.dumps(False))
+        else:
+            self.send_message(msg_type, json.dumps(True))
+
+    def adjust_sensor(self, args):
+        logger.info(f"Update adjustments: {args}")
+        self.sensor_data_adjustments.emit(args)
+        
+    def updateVersion(self, args):
+        version = args.get("version")
+        try:
+            script_url = f"https://8.137.17.72/updates/update_{version}.sh"
+            script_path = f"/tmp/update_{version}.sh"
+            # 删除可能存在的旧脚本
+            import os
+            if os.path.exists(script_path):
+                os.remove(script_path)
+            
+            response = requests.get(script_url, verify=False)
+            
+            if response.status_code == 404:
+                result = {"status": "error", "message": f"版本 {version} 不存在"}
+            elif response.status_code == 200:
+                with open(script_path, 'wb') as f:
+                    f.write(response.content)
+                
+                import os
+                os.chmod(script_path, 0o755)
+                
+                import subprocess
+                subprocess.Popen(f"nohup {script_path} > /tmp/update.log 2>&1 &", 
+                            shell=True,
+                            start_new_session=True)
+                
+                result = {"status": "success", "message": f"版本 {version} 更新程序已启动"}
+            else:
+                result = {"status": "error", "message": f"无法下载更新脚本（HTTP {response.status_code}）"}
+            
+            # 通过WebChannel发送结果回前端
+            self.send_message("updateVersion_response", json.dumps(result))
+                
+        except Exception as e:
+            result = {"status": "error", "message": f"更新过程出错: {str(e)}"}
+            self.send_message("updateVersion_response", json.dumps(result))
 
     def clearData_response(self):
         logger.info("Clear data response")

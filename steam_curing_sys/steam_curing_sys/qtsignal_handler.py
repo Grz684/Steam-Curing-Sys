@@ -14,6 +14,7 @@ import logging
 from .config_manager import ConfigManager
 from .export_file import ExportThread
 from .ros2_thread import ROS2Thread
+from .sensor_adjustments_db import SensorAdjustmentDB
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -71,8 +72,9 @@ class QtSignalHandler(QObject):
         self.sensor_num = 15
 
         # 为数据作弊提供的
-        self.temp_adjust = 0
-        self.humidity_adjust = 0
+        self.sensor_adjust_db = SensorAdjustmentDB()
+        self.temp_adjust = {}  # 温度调整值字典
+        self.humidity_adjust = {}  # 湿度调整值字典
         self.adjust_sensor_data_lock = threading.Lock()
 
         # 水箱工作模式
@@ -108,13 +110,14 @@ class QtSignalHandler(QObject):
             logger.error("未找到设备信息")
 
     def load_adjust_settings(self):
-        adjust_configs = self.config_manager.get_multiple_config([
-            'temp_adjust',
-            'humidity_adjust'
-        ])
-        if adjust_configs:
-            self.update_adjust_settings.emit(adjust_configs)
-            self.set_adjust_settings(adjust_configs)
+        all_adjustments = self.sensor_adjust_db.get_all_adjustments()
+        # adjust_configs = self.config_manager.get_multiple_config([
+        #     'temp_adjust',
+        #     'humidity_adjust'
+        # ])
+        if all_adjustments:
+            # self.update_adjust_settings.emit(all_adjustments)
+            self.set_adjust_settings(all_adjustments)
         else:
             logger.info("尚未设置数据调整信息")
     
@@ -444,17 +447,76 @@ class QtSignalHandler(QObject):
         base_time = int(base_time)
         self.config_manager.update_config(device_base_time=base_time)
 
-    def save_adjust_settings(self, settings):
-        # settings为字典
-        self.config_manager.update_multiple_config(settings)
-        self.set_adjust_settings(settings)
+    # def save_adjust_settings(self, settings):
+    #     # settings为字典
+    #     self.config_manager.update_multiple_config(settings)
+    #     self.set_adjust_settings(settings)
 
-    def set_adjust_settings(self, settings):
+    def set_adjust_settings(self, all_adjustments):
+        temp_payload = {}
+        humidity_payload = {}
         # settings为字典
         with self.adjust_sensor_data_lock:
-            self.temp_adjust = settings['temp_adjust']
-            self.humidity_adjust = settings['humidity_adjust']
+            for adjustment in all_adjustments:
+                sensor_id = adjustment['sensor_id']
+                convert_sensor_id = self.convert_sensor_id(sensor_id)
+                adjustment_type  = adjustment['adjustment_type']
+                adjustment_value = adjustment['value']
+                if adjustment["sensor_type"] == "temperature":
+                    self.temp_adjust[convert_sensor_id] = {"type":adjustment_type, "value":adjustment_value}
+                    temp_payload[sensor_id] = {"type":adjustment_type, "value":adjustment_value}
+                elif adjustment["sensor_type"] == "humidity":
+                    self.humidity_adjust[convert_sensor_id] = {"type":adjustment_type, "value":adjustment_value}
+                    humidity_payload[sensor_id] = {"type":adjustment_type, "value":adjustment_value}
+            sensor_adjustments = {"temperature":temp_payload, "humidity":humidity_payload}
+            
+            self.update_adjust_settings.emit(sensor_adjustments)
 
-    def read_adjust_settings(self):
+            # logger.info(f"设置数据调整信息: {sensor_adjustments}")
+            
+    # def read_adjust_settings(self):
+    #     with self.adjust_sensor_data_lock:
+    #         return self.temp_adjust, self.humidity_adjust
+    def read_sensor_data_adjustments(self):
         with self.adjust_sensor_data_lock:
             return self.temp_adjust, self.humidity_adjust
+    # 转换函数
+    @staticmethod
+    def convert_sensor_id(sensor_id):
+        sensor_type_map = {
+            '温感': 'temperature_sensor',
+            '湿感': 'humidity_sensor'
+        }
+        
+        sensor_type = sensor_id[:2]  # 取前两个字符
+        number = sensor_id[2:]       # 取剩余的数字部分
+        
+        eng_type = sensor_type_map.get(sensor_type)
+        if not eng_type:
+            raise ValueError(f'未知的传感器类型: {sensor_type}')
+            
+        return f'{eng_type}_{number}'
+        
+    def sensor_data_adjustments(self, payload):
+        # data为字典
+        # const payload = {
+        #     sensorType: sensorType.value,
+        #     sensorId: selectedSensor.value,
+        #     adjustmentType: adjustmentType.value,
+        #     value: parseFloat(adjustmentValue.value) || 0
+        # }
+        # 初始化字典(如果还没初始化)
+        
+        sensor_id = payload['sensorId']
+        sensor_id = self.convert_sensor_id(sensor_id)
+        sensor_type = payload['sensorType']
+        adjustment_type = payload['adjustmentType']
+        adjustment_value = payload['value']
+        #要把“温感1”变成“temperature_sensor_1”
+        
+        # 根据传感器类型存储到对应的字典中
+        if sensor_type == 'temperature':
+            self.temp_adjust[sensor_id] = {"type":adjustment_type, "value":adjustment_value}
+        elif sensor_type == 'humidity':
+            self.humidity_adjust[sensor_id] = {"type":adjustment_type, "value":adjustment_value}
+        self.sensor_adjust_db.save_adjustment(payload)

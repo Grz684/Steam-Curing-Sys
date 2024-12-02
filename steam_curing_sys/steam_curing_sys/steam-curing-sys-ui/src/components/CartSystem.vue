@@ -1,5 +1,8 @@
 <template>
   <div class="cart-system">
+    <div class="label-box" >
+      <label>在数字开关上，output1控制左侧养护开/关，output2控制右侧养护开/关，output3与output4控制小车运动</label><br>
+    </div>
     <!-- 新增的缺水保护功能 -->
     <div class="water-protection">
       <div class="water-tank" :class="{ 'low-water': leftTankLowWater }">
@@ -607,5 +610,18 @@ button:disabled {
   font-size: 40px; /* 增大图标尺寸 */
   color: #2196F3; 
   filter: grayscale(0); /* 移除黑白滤镜 */
+}
+
+/* 说明标签框 */
+.label-box {
+  background-color: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.label-box label {
+  font-size: 16px;
 }
 </style>

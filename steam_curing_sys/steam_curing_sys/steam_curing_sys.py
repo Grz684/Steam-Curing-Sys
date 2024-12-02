@@ -44,7 +44,7 @@ def main():
     qtSignalHandler.update_device_info.connect(ex.update_device_info)
     qtSignalHandler.device_activated.connect(ex.device_activated)
     ex.bridge.updataBaseTime.connect(qtSignalHandler.update_baseTime)
-    ex.bridge.adjustSettingsSaved.connect(qtSignalHandler.save_adjust_settings)
+    ex.bridge.sensor_data_adjustments.connect(qtSignalHandler.sensor_data_adjustments)
     qtSignalHandler.update_adjust_settings.connect(ex.update_adjust_settings)
 
     try:
