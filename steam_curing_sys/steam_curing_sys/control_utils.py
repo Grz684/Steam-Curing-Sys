@@ -32,7 +32,7 @@ class ControlUtils():
         self.switch_to_sprinkler = False
 
         # debug时不连接Modbus服务器
-        self.debug = True
+        self.debug = False
 
         self.output_num = 16 # 输出数量
 

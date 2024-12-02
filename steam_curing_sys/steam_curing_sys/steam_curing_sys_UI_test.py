@@ -150,13 +150,18 @@ class Bridge(QObject):
         version = args.get("version")
         try:
             script_url = f"https://8.137.17.72/updates/update_{version}.sh"
+            script_path = f"/tmp/update_{version}.sh"
+        
+            # 删除可能存在的旧脚本
+            import os
+            if os.path.exists(script_path):
+                os.remove(script_path)
             
             response = requests.get(script_url, verify=False)
             
             if response.status_code == 404:
                 result = {"status": "error", "message": f"版本 {version} 不存在"}
             elif response.status_code == 200:
-                script_path = f"/tmp/update_{version}.sh"
                 with open(script_path, 'wb') as f:
                     f.write(response.content)
                 
