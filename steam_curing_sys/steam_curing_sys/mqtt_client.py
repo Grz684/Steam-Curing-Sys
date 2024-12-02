@@ -114,7 +114,7 @@ class MQTTClient:
             export_thread = ExportThread(
                 db_name="sensor_data.db",
                 result_queue=queue.Queue(),
-                sensor_num=15,
+                sensor_num=4,
                 mqtt_client=self
             )
             export_thread.start()

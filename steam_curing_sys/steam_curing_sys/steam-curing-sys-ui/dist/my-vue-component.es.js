@@ -427,7 +427,7 @@ const lt = (me, ee) => {
       ])) : ot("", !0)
     ]));
   }
-}, $n = /* @__PURE__ */ lt(Bn, [["__scopeId", "data-v-6f1225eb"]]), Rn = { class: "cart-system" }, In = { class: "water-protection" }, Un = { class: "mode-group" }, Dn = { class: "mode-group-left" }, Mn = ["disabled"], Fn = ["disabled"], Vn = { class: "mode-group-right" }, qn = ["disabled"], Wn = ["disabled"], zn = { class: "mode-content" }, Kn = { key: 0 }, Qn = { class: "controls" }, Hn = { class: "input-group" }, Gn = { class: "input-group" }, Jn = { class: "button-group" }, Yn = ["disabled"], Xn = ["disabled"], Zn = { class: "visualization" }, eo = { class: "progress-bar" }, to = { class: "status" }, no = {
+}, $n = /* @__PURE__ */ lt(Bn, [["__scopeId", "data-v-55a9479e"]]), Rn = { class: "cart-system" }, In = { class: "water-protection" }, Un = { class: "mode-group" }, Dn = { class: "mode-group-left" }, Mn = ["disabled"], Fn = ["disabled"], Vn = { class: "mode-group-right" }, qn = ["disabled"], Wn = ["disabled"], zn = { class: "mode-content" }, Kn = { key: 0 }, Qn = { class: "controls" }, Hn = { class: "input-group" }, Gn = { class: "input-group" }, Jn = { class: "button-group" }, Yn = ["disabled"], Xn = ["disabled"], Zn = { class: "visualization" }, eo = { class: "progress-bar" }, to = { class: "status" }, no = {
   key: 1,
   class: "auto-mode-container"
 }, oo = {
