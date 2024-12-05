@@ -3,7 +3,8 @@
     <h2>集成控制系统【定时喷淋->循环养护->定时喷淋按时间设置交替运行】</h2>
 
     <div class="label-box" >
-      <label>在数字开关上，output1控制造雾机开/关，output2控制蒸汽机（组1）开/关，output3控制（组2）蒸汽机开/关，output4控制喷淋系统开/关</label><br>
+      <label>适用于9传感器+0606数字开关+喷淋小车+两组蒸汽机+超声波造雾机的养护系统</label><br>
+      <label>在数字开关上，output1控制造雾机开/关，output2控制蒸汽机（组1）开/关，output3控制（组2）蒸汽机开/关，output4连接喷淋小车前进/后退互锁电路，output5控制喷淋水泵1，output6控制喷淋水泵2</label>
     </div>
     
     <div class="mode-controls">
@@ -261,8 +262,8 @@ const transitions = ref([
     conditionX: centerX + radius + 100,
     conditionY: centerY - radius + 40,
     condition: 'C1',
-    text1: '拱顶平均温度',
-    text2: '高于温度上限'
+    text1: '平均温度',
+    text2: '高于(温度上限+温度下限)/2'
   },
   {
     path: `M ${centerX + radius} ${centerY + 40} Q ${centerX + radius} ${centerY + radius} ${centerX + 80} ${centerY + radius}`,
@@ -270,7 +271,7 @@ const transitions = ref([
     conditionX: centerX + radius + 100,
     conditionY: centerY + radius - 40,
     condition: 'C2',
-    text1: '拱腰平均温度',
+    text1: '平均温度',
     text2: '高于温度上限'
   },
   {
@@ -279,8 +280,8 @@ const transitions = ref([
     conditionX: centerX - radius - 100,
     conditionY: centerY + radius - 40,
     condition: 'C3',
-    text1: '拱腰平均温度',
-    text2: '低于温度下限'
+    text1: '平均温度',
+    text2: '低于(温度上限+温度下限)/2'
   },
   {
     path: `M ${centerX - radius} ${centerY - 40} Q ${centerX - radius} ${centerY - radius} ${centerX - 80} ${centerY - radius}`,
@@ -288,8 +289,8 @@ const transitions = ref([
     conditionX: centerX - radius - 100,
     conditionY: centerY - radius + 40,
     condition: 'C4',
-    text1: '拱顶平均温度',
-    text2: '低于温度上限'
+    text1: '平均温度',
+    text2: '低于温度下限'
   }
 ]);
 
@@ -351,26 +352,18 @@ onMounted(() => {
       else if (newMessage && newMessage.type === 'update_sensor_avg_data') {
         console.log('Received sensor avg data:', newMessage.content);
         const data = JSON.parse(newMessage.content);
-        if (data.top_temperature !== -1 && data.side_temperature !== -1 && data.humidity !== -1) {
-          top_avg_temp.value = String(data.top_temperature);
-          side_avg_temp.value = String(data.side_temperature);
+        if (data.temperature !== -1 && data.humidity !== -1) {
+          avg_temp.value = String(data.temperature);
           avg_humidity.value = String(data.humidity);
           sensor_error.value = false;
         }
         else {
           sensor_error.value = true;
-          if (data.top_temperature === -1) {
-            top_avg_temp.value = '未知';
+          if (data.temperature === -1) {
+            avg_temp.value = '未知';
           }
           else {
-            top_avg_temp.value = String(data.top_temperature);
-          }
-
-          if (data.side_temperature === -1) {
-            side_avg_temp.value = '未知';
-          }
-          else {
-            side_avg_temp.value = String(data.side_temperature);
+            avg_temp.value = String(data.temperature);
           }
 
           if (data.humidity === -1) {
@@ -474,15 +467,14 @@ const statusMessage = computed(() => {
   return '';
 });
 
-const top_avg_temp = ref("未知");
-const side_avg_temp = ref("未知");
+const avg_temp = ref("未知");
 const avg_humidity = ref("未知");
 
 const newStatusMessage = computed(() => {
   if (!isAutoMode.value) return '手动模式';
   if (!isRunning.value) return '循环养护系统未运行';
-  if (currentPhase.value === 'loop' && sensor_error.value === false) return `拱顶平均温度: ${top_avg_temp.value}°C, 拱腰平均温度: ${side_avg_temp.value}°C, 平均湿度: ${avg_humidity.value}%`;
-  if (currentPhase.value === 'loop' && sensor_error.value === true) return `拱顶平均温度: ${top_avg_temp.value}°C, 拱腰平均温度: ${side_avg_temp.value}°C, 平均湿度: ${avg_humidity.value}%, 无法开启循环, 请检查异常传感器`;
+  if (currentPhase.value === 'loop' && sensor_error.value === false) return `平均温度: ${avg_temp.value}°C, 平均湿度: ${avg_humidity.value}%`;
+  if (currentPhase.value === 'loop' && sensor_error.value === true) return `平均温度: ${avg_temp.value}°C, 平均湿度: ${avg_humidity.value}%, 无法开启循环, 请检查异常传感器`;
   return '循环养护系统未运行';
 });
 

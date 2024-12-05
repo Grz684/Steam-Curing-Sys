@@ -1,7 +1,7 @@
-import Bt, { ref as Y, onMounted as ht, provide as xt, readonly as kt, inject as _t, watch as lt, openBlock as we, createElementBlock as xe, createElementVNode as _, toDisplayString as Ce, Fragment as rt, renderList as it, normalizeClass as ot, createCommentVNode as ct, reactive as bt, createVNode as Ze, withDirectives as pt, vModelRadio as jt, createTextVNode as ft, vModelText as mt, onUnmounted as St, computed as yt, vModelCheckbox as It, defineComponent as Rt, unref as Ut, normalizeStyle as Dt } from "vue";
+import Bt, { ref as Y, onMounted as ht, provide as xt, readonly as kt, inject as _t, watch as lt, openBlock as be, createElementBlock as we, createElementVNode as _, toDisplayString as Ce, Fragment as ot, renderList as rt, normalizeClass as nt, createCommentVNode as ct, reactive as bt, createVNode as Je, withDirectives as pt, vModelRadio as jt, createTextVNode as ft, vModelText as mt, onUnmounted as St, computed as yt, vModelCheckbox as It, defineComponent as Rt, unref as Ut, normalizeStyle as Dt } from "vue";
 const Tt = Symbol(), Lt = Symbol(), At = Symbol();
-function Ft(ke, te) {
-  ke && ke.messageSignal ? ke.messageSignal.connect((X) => {
+function Ft(xe, te) {
+  xe && xe.messageSignal ? xe.messageSignal.connect((X) => {
     try {
       const i = JSON.parse(X);
       te.value = i, console.log("Received message from PyQt:", i);
@@ -11,20 +11,20 @@ function Ft(ke, te) {
   }) : console.error("messageSignal not found on bridge");
 }
 function Mt() {
-  const ke = Y(null), te = Y(null), X = Y("");
+  const xe = Y(null), te = Y(null), X = Y("");
   function i() {
     window.QWebChannel ? new QWebChannel(window.qt.webChannelTransport, (d) => {
-      ke.value = d, te.value = d.objects.bridge, console.log("QWebChannel initialized", d, d.objects.bridge), Ft(te.value, X), te.value && typeof te.value.vueReady == "function" ? te.value.vueReady() : console.error("vueReady method not found on bridge");
+      xe.value = d, te.value = d.objects.bridge, console.log("QWebChannel initialized", d, d.objects.bridge), Ft(te.value, X), te.value && typeof te.value.vueReady == "function" ? te.value.vueReady() : console.error("vueReady method not found on bridge");
     }) : console.error("QWebChannel not found");
   }
   ht(() => {
     document.readyState === "complete" || document.readyState === "interactive" ? i() : document.addEventListener("DOMContentLoaded", i);
-  }), xt(Tt, kt(ke)), xt(Lt, kt(te)), xt(At, kt(X));
+  }), xt(Tt, kt(xe)), xt(Lt, kt(te)), xt(At, kt(X));
 }
-function tt() {
-  const ke = _t(Tt), te = _t(Lt), X = _t(At);
-  return (!ke || !te || !X) && console.error("WebChannel not properly provided. Make sure to call provideWebChannel in a parent component."), {
-    channel: ke,
+function Ze() {
+  const xe = _t(Tt), te = _t(Lt), X = _t(At);
+  return (!xe || !te || !X) && console.error("WebChannel not properly provided. Make sure to call provideWebChannel in a parent component."), {
+    channel: xe,
     bridge: te,
     message: X,
     sendToPyQt: (d, e) => {
@@ -42,8 +42,8 @@ function tt() {
     }
   };
 }
-const vt = (ke, te) => {
-  const X = ke.__vccOpts || ke;
+const vt = (xe, te) => {
+  const X = xe.__vccOpts || xe;
   for (const [i, d] of te)
     X[i] = d;
   return X;
@@ -63,8 +63,8 @@ const vt = (ke, te) => {
     }
   },
   emits: ["update:modelValue", "update:showKeyboard"],
-  setup(ke, { emit: te }) {
-    const X = ke, i = te, d = Y([
+  setup(xe, { emit: te }) {
+    const X = xe, i = te, d = Y([
       ["7", "8", "9"],
       ["4", "5", "6"],
       ["1", "2", "3"],
@@ -76,17 +76,17 @@ const vt = (ke, te) => {
     const n = (o) => {
       o === "清除" ? e.value = "" : o === "确定" ? (i("update:modelValue", parseFloat(e.value) || 0), i("update:showKeyboard", !1)) : e.value += o;
     };
-    return (o, r) => ke.showKeyboard ? (we(), xe("div", Vt, [
+    return (o, r) => xe.showKeyboard ? (be(), we("div", Vt, [
       _("div", Wt, [
         _("div", qt, Ce(e.value), 1),
-        (we(!0), xe(rt, null, it(d.value, (t) => (we(), xe("div", {
+        (be(!0), we(ot, null, rt(d.value, (t) => (be(), we("div", {
           key: t.join(),
           class: "row"
         }, [
-          (we(!0), xe(rt, null, it(t, (a) => (we(), xe("button", {
+          (be(!0), we(ot, null, rt(t, (a) => (be(), we("button", {
             key: a,
             onClick: (u) => n(a),
-            class: ot({ "function-key": a === "清除" || a === "确定" })
+            class: nt({ "function-key": a === "清除" || a === "确定" })
           }, Ce(a), 11, zt))), 128))
         ]))), 128))
       ])
@@ -94,14 +94,14 @@ const vt = (ke, te) => {
   }
 }, Ot = /* @__PURE__ */ vt(Kt, [["__scopeId", "data-v-541feda2"]]), Qt = { class: "settings-container" }, Ht = { class: "setting-group" }, Yt = { class: "setting-item" }, Xt = { class: "setting-controls" }, Gt = ["value"], Jt = { class: "setting-item" }, Zt = { class: "setting-controls" }, en = ["value"], tn = { class: "setting-group" }, nn = { class: "setting-item" }, on = { class: "setting-controls" }, rn = ["value"], an = { class: "setting-item" }, sn = { class: "setting-controls" }, un = ["value"], cn = {
   __name: "SensorSettings",
-  setup(ke) {
-    const { sendToPyQt: te } = tt(), X = bt({
+  setup(xe) {
+    const { sendToPyQt: te } = Ze(), X = bt({
       isPyQtWebEngine: !1
     }), i = Y(35), d = Y(25), e = Y(95), n = Y(90), o = Y(!1), r = Y(null), t = Y("");
     ht(() => {
       if (X.isPyQtWebEngine = typeof window.qt < "u" && window.qt.webChannelTransport, X.isPyQtWebEngine) {
         console.log("在PyQt QWebEngine环境中运行");
-        const { message: v } = tt();
+        const { message: v } = Ze();
         lt(v, (p) => {
           if (p && p.type === "update_limit_settings")
             try {
@@ -144,7 +144,7 @@ const vt = (ke, te) => {
       const p = parseFloat(v);
       isNaN(p) || (r.value === "tempUpper" ? (i.value = p, u("upper")) : r.value === "tempLower" ? (d.value = p, u("lower")) : r.value === "humidityUpper" ? (e.value = p, s("upper")) : r.value === "humidityLower" && (n.value = p, s("lower"))), r.value = null;
     };
-    return (v, p) => (we(), xe("div", Qt, [
+    return (v, p) => (be(), we("div", Qt, [
       _("div", Ht, [
         p[15] || (p[15] = _("h2", null, "温度设置 (°C)", -1)),
         _("div", Yt, [
@@ -219,7 +219,7 @@ const vt = (ke, te) => {
           ])
         ])
       ]),
-      Ze(Ot, {
+      Je(Ot, {
         modelValue: t.value,
         showKeyboard: o.value,
         "onUpdate:modelValue": f,
@@ -243,8 +243,8 @@ const vt = (ke, te) => {
     }
   },
   emits: ["update:modelValue", "update:showKeyboard"],
-  setup(ke, { emit: te }) {
-    const X = ke, i = te, d = Y([
+  setup(xe, { emit: te }) {
+    const X = xe, i = te, d = Y([
       ["7", "8", "9"],
       ["4", "5", "6"],
       ["1", "2", "3"],
@@ -257,17 +257,17 @@ const vt = (ke, te) => {
     const n = (o) => {
       o === "清除" ? e.value = "" : o === "确定" ? (i("update:modelValue", parseFloat(e.value) || 0), i("update:showKeyboard", !1)) : o === "-" ? e.value.startsWith("-") ? e.value = e.value.slice(1) : e.value = "-" + e.value : o === "." && e.value.includes(".") || (e.value += o);
     };
-    return (o, r) => ke.showKeyboard ? (we(), xe("div", dn, [
+    return (o, r) => xe.showKeyboard ? (be(), we("div", dn, [
       _("div", fn, [
         _("div", pn, Ce(e.value), 1),
-        (we(!0), xe(rt, null, it(d.value, (t) => (we(), xe("div", {
+        (be(!0), we(ot, null, rt(d.value, (t) => (be(), we("div", {
           key: t.join(),
           class: "row"
         }, [
-          (we(!0), xe(rt, null, it(t, (a) => (we(), xe("button", {
+          (be(!0), we(ot, null, rt(t, (a) => (be(), we("button", {
             key: a,
             onClick: (u) => n(a),
-            class: ot({
+            class: nt({
               "function-key": ["清除", "确定"].includes(a),
               "operator-key": a === "-"
             })
@@ -281,15 +281,15 @@ const vt = (ke, te) => {
   class: "dialog-overlay"
 }, An = { class: "dialog" }, Nn = { class: "dialog-content" }, Pn = { class: "radio-group" }, $n = { class: "input-group" }, Bn = ["placeholder"], In = { class: "dialog-actions" }, Rn = {
   __name: "SensorDisplay",
-  setup(ke) {
+  setup(xe) {
     const te = Y({ temperature: {}, humidity: {} }), X = Y({
       temperature: {},
       humidity: {}
-    }), i = Y(null), d = Y(!1), e = Y("offset"), n = Y(""), o = Y(!1), { sendToPyQt: r } = tt();
+    }), i = Y(null), d = Y(!1), e = Y("offset"), n = Y(""), o = Y(!1), { sendToPyQt: r } = Ze();
     ht(() => {
       if (typeof window.qt < "u" && window.qt.webChannelTransport) {
         console.log("在PyQt QWebEngine环境中执行");
-        const { message: c } = tt();
+        const { message: c } = Ze();
         lt(c, (f) => {
           if (f && f.type === "update_sensor_data")
             try {
@@ -339,12 +339,12 @@ const vt = (ke, te) => {
         console.error("Error applying adjustment:", c);
       }
     };
-    return (c, f) => (we(), xe("div", gn, [
+    return (c, f) => (be(), we("div", gn, [
       _("div", yn, [
         f[7] || (f[7] = _("h2", null, "温度传感器【传感器1、4、7位于左拱腰，2、5、8位于拱顶，3、6、9位于右拱腰】", -1)),
         _("div", bn, [
           _("div", wn, [
-            (we(!0), xe(rt, null, it(te.value.temperature, (v, p) => (we(), xe("div", {
+            (be(!0), we(ot, null, rt(te.value.temperature, (v, p) => (be(), we("div", {
               key: p,
               class: "sensor-card",
               onClick: (h) => o.value ? s("temperature", p) : null
@@ -359,7 +359,7 @@ const vt = (ke, te) => {
         f[8] || (f[8] = _("h2", null, "湿度传感器", -1)),
         _("div", On, [
           _("div", En, [
-            (we(!0), xe(rt, null, it(te.value.humidity, (v, p) => (we(), xe("div", {
+            (be(!0), we(ot, null, rt(te.value.humidity, (v, p) => (be(), we("div", {
               key: p,
               class: "sensor-card",
               onClick: (h) => o.value ? s("humidity", p) : null
@@ -370,7 +370,7 @@ const vt = (ke, te) => {
           ])
         ])
       ]),
-      d.value ? (we(), xe("div", Ln, [
+      d.value ? (be(), we("div", Ln, [
         _("div", An, [
           _("h3", null, "调整传感器: " + Ce(i.value), 1),
           _("div", Nn, [
@@ -418,7 +418,7 @@ const vt = (ke, te) => {
             }, "确定")
           ])
         ]),
-        Ze(mn, {
+        Je(mn, {
           modelValue: u.value,
           "onUpdate:modelValue": f[5] || (f[5] = (v) => u.value = v),
           showKeyboard: a.value,
@@ -427,7 +427,7 @@ const vt = (ke, te) => {
       ])) : ct("", !0)
     ]));
   }
-}, Un = /* @__PURE__ */ vt(Rn, [["__scopeId", "data-v-41635404"]]), Dn = { class: "integrated-control-system" }, Fn = { class: "mode-controls" }, Mn = { class: "btn-group" }, Vn = { class: "btn-group" }, Wn = ["disabled"], qn = ["disabled"], zn = { class: "systems-container" }, Kn = { class: "side-controls" }, Qn = { class: "left-box" }, Hn = { class: "steam_engine" }, Yn = ["disabled"], Xn = { class: "text_status" }, Gn = { class: "right-box" }, Jn = { class: "controls" }, Zn = { class: "input-group" }, eo = ["value"], to = { class: "input-group" }, no = ["value"], oo = { class: "middle-box" }, ro = { class: "state-machine-container" }, io = { class: "state-machine" }, ao = { viewBox: "0 0 800 400" }, so = ["d"], uo = ["x1", "y1", "x2", "y2"], co = ["x", "y"], lo = ["x", "y"], fo = ["x", "y"], po = ["cx", "cy"], vo = ["x", "y"], ho = ["x", "y"], mo = { class: "control-systems" }, go = { class: "control-row" }, yo = { class: "control-item" }, bo = { class: "steam_engine" }, wo = ["disabled"], xo = { class: "control-item" }, ko = { class: "steam_engine" }, _o = ["disabled"], So = { class: "control-item" }, Oo = { class: "steam_engine" }, Eo = ["disabled"], jo = { class: "text_status" }, Fe = 400, Me = 200, Oe = 120, Co = {
+}, Un = /* @__PURE__ */ vt(Rn, [["__scopeId", "data-v-41635404"]]), Dn = { class: "integrated-control-system" }, Fn = { class: "mode-controls" }, Mn = { class: "btn-group" }, Vn = { class: "btn-group" }, Wn = ["disabled"], qn = ["disabled"], zn = { class: "systems-container" }, Kn = { class: "side-controls" }, Qn = { class: "left-box" }, Hn = { class: "steam_engine" }, Yn = ["disabled"], Xn = { class: "text_status" }, Gn = { class: "right-box" }, Jn = { class: "controls" }, Zn = { class: "input-group" }, eo = ["value"], to = { class: "input-group" }, no = ["value"], oo = { class: "middle-box" }, ro = { class: "state-machine-container" }, io = { class: "state-machine" }, ao = { viewBox: "0 0 800 400" }, so = ["d"], uo = ["x1", "y1", "x2", "y2"], co = ["x", "y"], lo = ["x", "y"], fo = ["x", "y"], po = ["cx", "cy"], vo = ["x", "y"], ho = ["x", "y"], mo = { class: "control-systems" }, go = { class: "control-row" }, yo = { class: "control-item" }, bo = { class: "steam_engine" }, wo = ["disabled"], xo = { class: "control-item" }, ko = { class: "steam_engine" }, _o = ["disabled"], So = { class: "control-item" }, Oo = { class: "steam_engine" }, Eo = ["disabled"], jo = { class: "text_status" }, De = 400, Fe = 200, Oe = 120, Co = {
   __name: "IntegratedControlSystem",
   props: {
     message: {
@@ -436,94 +436,94 @@ const vt = (ke, te) => {
       default: () => ({})
     }
   },
-  setup(ke) {
-    const te = Y(!1), X = Y(!1), i = Y(!1), d = Y(!1), e = Y(10), n = Y(0), o = Y(10), r = Y(e.value), t = Y(n.value), a = Y(o.value), u = Y(e.value), s = Y(n.value), l = Y(o.value), c = Y(""), f = Y(0), v = Y(!0), p = Y(!1), h = Y(!1), m = Y(null), g = Y(""), b = Y(!1), { sendToPyQt: S } = tt(), C = Y(0), x = bt({
+  setup(xe) {
+    const te = Y(!1), X = Y(!1), i = Y(!1), d = Y(!1), e = Y(10), n = Y(0), o = Y(10), r = Y(e.value), t = Y(n.value), a = Y(o.value), u = Y(e.value), s = Y(n.value), l = Y(o.value), c = Y(""), f = Y(0), v = Y(!0), p = Y(!1), h = Y(!1), m = Y(null), g = Y(""), b = Y(!1), { sendToPyQt: S } = Ze(), C = Y(0), x = bt({
       isPyQtWebEngine: !1
     }), w = Y([]);
     let y, j, E;
-    const L = ke;
-    lt(() => L.message, (re) => {
-      re != null && re.content && (v.value ? R("manual") : R("auto"));
+    const L = xe;
+    lt(() => L.message, (se) => {
+      se != null && se.content && (v.value ? Z("manual") : Z("auto"));
     });
-    const O = Y("S0"), F = Y([
-      { x: Fe, y: Me - Oe, label: "S1", text1: "打开全部", text2: "四个蒸汽机" },
-      { x: Fe + Oe, y: Me, label: "S2", text1: "关闭一半蒸汽机", text2: "只打开两个蒸汽机" },
-      { x: Fe, y: Me + Oe, label: "S3", text1: "关闭全部蒸汽机", text2: "根据湿度开/关造雾机" },
-      { x: Fe - Oe, y: Me, label: "S4", text1: "打开两个蒸汽机", text2: "自动关闭造雾机" }
+    const O = Y("S0"), M = Y([
+      { x: De, y: Fe - Oe, label: "S1", text1: "打开全部", text2: "四个蒸汽机" },
+      { x: De + Oe, y: Fe, label: "S2", text1: "关闭一半蒸汽机", text2: "只打开两个蒸汽机" },
+      { x: De, y: Fe + Oe, label: "S3", text1: "关闭全部蒸汽机", text2: "根据湿度开/关造雾机" },
+      { x: De - Oe, y: Fe, label: "S4", text1: "打开两个蒸汽机", text2: "自动关闭造雾机" }
     ]), V = Y([
       {
-        path: `M ${Fe + 80} ${Me - Oe} Q ${Fe + Oe} ${Me - Oe} ${Fe + Oe} ${Me - 40}`,
-        lineStart: { x: Fe + Oe - 40, y: Me - Oe + 40 },
-        conditionX: Fe + Oe + 100,
-        conditionY: Me - Oe + 40,
+        path: `M ${De + 80} ${Fe - Oe} Q ${De + Oe} ${Fe - Oe} ${De + Oe} ${Fe - 40}`,
+        lineStart: { x: De + Oe - 40, y: Fe - Oe + 40 },
+        conditionX: De + Oe + 100,
+        conditionY: Fe - Oe + 40,
         condition: "C1",
-        text1: "拱顶平均温度",
-        text2: "高于温度上限"
+        text1: "平均温度",
+        text2: "高于(温度上限+温度下限)/2"
       },
       {
-        path: `M ${Fe + Oe} ${Me + 40} Q ${Fe + Oe} ${Me + Oe} ${Fe + 80} ${Me + Oe}`,
-        lineStart: { x: Fe + Oe - 40, y: Me + Oe - 40 },
-        conditionX: Fe + Oe + 100,
-        conditionY: Me + Oe - 40,
+        path: `M ${De + Oe} ${Fe + 40} Q ${De + Oe} ${Fe + Oe} ${De + 80} ${Fe + Oe}`,
+        lineStart: { x: De + Oe - 40, y: Fe + Oe - 40 },
+        conditionX: De + Oe + 100,
+        conditionY: Fe + Oe - 40,
         condition: "C2",
-        text1: "拱腰平均温度",
+        text1: "平均温度",
         text2: "高于温度上限"
       },
       {
-        path: `M ${Fe - 80} ${Me + Oe} Q ${Fe - Oe} ${Me + Oe} ${Fe - Oe} ${Me + 40}`,
-        lineStart: { x: Fe - Oe + 40, y: Me + Oe - 40 },
-        conditionX: Fe - Oe - 100,
-        conditionY: Me + Oe - 40,
+        path: `M ${De - 80} ${Fe + Oe} Q ${De - Oe} ${Fe + Oe} ${De - Oe} ${Fe + 40}`,
+        lineStart: { x: De - Oe + 40, y: Fe + Oe - 40 },
+        conditionX: De - Oe - 100,
+        conditionY: Fe + Oe - 40,
         condition: "C3",
-        text1: "拱腰平均温度",
-        text2: "低于温度下限"
+        text1: "平均温度",
+        text2: "低于(温度上限+温度下限)/2"
       },
       {
-        path: `M ${Fe - Oe} ${Me - 40} Q ${Fe - Oe} ${Me - Oe} ${Fe - 80} ${Me - Oe}`,
-        lineStart: { x: Fe - Oe + 40, y: Me - Oe + 40 },
-        conditionX: Fe - Oe - 100,
-        conditionY: Me - Oe + 40,
+        path: `M ${De - Oe} ${Fe - 40} Q ${De - Oe} ${Fe - Oe} ${De - 80} ${Fe - Oe}`,
+        lineStart: { x: De - Oe + 40, y: Fe - Oe + 40 },
+        conditionX: De - Oe - 100,
+        conditionY: Fe - Oe + 40,
         condition: "C4",
-        text1: "拱顶平均温度",
-        text2: "低于温度上限"
+        text1: "平均温度",
+        text2: "低于温度下限"
       }
-    ]), J = (re) => {
-      re === 0 ? O.value = "S0" : re === 1 ? O.value = "S1" : re === 2 ? O.value = "S2" : re === 3 ? O.value = "S3" : re === 4 && (O.value = "S4");
+    ]), J = (se) => {
+      se === 0 ? O.value = "S0" : se === 1 ? O.value = "S1" : se === 2 ? O.value = "S2" : se === 3 ? O.value = "S3" : se === 4 && (O.value = "S4");
     };
     ht(() => {
       if (x.isPyQtWebEngine = typeof window.qt < "u" && window.qt.webChannelTransport, x.isPyQtWebEngine) {
         console.log("在PyQt QWebEngine环境中运行");
-        const { message: re } = tt();
-        lt(re, (M) => {
-          if (M && M.type === "update_spray_engine_status")
-            te.value = M.content;
-          else if (M && M.type === "IntegratedControlSystem_init")
+        const { message: se } = Ze();
+        lt(se, ($) => {
+          if ($ && $.type === "update_spray_engine_status")
+            te.value = $.content;
+          else if ($ && $.type === "IntegratedControlSystem_init")
             console.log("Received IntegratedControlSystem_init message"), W();
-          else if (M && M.type === "update_left_steam_status")
-            X.value = M.content;
-          else if (M && M.type === "update_right_steam_status")
-            i.value = M.content;
-          else if (M && M.type === "update_sprinkler_settings")
+          else if ($ && $.type === "update_left_steam_status")
+            X.value = $.content;
+          else if ($ && $.type === "update_right_steam_status")
+            i.value = $.content;
+          else if ($ && $.type === "update_sprinkler_settings")
             try {
-              const G = JSON.parse(M.content);
+              const G = JSON.parse($.content);
               u.value = G.sprinkler_single_run_time, s.value = G.sprinkler_run_interval_time, l.value = G.sprinkler_loop_interval, t.value = s.value, r.value = u.value, a.value = l.value, console.log("Sprinkler Settings updated:", G);
             } catch (G) {
               console.error("Failed to parse sprinkler settings data:", G);
             }
-          else if (M && M.type === "update_state_machine")
-            console.log("Received state machine update:", M.content), J(M.content);
-          else if (M && M.type === "update_sensor_avg_data") {
-            console.log("Received sensor avg data:", M.content);
-            const G = JSON.parse(M.content);
-            G.top_temperature !== -1 && G.side_temperature !== -1 && G.humidity !== -1 ? (T.value = String(G.top_temperature), A.value = String(G.side_temperature), z.value = String(G.humidity), b.value = !1) : (b.value = !0, G.top_temperature === -1 ? T.value = "未知" : T.value = String(G.top_temperature), G.side_temperature === -1 ? A.value = "未知" : A.value = String(G.side_temperature), G.humidity === -1 ? z.value = "未知" : z.value = String(G.humidity));
-          } else if (M && M.type === "SprinklerSettings_set") {
-            console.log("Received SprinklerSettings_set message:", M.content);
-            const Ke = JSON.parse(M.content).args;
-            u.value = Ke.sprinkler_single_run_time, s.value = Ke.sprinkler_run_interval_time, l.value = Ke.sprinkler_loop_interval, t.value = s.value, r.value = u.value, a.value = l.value, ee();
-          } else if (M && M.type === "IntegratedControlSystem_set") {
-            console.log("Received IntegratedControlSystem_set message:", M.content);
-            const G = JSON.parse(M.content);
-            G.method === "startSystem" ? ie() : G.method === "stopSystem" ? be() : G.method === "setMode" ? R(G.args.mode) : G.method === "click_toggleEngine" ? Ue() : G.method === "click_toggleSteamEngine" ? Ae() : G.method === "toggleManualSprinkler" && toggleManualSprinkler(G.args.n);
+          else if ($ && $.type === "update_state_machine")
+            console.log("Received state machine update:", $.content), J($.content);
+          else if ($ && $.type === "update_sensor_avg_data") {
+            console.log("Received sensor avg data:", $.content);
+            const G = JSON.parse($.content);
+            G.temperature !== -1 && G.humidity !== -1 ? (T.value = String(G.temperature), A.value = String(G.humidity), b.value = !1) : (b.value = !0, G.temperature === -1 ? T.value = "未知" : T.value = String(G.temperature), G.humidity === -1 ? A.value = "未知" : A.value = String(G.humidity));
+          } else if ($ && $.type === "SprinklerSettings_set") {
+            console.log("Received SprinklerSettings_set message:", $.content);
+            const ze = JSON.parse($.content).args;
+            u.value = ze.sprinkler_single_run_time, s.value = ze.sprinkler_run_interval_time, l.value = ze.sprinkler_loop_interval, t.value = s.value, r.value = u.value, a.value = l.value, D();
+          } else if ($ && $.type === "IntegratedControlSystem_set") {
+            console.log("Received IntegratedControlSystem_set message:", $.content);
+            const G = JSON.parse($.content);
+            G.method === "startSystem" ? ne() : G.method === "stopSystem" ? re() : G.method === "setMode" ? Z(G.args.mode) : G.method === "click_toggleEngine" ? Ie() : G.method === "click_toggleSteamEngine" ? Ue() : G.method === "toggleManualSprinkler" && toggleManualSprinkler(G.args.n);
           }
         });
       } else
@@ -531,14 +531,14 @@ const vt = (ke, te) => {
     }), St(() => {
       clearInterval(E), clearInterval(j), H();
     });
-    const ae = (re) => {
-      re !== void 0 && clearTimeout(re);
+    const ie = (se) => {
+      se !== void 0 && clearTimeout(se);
     }, H = () => {
-      w.value.forEach((re) => {
-        ae(re);
+      w.value.forEach((se) => {
+        ie(se);
       }), w.value = [];
     }, W = () => {
-      const re = {
+      const se = {
         leftEngineOn: te.value,
         rightEngineOn: X.value,
         currentSingleRunTime: e.value,
@@ -556,114 +556,115 @@ const vt = (ke, te) => {
         isRunning: p.value,
         phaseStartTime: C.value
       };
-      S("IntegratedControlSystem_init_response", re);
-    }, U = yt(() => v.value ? p.value ? c.value === "run" ? `喷淋系统正在运行，剩余 ${f.value + 1} 秒` : c.value === "interval" ? `运行间隔中，剩余 ${f.value + 1} 秒` : c.value === "loop" ? `循环养护系统工作中，离下次喷淋剩余 ${f.value + 1} 秒` : "" : "喷淋系统未运行" : "手动模式"), T = Y("未知"), A = Y("未知"), z = Y("未知"), ne = yt(() => v.value ? p.value ? c.value === "loop" && b.value === !1 ? `拱顶平均温度: ${T.value}°C, 拱腰平均温度: ${A.value}°C, 平均湿度: ${z.value}%` : c.value === "loop" && b.value === !0 ? `拱顶平均温度: ${T.value}°C, 拱腰平均温度: ${A.value}°C, 平均湿度: ${z.value}%, 无法开启循环, 请检查异常传感器` : "循环养护系统未运行" : "循环养护系统未运行" : "手动模式");
-    async function R(re) {
-      const M = v.value;
-      v.value = re === "auto", M !== v.value && (x.isPyQtWebEngine && (S("IntegratedControlSystem_set_response", { method: "setMode", args: { mode: re } }), S("controlSprinkler", { target: "setMode", mode: v.value ? "auto" : "manual" })), v.value ? (H(), te.value && await _e(), X.value && await ve(), i.value && await Ne(), d.value && await $e()) : await be());
+      S("IntegratedControlSystem_init_response", se);
+    }, F = yt(() => v.value ? p.value ? c.value === "run" ? `喷淋系统正在运行，剩余 ${f.value + 1} 秒` : c.value === "interval" ? `运行间隔中，剩余 ${f.value + 1} 秒` : c.value === "loop" ? `循环养护系统工作中，离下次喷淋剩余 ${f.value + 1} 秒` : "" : "喷淋系统未运行" : "手动模式"), T = Y("未知"), A = Y("未知"), Q = yt(() => v.value ? p.value ? c.value === "loop" && b.value === !1 ? `平均温度: ${T.value}°C, 平均湿度: ${A.value}%` : c.value === "loop" && b.value === !0 ? `平均温度: ${T.value}°C, 平均湿度: ${A.value}%, 无法开启循环, 请检查异常传感器` : "循环养护系统未运行" : "循环养护系统未运行" : "手动模式");
+    async function Z(se) {
+      const $ = v.value;
+      v.value = se === "auto", $ !== v.value && (x.isPyQtWebEngine && (S("IntegratedControlSystem_set_response", { method: "setMode", args: { mode: se } }), S("controlSprinkler", { target: "setMode", mode: v.value ? "auto" : "manual" })), v.value ? (H(), te.value && await U(), X.value && await _e(), i.value && await ve(), d.value && await Ae()) : await re());
     }
-    async function _e() {
+    async function U() {
       x.isPyQtWebEngine && (S("setEngineState", { engine: "sprayEngine", state: !te.value }), te.value = !te.value);
     }
-    async function ve() {
+    async function _e() {
       x.isPyQtWebEngine && (S("setEngineState", { engine: "leftSteamEngine", state: !X.value }), X.value = !X.value);
     }
-    async function Ne() {
+    async function ve() {
       x.isPyQtWebEngine && (S("setEngineState", { engine: "rightSteamEngine", state: !i.value }), i.value = !i.value);
     }
-    async function $e() {
+    async function Ae() {
       x.isPyQtWebEngine && (S("setEngineState", { engine: "sprinklerEngine", state: !d.value }), d.value = !d.value);
     }
-    async function Ue() {
+    async function Ie() {
       S("IntegratedControlSystem_set_response", { method: "click_toggleSprayEngine", args: {} }), S("setEngineState", { engine: "sprayEngine", state: !te.value }), te.value = !te.value;
     }
-    async function Ae() {
+    async function Ue() {
       x.isPyQtWebEngine && (S("IntegratedControlSystem_set_response", { method: "click_toggleLeftSteamEngine", args: {} }), S("setEngineState", { engine: "leftSteamEngine", state: !X.value }), X.value = !X.value);
     }
-    async function Pe() {
+    async function Ne() {
       x.isPyQtWebEngine && (S("IntegratedControlSystem_set_response", { method: "click_toggleRightSteamEngine", args: {} }), S("setEngineState", { engine: "rightSteamEngine", state: !i.value }), i.value = !i.value);
     }
-    async function He() {
+    async function Pe() {
       x.isPyQtWebEngine && (S("IntegratedControlSystem_set_response", { method: "click_toggleSprinklerEngine", args: {} }), S("setEngineState", { engine: "sprinklerEngine", state: !d.value }), d.value = !d.value);
     }
-    function et(re) {
-      m.value = re, h.value = !0, g.value = re === "singleRunTime" ? u.value.toString() : re === "runIntervalTime" ? s.value.toString() : l.value.toString();
+    function Ke(se) {
+      m.value = se, h.value = !0, g.value = se === "singleRunTime" ? u.value.toString() : se === "runIntervalTime" ? s.value.toString() : l.value.toString();
     }
-    function $(re) {
-      const M = parseInt(re);
-      isNaN(M) || (m.value === "singleRunTime" ? (u.value = M, B()) : m.value === "runIntervalTime" ? (s.value = M, Z()) : m.value === "loopInterval" && (l.value = M, D())), m.value = null;
+    function et(se) {
+      const $ = parseInt(se);
+      isNaN($) || (m.value === "singleRunTime" ? (u.value = $, B()) : m.value === "runIntervalTime" ? (s.value = $, I()) : m.value === "loopInterval" && (l.value = $, ee())), m.value = null;
     }
     function B() {
-      u.value = Math.max(1, u.value), r.value = u.value, ee();
+      u.value = Math.max(1, u.value), r.value = u.value, D();
     }
-    function Z() {
-      s.value = Math.max(0, s.value), t.value = s.value, ee();
-    }
-    function D() {
-      l.value = Math.max(0, l.value), a.value = l.value, ee();
+    function I() {
+      s.value = Math.max(0, s.value), t.value = s.value, D();
     }
     function ee() {
+      l.value = Math.max(0, l.value), a.value = l.value, D();
+    }
+    function D() {
       if (x.isPyQtWebEngine) {
         console.log("在PyQt QWebEngine环境中执行更新设置");
-        const re = {
+        const se = {
           sprinkler_single_run_time: r.value,
           sprinkler_run_interval_time: t.value,
           sprinkler_loop_interval: a.value
         };
-        S("controlSprinkler", { target: "settings", settings: JSON.stringify(re) });
+        S("controlSprinkler", { target: "settings", settings: JSON.stringify(se) });
       } else
         console.log("在普通网页环境中执行更新设置");
     }
-    async function ie() {
-      S("IntegratedControlSystem_set_response", { method: "startSystem", args: {} }), !(p.value || !v.value) && (p.value = !0, await ce());
+    async function ne() {
+      S("IntegratedControlSystem_set_response", { method: "startSystem", args: {} }), !(p.value || !v.value) && (p.value = !0, await he());
     }
-    async function be() {
-      S("IntegratedControlSystem_set_response", { method: "stopSystem", args: {} }), x.isPyQtWebEngine && S("controlSprinkler", { target: "setState", state: !1 }), te.value && await _e(), X.value && await ve(), i.value && await Ne(), d.value && await $e(), ge();
+    async function re() {
+      S("IntegratedControlSystem_set_response", { method: "stopSystem", args: {} }), x.isPyQtWebEngine && S("controlSprinkler", { target: "setState", state: !1 }), te.value && await U(), X.value && await _e(), i.value && await ve(), d.value && await Ae(), ke();
     }
-    function ge() {
+    function ke() {
       p.value = !1, H(), c.value = "", f.value = 0;
     }
-    async function ce() {
-      Ee();
+    async function he() {
+      Se();
+    }
+    function ue() {
+      !p.value || !v.value || (f.value--, f.value > 0 && (y = setTimeout(ue, 1e3), w.value.push(y)));
     }
     function Se() {
-      !p.value || !v.value || (f.value--, f.value > 0 && (y = setTimeout(Se, 1e3), w.value.push(y)));
-    }
-    function Ee() {
-      !p.value || !v.value || (c.value = "run", e.value = r.value, f.value = e.value, C.value = Date.now(), Se(), S("setEngineState", { engine: "sprinklerEngine", state: !0 }), d.value = !0, y = setTimeout(async () => {
-        S("setEngineState", { engine: "sprinklerEngine", state: !1 }), d.value = !1, De();
+      !p.value || !v.value || (c.value = "run", e.value = r.value, f.value = e.value, C.value = Date.now(), ue(), S("setEngineState", { engine: "sprinklerEngine", state: !0 }), d.value = !0, y = setTimeout(async () => {
+        S("setEngineState", { engine: "sprinklerEngine", state: !1 }), d.value = !1, Ee();
       }, e.value * 1e3), w.value.push(y));
     }
-    async function De() {
-      !p.value || !v.value || (o.value = a.value, f.value = o.value, S("controlSprinkler", { target: "setState", state: !0 }), C.value = Date.now(), c.value = "loop", Se(), y = setTimeout(async () => {
-        S("controlSprinkler", { target: "setState", state: !1 }), te.value && await _e(), X.value && await ve(), i.value && await Ne(), d.value && await $e(), await ce();
+    async function Ee() {
+      !p.value || !v.value || (o.value = a.value, f.value = o.value, S("controlSprinkler", { target: "setState", state: !0 }), C.value = Date.now(), c.value = "loop", ue(), y = setTimeout(async () => {
+        S("controlSprinkler", { target: "setState", state: !1 }), te.value && await U(), X.value && await _e(), i.value && await ve(), d.value && await Ae(), await he();
       }, o.value * 1e3), w.value.push(y));
     }
-    return (re, M) => (we(), xe("div", Dn, [
-      M[18] || (M[18] = _("h2", null, "集成控制系统【定时喷淋->循环养护->定时喷淋按时间设置交替运行】", -1)),
-      M[19] || (M[19] = _("div", { class: "label-box" }, [
-        _("label", null, "在数字开关上，output1控制造雾机开/关，output2控制蒸汽机（组1）开/关，output3控制（组2）蒸汽机开/关，output4控制喷淋系统开/关"),
-        _("br")
+    return (se, $) => (be(), we("div", Dn, [
+      $[18] || ($[18] = _("h2", null, "集成控制系统【定时喷淋->循环养护->定时喷淋按时间设置交替运行】", -1)),
+      $[19] || ($[19] = _("div", { class: "label-box" }, [
+        _("label", null, "适用于9传感器+0606数字开关+喷淋小车+两组蒸汽机+超声波造雾机的养护系统"),
+        _("br"),
+        _("label", null, "在数字开关上，output1控制造雾机开/关，output2控制蒸汽机（组1）开/关，output3控制（组2）蒸汽机开/关，output4连接喷淋小车前进/后退互锁电路，output5控制喷淋水泵1，output6控制喷淋水泵2")
       ], -1)),
       _("div", Fn, [
         _("div", Mn, [
           _("button", {
-            onClick: M[0] || (M[0] = (G) => R("auto")),
-            class: ot([{ active: v.value }, "mode-btn"])
+            onClick: $[0] || ($[0] = (G) => Z("auto")),
+            class: nt([{ active: v.value }, "mode-btn"])
           }, "自动模式", 2),
           _("button", {
-            onClick: M[1] || (M[1] = (G) => R("manual")),
-            class: ot([{ active: !v.value }, "mode-btn"])
+            onClick: $[1] || ($[1] = (G) => Z("manual")),
+            class: nt([{ active: !v.value }, "mode-btn"])
           }, "手动模式", 2)
         ]),
         _("div", Vn, [
           _("button", {
-            onClick: ie,
+            onClick: ne,
             disabled: p.value || !v.value,
             class: "control-btn"
           }, "开始", 8, Wn),
           _("button", {
-            onClick: be,
+            onClick: re,
             disabled: !p.value || !v.value,
             class: "control-btn"
           }, "停止", 8, qn)
@@ -672,40 +673,40 @@ const vt = (ke, te) => {
       _("div", zn, [
         _("div", Kn, [
           _("div", Qn, [
-            M[6] || (M[6] = _("h3", null, "定时喷淋系统", -1)),
+            $[6] || ($[6] = _("h3", null, "定时喷淋系统", -1)),
             _("div", Hn, [
               _("div", {
-                class: ot(["status", { on: d.value }])
+                class: nt(["status", { on: d.value }])
               }, [
-                M[5] || (M[5] = _("div", { class: "status-indicator" }, null, -1)),
+                $[5] || ($[5] = _("div", { class: "status-indicator" }, null, -1)),
                 ft(" " + Ce(d.value ? "开" : "关"), 1)
               ], 2),
               _("button", {
-                onClick: He,
+                onClick: Pe,
                 disabled: v.value,
                 class: "control-btn"
               }, Ce(d.value ? "关闭" : "开启"), 9, Yn)
             ]),
-            _("div", Xn, Ce(U.value), 1)
+            _("div", Xn, Ce(F.value), 1)
           ]),
           _("div", Gn, [
-            M[9] || (M[9] = _("h3", null, "定时喷淋/循环养护系统时间设置", -1)),
+            $[9] || ($[9] = _("h3", null, "定时喷淋/循环养护系统时间设置", -1)),
             _("div", Jn, [
               _("div", Zn, [
-                M[7] || (M[7] = _("label", null, "喷淋系统工作时间 (秒):", -1)),
+                $[7] || ($[7] = _("label", null, "喷淋系统工作时间 (秒):", -1)),
                 _("input", {
                   type: "text",
                   value: u.value,
-                  onFocus: M[2] || (M[2] = (G) => et("singleRunTime")),
+                  onFocus: $[2] || ($[2] = (G) => Ke("singleRunTime")),
                   readonly: ""
                 }, null, 40, eo)
               ]),
               _("div", to, [
-                M[8] || (M[8] = _("label", null, "循环养护系统工作时间 (秒):", -1)),
+                $[8] || ($[8] = _("label", null, "循环养护系统工作时间 (秒):", -1)),
                 _("input", {
                   type: "text",
                   value: l.value,
-                  onFocus: M[3] || (M[3] = (G) => et("loopInterval")),
+                  onFocus: $[3] || ($[3] = (G) => Ke("loopInterval")),
                   readonly: ""
                 }, null, 40, no)
               ])
@@ -713,11 +714,11 @@ const vt = (ke, te) => {
           ])
         ]),
         _("div", oo, [
-          M[17] || (M[17] = _("h3", null, "循环养护系统", -1)),
+          $[17] || ($[17] = _("h3", null, "循环养护系统", -1)),
           _("div", ro, [
             _("div", io, [
-              (we(), xe("svg", ao, [
-                M[10] || (M[10] = _("defs", null, [
+              (be(), we("svg", ao, [
+                $[10] || ($[10] = _("defs", null, [
                   _("marker", {
                     id: "arrowhead",
                     markerWidth: "10",
@@ -732,8 +733,8 @@ const vt = (ke, te) => {
                     })
                   ])
                 ], -1)),
-                (we(!0), xe(rt, null, it(V.value, (G, Ke) => (we(), xe("g", {
-                  key: "t" + Ke
+                (be(!0), we(ot, null, rt(V.value, (G, ze) => (be(), we("g", {
+                  key: "t" + ze
                 }, [
                   _("path", {
                     d: G.path,
@@ -765,16 +766,16 @@ const vt = (ke, te) => {
                     class: "condition-text"
                   }, Ce(G.text2), 9, fo)
                 ]))), 128)),
-                (we(!0), xe(rt, null, it(F.value, (G, Ke) => (we(), xe("g", {
-                  key: Ke,
-                  class: ot({ active: O.value === G.label })
+                (be(!0), we(ot, null, rt(M.value, (G, ze) => (be(), we("g", {
+                  key: ze,
+                  class: nt({ active: O.value === G.label })
                 }, [
                   _("ellipse", {
                     cx: G.x,
                     cy: G.y,
                     rx: "80",
                     ry: "40",
-                    class: ot(["state", { active: O.value === G.label }])
+                    class: nt(["state", { active: O.value === G.label }])
                   }, null, 10, po),
                   _("text", {
                     x: G.x,
@@ -793,48 +794,48 @@ const vt = (ke, te) => {
           _("div", mo, [
             _("div", go, [
               _("div", yo, [
-                M[12] || (M[12] = _("h4", null, "蒸汽机（组1）", -1)),
+                $[12] || ($[12] = _("h4", null, "蒸汽机（组1）", -1)),
                 _("div", bo, [
                   _("div", {
-                    class: ot(["status", { on: X.value }])
+                    class: nt(["status", { on: X.value }])
                   }, [
-                    M[11] || (M[11] = _("div", { class: "status-indicator" }, null, -1)),
+                    $[11] || ($[11] = _("div", { class: "status-indicator" }, null, -1)),
                     ft(" " + Ce(X.value ? "开" : "关"), 1)
                   ], 2),
                   _("button", {
-                    onClick: Ae,
+                    onClick: Ue,
                     disabled: v.value,
                     class: "control-btn"
                   }, Ce(X.value ? "关闭" : "开启"), 9, wo)
                 ])
               ]),
               _("div", xo, [
-                M[14] || (M[14] = _("h4", null, "蒸汽机（组2）", -1)),
+                $[14] || ($[14] = _("h4", null, "蒸汽机（组2）", -1)),
                 _("div", ko, [
                   _("div", {
-                    class: ot(["status", { on: i.value }])
+                    class: nt(["status", { on: i.value }])
                   }, [
-                    M[13] || (M[13] = _("div", { class: "status-indicator" }, null, -1)),
+                    $[13] || ($[13] = _("div", { class: "status-indicator" }, null, -1)),
                     ft(" " + Ce(i.value ? "开" : "关"), 1)
                   ], 2),
                   _("button", {
-                    onClick: Pe,
+                    onClick: Ne,
                     disabled: v.value,
                     class: "control-btn"
                   }, Ce(i.value ? "关闭" : "开启"), 9, _o)
                 ])
               ]),
               _("div", So, [
-                M[16] || (M[16] = _("h4", null, "超声波造雾机", -1)),
+                $[16] || ($[16] = _("h4", null, "超声波造雾机", -1)),
                 _("div", Oo, [
                   _("div", {
-                    class: ot(["status", { on: te.value }])
+                    class: nt(["status", { on: te.value }])
                   }, [
-                    M[15] || (M[15] = _("div", { class: "status-indicator" }, null, -1)),
+                    $[15] || ($[15] = _("div", { class: "status-indicator" }, null, -1)),
                     ft(" " + Ce(te.value ? "开" : "关"), 1)
                   ], 2),
                   _("button", {
-                    onClick: Ue,
+                    onClick: Ie,
                     disabled: v.value,
                     class: "control-btn"
                   }, Ce(te.value ? "关闭" : "开启"), 9, Eo)
@@ -842,18 +843,18 @@ const vt = (ke, te) => {
               ])
             ])
           ]),
-          _("div", jo, Ce(ne.value), 1)
+          _("div", jo, Ce(Q.value), 1)
         ])
       ]),
-      Ze(Ot, {
+      Je(Ot, {
         modelValue: g.value,
         showKeyboard: h.value,
-        "onUpdate:modelValue": $,
-        "onUpdate:showKeyboard": M[4] || (M[4] = (G) => h.value = G)
+        "onUpdate:modelValue": et,
+        "onUpdate:showKeyboard": $[4] || ($[4] = (G) => h.value = G)
       }, null, 8, ["modelValue", "showKeyboard"])
     ]));
   }
-}, To = /* @__PURE__ */ vt(Co, [["__scopeId", "data-v-90556016"]]), Lo = { class: "data-actions" }, Ao = {
+}, To = /* @__PURE__ */ vt(Co, [["__scopeId", "data-v-4f1228b5"]]), Lo = { class: "data-actions" }, Ao = {
   key: 0,
   class: "modal-overlay"
 }, No = { class: "modal-content settings-modal" }, Po = { class: "setting-group" }, $o = { class: "setting-item" }, Bo = { class: "toggle-switch" }, Io = {
@@ -867,8 +868,8 @@ const vt = (ke, te) => {
   class: "modal-overlay"
 }, Fo = { class: "modal-content" }, Mo = {
   __name: "DataExport",
-  setup(ke) {
-    const { sendToPyQt: te } = tt(), X = bt({
+  setup(xe) {
+    const { sendToPyQt: te } = Ze(), X = bt({
       isPyQtWebEngine: !1
     }), i = Y(!1), d = Y(!1), e = Y(""), n = Y(!1), o = Y(!1), r = Y(!1), t = Y(!1), a = Y(""), u = Y(!1), s = () => {
       t.value = !0, a.value = "", document.body.style.overflow = "hidden";
@@ -890,7 +891,7 @@ const vt = (ke, te) => {
     ht(() => {
       if (X.isPyQtWebEngine = typeof window.qt < "u" && window.qt.webChannelTransport, X.isPyQtWebEngine) {
         console.log("在PyQt QWebEngine环境中运行");
-        const { message: x } = tt();
+        const { message: x } = Ze();
         lt(x, (w) => {
           if (w && w.type === "update_debug_mode")
             try {
@@ -930,7 +931,7 @@ const vt = (ke, te) => {
     }, C = () => {
       d.value = !1;
     };
-    return (x, w) => (we(), xe("div", Lo, [
+    return (x, w) => (be(), we("div", Lo, [
       _("div", { class: "action-buttons" }, [
         _("div", { class: "button-group" }, [
           _("button", {
@@ -957,7 +958,7 @@ const vt = (ke, te) => {
           }, "更新")
         ])
       ]),
-      n.value ? (we(), xe("div", Ao, [
+      n.value ? (be(), we("div", Ao, [
         _("div", No, [
           _("div", Po, [
             w[7] || (w[7] = _("h2", null, "传感器调试模式【开发者测试用】", -1)),
@@ -987,7 +988,7 @@ const vt = (ke, te) => {
           ])
         ])
       ])) : ct("", !0),
-      i.value ? (we(), xe("div", Io, [
+      i.value ? (be(), we("div", Io, [
         _("div", { class: "modal-content" }, [
           w[8] || (w[8] = _("h2", null, "确定要清空所有数据吗？此操作不可撤销。", -1)),
           _("div", { class: "modal-buttons" }, [
@@ -1002,7 +1003,7 @@ const vt = (ke, te) => {
           ])
         ])
       ])) : ct("", !0),
-      t.value ? (we(), xe("div", Ro, [
+      t.value ? (be(), we("div", Ro, [
         _("div", Uo, [
           w[9] || (w[9] = _("h2", null, "更新版本", -1)),
           _("div", {
@@ -1030,13 +1031,13 @@ const vt = (ke, te) => {
           ])
         ])
       ])) : ct("", !0),
-      Ze(Ot, {
+      Je(Ot, {
         modelValue: a.value,
         "onUpdate:modelValue": w[3] || (w[3] = (y) => a.value = y),
         "show-keyboard": u.value,
         "onUpdate:showKeyboard": w[4] || (w[4] = (y) => u.value = y)
       }, null, 8, ["modelValue", "show-keyboard"]),
-      d.value ? (we(), xe("div", Do, [
+      d.value ? (be(), we("div", Do, [
         _("div", Fo, [
           _("h2", null, Ce(e.value), 1),
           _("div", { class: "modal-buttons" }, [
@@ -1051,13 +1052,13 @@ const vt = (ke, te) => {
   }
 }, Vo = /* @__PURE__ */ vt(Mo, [["__scopeId", "data-v-d87ac98e"]]);
 var Wo = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : typeof global < "u" ? global : typeof self < "u" ? self : {};
-function qo(ke) {
-  return ke && ke.__esModule && Object.prototype.hasOwnProperty.call(ke, "default") ? ke.default : ke;
+function qo(xe) {
+  return xe && xe.__esModule && Object.prototype.hasOwnProperty.call(xe, "default") ? xe.default : xe;
 }
 var Nt = { exports: {} };
-(function(ke, te) {
+(function(xe, te) {
   (function(X, i) {
-    ke.exports = i(Bt);
+    xe.exports = i(Bt);
   })(typeof self < "u" ? self : Wo, function(X) {
     return function(i) {
       var d = {};
@@ -1223,9 +1224,9 @@ var Nt = { exports: {} };
           if (j === 0) return [];
           if (x === void 0) return [y];
           if (!o(x)) return b.call(y, x, j);
-          for (var E, L, O, F = [], V = (x.ignoreCase ? "i" : "") + (x.multiline ? "m" : "") + (x.unicode ? "u" : "") + (x.sticky ? "y" : ""), J = 0, ae = new RegExp(x.source, V + "g"); (E = c.call(ae, y)) && (L = ae.lastIndex, !(L > J && (F.push(y.slice(J, E.index)), E.length > 1 && E.index < y.length && v.apply(F, E.slice(1)), O = E[0].length, J = L, F.length >= j))); )
-            ae.lastIndex === E.index && ae.lastIndex++;
-          return J === y.length ? !O && ae.test("") || F.push("") : F.push(y.slice(J)), F.length > j ? F.slice(0, j) : F;
+          for (var E, L, O, M = [], V = (x.ignoreCase ? "i" : "") + (x.multiline ? "m" : "") + (x.unicode ? "u" : "") + (x.sticky ? "y" : ""), J = 0, ie = new RegExp(x.source, V + "g"); (E = c.call(ie, y)) && (L = ie.lastIndex, !(L > J && (M.push(y.slice(J, E.index)), E.length > 1 && E.index < y.length && v.apply(M, E.slice(1)), O = E[0].length, J = L, M.length >= j))); )
+            ie.lastIndex === E.index && ie.lastIndex++;
+          return J === y.length ? !O && ie.test("") || M.push("") : M.push(y.slice(J)), M.length > j ? M.slice(0, j) : M;
         } : "0".split(void 0, 0).length ? function(x, w) {
           return x === void 0 && w === 0 ? [] : b.call(this, x, w);
         } : b, [function(x, w) {
@@ -1234,20 +1235,20 @@ var Nt = { exports: {} };
         }, function(x, w) {
           var y = S(C, x, this, w, C !== b);
           if (y.done) return y.value;
-          var j = r(x), E = String(this), L = a(j, RegExp), O = j.unicode, F = (j.ignoreCase ? "i" : "") + (j.multiline ? "m" : "") + (j.unicode ? "u" : "") + (m ? "y" : "g"), V = new L(m ? j : "^(?:" + j.source + ")", F), J = w === void 0 ? h : w >>> 0;
+          var j = r(x), E = String(this), L = a(j, RegExp), O = j.unicode, M = (j.ignoreCase ? "i" : "") + (j.multiline ? "m" : "") + (j.unicode ? "u" : "") + (m ? "y" : "g"), V = new L(m ? j : "^(?:" + j.source + ")", M), J = w === void 0 ? h : w >>> 0;
           if (J === 0) return [];
           if (E.length === 0) return l(V, E) === null ? [E] : [];
-          for (var ae = 0, H = 0, W = []; H < E.length; ) {
+          for (var ie = 0, H = 0, W = []; H < E.length; ) {
             V.lastIndex = m ? H : 0;
-            var U, T = l(V, m ? E : E.slice(H));
-            if (T === null || (U = p(s(V.lastIndex + (m ? 0 : H)), E.length)) === ae) H = u(E, H, O);
+            var F, T = l(V, m ? E : E.slice(H));
+            if (T === null || (F = p(s(V.lastIndex + (m ? 0 : H)), E.length)) === ie) H = u(E, H, O);
             else {
-              if (W.push(E.slice(ae, H)), W.length === J) return W;
+              if (W.push(E.slice(ie, H)), W.length === J) return W;
               for (var A = 1; A <= T.length - 1; A++) if (W.push(T[A]), W.length === J) return W;
-              H = ae = U;
+              H = ie = F;
             }
           }
-          return W.push(E.slice(ae)), W;
+          return W.push(E.slice(ie)), W;
         }];
       }, !m);
     }, "13d5": function(i, d, e) {
@@ -1354,145 +1355,145 @@ var Nt = { exports: {} };
         (function(o, r) {
           i.exports = r();
         })(0, function() {
-          function o($, B) {
-            return B = { exports: {} }, $(B, B.exports), B.exports;
+          function o(B, I) {
+            return I = { exports: {} }, B(I, I.exports), I.exports;
           }
-          var r = o(function($, B) {
-            (function(Z, D) {
-              $.exports = D();
+          var r = o(function(B, I) {
+            (function(ee, D) {
+              B.exports = D();
             })(0, function() {
-              function Z(ce) {
-                var Se = ce && typeof ce == "object";
-                return Se && Object.prototype.toString.call(ce) !== "[object RegExp]" && Object.prototype.toString.call(ce) !== "[object Date]";
+              function ee(ue) {
+                var Se = ue && typeof ue == "object";
+                return Se && Object.prototype.toString.call(ue) !== "[object RegExp]" && Object.prototype.toString.call(ue) !== "[object Date]";
               }
-              function D(ce) {
-                return Array.isArray(ce) ? [] : {};
+              function D(ue) {
+                return Array.isArray(ue) ? [] : {};
               }
-              function ee(ce, Se) {
+              function ne(ue, Se) {
                 var Ee = Se && Se.clone === !0;
-                return Ee && Z(ce) ? ge(D(ce), ce, Se) : ce;
+                return Ee && ee(ue) ? he(D(ue), ue, Se) : ue;
               }
-              function ie(ce, Se, Ee) {
-                var De = ce.slice();
-                return Se.forEach(function(re, M) {
-                  typeof De[M] > "u" ? De[M] = ee(re, Ee) : Z(re) ? De[M] = ge(ce[M], re, Ee) : ce.indexOf(re) === -1 && De.push(ee(re, Ee));
-                }), De;
+              function re(ue, Se, Ee) {
+                var se = ue.slice();
+                return Se.forEach(function($, G) {
+                  typeof se[G] > "u" ? se[G] = ne($, Ee) : ee($) ? se[G] = he(ue[G], $, Ee) : ue.indexOf($) === -1 && se.push(ne($, Ee));
+                }), se;
               }
-              function be(ce, Se, Ee) {
-                var De = {};
-                return Z(ce) && Object.keys(ce).forEach(function(re) {
-                  De[re] = ee(ce[re], Ee);
-                }), Object.keys(Se).forEach(function(re) {
-                  Z(Se[re]) && ce[re] ? De[re] = ge(ce[re], Se[re], Ee) : De[re] = ee(Se[re], Ee);
-                }), De;
+              function ke(ue, Se, Ee) {
+                var se = {};
+                return ee(ue) && Object.keys(ue).forEach(function($) {
+                  se[$] = ne(ue[$], Ee);
+                }), Object.keys(Se).forEach(function($) {
+                  ee(Se[$]) && ue[$] ? se[$] = he(ue[$], Se[$], Ee) : se[$] = ne(Se[$], Ee);
+                }), se;
               }
-              function ge(ce, Se, Ee) {
-                var De = Array.isArray(Se), re = Ee || { arrayMerge: ie }, M = re.arrayMerge || ie;
-                return De ? Array.isArray(ce) ? M(ce, Se, Ee) : ee(Se, Ee) : be(ce, Se, Ee);
+              function he(ue, Se, Ee) {
+                var se = Array.isArray(Se), $ = Ee || { arrayMerge: re }, G = $.arrayMerge || re;
+                return se ? Array.isArray(ue) ? G(ue, Se, Ee) : ne(Se, Ee) : ke(ue, Se, Ee);
               }
-              return ge.all = function(ce, Se) {
-                if (!Array.isArray(ce) || ce.length < 2) throw new Error("first argument should be an array with at least two elements");
-                return ce.reduce(function(Ee, De) {
-                  return ge(Ee, De, Se);
+              return he.all = function(ue, Se) {
+                if (!Array.isArray(ue) || ue.length < 2) throw new Error("first argument should be an array with at least two elements");
+                return ue.reduce(function(Ee, se) {
+                  return he(Ee, se, Se);
                 });
-              }, ge;
+              }, he;
             });
           });
-          function t($) {
-            return $ = $ || /* @__PURE__ */ Object.create(null), { on: function(B, Z) {
-              ($[B] || ($[B] = [])).push(Z);
-            }, off: function(B, Z) {
-              $[B] && $[B].splice($[B].indexOf(Z) >>> 0, 1);
-            }, emit: function(B, Z) {
-              ($[B] || []).map(function(D) {
-                D(Z);
-              }), ($["*"] || []).map(function(D) {
-                D(B, Z);
+          function t(B) {
+            return B = B || /* @__PURE__ */ Object.create(null), { on: function(I, ee) {
+              (B[I] || (B[I] = [])).push(ee);
+            }, off: function(I, ee) {
+              B[I] && B[I].splice(B[I].indexOf(ee) >>> 0, 1);
+            }, emit: function(I, ee) {
+              (B[I] || []).map(function(D) {
+                D(ee);
+              }), (B["*"] || []).map(function(D) {
+                D(I, ee);
               });
             } };
           }
-          var a = o(function($, B) {
-            var Z = { svg: { name: "xmlns", uri: "http://www.w3.org/2000/svg" }, xlink: { name: "xmlns:xlink", uri: "http://www.w3.org/1999/xlink" } };
-            B.default = Z, $.exports = B.default;
-          }), u = function($) {
-            return Object.keys($).map(function(B) {
-              var Z = $[B].toString().replace(/"/g, "&quot;");
-              return B + '="' + Z + '"';
+          var a = o(function(B, I) {
+            var ee = { svg: { name: "xmlns", uri: "http://www.w3.org/2000/svg" }, xlink: { name: "xmlns:xlink", uri: "http://www.w3.org/1999/xlink" } };
+            I.default = ee, B.exports = I.default;
+          }), u = function(B) {
+            return Object.keys(B).map(function(I) {
+              var ee = B[I].toString().replace(/"/g, "&quot;");
+              return I + '="' + ee + '"';
             }).join(" ");
           }, s = a.svg, l = a.xlink, c = {};
           c[s.name] = s.uri, c[l.name] = l.uri;
-          var f, v = function($, B) {
-            $ === void 0 && ($ = "");
-            var Z = r(c, B || {}), D = u(Z);
-            return "<svg " + D + ">" + $ + "</svg>";
-          }, p = a.svg, h = a.xlink, m = { attrs: (f = { style: ["position: absolute", "width: 0", "height: 0"].join("; "), "aria-hidden": "true" }, f[p.name] = p.uri, f[h.name] = h.uri, f) }, g = function($) {
-            this.config = r(m, $ || {}), this.symbols = [];
+          var f, v = function(B, I) {
+            B === void 0 && (B = "");
+            var ee = r(c, I || {}), D = u(ee);
+            return "<svg " + D + ">" + B + "</svg>";
+          }, p = a.svg, h = a.xlink, m = { attrs: (f = { style: ["position: absolute", "width: 0", "height: 0"].join("; "), "aria-hidden": "true" }, f[p.name] = p.uri, f[h.name] = h.uri, f) }, g = function(B) {
+            this.config = r(m, B || {}), this.symbols = [];
           };
-          g.prototype.add = function($) {
-            var B = this, Z = B.symbols, D = this.find($.id);
-            return D ? (Z[Z.indexOf(D)] = $, !1) : (Z.push($), !0);
-          }, g.prototype.remove = function($) {
-            var B = this, Z = B.symbols, D = this.find($);
-            return !!D && (Z.splice(Z.indexOf(D), 1), D.destroy(), !0);
-          }, g.prototype.find = function($) {
-            return this.symbols.filter(function(B) {
-              return B.id === $;
+          g.prototype.add = function(B) {
+            var I = this, ee = I.symbols, D = this.find(B.id);
+            return D ? (ee[ee.indexOf(D)] = B, !1) : (ee.push(B), !0);
+          }, g.prototype.remove = function(B) {
+            var I = this, ee = I.symbols, D = this.find(B);
+            return !!D && (ee.splice(ee.indexOf(D), 1), D.destroy(), !0);
+          }, g.prototype.find = function(B) {
+            return this.symbols.filter(function(I) {
+              return I.id === B;
             })[0] || null;
-          }, g.prototype.has = function($) {
-            return this.find($) !== null;
+          }, g.prototype.has = function(B) {
+            return this.find(B) !== null;
           }, g.prototype.stringify = function() {
-            var $ = this.config, B = $.attrs, Z = this.symbols.map(function(D) {
+            var B = this.config, I = B.attrs, ee = this.symbols.map(function(D) {
               return D.stringify();
             }).join("");
-            return v(Z, B);
+            return v(ee, I);
           }, g.prototype.toString = function() {
             return this.stringify();
           }, g.prototype.destroy = function() {
-            this.symbols.forEach(function($) {
-              return $.destroy();
+            this.symbols.forEach(function(B) {
+              return B.destroy();
             });
           };
-          var b = function($) {
-            var B = $.id, Z = $.viewBox, D = $.content;
-            this.id = B, this.viewBox = Z, this.content = D;
+          var b = function(B) {
+            var I = B.id, ee = B.viewBox, D = B.content;
+            this.id = I, this.viewBox = ee, this.content = D;
           };
           b.prototype.stringify = function() {
             return this.content;
           }, b.prototype.toString = function() {
             return this.stringify();
           }, b.prototype.destroy = function() {
-            var $ = this;
-            ["id", "viewBox", "content"].forEach(function(B) {
-              return delete $[B];
+            var B = this;
+            ["id", "viewBox", "content"].forEach(function(I) {
+              return delete B[I];
             });
           };
-          var S = function($) {
-            var B = !!document.importNode, Z = new DOMParser().parseFromString($, "image/svg+xml").documentElement;
-            return B ? document.importNode(Z, !0) : Z;
-          }, C = function($) {
-            function B() {
-              $.apply(this, arguments);
+          var S = function(B) {
+            var I = !!document.importNode, ee = new DOMParser().parseFromString(B, "image/svg+xml").documentElement;
+            return I ? document.importNode(ee, !0) : ee;
+          }, C = function(B) {
+            function I() {
+              B.apply(this, arguments);
             }
-            $ && (B.__proto__ = $), B.prototype = Object.create($ && $.prototype), B.prototype.constructor = B;
-            var Z = { isMounted: {} };
-            return Z.isMounted.get = function() {
+            B && (I.__proto__ = B), I.prototype = Object.create(B && B.prototype), I.prototype.constructor = I;
+            var ee = { isMounted: {} };
+            return ee.isMounted.get = function() {
               return !!this.node;
-            }, B.createFromExistingNode = function(D) {
-              return new B({ id: D.getAttribute("id"), viewBox: D.getAttribute("viewBox"), content: D.outerHTML });
-            }, B.prototype.destroy = function() {
-              this.isMounted && this.unmount(), $.prototype.destroy.call(this);
-            }, B.prototype.mount = function(D) {
+            }, I.createFromExistingNode = function(D) {
+              return new I({ id: D.getAttribute("id"), viewBox: D.getAttribute("viewBox"), content: D.outerHTML });
+            }, I.prototype.destroy = function() {
+              this.isMounted && this.unmount(), B.prototype.destroy.call(this);
+            }, I.prototype.mount = function(D) {
               if (this.isMounted) return this.node;
-              var ee = typeof D == "string" ? document.querySelector(D) : D, ie = this.render();
-              return this.node = ie, ee.appendChild(ie), ie;
-            }, B.prototype.render = function() {
+              var ne = typeof D == "string" ? document.querySelector(D) : D, re = this.render();
+              return this.node = re, ne.appendChild(re), re;
+            }, I.prototype.render = function() {
               var D = this.stringify();
               return S(v(D)).childNodes[0];
-            }, B.prototype.unmount = function() {
+            }, I.prototype.unmount = function() {
               this.node.parentNode.removeChild(this.node);
-            }, Object.defineProperties(B.prototype, Z), B;
-          }(b), x = { autoConfigure: !0, mountTo: "body", syncUrlsWithBaseTag: !1, listenLocationChangeEvent: !0, locationChangeEvent: "locationChange", locationChangeAngularEmitter: !1, usagesToUpdate: "use[*|href]", moveGradientsOutsideSymbol: !1 }, w = function($) {
-            return Array.prototype.slice.call($, 0);
+            }, Object.defineProperties(I.prototype, ee), I;
+          }(b), x = { autoConfigure: !0, mountTo: "body", syncUrlsWithBaseTag: !1, listenLocationChangeEvent: !0, locationChangeEvent: "locationChange", locationChangeAngularEmitter: !1, usagesToUpdate: "use[*|href]", moveGradientsOutsideSymbol: !1 }, w = function(B) {
+            return Array.prototype.slice.call(B, 0);
           }, y = { isChrome: function() {
             return /chrome/i.test(navigator.userAgent);
           }, isFirefox: function() {
@@ -1501,150 +1502,150 @@ var Nt = { exports: {} };
             return /msie/i.test(navigator.userAgent) || /trident/i.test(navigator.userAgent);
           }, isEdge: function() {
             return /edge/i.test(navigator.userAgent);
-          } }, j = function($, B) {
-            var Z = document.createEvent("CustomEvent");
-            Z.initCustomEvent($, !1, !1, B), window.dispatchEvent(Z);
-          }, E = function($) {
-            var B = [];
-            return w($.querySelectorAll("style")).forEach(function(Z) {
-              Z.textContent += "", B.push(Z);
-            }), B;
-          }, L = function($) {
-            return ($ || window.location.href).split("#")[0];
-          }, O = function($) {
-            angular.module("ng").run(["$rootScope", function(B) {
-              B.$on("$locationChangeSuccess", function(Z, D, ee) {
-                j($, { oldUrl: ee, newUrl: D });
+          } }, j = function(B, I) {
+            var ee = document.createEvent("CustomEvent");
+            ee.initCustomEvent(B, !1, !1, I), window.dispatchEvent(ee);
+          }, E = function(B) {
+            var I = [];
+            return w(B.querySelectorAll("style")).forEach(function(ee) {
+              ee.textContent += "", I.push(ee);
+            }), I;
+          }, L = function(B) {
+            return (B || window.location.href).split("#")[0];
+          }, O = function(B) {
+            angular.module("ng").run(["$rootScope", function(I) {
+              I.$on("$locationChangeSuccess", function(ee, D, ne) {
+                j(B, { oldUrl: ne, newUrl: D });
               });
             }]);
-          }, F = "linearGradient, radialGradient, pattern, mask, clipPath", V = function($, B) {
-            return B === void 0 && (B = F), w($.querySelectorAll("symbol")).forEach(function(Z) {
-              w(Z.querySelectorAll(B)).forEach(function(D) {
-                Z.parentNode.insertBefore(D, Z);
+          }, M = "linearGradient, radialGradient, pattern, mask, clipPath", V = function(B, I) {
+            return I === void 0 && (I = M), w(B.querySelectorAll("symbol")).forEach(function(ee) {
+              w(ee.querySelectorAll(I)).forEach(function(D) {
+                ee.parentNode.insertBefore(D, ee);
               });
-            }), $;
+            }), B;
           };
-          function J($, B) {
-            var Z = w($).reduce(function(D, ee) {
-              if (!ee.attributes) return D;
-              var ie = w(ee.attributes), be = B ? ie.filter(B) : ie;
-              return D.concat(be);
+          function J(B, I) {
+            var ee = w(B).reduce(function(D, ne) {
+              if (!ne.attributes) return D;
+              var re = w(ne.attributes), ke = I ? re.filter(I) : re;
+              return D.concat(ke);
             }, []);
-            return Z;
+            return ee;
           }
-          var ae = a.xlink.uri, H = "xlink:href", W = /[{}|\\\^\[\]`"<>]/g;
-          function U($) {
-            return $.replace(W, function(B) {
-              return "%" + B[0].charCodeAt(0).toString(16).toUpperCase();
+          var ie = a.xlink.uri, H = "xlink:href", W = /[{}|\\\^\[\]`"<>]/g;
+          function F(B) {
+            return B.replace(W, function(I) {
+              return "%" + I[0].charCodeAt(0).toString(16).toUpperCase();
             });
           }
-          function T($) {
-            return $.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          function T(B) {
+            return B.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
           }
-          function A($, B, Z) {
-            return w($).forEach(function(D) {
-              var ee = D.getAttribute(H);
-              if (ee && ee.indexOf(B) === 0) {
-                var ie = ee.replace(B, Z);
-                D.setAttributeNS(ae, H, ie);
+          function A(B, I, ee) {
+            return w(B).forEach(function(D) {
+              var ne = D.getAttribute(H);
+              if (ne && ne.indexOf(I) === 0) {
+                var re = ne.replace(I, ee);
+                D.setAttributeNS(ie, H, re);
               }
-            }), $;
+            }), B;
           }
-          var z, ne = ["clipPath", "colorProfile", "src", "cursor", "fill", "filter", "marker", "markerStart", "markerMid", "markerEnd", "mask", "stroke", "style"], R = ne.map(function($) {
-            return "[" + $ + "]";
-          }).join(","), _e = function($, B, Z, D) {
-            var ee = U(Z), ie = U(D), be = $.querySelectorAll(R), ge = J(be, function(ce) {
-              var Se = ce.localName, Ee = ce.value;
-              return ne.indexOf(Se) !== -1 && Ee.indexOf("url(" + ee) !== -1;
+          var Q, Z = ["clipPath", "colorProfile", "src", "cursor", "fill", "filter", "marker", "markerStart", "markerMid", "markerEnd", "mask", "stroke", "style"], U = Z.map(function(B) {
+            return "[" + B + "]";
+          }).join(","), _e = function(B, I, ee, D) {
+            var ne = F(ee), re = F(D), ke = B.querySelectorAll(U), he = J(ke, function(ue) {
+              var Se = ue.localName, Ee = ue.value;
+              return Z.indexOf(Se) !== -1 && Ee.indexOf("url(" + ne) !== -1;
             });
-            ge.forEach(function(ce) {
-              return ce.value = ce.value.replace(new RegExp(T(ee), "g"), ie);
-            }), A(B, ee, ie);
-          }, ve = { MOUNT: "mount", SYMBOL_MOUNT: "symbol_mount" }, Ne = function($) {
-            function B(D) {
-              var ee = this;
-              D === void 0 && (D = {}), $.call(this, r(x, D));
-              var ie = t();
-              this._emitter = ie, this.node = null;
-              var be = this, ge = be.config;
-              if (ge.autoConfigure && this._autoConfigure(D), ge.syncUrlsWithBaseTag) {
-                var ce = document.getElementsByTagName("base")[0].getAttribute("href");
-                ie.on(ve.MOUNT, function() {
-                  return ee.updateUrls("#", ce);
+            he.forEach(function(ue) {
+              return ue.value = ue.value.replace(new RegExp(T(ne), "g"), re);
+            }), A(I, ne, re);
+          }, ve = { MOUNT: "mount", SYMBOL_MOUNT: "symbol_mount" }, Ae = function(B) {
+            function I(D) {
+              var ne = this;
+              D === void 0 && (D = {}), B.call(this, r(x, D));
+              var re = t();
+              this._emitter = re, this.node = null;
+              var ke = this, he = ke.config;
+              if (he.autoConfigure && this._autoConfigure(D), he.syncUrlsWithBaseTag) {
+                var ue = document.getElementsByTagName("base")[0].getAttribute("href");
+                re.on(ve.MOUNT, function() {
+                  return ne.updateUrls("#", ue);
                 });
               }
               var Se = this._handleLocationChange.bind(this);
-              this._handleLocationChange = Se, ge.listenLocationChangeEvent && window.addEventListener(ge.locationChangeEvent, Se), ge.locationChangeAngularEmitter && O(ge.locationChangeEvent), ie.on(ve.MOUNT, function(Ee) {
-                ge.moveGradientsOutsideSymbol && V(Ee);
-              }), ie.on(ve.SYMBOL_MOUNT, function(Ee) {
-                ge.moveGradientsOutsideSymbol && V(Ee.parentNode), (y.isIE() || y.isEdge()) && E(Ee);
+              this._handleLocationChange = Se, he.listenLocationChangeEvent && window.addEventListener(he.locationChangeEvent, Se), he.locationChangeAngularEmitter && O(he.locationChangeEvent), re.on(ve.MOUNT, function(Ee) {
+                he.moveGradientsOutsideSymbol && V(Ee);
+              }), re.on(ve.SYMBOL_MOUNT, function(Ee) {
+                he.moveGradientsOutsideSymbol && V(Ee.parentNode), (y.isIE() || y.isEdge()) && E(Ee);
               });
             }
-            $ && (B.__proto__ = $), B.prototype = Object.create($ && $.prototype), B.prototype.constructor = B;
-            var Z = { isMounted: {} };
-            return Z.isMounted.get = function() {
+            B && (I.__proto__ = B), I.prototype = Object.create(B && B.prototype), I.prototype.constructor = I;
+            var ee = { isMounted: {} };
+            return ee.isMounted.get = function() {
               return !!this.node;
-            }, B.prototype._autoConfigure = function(D) {
-              var ee = this, ie = ee.config;
-              typeof D.syncUrlsWithBaseTag > "u" && (ie.syncUrlsWithBaseTag = typeof document.getElementsByTagName("base")[0] < "u"), typeof D.locationChangeAngularEmitter > "u" && (ie.locationChangeAngularEmitter = typeof window.angular < "u"), typeof D.moveGradientsOutsideSymbol > "u" && (ie.moveGradientsOutsideSymbol = y.isFirefox());
-            }, B.prototype._handleLocationChange = function(D) {
-              var ee = D.detail, ie = ee.oldUrl, be = ee.newUrl;
-              this.updateUrls(ie, be);
-            }, B.prototype.add = function(D) {
-              var ee = this, ie = $.prototype.add.call(this, D);
-              return this.isMounted && ie && (D.mount(ee.node), this._emitter.emit(ve.SYMBOL_MOUNT, D.node)), ie;
-            }, B.prototype.attach = function(D) {
-              var ee = this, ie = this;
-              if (ie.isMounted) return ie.node;
-              var be = typeof D == "string" ? document.querySelector(D) : D;
-              return ie.node = be, this.symbols.forEach(function(ge) {
-                ge.mount(ie.node), ee._emitter.emit(ve.SYMBOL_MOUNT, ge.node);
-              }), w(be.querySelectorAll("symbol")).forEach(function(ge) {
-                var ce = C.createFromExistingNode(ge);
-                ce.node = ge, ie.add(ce);
-              }), this._emitter.emit(ve.MOUNT, be), be;
-            }, B.prototype.destroy = function() {
-              var D = this, ee = D.config, ie = D.symbols, be = D._emitter;
-              ie.forEach(function(ge) {
-                return ge.destroy();
-              }), be.off("*"), window.removeEventListener(ee.locationChangeEvent, this._handleLocationChange), this.isMounted && this.unmount();
-            }, B.prototype.mount = function(D, ee) {
-              D === void 0 && (D = this.config.mountTo), ee === void 0 && (ee = !1);
-              var ie = this;
-              if (ie.isMounted) return ie.node;
-              var be = typeof D == "string" ? document.querySelector(D) : D, ge = ie.render();
-              return this.node = ge, ee && be.childNodes[0] ? be.insertBefore(ge, be.childNodes[0]) : be.appendChild(ge), this._emitter.emit(ve.MOUNT, ge), ge;
-            }, B.prototype.render = function() {
+            }, I.prototype._autoConfigure = function(D) {
+              var ne = this, re = ne.config;
+              typeof D.syncUrlsWithBaseTag > "u" && (re.syncUrlsWithBaseTag = typeof document.getElementsByTagName("base")[0] < "u"), typeof D.locationChangeAngularEmitter > "u" && (re.locationChangeAngularEmitter = typeof window.angular < "u"), typeof D.moveGradientsOutsideSymbol > "u" && (re.moveGradientsOutsideSymbol = y.isFirefox());
+            }, I.prototype._handleLocationChange = function(D) {
+              var ne = D.detail, re = ne.oldUrl, ke = ne.newUrl;
+              this.updateUrls(re, ke);
+            }, I.prototype.add = function(D) {
+              var ne = this, re = B.prototype.add.call(this, D);
+              return this.isMounted && re && (D.mount(ne.node), this._emitter.emit(ve.SYMBOL_MOUNT, D.node)), re;
+            }, I.prototype.attach = function(D) {
+              var ne = this, re = this;
+              if (re.isMounted) return re.node;
+              var ke = typeof D == "string" ? document.querySelector(D) : D;
+              return re.node = ke, this.symbols.forEach(function(he) {
+                he.mount(re.node), ne._emitter.emit(ve.SYMBOL_MOUNT, he.node);
+              }), w(ke.querySelectorAll("symbol")).forEach(function(he) {
+                var ue = C.createFromExistingNode(he);
+                ue.node = he, re.add(ue);
+              }), this._emitter.emit(ve.MOUNT, ke), ke;
+            }, I.prototype.destroy = function() {
+              var D = this, ne = D.config, re = D.symbols, ke = D._emitter;
+              re.forEach(function(he) {
+                return he.destroy();
+              }), ke.off("*"), window.removeEventListener(ne.locationChangeEvent, this._handleLocationChange), this.isMounted && this.unmount();
+            }, I.prototype.mount = function(D, ne) {
+              D === void 0 && (D = this.config.mountTo), ne === void 0 && (ne = !1);
+              var re = this;
+              if (re.isMounted) return re.node;
+              var ke = typeof D == "string" ? document.querySelector(D) : D, he = re.render();
+              return this.node = he, ne && ke.childNodes[0] ? ke.insertBefore(he, ke.childNodes[0]) : ke.appendChild(he), this._emitter.emit(ve.MOUNT, he), he;
+            }, I.prototype.render = function() {
               return S(this.stringify());
-            }, B.prototype.unmount = function() {
+            }, I.prototype.unmount = function() {
               this.node.parentNode.removeChild(this.node);
-            }, B.prototype.updateUrls = function(D, ee) {
+            }, I.prototype.updateUrls = function(D, ne) {
               if (!this.isMounted) return !1;
-              var ie = document.querySelectorAll(this.config.usagesToUpdate);
-              return _e(this.node, ie, L(D) + "#", L(ee) + "#"), !0;
-            }, Object.defineProperties(B.prototype, Z), B;
-          }(g), $e = o(function($) {
+              var re = document.querySelectorAll(this.config.usagesToUpdate);
+              return _e(this.node, re, L(D) + "#", L(ne) + "#"), !0;
+            }, Object.defineProperties(I.prototype, ee), I;
+          }(g), Ie = o(function(B) {
             /*!
               * domready (c) Dustin Diaz 2014 - License MIT
               */
-            (function(B, Z) {
-              $.exports = Z();
+            (function(I, ee) {
+              B.exports = ee();
             })(0, function() {
-              var B, Z = [], D = document, ee = D.documentElement.doScroll, ie = "DOMContentLoaded", be = (ee ? /^loaded|^c/ : /^loaded|^i|^c/).test(D.readyState);
-              return be || D.addEventListener(ie, B = function() {
-                for (D.removeEventListener(ie, B), be = 1; B = Z.shift(); ) B();
-              }), function(ge) {
-                be ? setTimeout(ge, 0) : Z.push(ge);
+              var I, ee = [], D = document, ne = D.documentElement.doScroll, re = "DOMContentLoaded", ke = (ne ? /^loaded|^c/ : /^loaded|^i|^c/).test(D.readyState);
+              return ke || D.addEventListener(re, I = function() {
+                for (D.removeEventListener(re, I), ke = 1; I = ee.shift(); ) I();
+              }), function(he) {
+                ke ? setTimeout(he, 0) : ee.push(he);
               };
             });
-          }), Ue = "__SVG_SPRITE_NODE__", Ae = "__SVG_SPRITE__", Pe = !!window[Ae];
-          Pe ? z = window[Ae] : (z = new Ne({ attrs: { id: Ue, "aria-hidden": "true" } }), window[Ae] = z);
-          var He = function() {
-            var $ = document.getElementById(Ue);
-            $ ? z.attach($) : z.mount(document.body, !0);
+          }), Ue = "__SVG_SPRITE_NODE__", Ne = "__SVG_SPRITE__", Pe = !!window[Ne];
+          Pe ? Q = window[Ne] : (Q = new Ae({ attrs: { id: Ue, "aria-hidden": "true" } }), window[Ne] = Q);
+          var Ke = function() {
+            var B = document.getElementById(Ue);
+            B ? Q.attach(B) : Q.mount(document.body, !0);
           };
-          document.body ? He() : $e(He);
-          var et = z;
+          document.body ? Ke() : Ie(Ke);
+          var et = Q;
           return et;
         });
       }).call(this, e("c8ba"));
@@ -1770,7 +1771,7 @@ var Nt = { exports: {} };
         t.postMessage(L + "", v.protocol + "//" + v.host);
       };
       p && h || (p = function(L) {
-        for (var O = [], F = 1; arguments.length > F; ) O.push(arguments[F++]);
+        for (var O = [], M = 1; arguments.length > M; ) O.push(arguments[M++]);
         return C[++S] = function() {
           (typeof L == "function" ? L : Function(L)).apply(void 0, O);
         }, n(S), S;
@@ -1996,18 +1997,18 @@ var Nt = { exports: {} };
       }));
       if (j) {
         for (var E = function(V, J) {
-          var ae, H = this instanceof E, W = s(V), U = J === void 0;
-          if (!H && W && V.constructor === E && U) return V;
-          w ? W && !U && (V = V.source) : V instanceof E && (U && (J = l.call(V)), V = V.source), y && (ae = !!J && J.indexOf("y") > -1, ae && (J = J.replace(/y/g, "")));
+          var ie, H = this instanceof E, W = s(V), F = J === void 0;
+          if (!H && W && V.constructor === E && F) return V;
+          w ? W && !F && (V = V.source) : V instanceof E && (F && (J = l.call(V)), V = V.source), y && (ie = !!J && J.indexOf("y") > -1, ie && (J = J.replace(/y/g, "")));
           var T = t(w ? new b(V, J) : b(V, J), H ? this : S, E);
-          return y && ae && p(T, { sticky: ae }), T;
+          return y && ie && p(T, { sticky: ie }), T;
         }, L = function(V) {
           V in E || a(E, V, { configurable: !0, get: function() {
             return b[V];
           }, set: function(J) {
             b[V] = J;
           } });
-        }, O = u(b), F = 0; O.length > F; ) L(O[F++]);
+        }, O = u(b), M = 0; O.length > M; ) L(O[M++]);
         S.constructor = E, E.prototype = S, f(o, "RegExp", E);
       }
       h("RegExp");
@@ -2108,24 +2109,24 @@ var Nt = { exports: {} };
           L || (w = String(w));
           var O = j.global;
           if (O) {
-            var F = j.unicode;
+            var M = j.unicode;
             j.lastIndex = 0;
           }
           for (var V = []; ; ) {
             var J = l(j, E);
             if (J === null || (V.push(J), !O)) break;
-            var ae = String(J[0]);
-            ae === "" && (j.lastIndex = u(E, r(j.lastIndex), F));
+            var ie = String(J[0]);
+            ie === "" && (j.lastIndex = u(E, r(j.lastIndex), M));
           }
-          for (var H = "", W = 0, U = 0; U < V.length; U++) {
-            J = V[U];
-            for (var T = String(J[0]), A = c(f(t(J.index), E.length), 0), z = [], ne = 1; ne < J.length; ne++) z.push(v(J[ne]));
-            var R = J.groups;
+          for (var H = "", W = 0, F = 0; F < V.length; F++) {
+            J = V[F];
+            for (var T = String(J[0]), A = c(f(t(J.index), E.length), 0), Q = [], Z = 1; Z < J.length; Z++) Q.push(v(J[Z]));
+            var U = J.groups;
             if (L) {
-              var _e = [T].concat(z, A, E);
-              R !== void 0 && _e.push(R);
+              var _e = [T].concat(Q, A, E);
+              U !== void 0 && _e.push(U);
               var ve = String(w.apply(void 0, _e));
-            } else ve = s(T, E, A, z, R, w);
+            } else ve = s(T, E, A, Q, U, w);
             A >= W && (H += E.slice(W, A) + ve, W = A + T.length);
           }
           return H + E.slice(W);
@@ -2232,11 +2233,11 @@ var Nt = { exports: {} };
         var C = m(function(j, E) {
           a(j, C, g), p(j, { type: g, index: o(null), first: void 0, last: void 0, size: 0 }), c || (j.size = 0), E != null && u(E, j[S], { that: j, AS_ENTRIES: b });
         }), x = h(g), w = function(j, E, L) {
-          var O, F, V = x(j), J = y(j, E);
-          return J ? J.value = L : (V.last = J = { index: F = f(E, !0), key: E, value: L, previous: O = V.last, next: void 0, removed: !1 }, V.first || (V.first = J), O && (O.next = J), c ? V.size++ : j.size++, F !== "F" && (V.index[F] = J)), j;
+          var O, M, V = x(j), J = y(j, E);
+          return J ? J.value = L : (V.last = J = { index: M = f(E, !0), key: E, value: L, previous: O = V.last, next: void 0, removed: !1 }, V.first || (V.first = J), O && (O.next = J), c ? V.size++ : j.size++, M !== "F" && (V.index[M] = J)), j;
         }, y = function(j, E) {
-          var L, O = x(j), F = f(E);
-          if (F !== "F") return O.index[F];
+          var L, O = x(j), M = f(E);
+          if (M !== "F") return O.index[M];
           for (L = O.first; L; L = L.next) if (L.key == E) return L;
         };
         return r(C.prototype, { clear: function() {
@@ -2245,8 +2246,8 @@ var Nt = { exports: {} };
         }, delete: function(j) {
           var E = this, L = x(E), O = y(E, j);
           if (O) {
-            var F = O.next, V = O.previous;
-            delete L.index[O.index], O.removed = !0, V && (V.next = F), F && (F.previous = V), L.first == O && (L.first = F), L.last == O && (L.last = V), c ? L.size-- : E.size--;
+            var M = O.next, V = O.previous;
+            delete L.index[O.index], O.removed = !0, V && (V.next = M), M && (M.previous = V), L.first == O && (L.first = M), L.last == O && (L.last = V), c ? L.size-- : E.size--;
           }
           return !!O;
         }, forEach: function(j) {
@@ -2323,35 +2324,35 @@ var Nt = { exports: {} };
       i.exports = function(h, m, g) {
         var b = h.indexOf("Map") !== -1, S = h.indexOf("Weak") !== -1, C = b ? "set" : "add", x = o[h], w = x && x.prototype, y = x, j = {}, E = function(H) {
           var W = w[H];
-          t(w, H, H == "add" ? function(U) {
-            return W.call(this, U === 0 ? 0 : U), this;
-          } : H == "delete" ? function(U) {
-            return !(S && !l(U)) && W.call(this, U === 0 ? 0 : U);
-          } : H == "get" ? function(U) {
-            return S && !l(U) ? void 0 : W.call(this, U === 0 ? 0 : U);
-          } : H == "has" ? function(U) {
-            return !(S && !l(U)) && W.call(this, U === 0 ? 0 : U);
-          } : function(U, T) {
-            return W.call(this, U === 0 ? 0 : U, T), this;
+          t(w, H, H == "add" ? function(F) {
+            return W.call(this, F === 0 ? 0 : F), this;
+          } : H == "delete" ? function(F) {
+            return !(S && !l(F)) && W.call(this, F === 0 ? 0 : F);
+          } : H == "get" ? function(F) {
+            return S && !l(F) ? void 0 : W.call(this, F === 0 ? 0 : F);
+          } : H == "has" ? function(F) {
+            return !(S && !l(F)) && W.call(this, F === 0 ? 0 : F);
+          } : function(F, T) {
+            return W.call(this, F === 0 ? 0 : F, T), this;
           });
         }, L = r(h, typeof x != "function" || !(S || w.forEach && !c(function() {
           new x().entries().next();
         })));
         if (L) y = g.getConstructor(m, h, b, C), a.REQUIRED = !0;
         else if (r(h, !0)) {
-          var O = new y(), F = O[C](S ? {} : -0, 1) != O, V = c(function() {
+          var O = new y(), M = O[C](S ? {} : -0, 1) != O, V = c(function() {
             O.has(1);
           }), J = f(function(H) {
             new x(H);
-          }), ae = !S && c(function() {
+          }), ie = !S && c(function() {
             for (var H = new x(), W = 5; W--; ) H[C](W, W);
             return !H.has(-0);
           });
           J || (y = m(function(H, W) {
             s(H, y, h);
-            var U = p(new x(), H, y);
-            return W != null && u(W, U[C], { that: U, AS_ENTRIES: b }), U;
-          }), y.prototype = w, w.constructor = y), (V || ae) && (E("delete"), E("has"), b && E("get")), (ae || F) && E(C), S && w.clear && delete w.clear;
+            var F = p(new x(), H, y);
+            return W != null && u(W, F[C], { that: F, AS_ENTRIES: b }), F;
+          }), y.prototype = w, w.constructor = y), (V || ie) && (E("delete"), E("has"), b && E("get")), (ie || M) && E(C), S && w.clear && delete w.clear;
         }
         return j[h] = y, n({ global: !0, forced: y != x }, j), v(y, h), S || g.setStrong(y, h, b), y;
       };
@@ -2450,30 +2451,30 @@ var Nt = { exports: {} };
       };
       i.exports = function(x, w, y, j, E, L, O) {
         o(y, w, j);
-        var F, V, J, ae = function(ne) {
-          if (ne === E && A) return A;
-          if (!h && ne in U) return U[ne];
-          switch (ne) {
+        var M, V, J, ie = function(Z) {
+          if (Z === E && A) return A;
+          if (!h && Z in F) return F[Z];
+          switch (Z) {
             case g:
               return function() {
-                return new y(this, ne);
+                return new y(this, Z);
               };
             case b:
               return function() {
-                return new y(this, ne);
+                return new y(this, Z);
               };
             case S:
               return function() {
-                return new y(this, ne);
+                return new y(this, Z);
               };
           }
           return function() {
             return new y(this);
           };
-        }, H = w + " Iterator", W = !1, U = x.prototype, T = U[m] || U["@@iterator"] || E && U[E], A = !h && T || ae(E), z = w == "Array" && U.entries || T;
-        if (z && (F = r(z.call(new x())), p !== Object.prototype && F.next && (c || r(F) === p || (t ? t(F, p) : typeof F[m] != "function" && u(F, m, C)), a(F, H, !0, !0), c && (f[H] = C))), E == b && T && T.name !== b && (W = !0, A = function() {
+        }, H = w + " Iterator", W = !1, F = x.prototype, T = F[m] || F["@@iterator"] || E && F[E], A = !h && T || ie(E), Q = w == "Array" && F.entries || T;
+        if (Q && (M = r(Q.call(new x())), p !== Object.prototype && M.next && (c || r(M) === p || (t ? t(M, p) : typeof M[m] != "function" && u(M, m, C)), a(M, H, !0, !0), c && (f[H] = C))), E == b && T && T.name !== b && (W = !0, A = function() {
           return T.call(this);
-        }), c && !O || U[m] === A || u(U, m, A), f[w] = A, E) if (V = { values: ae(b), keys: L ? A : ae(g), entries: ae(S) }, O) for (J in V) (h || W || !(J in U)) && s(U, J, V[J]);
+        }), c && !O || F[m] === A || u(F, m, A), f[w] = A, E) if (V = { values: ie(b), keys: L ? A : ie(g), entries: ie(S) }, O) for (J in V) (h || W || !(J in F)) && s(F, J, V[J]);
         else n({ target: w, proto: !0, forced: h || W }, V);
         return V;
       };
@@ -2629,10 +2630,10 @@ var Nt = { exports: {} };
             return { __await: T };
           }, L(O.prototype), O.prototype[u] = function() {
             return this;
-          }, c.AsyncIterator = O, c.async = function(T, A, z, ne) {
-            var R = new O(x(T, A, z, ne));
-            return c.isGeneratorFunction(A) ? R : R.next().then(function(_e) {
-              return _e.done ? _e.value : R.next();
+          }, c.AsyncIterator = O, c.async = function(T, A, Q, Z) {
+            var U = new O(x(T, A, Q, Z));
+            return c.isGeneratorFunction(A) ? U : U.next().then(function(_e) {
+              return _e.done ? _e.value : U.next();
             });
           }, L(C), C[s] = "Generator", C[a] = function() {
             return this;
@@ -2640,16 +2641,16 @@ var Nt = { exports: {} };
             return "[object Generator]";
           }, c.keys = function(T) {
             var A = [];
-            for (var z in T) A.push(z);
-            return A.reverse(), function ne() {
+            for (var Q in T) A.push(Q);
+            return A.reverse(), function Z() {
               for (; A.length; ) {
-                var R = A.pop();
-                if (R in T) return ne.value = R, ne.done = !1, ne;
+                var U = A.pop();
+                if (U in T) return Z.value = U, Z.done = !1, Z;
               }
-              return ne.done = !0, ne;
+              return Z.done = !0, Z;
             };
           }, c.values = W, H.prototype = { constructor: H, reset: function(T) {
-            if (this.prev = 0, this.next = 0, this.sent = this._sent = n, this.done = !1, this.delegate = null, this.method = "next", this.arg = n, this.tryEntries.forEach(ae), !T) for (var A in this) A.charAt(0) === "t" && r.call(this, A) && !isNaN(+A.slice(1)) && (this[A] = n);
+            if (this.prev = 0, this.next = 0, this.sent = this._sent = n, this.done = !1, this.delegate = null, this.method = "next", this.arg = n, this.tryEntries.forEach(ie), !T) for (var A in this) A.charAt(0) === "t" && r.call(this, A) && !isNaN(+A.slice(1)) && (this[A] = n);
           }, stop: function() {
             this.done = !0;
             var T = this.tryEntries[0], A = T.completion;
@@ -2658,70 +2659,70 @@ var Nt = { exports: {} };
           }, dispatchException: function(T) {
             if (this.done) throw T;
             var A = this;
-            function z($e, Ue) {
-              return _e.type = "throw", _e.arg = T, A.next = $e, Ue && (A.method = "next", A.arg = n), !!Ue;
+            function Q(Ie, Ue) {
+              return _e.type = "throw", _e.arg = T, A.next = Ie, Ue && (A.method = "next", A.arg = n), !!Ue;
             }
-            for (var ne = this.tryEntries.length - 1; ne >= 0; --ne) {
-              var R = this.tryEntries[ne], _e = R.completion;
-              if (R.tryLoc === "root") return z("end");
-              if (R.tryLoc <= this.prev) {
-                var ve = r.call(R, "catchLoc"), Ne = r.call(R, "finallyLoc");
-                if (ve && Ne) {
-                  if (this.prev < R.catchLoc) return z(R.catchLoc, !0);
-                  if (this.prev < R.finallyLoc) return z(R.finallyLoc);
+            for (var Z = this.tryEntries.length - 1; Z >= 0; --Z) {
+              var U = this.tryEntries[Z], _e = U.completion;
+              if (U.tryLoc === "root") return Q("end");
+              if (U.tryLoc <= this.prev) {
+                var ve = r.call(U, "catchLoc"), Ae = r.call(U, "finallyLoc");
+                if (ve && Ae) {
+                  if (this.prev < U.catchLoc) return Q(U.catchLoc, !0);
+                  if (this.prev < U.finallyLoc) return Q(U.finallyLoc);
                 } else if (ve) {
-                  if (this.prev < R.catchLoc) return z(R.catchLoc, !0);
+                  if (this.prev < U.catchLoc) return Q(U.catchLoc, !0);
                 } else {
-                  if (!Ne) throw new Error("try statement without catch or finally");
-                  if (this.prev < R.finallyLoc) return z(R.finallyLoc);
+                  if (!Ae) throw new Error("try statement without catch or finally");
+                  if (this.prev < U.finallyLoc) return Q(U.finallyLoc);
                 }
               }
             }
           }, abrupt: function(T, A) {
-            for (var z = this.tryEntries.length - 1; z >= 0; --z) {
-              var ne = this.tryEntries[z];
-              if (ne.tryLoc <= this.prev && r.call(ne, "finallyLoc") && this.prev < ne.finallyLoc) {
-                var R = ne;
+            for (var Q = this.tryEntries.length - 1; Q >= 0; --Q) {
+              var Z = this.tryEntries[Q];
+              if (Z.tryLoc <= this.prev && r.call(Z, "finallyLoc") && this.prev < Z.finallyLoc) {
+                var U = Z;
                 break;
               }
             }
-            R && (T === "break" || T === "continue") && R.tryLoc <= A && A <= R.finallyLoc && (R = null);
-            var _e = R ? R.completion : {};
-            return _e.type = T, _e.arg = A, R ? (this.method = "next", this.next = R.finallyLoc, m) : this.complete(_e);
+            U && (T === "break" || T === "continue") && U.tryLoc <= A && A <= U.finallyLoc && (U = null);
+            var _e = U ? U.completion : {};
+            return _e.type = T, _e.arg = A, U ? (this.method = "next", this.next = U.finallyLoc, m) : this.complete(_e);
           }, complete: function(T, A) {
             if (T.type === "throw") throw T.arg;
             return T.type === "break" || T.type === "continue" ? this.next = T.arg : T.type === "return" ? (this.rval = this.arg = T.arg, this.method = "return", this.next = "end") : T.type === "normal" && A && (this.next = A), m;
           }, finish: function(T) {
             for (var A = this.tryEntries.length - 1; A >= 0; --A) {
-              var z = this.tryEntries[A];
-              if (z.finallyLoc === T) return this.complete(z.completion, z.afterLoc), ae(z), m;
+              var Q = this.tryEntries[A];
+              if (Q.finallyLoc === T) return this.complete(Q.completion, Q.afterLoc), ie(Q), m;
             }
           }, catch: function(T) {
             for (var A = this.tryEntries.length - 1; A >= 0; --A) {
-              var z = this.tryEntries[A];
-              if (z.tryLoc === T) {
-                var ne = z.completion;
-                if (ne.type === "throw") {
-                  var R = ne.arg;
-                  ae(z);
+              var Q = this.tryEntries[A];
+              if (Q.tryLoc === T) {
+                var Z = Q.completion;
+                if (Z.type === "throw") {
+                  var U = Z.arg;
+                  ie(Q);
                 }
-                return R;
+                return U;
               }
             }
             throw new Error("illegal catch attempt");
-          }, delegateYield: function(T, A, z) {
-            return this.delegate = { iterator: W(T), resultName: A, nextLoc: z }, this.method === "next" && (this.arg = n), m;
+          }, delegateYield: function(T, A, Q) {
+            return this.delegate = { iterator: W(T), resultName: A, nextLoc: Q }, this.method === "next" && (this.arg = n), m;
           } };
         }
-        function x(T, A, z, ne) {
-          var R = A && A.prototype instanceof y ? A : y, _e = Object.create(R.prototype), ve = new H(ne || []);
-          return _e._invoke = F(T, z, ve), _e;
+        function x(T, A, Q, Z) {
+          var U = A && A.prototype instanceof y ? A : y, _e = Object.create(U.prototype), ve = new H(Z || []);
+          return _e._invoke = M(T, Q, ve), _e;
         }
-        function w(T, A, z) {
+        function w(T, A, Q) {
           try {
-            return { type: "normal", arg: T.call(A, z) };
-          } catch (ne) {
-            return { type: "throw", arg: ne };
+            return { type: "normal", arg: T.call(A, Q) };
+          } catch (Z) {
+            return { type: "throw", arg: Z };
           }
         }
         function y() {
@@ -2732,88 +2733,88 @@ var Nt = { exports: {} };
         }
         function L(T) {
           ["next", "throw", "return"].forEach(function(A) {
-            T[A] = function(z) {
-              return this._invoke(A, z);
+            T[A] = function(Q) {
+              return this._invoke(A, Q);
             };
           });
         }
         function O(T) {
-          function A(R, _e, ve, Ne) {
-            var $e = w(T[R], T, _e);
-            if ($e.type !== "throw") {
-              var Ue = $e.arg, Ae = Ue.value;
-              return Ae && typeof Ae == "object" && r.call(Ae, "__await") ? Promise.resolve(Ae.__await).then(function(Pe) {
-                A("next", Pe, ve, Ne);
+          function A(U, _e, ve, Ae) {
+            var Ie = w(T[U], T, _e);
+            if (Ie.type !== "throw") {
+              var Ue = Ie.arg, Ne = Ue.value;
+              return Ne && typeof Ne == "object" && r.call(Ne, "__await") ? Promise.resolve(Ne.__await).then(function(Pe) {
+                A("next", Pe, ve, Ae);
               }, function(Pe) {
-                A("throw", Pe, ve, Ne);
-              }) : Promise.resolve(Ae).then(function(Pe) {
+                A("throw", Pe, ve, Ae);
+              }) : Promise.resolve(Ne).then(function(Pe) {
                 Ue.value = Pe, ve(Ue);
-              }, Ne);
+              }, Ae);
             }
-            Ne($e.arg);
+            Ae(Ie.arg);
           }
-          var z;
-          function ne(R, _e) {
+          var Q;
+          function Z(U, _e) {
             function ve() {
-              return new Promise(function(Ne, $e) {
-                A(R, _e, Ne, $e);
+              return new Promise(function(Ae, Ie) {
+                A(U, _e, Ae, Ie);
               });
             }
-            return z = z ? z.then(ve, ve) : ve();
+            return Q = Q ? Q.then(ve, ve) : ve();
           }
-          this._invoke = ne;
+          this._invoke = Z;
         }
-        function F(T, A, z) {
-          var ne = f;
-          return function(R, _e) {
-            if (ne === p) throw new Error("Generator is already running");
-            if (ne === h) {
-              if (R === "throw") throw _e;
-              return U();
+        function M(T, A, Q) {
+          var Z = f;
+          return function(U, _e) {
+            if (Z === p) throw new Error("Generator is already running");
+            if (Z === h) {
+              if (U === "throw") throw _e;
+              return F();
             }
-            for (z.method = R, z.arg = _e; ; ) {
-              var ve = z.delegate;
+            for (Q.method = U, Q.arg = _e; ; ) {
+              var ve = Q.delegate;
               if (ve) {
-                var Ne = V(ve, z);
-                if (Ne) {
-                  if (Ne === m) continue;
-                  return Ne;
+                var Ae = V(ve, Q);
+                if (Ae) {
+                  if (Ae === m) continue;
+                  return Ae;
                 }
               }
-              if (z.method === "next") z.sent = z._sent = z.arg;
-              else if (z.method === "throw") {
-                if (ne === f) throw ne = h, z.arg;
-                z.dispatchException(z.arg);
-              } else z.method === "return" && z.abrupt("return", z.arg);
-              ne = p;
-              var $e = w(T, A, z);
-              if ($e.type === "normal") {
-                if (ne = z.done ? h : v, $e.arg === m) continue;
-                return { value: $e.arg, done: z.done };
+              if (Q.method === "next") Q.sent = Q._sent = Q.arg;
+              else if (Q.method === "throw") {
+                if (Z === f) throw Z = h, Q.arg;
+                Q.dispatchException(Q.arg);
+              } else Q.method === "return" && Q.abrupt("return", Q.arg);
+              Z = p;
+              var Ie = w(T, A, Q);
+              if (Ie.type === "normal") {
+                if (Z = Q.done ? h : v, Ie.arg === m) continue;
+                return { value: Ie.arg, done: Q.done };
               }
-              $e.type === "throw" && (ne = h, z.method = "throw", z.arg = $e.arg);
+              Ie.type === "throw" && (Z = h, Q.method = "throw", Q.arg = Ie.arg);
             }
           };
         }
         function V(T, A) {
-          var z = T.iterator[A.method];
-          if (z === n) {
+          var Q = T.iterator[A.method];
+          if (Q === n) {
             if (A.delegate = null, A.method === "throw") {
               if (T.iterator.return && (A.method = "return", A.arg = n, V(T, A), A.method === "throw")) return m;
               A.method = "throw", A.arg = new TypeError("The iterator does not provide a 'throw' method");
             }
             return m;
           }
-          var ne = w(z, T.iterator, A.arg);
-          if (ne.type === "throw") return A.method = "throw", A.arg = ne.arg, A.delegate = null, m;
-          var R = ne.arg;
-          return R ? R.done ? (A[T.resultName] = R.value, A.next = T.nextLoc, A.method !== "return" && (A.method = "next", A.arg = n), A.delegate = null, m) : R : (A.method = "throw", A.arg = new TypeError("iterator result is not an object"), A.delegate = null, m);
+          var Z = w(Q, T.iterator, A.arg);
+          if (Z.type === "throw") return A.method = "throw", A.arg = Z.arg, A.delegate = null, m;
+          var U = Z.arg;
+          return U ? U.done ? (A[T.resultName] = U.value, A.next = T.nextLoc, A.method !== "return" && (A.method = "next", A.arg = n), A.delegate = null, m) : U : (A.method = "throw", A.arg = new TypeError("iterator result is not an object"), A.delegate = null, m);
         }
         function J(T) {
           var A = { tryLoc: T[0] };
           1 in T && (A.catchLoc = T[1]), 2 in T && (A.finallyLoc = T[2], A.afterLoc = T[3]), this.tryEntries.push(A);
         }
-        function ae(T) {
+        function ie(T) {
           var A = T.completion || {};
           A.type = "normal", delete A.arg, T.completion = A;
         }
@@ -2826,16 +2827,16 @@ var Nt = { exports: {} };
             if (A) return A.call(T);
             if (typeof T.next == "function") return T;
             if (!isNaN(T.length)) {
-              var z = -1, ne = function R() {
-                for (; ++z < T.length; ) if (r.call(T, z)) return R.value = T[z], R.done = !1, R;
-                return R.value = n, R.done = !0, R;
+              var Q = -1, Z = function U() {
+                for (; ++Q < T.length; ) if (r.call(T, Q)) return U.value = T[Q], U.done = !1, U;
+                return U.value = n, U.done = !0, U;
               };
-              return ne.next = ne;
+              return Z.next = Z;
             }
           }
-          return { next: U };
+          return { next: F };
         }
-        function U() {
+        function F() {
           return { value: n, done: !0 };
         }
       })(/* @__PURE__ */ function() {
@@ -2851,15 +2852,15 @@ var Nt = { exports: {} };
         return w !== void 0 ? !!w : r(x);
       }, C = !g || !b;
       n({ target: "Array", proto: !0, forced: C }, { concat: function(x) {
-        var w, y, j, E, L, O = a(this), F = l(O, 0), V = 0;
+        var w, y, j, E, L, O = a(this), M = l(O, 0), V = 0;
         for (w = -1, j = arguments.length; w < j; w++) if (L = w === -1 ? O : arguments[w], S(L)) {
           if (E = u(L.length), V + E > h) throw TypeError(m);
-          for (y = 0; y < E; y++, V++) y in L && s(F, V, L[y]);
+          for (y = 0; y < E; y++, V++) y in L && s(M, V, L[y]);
         } else {
           if (V >= h) throw TypeError(m);
-          s(F, V++, L);
+          s(M, V++, L);
         }
-        return F.length = V, F;
+        return M.length = V, M;
       } });
     }, "9aaf": function(i, d, e) {
       e("70d3");
@@ -2919,97 +2920,97 @@ var Nt = { exports: {} };
       var n = e("342f");
       i.exports = /web0s(?!.*chrome)/i.test(n);
     }, a4d3: function(i, d, e) {
-      var n = e("23e7"), o = e("da84"), r = e("d066"), t = e("c430"), a = e("83ab"), u = e("4930"), s = e("fdbf"), l = e("d039"), c = e("5135"), f = e("e8b5"), v = e("861d"), p = e("825a"), h = e("7b0b"), m = e("fc6a"), g = e("c04e"), b = e("5c6c"), S = e("7c73"), C = e("df75"), x = e("241c"), w = e("057f"), y = e("7418"), j = e("06cf"), E = e("9bf2"), L = e("d1e7"), O = e("9112"), F = e("6eeb"), V = e("5692"), J = e("f772"), ae = e("d012"), H = e("90e3"), W = e("b622"), U = e("e538"), T = e("746f"), A = e("d44e"), z = e("69f3"), ne = e("b727").forEach, R = J("hidden"), _e = "Symbol", ve = "prototype", Ne = W("toPrimitive"), $e = z.set, Ue = z.getterFor(_e), Ae = Object[ve], Pe = o.Symbol, He = r("JSON", "stringify"), et = j.f, $ = E.f, B = w.f, Z = L.f, D = V("symbols"), ee = V("op-symbols"), ie = V("string-to-symbol-registry"), be = V("symbol-to-string-registry"), ge = V("wks"), ce = o.QObject, Se = !ce || !ce[ve] || !ce[ve].findChild, Ee = a && l(function() {
-        return S($({}, "a", { get: function() {
-          return $(this, "a", { value: 7 }).a;
+      var n = e("23e7"), o = e("da84"), r = e("d066"), t = e("c430"), a = e("83ab"), u = e("4930"), s = e("fdbf"), l = e("d039"), c = e("5135"), f = e("e8b5"), v = e("861d"), p = e("825a"), h = e("7b0b"), m = e("fc6a"), g = e("c04e"), b = e("5c6c"), S = e("7c73"), C = e("df75"), x = e("241c"), w = e("057f"), y = e("7418"), j = e("06cf"), E = e("9bf2"), L = e("d1e7"), O = e("9112"), M = e("6eeb"), V = e("5692"), J = e("f772"), ie = e("d012"), H = e("90e3"), W = e("b622"), F = e("e538"), T = e("746f"), A = e("d44e"), Q = e("69f3"), Z = e("b727").forEach, U = J("hidden"), _e = "Symbol", ve = "prototype", Ae = W("toPrimitive"), Ie = Q.set, Ue = Q.getterFor(_e), Ne = Object[ve], Pe = o.Symbol, Ke = r("JSON", "stringify"), et = j.f, B = E.f, I = w.f, ee = L.f, D = V("symbols"), ne = V("op-symbols"), re = V("string-to-symbol-registry"), ke = V("symbol-to-string-registry"), he = V("wks"), ue = o.QObject, Se = !ue || !ue[ve] || !ue[ve].findChild, Ee = a && l(function() {
+        return S(B({}, "a", { get: function() {
+          return B(this, "a", { value: 7 }).a;
         } })).a != 7;
       }) ? function(q, oe, le) {
-        var me = et(Ae, oe);
-        me && delete Ae[oe], $(q, oe, le), me && q !== Ae && $(Ae, oe, me);
-      } : $, De = function(q, oe) {
+        var ge = et(Ne, oe);
+        ge && delete Ne[oe], B(q, oe, le), ge && q !== Ne && B(Ne, oe, ge);
+      } : B, se = function(q, oe) {
         var le = D[q] = S(Pe[ve]);
-        return $e(le, { type: _e, tag: q, description: oe }), a || (le.description = oe), le;
-      }, re = s ? function(q) {
+        return Ie(le, { type: _e, tag: q, description: oe }), a || (le.description = oe), le;
+      }, $ = s ? function(q) {
         return typeof q == "symbol";
       } : function(q) {
         return Object(q) instanceof Pe;
-      }, M = function(q, oe, le) {
-        q === Ae && M(ee, oe, le), p(q);
-        var me = g(oe, !0);
-        return p(le), c(D, me) ? (le.enumerable ? (c(q, R) && q[R][me] && (q[R][me] = !1), le = S(le, { enumerable: b(0, !1) })) : (c(q, R) || $(q, R, b(1, {})), q[R][me] = !0), Ee(q, me, le)) : $(q, me, le);
-      }, G = function(q, oe) {
+      }, G = function(q, oe, le) {
+        q === Ne && G(ne, oe, le), p(q);
+        var ge = g(oe, !0);
+        return p(le), c(D, ge) ? (le.enumerable ? (c(q, U) && q[U][ge] && (q[U][ge] = !1), le = S(le, { enumerable: b(0, !1) })) : (c(q, U) || B(q, U, b(1, {})), q[U][ge] = !0), Ee(q, ge, le)) : B(q, ge, le);
+      }, ze = function(q, oe) {
         p(q);
-        var le = m(oe), me = C(le).concat(fe(le));
-        return ne(me, function(We) {
-          a && !dt.call(le, We) || M(q, We, le[We]);
+        var le = m(oe), ge = C(le).concat(fe(le));
+        return Z(ge, function(Ve) {
+          a && !dt.call(le, Ve) || G(q, Ve, le[Ve]);
         }), q;
-      }, Ke = function(q, oe) {
-        return oe === void 0 ? S(q) : G(S(q), oe);
+      }, it = function(q, oe) {
+        return oe === void 0 ? S(q) : ze(S(q), oe);
       }, dt = function(q) {
-        var oe = g(q, !0), le = Z.call(this, oe);
-        return !(this === Ae && c(D, oe) && !c(ee, oe)) && (!(le || !c(this, oe) || !c(D, oe) || c(this, R) && this[R][oe]) || le);
-      }, K = function(q, oe) {
-        var le = m(q), me = g(oe, !0);
-        if (le !== Ae || !c(D, me) || c(ee, me)) {
-          var We = et(le, me);
-          return !We || !c(D, me) || c(le, R) && le[R][me] || (We.enumerable = !0), We;
+        var oe = g(q, !0), le = ee.call(this, oe);
+        return !(this === Ne && c(D, oe) && !c(ne, oe)) && (!(le || !c(this, oe) || !c(D, oe) || c(this, U) && this[U][oe]) || le);
+      }, z = function(q, oe) {
+        var le = m(q), ge = g(oe, !0);
+        if (le !== Ne || !c(D, ge) || c(ne, ge)) {
+          var Ve = et(le, ge);
+          return !Ve || !c(D, ge) || c(le, U) && le[U][ge] || (Ve.enumerable = !0), Ve;
         }
-      }, se = function(q) {
-        var oe = B(m(q)), le = [];
-        return ne(oe, function(me) {
-          c(D, me) || c(ae, me) || le.push(me);
+      }, ae = function(q) {
+        var oe = I(m(q)), le = [];
+        return Z(oe, function(ge) {
+          c(D, ge) || c(ie, ge) || le.push(ge);
         }), le;
       }, fe = function(q) {
-        var oe = q === Ae, le = B(oe ? ee : m(q)), me = [];
-        return ne(le, function(We) {
-          !c(D, We) || oe && !c(Ae, We) || me.push(D[We]);
-        }), me;
+        var oe = q === Ne, le = I(oe ? ne : m(q)), ge = [];
+        return Z(le, function(Ve) {
+          !c(D, Ve) || oe && !c(Ne, Ve) || ge.push(D[Ve]);
+        }), ge;
       };
       if (u || (Pe = function() {
         if (this instanceof Pe) throw TypeError("Symbol is not a constructor");
-        var q = arguments.length && arguments[0] !== void 0 ? String(arguments[0]) : void 0, oe = H(q), le = function(me) {
-          this === Ae && le.call(ee, me), c(this, R) && c(this[R], oe) && (this[R][oe] = !1), Ee(this, oe, b(1, me));
+        var q = arguments.length && arguments[0] !== void 0 ? String(arguments[0]) : void 0, oe = H(q), le = function(ge) {
+          this === Ne && le.call(ne, ge), c(this, U) && c(this[U], oe) && (this[U][oe] = !1), Ee(this, oe, b(1, ge));
         };
-        return a && Se && Ee(Ae, oe, { configurable: !0, set: le }), De(oe, q);
-      }, F(Pe[ve], "toString", function() {
+        return a && Se && Ee(Ne, oe, { configurable: !0, set: le }), se(oe, q);
+      }, M(Pe[ve], "toString", function() {
         return Ue(this).tag;
-      }), F(Pe, "withoutSetter", function(q) {
-        return De(H(q), q);
-      }), L.f = dt, E.f = M, j.f = K, x.f = w.f = se, y.f = fe, U.f = function(q) {
-        return De(W(q), q);
-      }, a && ($(Pe[ve], "description", { configurable: !0, get: function() {
+      }), M(Pe, "withoutSetter", function(q) {
+        return se(H(q), q);
+      }), L.f = dt, E.f = G, j.f = z, x.f = w.f = ae, y.f = fe, F.f = function(q) {
+        return se(W(q), q);
+      }, a && (B(Pe[ve], "description", { configurable: !0, get: function() {
         return Ue(this).description;
-      } }), t || F(Ae, "propertyIsEnumerable", dt, { unsafe: !0 }))), n({ global: !0, wrap: !0, forced: !u, sham: !u }, { Symbol: Pe }), ne(C(ge), function(q) {
+      } }), t || M(Ne, "propertyIsEnumerable", dt, { unsafe: !0 }))), n({ global: !0, wrap: !0, forced: !u, sham: !u }, { Symbol: Pe }), Z(C(he), function(q) {
         T(q);
       }), n({ target: _e, stat: !0, forced: !u }, { for: function(q) {
         var oe = String(q);
-        if (c(ie, oe)) return ie[oe];
+        if (c(re, oe)) return re[oe];
         var le = Pe(oe);
-        return ie[oe] = le, be[le] = oe, le;
+        return re[oe] = le, ke[le] = oe, le;
       }, keyFor: function(q) {
-        if (!re(q)) throw TypeError(q + " is not a symbol");
-        if (c(be, q)) return be[q];
+        if (!$(q)) throw TypeError(q + " is not a symbol");
+        if (c(ke, q)) return ke[q];
       }, useSetter: function() {
         Se = !0;
       }, useSimple: function() {
         Se = !1;
-      } }), n({ target: "Object", stat: !0, forced: !u, sham: !a }, { create: Ke, defineProperty: M, defineProperties: G, getOwnPropertyDescriptor: K }), n({ target: "Object", stat: !0, forced: !u }, { getOwnPropertyNames: se, getOwnPropertySymbols: fe }), n({ target: "Object", stat: !0, forced: l(function() {
+      } }), n({ target: "Object", stat: !0, forced: !u, sham: !a }, { create: it, defineProperty: G, defineProperties: ze, getOwnPropertyDescriptor: z }), n({ target: "Object", stat: !0, forced: !u }, { getOwnPropertyNames: ae, getOwnPropertySymbols: fe }), n({ target: "Object", stat: !0, forced: l(function() {
         y.f(1);
       }) }, { getOwnPropertySymbols: function(q) {
         return y.f(h(q));
-      } }), He) {
-        var he = !u || l(function() {
+      } }), Ke) {
+        var me = !u || l(function() {
           var q = Pe();
-          return He([q]) != "[null]" || He({ a: q }) != "{}" || He(Object(q)) != "{}";
+          return Ke([q]) != "[null]" || Ke({ a: q }) != "{}" || Ke(Object(q)) != "{}";
         });
-        n({ target: "JSON", stat: !0, forced: he }, { stringify: function(q, oe, le) {
-          for (var me, We = [q], Ye = 1; arguments.length > Ye; ) We.push(arguments[Ye++]);
-          if (me = oe, (v(oe) || q !== void 0) && !re(q)) return f(oe) || (oe = function(at, je) {
-            if (typeof me == "function" && (je = me.call(this, at, je)), !re(je)) return je;
-          }), We[1] = oe, He.apply(null, We);
+        n({ target: "JSON", stat: !0, forced: me }, { stringify: function(q, oe, le) {
+          for (var ge, Ve = [q], He = 1; arguments.length > He; ) Ve.push(arguments[He++]);
+          if (ge = oe, (v(oe) || q !== void 0) && !$(q)) return f(oe) || (oe = function(at, je) {
+            if (typeof ge == "function" && (je = ge.call(this, at, je)), !$(je)) return je;
+          }), Ve[1] = oe, Ke.apply(null, Ve);
         } });
       }
-      Pe[ve][Ne] || O(Pe[ve], Ne, Pe[ve].valueOf), A(Pe, _e), ae[R] = !0;
+      Pe[ve][Ae] || O(Pe[ve], Ae, Pe[ve].valueOf), A(Pe, _e), ie[U] = !0;
     }, a630: function(i, d, e) {
       var n = e("23e7"), o = e("4df4"), r = e("1c7e"), t = !r(function(a) {
         Array.from(a);
@@ -3191,14 +3192,14 @@ var Nt = { exports: {} };
       var n = e("0366"), o = e("44ad"), r = e("7b0b"), t = e("50c4"), a = e("65f0"), u = [].push, s = function(l) {
         var c = l == 1, f = l == 2, v = l == 3, p = l == 4, h = l == 6, m = l == 7, g = l == 5 || h;
         return function(b, S, C, x) {
-          for (var w, y, j = r(b), E = o(j), L = n(S, C, 3), O = t(E.length), F = 0, V = x || a, J = c ? V(b, O) : f || m ? V(b, 0) : void 0; O > F; F++) if ((g || F in E) && (w = E[F], y = L(w, F, j), l)) if (c) J[F] = y;
+          for (var w, y, j = r(b), E = o(j), L = n(S, C, 3), O = t(E.length), M = 0, V = x || a, J = c ? V(b, O) : f || m ? V(b, 0) : void 0; O > M; M++) if ((g || M in E) && (w = E[M], y = L(w, M, j), l)) if (c) J[M] = y;
           else if (y) switch (l) {
             case 3:
               return !0;
             case 5:
               return w;
             case 6:
-              return F;
+              return M;
             case 2:
               u.call(J, w);
           }
@@ -3267,8 +3268,8 @@ var Nt = { exports: {} };
         return typeof FormData < "u" && O instanceof FormData;
       }
       function l(O) {
-        var F;
-        return F = typeof ArrayBuffer < "u" && ArrayBuffer.isView ? ArrayBuffer.isView(O) : O && O.buffer && O.buffer instanceof ArrayBuffer, F;
+        var M;
+        return M = typeof ArrayBuffer < "u" && ArrayBuffer.isView ? ArrayBuffer.isView(O) : O && O.buffer && O.buffer instanceof ArrayBuffer, M;
       }
       function c(O) {
         return typeof O == "string";
@@ -3281,8 +3282,8 @@ var Nt = { exports: {} };
       }
       function p(O) {
         if (o.call(O) !== "[object Object]") return !1;
-        var F = Object.getPrototypeOf(O);
-        return F === null || F === Object.prototype;
+        var M = Object.getPrototypeOf(O);
+        return M === null || M === Object.prototype;
       }
       function h(O) {
         return o.call(O) === "[object Date]";
@@ -3308,21 +3309,21 @@ var Nt = { exports: {} };
       function w() {
         return (typeof navigator > "u" || navigator.product !== "ReactNative" && navigator.product !== "NativeScript" && navigator.product !== "NS") && typeof window < "u" && typeof document < "u";
       }
-      function y(O, F) {
-        if (O !== null && typeof O < "u") if (typeof O != "object" && (O = [O]), r(O)) for (var V = 0, J = O.length; V < J; V++) F.call(null, O[V], V, O);
-        else for (var ae in O) Object.prototype.hasOwnProperty.call(O, ae) && F.call(null, O[ae], ae, O);
+      function y(O, M) {
+        if (O !== null && typeof O < "u") if (typeof O != "object" && (O = [O]), r(O)) for (var V = 0, J = O.length; V < J; V++) M.call(null, O[V], V, O);
+        else for (var ie in O) Object.prototype.hasOwnProperty.call(O, ie) && M.call(null, O[ie], ie, O);
       }
       function j() {
         var O = {};
-        function F(ae, H) {
-          p(O[H]) && p(ae) ? O[H] = j(O[H], ae) : p(ae) ? O[H] = j({}, ae) : r(ae) ? O[H] = ae.slice() : O[H] = ae;
+        function M(ie, H) {
+          p(O[H]) && p(ie) ? O[H] = j(O[H], ie) : p(ie) ? O[H] = j({}, ie) : r(ie) ? O[H] = ie.slice() : O[H] = ie;
         }
-        for (var V = 0, J = arguments.length; V < J; V++) y(arguments[V], F);
+        for (var V = 0, J = arguments.length; V < J; V++) y(arguments[V], M);
         return O;
       }
-      function E(O, F, V) {
-        return y(F, function(J, ae) {
-          O[ae] = V && typeof J == "function" ? n(J, V) : J;
+      function E(O, M, V) {
+        return y(M, function(J, ie) {
+          O[ie] = V && typeof J == "function" ? n(J, V) : J;
         }), O;
       }
       function L(O) {
@@ -3527,8 +3528,8 @@ var Nt = { exports: {} };
           }, L[b](""), !E;
         });
         if (!S || !C || p === "replace" && (!s || !l || f) || p === "split" && !v) {
-          var x = /./[b], w = m(b, ""[p], function(E, L, O, F, V) {
-            return L.exec === t ? S && !V ? { done: !0, value: x.call(L, O, F) } : { done: !0, value: E.call(O, L, F) } : { done: !1 };
+          var x = /./[b], w = m(b, ""[p], function(E, L, O, M, V) {
+            return L.exec === t ? S && !V ? { done: !0, value: x.call(L, O, M) } : { done: !0, value: E.call(O, L, M) } : { done: !1 };
           }, { REPLACE_KEEPS_$0: l, REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE: f }), y = w[0], j = w[1];
           n(String.prototype, p, y), n(RegExp.prototype, b, h == 2 ? function(E, L) {
             return j.call(E, this, L);
@@ -3723,8 +3724,8 @@ var Nt = { exports: {} };
               }
               function C(y, j, E) {
                 var L = y.slice();
-                return j.forEach(function(O, F) {
-                  typeof L[F] > "u" ? L[F] = S(O, E) : g(O) ? L[F] = w(y[F], O, E) : y.indexOf(O) === -1 && L.push(S(O, E));
+                return j.forEach(function(O, M) {
+                  typeof L[M] > "u" ? L[M] = S(O, E) : g(O) ? L[M] = w(y[M], O, E) : y.indexOf(O) === -1 && L.push(S(O, E));
                 }), L;
               }
               function x(y, j, E) {
@@ -3736,8 +3737,8 @@ var Nt = { exports: {} };
                 }), L;
               }
               function w(y, j, E) {
-                var L = Array.isArray(j), O = E || { arrayMerge: C }, F = O.arrayMerge || C;
-                return L ? Array.isArray(y) ? F(y, j, E) : S(j, E) : x(y, j, E);
+                var L = Array.isArray(j), O = E || { arrayMerge: C }, M = O.arrayMerge || C;
+                return L ? Array.isArray(y) ? M(y, j, E) : S(j, E) : x(y, j, E);
               }
               return w.all = function(y, j) {
                 if (!Array.isArray(y) || y.length < 2) throw new Error("first argument should be an array with at least two elements");
@@ -3855,132 +3856,132 @@ var Nt = { exports: {} };
         return o ? n.replace(/\/+$/, "") + "/" + o.replace(/^\/+/, "") : n;
       };
     }, e6cf: function(i, d, e) {
-      var n, o, r, t, a = e("23e7"), u = e("c430"), s = e("da84"), l = e("d066"), c = e("fea9"), f = e("6eeb"), v = e("e2cc"), p = e("d44e"), h = e("2626"), m = e("861d"), g = e("1c0b"), b = e("19aa"), S = e("8925"), C = e("2266"), x = e("1c7e"), w = e("4840"), y = e("2cf4").set, j = e("b575"), E = e("cdf9"), L = e("44de"), O = e("f069"), F = e("e667"), V = e("69f3"), J = e("94ca"), ae = e("b622"), H = e("605d"), W = e("2d00"), U = ae("species"), T = "Promise", A = V.get, z = V.set, ne = V.getterFor(T), R = c, _e = s.TypeError, ve = s.document, Ne = s.process, $e = l("fetch"), Ue = O.f, Ae = Ue, Pe = !!(ve && ve.createEvent && s.dispatchEvent), He = typeof PromiseRejectionEvent == "function", et = "unhandledrejection", $ = "rejectionhandled", B = 0, Z = 1, D = 2, ee = 1, ie = 2, be = J(T, function() {
-        var K = S(R) !== String(R);
-        if (!K && (W === 66 || !H && !He) || u && !R.prototype.finally) return !0;
-        if (W >= 51 && /native code/.test(R)) return !1;
-        var se = R.resolve(1), fe = function(q) {
+      var n, o, r, t, a = e("23e7"), u = e("c430"), s = e("da84"), l = e("d066"), c = e("fea9"), f = e("6eeb"), v = e("e2cc"), p = e("d44e"), h = e("2626"), m = e("861d"), g = e("1c0b"), b = e("19aa"), S = e("8925"), C = e("2266"), x = e("1c7e"), w = e("4840"), y = e("2cf4").set, j = e("b575"), E = e("cdf9"), L = e("44de"), O = e("f069"), M = e("e667"), V = e("69f3"), J = e("94ca"), ie = e("b622"), H = e("605d"), W = e("2d00"), F = ie("species"), T = "Promise", A = V.get, Q = V.set, Z = V.getterFor(T), U = c, _e = s.TypeError, ve = s.document, Ae = s.process, Ie = l("fetch"), Ue = O.f, Ne = Ue, Pe = !!(ve && ve.createEvent && s.dispatchEvent), Ke = typeof PromiseRejectionEvent == "function", et = "unhandledrejection", B = "rejectionhandled", I = 0, ee = 1, D = 2, ne = 1, re = 2, ke = J(T, function() {
+        var z = S(U) !== String(U);
+        if (!z && (W === 66 || !H && !Ke) || u && !U.prototype.finally) return !0;
+        if (W >= 51 && /native code/.test(U)) return !1;
+        var ae = U.resolve(1), fe = function(q) {
           q(function() {
           }, function() {
           });
-        }, he = se.constructor = {};
-        return he[U] = fe, !(se.then(function() {
+        }, me = ae.constructor = {};
+        return me[F] = fe, !(ae.then(function() {
         }) instanceof fe);
-      }), ge = be || !x(function(K) {
-        R.all(K).catch(function() {
+      }), he = ke || !x(function(z) {
+        U.all(z).catch(function() {
         });
-      }), ce = function(K) {
-        var se;
-        return !(!m(K) || typeof (se = K.then) != "function") && se;
-      }, Se = function(K, se) {
-        if (!K.notified) {
-          K.notified = !0;
-          var fe = K.reactions;
+      }), ue = function(z) {
+        var ae;
+        return !(!m(z) || typeof (ae = z.then) != "function") && ae;
+      }, Se = function(z, ae) {
+        if (!z.notified) {
+          z.notified = !0;
+          var fe = z.reactions;
           j(function() {
-            for (var he = K.value, q = K.state == Z, oe = 0; fe.length > oe; ) {
-              var le, me, We, Ye = fe[oe++], at = q ? Ye.ok : Ye.fail, je = Ye.resolve, st = Ye.reject, Je = Ye.domain;
+            for (var me = z.value, q = z.state == ee, oe = 0; fe.length > oe; ) {
+              var le, ge, Ve, He = fe[oe++], at = q ? He.ok : He.fail, je = He.resolve, st = He.reject, Ge = He.domain;
               try {
-                at ? (q || (K.rejection === ie && M(K), K.rejection = ee), at === !0 ? le = he : (Je && Je.enter(), le = at(he), Je && (Je.exit(), We = !0)), le === Ye.promise ? st(_e("Promise-chain cycle")) : (me = ce(le)) ? me.call(le, je, st) : je(le)) : st(he);
+                at ? (q || (z.rejection === re && G(z), z.rejection = ne), at === !0 ? le = me : (Ge && Ge.enter(), le = at(me), Ge && (Ge.exit(), Ve = !0)), le === He.promise ? st(_e("Promise-chain cycle")) : (ge = ue(le)) ? ge.call(le, je, st) : je(le)) : st(me);
               } catch (wt) {
-                Je && !We && Je.exit(), st(wt);
+                Ge && !Ve && Ge.exit(), st(wt);
               }
             }
-            K.reactions = [], K.notified = !1, se && !K.rejection && De(K);
+            z.reactions = [], z.notified = !1, ae && !z.rejection && se(z);
           });
         }
-      }, Ee = function(K, se, fe) {
-        var he, q;
-        Pe ? (he = ve.createEvent("Event"), he.promise = se, he.reason = fe, he.initEvent(K, !1, !0), s.dispatchEvent(he)) : he = { promise: se, reason: fe }, !He && (q = s["on" + K]) ? q(he) : K === et && L("Unhandled promise rejection", fe);
-      }, De = function(K) {
+      }, Ee = function(z, ae, fe) {
+        var me, q;
+        Pe ? (me = ve.createEvent("Event"), me.promise = ae, me.reason = fe, me.initEvent(z, !1, !0), s.dispatchEvent(me)) : me = { promise: ae, reason: fe }, !Ke && (q = s["on" + z]) ? q(me) : z === et && L("Unhandled promise rejection", fe);
+      }, se = function(z) {
         y.call(s, function() {
-          var se, fe = K.facade, he = K.value, q = re(K);
-          if (q && (se = F(function() {
-            H ? Ne.emit("unhandledRejection", he, fe) : Ee(et, fe, he);
-          }), K.rejection = H || re(K) ? ie : ee, se.error)) throw se.value;
+          var ae, fe = z.facade, me = z.value, q = $(z);
+          if (q && (ae = M(function() {
+            H ? Ae.emit("unhandledRejection", me, fe) : Ee(et, fe, me);
+          }), z.rejection = H || $(z) ? re : ne, ae.error)) throw ae.value;
         });
-      }, re = function(K) {
-        return K.rejection !== ee && !K.parent;
-      }, M = function(K) {
+      }, $ = function(z) {
+        return z.rejection !== ne && !z.parent;
+      }, G = function(z) {
         y.call(s, function() {
-          var se = K.facade;
-          H ? Ne.emit("rejectionHandled", se) : Ee($, se, K.value);
+          var ae = z.facade;
+          H ? Ae.emit("rejectionHandled", ae) : Ee(B, ae, z.value);
         });
-      }, G = function(K, se, fe) {
-        return function(he) {
-          K(se, he, fe);
+      }, ze = function(z, ae, fe) {
+        return function(me) {
+          z(ae, me, fe);
         };
-      }, Ke = function(K, se, fe) {
-        K.done || (K.done = !0, fe && (K = fe), K.value = se, K.state = D, Se(K, !0));
-      }, dt = function(K, se, fe) {
-        if (!K.done) {
-          K.done = !0, fe && (K = fe);
+      }, it = function(z, ae, fe) {
+        z.done || (z.done = !0, fe && (z = fe), z.value = ae, z.state = D, Se(z, !0));
+      }, dt = function(z, ae, fe) {
+        if (!z.done) {
+          z.done = !0, fe && (z = fe);
           try {
-            if (K.facade === se) throw _e("Promise can't be resolved itself");
-            var he = ce(se);
-            he ? j(function() {
+            if (z.facade === ae) throw _e("Promise can't be resolved itself");
+            var me = ue(ae);
+            me ? j(function() {
               var q = { done: !1 };
               try {
-                he.call(se, G(dt, q, K), G(Ke, q, K));
+                me.call(ae, ze(dt, q, z), ze(it, q, z));
               } catch (oe) {
-                Ke(q, oe, K);
+                it(q, oe, z);
               }
-            }) : (K.value = se, K.state = Z, Se(K, !1));
+            }) : (z.value = ae, z.state = ee, Se(z, !1));
           } catch (q) {
-            Ke({ done: !1 }, q, K);
+            it({ done: !1 }, q, z);
           }
         }
       };
-      be && (R = function(K) {
-        b(this, R, T), g(K), n.call(this);
-        var se = A(this);
+      ke && (U = function(z) {
+        b(this, U, T), g(z), n.call(this);
+        var ae = A(this);
         try {
-          K(G(dt, se), G(Ke, se));
+          z(ze(dt, ae), ze(it, ae));
         } catch (fe) {
-          Ke(se, fe);
+          it(ae, fe);
         }
-      }, n = function(K) {
-        z(this, { type: T, done: !1, notified: !1, parent: !1, reactions: [], rejection: !1, state: B, value: void 0 });
-      }, n.prototype = v(R.prototype, { then: function(K, se) {
-        var fe = ne(this), he = Ue(w(this, R));
-        return he.ok = typeof K != "function" || K, he.fail = typeof se == "function" && se, he.domain = H ? Ne.domain : void 0, fe.parent = !0, fe.reactions.push(he), fe.state != B && Se(fe, !1), he.promise;
-      }, catch: function(K) {
-        return this.then(void 0, K);
+      }, n = function(z) {
+        Q(this, { type: T, done: !1, notified: !1, parent: !1, reactions: [], rejection: !1, state: I, value: void 0 });
+      }, n.prototype = v(U.prototype, { then: function(z, ae) {
+        var fe = Z(this), me = Ue(w(this, U));
+        return me.ok = typeof z != "function" || z, me.fail = typeof ae == "function" && ae, me.domain = H ? Ae.domain : void 0, fe.parent = !0, fe.reactions.push(me), fe.state != I && Se(fe, !1), me.promise;
+      }, catch: function(z) {
+        return this.then(void 0, z);
       } }), o = function() {
-        var K = new n(), se = A(K);
-        this.promise = K, this.resolve = G(dt, se), this.reject = G(Ke, se);
-      }, O.f = Ue = function(K) {
-        return K === R || K === r ? new o(K) : Ae(K);
-      }, u || typeof c != "function" || (t = c.prototype.then, f(c.prototype, "then", function(K, se) {
+        var z = new n(), ae = A(z);
+        this.promise = z, this.resolve = ze(dt, ae), this.reject = ze(it, ae);
+      }, O.f = Ue = function(z) {
+        return z === U || z === r ? new o(z) : Ne(z);
+      }, u || typeof c != "function" || (t = c.prototype.then, f(c.prototype, "then", function(z, ae) {
         var fe = this;
-        return new R(function(he, q) {
-          t.call(fe, he, q);
-        }).then(K, se);
-      }, { unsafe: !0 }), typeof $e == "function" && a({ global: !0, enumerable: !0, forced: !0 }, { fetch: function(K) {
-        return E(R, $e.apply(s, arguments));
-      } }))), a({ global: !0, wrap: !0, forced: be }, { Promise: R }), p(R, T, !1, !0), h(T), r = l(T), a({ target: T, stat: !0, forced: be }, { reject: function(K) {
-        var se = Ue(this);
-        return se.reject.call(void 0, K), se.promise;
-      } }), a({ target: T, stat: !0, forced: u || be }, { resolve: function(K) {
-        return E(u && this === r ? R : this, K);
-      } }), a({ target: T, stat: !0, forced: ge }, { all: function(K) {
-        var se = this, fe = Ue(se), he = fe.resolve, q = fe.reject, oe = F(function() {
-          var le = g(se.resolve), me = [], We = 0, Ye = 1;
-          C(K, function(at) {
-            var je = We++, st = !1;
-            me.push(void 0), Ye++, le.call(se, at).then(function(Je) {
-              st || (st = !0, me[je] = Je, --Ye || he(me));
+        return new U(function(me, q) {
+          t.call(fe, me, q);
+        }).then(z, ae);
+      }, { unsafe: !0 }), typeof Ie == "function" && a({ global: !0, enumerable: !0, forced: !0 }, { fetch: function(z) {
+        return E(U, Ie.apply(s, arguments));
+      } }))), a({ global: !0, wrap: !0, forced: ke }, { Promise: U }), p(U, T, !1, !0), h(T), r = l(T), a({ target: T, stat: !0, forced: ke }, { reject: function(z) {
+        var ae = Ue(this);
+        return ae.reject.call(void 0, z), ae.promise;
+      } }), a({ target: T, stat: !0, forced: u || ke }, { resolve: function(z) {
+        return E(u && this === r ? U : this, z);
+      } }), a({ target: T, stat: !0, forced: he }, { all: function(z) {
+        var ae = this, fe = Ue(ae), me = fe.resolve, q = fe.reject, oe = M(function() {
+          var le = g(ae.resolve), ge = [], Ve = 0, He = 1;
+          C(z, function(at) {
+            var je = Ve++, st = !1;
+            ge.push(void 0), He++, le.call(ae, at).then(function(Ge) {
+              st || (st = !0, ge[je] = Ge, --He || me(ge));
             }, q);
-          }), --Ye || he(me);
+          }), --He || me(ge);
         });
         return oe.error && q(oe.value), fe.promise;
-      }, race: function(K) {
-        var se = this, fe = Ue(se), he = fe.reject, q = F(function() {
-          var oe = g(se.resolve);
-          C(K, function(le) {
-            oe.call(se, le).then(fe.resolve, he);
+      }, race: function(z) {
+        var ae = this, fe = Ue(ae), me = fe.reject, q = M(function() {
+          var oe = g(ae.resolve);
+          C(z, function(le) {
+            oe.call(ae, le).then(fe.resolve, me);
           });
         });
-        return q.error && he(q.value), fe.promise;
+        return q.error && me(q.value), fe.promise;
       } });
     }, e893: function(i, d, e) {
       var n = e("5135"), o = e("56ef"), r = e("06cf"), t = e("9bf2");
@@ -4094,31 +4095,31 @@ var Nt = { exports: {} };
       }
       e("b0c0");
       var t = e("8bbf"), a = { class: "key-board-container" }, u = { class: "key-board-area" };
-      function s(k, I, P, N, Q, ue) {
-        var pe = Object(t.resolveComponent)("Result"), de = Object(t.resolveComponent)("DefaultBoard"), ye = Object(t.resolveComponent)("HandBoard"), Ve = Object(t.resolveComponent)("svg-icon"), qe = Object(t.resolveDirective)("handleDrag");
+      function s(k, R, P, N, K, ce) {
+        var pe = Object(t.resolveComponent)("Result"), de = Object(t.resolveComponent)("DefaultBoard"), ye = Object(t.resolveComponent)("HandBoard"), Me = Object(t.resolveComponent)("svg-icon"), We = Object(t.resolveDirective)("handleDrag");
         return Object(t.openBlock)(), Object(t.createBlock)(t.Transition, { name: k.animateClass || "move-bottom-to-top" }, { default: Object(t.withCtx)(function() {
-          return [k.visible ? (Object(t.openBlock)(), Object(t.createBlock)("div", { key: 0, class: "key-board", onMousedown: I[1] || (I[1] = Object(t.withModifiers)(function() {
-          }, ["prevent"])) }, [Object(t.createVNode)("div", a, [Object(t.createVNode)(pe, { data: k.resultVal, onChange: k.change }, null, 8, ["data", "onChange"]), Object(t.createVNode)("div", u, [k.showMode === "default" ? (Object(t.openBlock)(), Object(t.createBlock)(de, { key: 0, ref: "defaultBoardRef", onTrigger: k.trigger, onChange: k.change, onTranslate: k.translate }, null, 8, ["onTrigger", "onChange", "onTranslate"])) : Object(t.createCommentVNode)("", !0), k.showMode === "handwrite" ? (Object(t.openBlock)(), Object(t.createBlock)(ye, { key: 1, onTrigger: k.trigger, onChange: k.change }, null, 8, ["onTrigger", "onChange"])) : Object(t.createCommentVNode)("", !0)])]), k.showHandleBar ? Object(t.withDirectives)((Object(t.openBlock)(), Object(t.createBlock)("div", { key: 0, class: "key-board-drag-handle", style: { color: k.color } }, [Object(t.createVNode)("span", null, Object(t.toDisplayString)(k.dargHandleText || "将键盘拖到您喜欢的位置"), 1), Object(t.createVNode)(Ve, { "icon-class": "drag" })], 4)), [[qe]]) : Object(t.createCommentVNode)("", !0)], 32)) : Object(t.createCommentVNode)("", !0)];
+          return [k.visible ? (Object(t.openBlock)(), Object(t.createBlock)("div", { key: 0, class: "key-board", onMousedown: R[1] || (R[1] = Object(t.withModifiers)(function() {
+          }, ["prevent"])) }, [Object(t.createVNode)("div", a, [Object(t.createVNode)(pe, { data: k.resultVal, onChange: k.change }, null, 8, ["data", "onChange"]), Object(t.createVNode)("div", u, [k.showMode === "default" ? (Object(t.openBlock)(), Object(t.createBlock)(de, { key: 0, ref: "defaultBoardRef", onTrigger: k.trigger, onChange: k.change, onTranslate: k.translate }, null, 8, ["onTrigger", "onChange", "onTranslate"])) : Object(t.createCommentVNode)("", !0), k.showMode === "handwrite" ? (Object(t.openBlock)(), Object(t.createBlock)(ye, { key: 1, onTrigger: k.trigger, onChange: k.change }, null, 8, ["onTrigger", "onChange"])) : Object(t.createCommentVNode)("", !0)])]), k.showHandleBar ? Object(t.withDirectives)((Object(t.openBlock)(), Object(t.createBlock)("div", { key: 0, class: "key-board-drag-handle", style: { color: k.color } }, [Object(t.createVNode)("span", null, Object(t.toDisplayString)(k.dargHandleText || "将键盘拖到您喜欢的位置"), 1), Object(t.createVNode)(Me, { "icon-class": "drag" })], 4)), [[We]]) : Object(t.createCommentVNode)("", !0)], 32)) : Object(t.createCommentVNode)("", !0)];
         }), _: 1 }, 8, ["name"]);
       }
       e("b64b"), e("a4d3"), e("4de4"), e("e439"), e("159b"), e("dbb4");
-      function l(k, I, P) {
-        return I in k ? Object.defineProperty(k, I, { value: P, enumerable: !0, configurable: !0, writable: !0 }) : k[I] = P, k;
+      function l(k, R, P) {
+        return R in k ? Object.defineProperty(k, R, { value: P, enumerable: !0, configurable: !0, writable: !0 }) : k[R] = P, k;
       }
-      function c(k, I) {
+      function c(k, R) {
         var P = Object.keys(k);
         if (Object.getOwnPropertySymbols) {
           var N = Object.getOwnPropertySymbols(k);
-          I && (N = N.filter(function(Q) {
-            return Object.getOwnPropertyDescriptor(k, Q).enumerable;
+          R && (N = N.filter(function(K) {
+            return Object.getOwnPropertyDescriptor(k, K).enumerable;
           })), P.push.apply(P, N);
         }
         return P;
       }
       function f(k) {
-        for (var I = 1; I < arguments.length; I++) {
-          var P = arguments[I] != null ? arguments[I] : {};
-          I % 2 ? c(Object(P), !0).forEach(function(N) {
+        for (var R = 1; R < arguments.length; R++) {
+          var P = arguments[R] != null ? arguments[R] : {};
+          R % 2 ? c(Object(P), !0).forEach(function(N) {
             l(k, N, P[N]);
           }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(k, Object.getOwnPropertyDescriptors(P)) : c(Object(P)).forEach(function(N) {
             Object.defineProperty(k, N, Object.getOwnPropertyDescriptor(P, N));
@@ -4126,9 +4127,9 @@ var Nt = { exports: {} };
         }
         return k;
       }
-      function v(k, I) {
-        (I == null || I > k.length) && (I = k.length);
-        for (var P = 0, N = new Array(I); P < I; P++) N[P] = k[P];
+      function v(k, R) {
+        (R == null || R > k.length) && (R = k.length);
+        for (var P = 0, N = new Array(R); P < R; P++) N[P] = k[P];
         return N;
       }
       function p(k) {
@@ -4139,11 +4140,11 @@ var Nt = { exports: {} };
         if (typeof Symbol < "u" && Symbol.iterator in Object(k)) return Array.from(k);
       }
       e("fb6a");
-      function m(k, I) {
+      function m(k, R) {
         if (k) {
-          if (typeof k == "string") return v(k, I);
+          if (typeof k == "string") return v(k, R);
           var P = Object.prototype.toString.call(k).slice(8, -1);
-          return P === "Object" && k.constructor && (P = k.constructor.name), P === "Map" || P === "Set" ? Array.from(k) : P === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(P) ? v(k, I) : void 0;
+          return P === "Object" && k.constructor && (P = k.constructor.name), P === "Map" || P === "Set" ? Array.from(k) : P === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(P) ? v(k, R) : void 0;
         }
       }
       function g() {
@@ -4154,62 +4155,62 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         return p(k) || h(k) || m(k) || g();
       }
       e("d81d"), e("7db0"), e("99af"), e("4d63"), e("ac1f"), e("25f0"), e("13d5"), e("5530"), e("7320");
-      function S(k, I) {
-        if (!(k instanceof I)) throw new TypeError("Cannot call a class as a function");
+      function S(k, R) {
+        if (!(k instanceof R)) throw new TypeError("Cannot call a class as a function");
       }
-      function C(k, I) {
-        for (var P = 0; P < I.length; P++) {
-          var N = I[P];
+      function C(k, R) {
+        for (var P = 0; P < R.length; P++) {
+          var N = R[P];
           N.enumerable = N.enumerable || !1, N.configurable = !0, "value" in N && (N.writable = !0), Object.defineProperty(k, N.key, N);
         }
       }
-      function x(k, I, P) {
-        return I && C(k.prototype, I), k;
+      function x(k, R, P) {
+        return R && C(k.prototype, R), k;
       }
       var w = function() {
         function k() {
           S(this, k), this.listeners = {};
         }
-        return x(k, [{ key: "on", value: function(I, P) {
-          var N = this, Q = this.listeners[I];
-          return Q || (Q = []), Q.push(P), this.listeners[I] = Q, function() {
-            N.remove(I, P);
+        return x(k, [{ key: "on", value: function(R, P) {
+          var N = this, K = this.listeners[R];
+          return K || (K = []), K.push(P), this.listeners[R] = K, function() {
+            N.remove(R, P);
           };
-        } }, { key: "emit", value: function(I) {
-          var P = this.listeners[I];
+        } }, { key: "emit", value: function(R) {
+          var P = this.listeners[R];
           if (Array.isArray(P)) {
-            for (var N = arguments.length, Q = new Array(N > 1 ? N - 1 : 0), ue = 1; ue < N; ue++) Q[ue - 1] = arguments[ue];
+            for (var N = arguments.length, K = new Array(N > 1 ? N - 1 : 0), ce = 1; ce < N; ce++) K[ce - 1] = arguments[ce];
             for (var pe = 0; pe < P.length; pe++) {
               var de = P[pe];
-              typeof de == "function" && de.apply(void 0, Q);
+              typeof de == "function" && de.apply(void 0, K);
             }
           }
-        } }, { key: "remove", value: function(I, P) {
+        } }, { key: "remove", value: function(R, P) {
           if (P) {
-            var N = this.listeners[I];
+            var N = this.listeners[R];
             if (!N) return;
-            N = N.filter(function(Q) {
-              return Q !== P;
-            }), this.listeners[I] = N;
-          } else this.listeners[I] = null, delete this.listeners[I];
+            N = N.filter(function(K) {
+              return K !== P;
+            }), this.listeners[R] = N;
+          } else this.listeners[R] = null, delete this.listeners[R];
         } }]), k;
-      }(), y = new w(), j = { mounted: function(k, I, P) {
+      }(), y = new w(), j = { mounted: function(k, R, P) {
         var N = k.parentNode;
-        k.onmousedown = function(Q) {
-          var ue = Q.clientX - N.offsetLeft, pe = Q.clientY - N.offsetTop;
+        k.onmousedown = function(K) {
+          var ce = K.clientX - N.offsetLeft, pe = K.clientY - N.offsetTop;
           document.onmousemove = function(de) {
-            var ye = de.clientX - ue, Ve = de.clientY - pe;
-            N.style.left = ye + "px", N.style.top = Ve + "px";
+            var ye = de.clientX - ce, Me = de.clientY - pe;
+            N.style.left = ye + "px", N.style.top = Me + "px";
           }, document.onmouseup = function() {
             Object(t.nextTick)(function() {
               y.emit("updateBound");
             }), document.onmousemove = null, document.onmouseup = null;
           };
-        }, k.ontouchstart = function(Q) {
-          var ue = Q.touches[0].pageX, pe = Q.touches[0].pageY, de = ue - N.offsetLeft, ye = pe - N.offsetTop;
-          document.ontouchmove = function(Ve) {
-            var qe = Ve.touches[0].pageX, Qe = Ve.touches[0].pageY, Xe = qe - de, gt = Qe - ye;
-            N.style.left = Xe + "px", N.style.top = gt + "px";
+        }, k.ontouchstart = function(K) {
+          var ce = K.touches[0].pageX, pe = K.touches[0].pageY, de = ce - N.offsetLeft, ye = pe - N.offsetTop;
+          document.ontouchmove = function(Me) {
+            var We = Me.touches[0].pageX, Qe = Me.touches[0].pageY, Ye = We - de, gt = Qe - ye;
+            N.style.left = Ye + "px", N.style.top = gt + "px";
           }, document.ontouchend = function() {
             Object(t.nextTick)(function() {
               y.emit("updateBound");
@@ -4218,355 +4219,355 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         };
       } }, E = j, L = Object(t.withScopeId)("data-v-02e63132");
       Object(t.pushScopeId)("data-v-02e63132");
-      var O = { key: 0, class: "key-board-code-show" }, F = { class: "key-board-result-show" }, V = { class: "key-board-result-show-container" }, J = { key: 0, class: "key-board-result-show-more" };
+      var O = { key: 0, class: "key-board-code-show" }, M = { class: "key-board-result-show" }, V = { class: "key-board-result-show-container" }, J = { key: 0, class: "key-board-result-show-more" };
       Object(t.popScopeId)();
-      var ae = L(function(k, I, P, N, Q, ue) {
-        return k.status === "CN" || k.status === "handwrite" ? (Object(t.openBlock)(), Object(t.createBlock)("div", { key: 0, class: "key-board-result", style: { color: k.color } }, [k.status === "CN" ? (Object(t.openBlock)(), Object(t.createBlock)("div", O, Object(t.toDisplayString)(k.data.code), 1)) : Object(t.createCommentVNode)("", !0), Object(t.createVNode)("div", F, [Object(t.createVNode)("div", V, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(k.showList[k.showIndex], function(pe, de) {
+      var ie = L(function(k, R, P, N, K, ce) {
+        return k.status === "CN" || k.status === "handwrite" ? (Object(t.openBlock)(), Object(t.createBlock)("div", { key: 0, class: "key-board-result", style: { color: k.color } }, [k.status === "CN" ? (Object(t.openBlock)(), Object(t.createBlock)("div", O, Object(t.toDisplayString)(k.data.code), 1)) : Object(t.createCommentVNode)("", !0), Object(t.createVNode)("div", M, [Object(t.createVNode)("div", V, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(k.showList[k.showIndex], function(pe, de) {
           return Object(t.openBlock)(), Object(t.createBlock)("span", { key: de, onClick: function(ye) {
             return k.selectWord(pe);
           } }, Object(t.toDisplayString)(de + 1) + "." + Object(t.toDisplayString)(pe), 9, ["onClick"]);
-        }), 128))]), k.valueList.length > 11 ? (Object(t.openBlock)(), Object(t.createBlock)("div", J, [Object(t.createVNode)("span", { style: k.getStyle, onClick: I[1] || (I[1] = function() {
+        }), 128))]), k.valueList.length > 11 ? (Object(t.openBlock)(), Object(t.createBlock)("div", J, [Object(t.createVNode)("span", { style: k.getStyle, onClick: R[1] || (R[1] = function() {
           return k.upper && k.upper.apply(k, arguments);
-        }) }, null, 4), Object(t.createVNode)("span", { style: k.getStyle, onClick: I[2] || (I[2] = function() {
+        }) }, null, 4), Object(t.createVNode)("span", { style: k.getStyle, onClick: R[2] || (R[2] = function() {
           return k.lower && k.lower.apply(k, arguments);
         }) }, null, 4)])) : Object(t.createCommentVNode)("", !0)])], 4)) : Object(t.createCommentVNode)("", !0);
-      }), H = (e("1276"), e("6062"), e("5319"), function(k, I) {
-        for (var P = 0, N = []; P < k.length; ) N.push(k.slice(P, P += I));
+      }), H = (e("1276"), e("6062"), e("5319"), function(k, R) {
+        for (var P = 0, N = []; P < k.length; ) N.push(k.slice(P, P += R));
         return N;
-      }), W = Symbol("KEYBOARD_CONTEXT"), U = function(k) {
+      }), W = Symbol("KEYBOARD_CONTEXT"), F = function(k) {
         Object(t.provide)(W, k);
       }, T = function() {
         return Object(t.inject)(W);
-      }, A = Object(t.defineComponent)({ props: { data: Object }, emits: ["change"], setup: function(k, I) {
-        var P = I.emit, N = T(), Q = Object(t.computed)(function() {
+      }, A = Object(t.defineComponent)({ props: { data: Object }, emits: ["change"], setup: function(k, R) {
+        var P = R.emit, N = T(), K = Object(t.computed)(function() {
           return { borderTopColor: N == null ? void 0 : N.color };
-        }), ue = Object(t.reactive)({ status: "", valueList: [], showList: [], showIndex: 0 });
+        }), ce = Object(t.reactive)({ status: "", valueList: [], showList: [], showIndex: 0 });
         function pe() {
-          ue.showIndex !== 0 && (ue.showIndex -= 1);
+          ce.showIndex !== 0 && (ce.showIndex -= 1);
         }
         function de() {
-          ue.showIndex !== ue.showList.length - 1 && (ue.showIndex += 1);
+          ce.showIndex !== ce.showList.length - 1 && (ce.showIndex += 1);
         }
         function ye() {
-          ue.showIndex = 0, ue.showList = [], ue.valueList = [], y.emit("resultReset");
+          ce.showIndex = 0, ce.showList = [], ce.valueList = [], y.emit("resultReset");
         }
-        function Ve(qe) {
-          ye(), P("change", qe);
+        function Me(We) {
+          ye(), P("change", We);
         }
         return Object(t.watch)(function() {
           return k.data;
-        }, function(qe) {
+        }, function(We) {
           var Qe;
-          ue.showIndex = 0, ue.valueList = (qe == null || (Qe = qe.value) === null || Qe === void 0 ? void 0 : Qe.split("")) || [], ue.valueList.length !== 0 ? ue.showList = H(ue.valueList, 11) : ue.showList = [];
+          ce.showIndex = 0, ce.valueList = (We == null || (Qe = We.value) === null || Qe === void 0 ? void 0 : Qe.split("")) || [], ce.valueList.length !== 0 ? ce.showList = H(ce.valueList, 11) : ce.showList = [];
         }, { immediate: !0 }), Object(t.onMounted)(function() {
-          y.on("keyBoardChange", function(qe) {
-            y.emit("updateBound"), ue.status = qe, ye();
-          }), y.on("getWordsFromServer", function(qe) {
-            var Qe = Array.from(new Set(qe.replace(/\s+/g, "").split("")));
-            ue.valueList = Qe, ue.showList = H(Qe, 11);
+          y.on("keyBoardChange", function(We) {
+            y.emit("updateBound"), ce.status = We, ye();
+          }), y.on("getWordsFromServer", function(We) {
+            var Qe = Array.from(new Set(We.replace(/\s+/g, "").split("")));
+            ce.valueList = Qe, ce.showList = H(Qe, 11);
           });
         }), Object(t.onUnmounted)(function() {
           y.remove("keyBoardChange"), y.remove("getWordsFromServer");
-        }), f({ color: N == null ? void 0 : N.color, upper: pe, lower: de, getStyle: Q, selectWord: Ve }, Object(t.toRefs)(ue));
+        }), f({ color: N == null ? void 0 : N.color, upper: pe, lower: de, getStyle: K, selectWord: Me }, Object(t.toRefs)(ce));
       } });
-      e("e66c"), A.render = ae, A.__scopeId = "data-v-02e63132";
-      var z = A, ne = e("bc3a"), R = e.n(ne), _e = 15e3, ve = function(k) {
-        R.a.defaults.baseURL = k, R.a.defaults.timeout = _e, R.a.defaults.headers.post["Content-Type"] = "application/json;charset=UTF-8";
+      e("e66c"), A.render = ie, A.__scopeId = "data-v-02e63132";
+      var Q = A, Z = e("bc3a"), U = e.n(Z), _e = 15e3, ve = function(k) {
+        U.a.defaults.baseURL = k, U.a.defaults.timeout = _e, U.a.defaults.headers.post["Content-Type"] = "application/json;charset=UTF-8";
       };
-      function Ne(k, I, P, N, Q, ue) {
+      function Ae(k, R, P, N, K, ce) {
         return Object(t.openBlock)(), Object(t.createBlock)("svg", { class: "svg-icon", style: { stroke: k.color } }, [Object(t.createVNode)("use", { "xlink:href": k.iconName }, null, 8, ["xlink:href"])], 4);
       }
-      var $e = Object(t.defineComponent)({ name: "SvgIcon", props: { iconClass: { type: String, required: !0 }, className: { type: String, default: "" } }, setup: function(k) {
-        var I = T(), P = Object(t.computed)(function() {
+      var Ie = Object(t.defineComponent)({ name: "SvgIcon", props: { iconClass: { type: String, required: !0 }, className: { type: String, default: "" } }, setup: function(k) {
+        var R = T(), P = Object(t.computed)(function() {
           return "#icon-".concat(k.iconClass);
         });
-        return { color: I == null ? void 0 : I.color, iconName: P };
+        return { color: R == null ? void 0 : R.color, iconName: P };
       } });
-      e("38cd"), $e.render = Ne;
-      var Ue = $e, Ae = Object(t.withScopeId)("data-v-1b5e0983");
+      e("38cd"), Ie.render = Ae;
+      var Ue = Ie, Ne = Object(t.withScopeId)("data-v-1b5e0983");
       Object(t.pushScopeId)("data-v-1b5e0983");
-      var Pe = { class: "hand-write-board" }, He = { class: "hand-write-board-opers" };
+      var Pe = { class: "hand-write-board" }, Ke = { class: "hand-write-board-opers" };
       Object(t.popScopeId)();
-      var et = Ae(function(k, I, P, N, Q, ue) {
+      var et = Ne(function(k, R, P, N, K, ce) {
         var pe = Object(t.resolveComponent)("PaintBoard"), de = Object(t.resolveComponent)("KeyCodeButton");
-        return Object(t.openBlock)(), Object(t.createBlock)("div", Pe, [Object(t.createVNode)(pe, { lib: k.isCn ? "CN" : "EN" }, null, 8, ["lib"]), Object(t.createVNode)("div", He, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(k.handBoardOperList, function(ye) {
+        return Object(t.openBlock)(), Object(t.createBlock)("div", Pe, [Object(t.createVNode)(pe, { lib: k.isCn ? "CN" : "EN" }, null, 8, ["lib"]), Object(t.createVNode)("div", Ke, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(k.handBoardOperList, function(ye) {
           return Object(t.openBlock)(), Object(t.createBlock)(de, { key: ye.type, type: ye.type, data: ye.data, isCn: k.isCn, onClick: k.click }, null, 8, ["type", "data", "isCn", "onClick"]);
         }), 128))])]);
-      }), $ = { class: "paint-board" };
-      function B(k, I, P, N, Q, ue) {
-        return Object(t.openBlock)(), Object(t.createBlock)("div", $, [Object(t.createVNode)("canvas", { ref: "canvasRef", width: k.width, height: k.height, onTouchstart: I[1] || (I[1] = function() {
+      }), B = { class: "paint-board" };
+      function I(k, R, P, N, K, ce) {
+        return Object(t.openBlock)(), Object(t.createBlock)("div", B, [Object(t.createVNode)("canvas", { ref: "canvasRef", width: k.width, height: k.height, onTouchstart: R[1] || (R[1] = function() {
           return k.down && k.down.apply(k, arguments);
-        }), onTouchmove: I[2] || (I[2] = function() {
+        }), onTouchmove: R[2] || (R[2] = function() {
           return k.move && k.move.apply(k, arguments);
-        }), onTouchend: I[3] || (I[3] = function() {
+        }), onTouchend: R[3] || (R[3] = function() {
           return k.mouseup && k.mouseup.apply(k, arguments);
-        }), onMousedown: I[4] || (I[4] = function() {
+        }), onMousedown: R[4] || (R[4] = function() {
           return k.down && k.down.apply(k, arguments);
-        }), onMousemove: I[5] || (I[5] = function() {
+        }), onMousemove: R[5] || (R[5] = function() {
           return k.move && k.move.apply(k, arguments);
-        }), onMouseup: I[6] || (I[6] = function() {
+        }), onMouseup: R[6] || (R[6] = function() {
           return k.mouseup && k.mouseup.apply(k, arguments);
-        }), onMouseleave: I[7] || (I[7] = function() {
+        }), onMouseleave: R[7] || (R[7] = function() {
           return k.mouseup && k.mouseup.apply(k, arguments);
         }) }, null, 40, ["width", "height"])]);
       }
       e("e6cf");
-      function Z(k, I, P, N, Q, ue, pe) {
+      function ee(k, R, P, N, K, ce, pe) {
         try {
-          var de = k[ue](pe), ye = de.value;
-        } catch (Ve) {
-          return void P(Ve);
+          var de = k[ce](pe), ye = de.value;
+        } catch (Me) {
+          return void P(Me);
         }
-        de.done ? I(ye) : Promise.resolve(ye).then(N, Q);
+        de.done ? R(ye) : Promise.resolve(ye).then(N, K);
       }
       function D(k) {
         return function() {
-          var I = this, P = arguments;
-          return new Promise(function(N, Q) {
-            var ue = k.apply(I, P);
+          var R = this, P = arguments;
+          return new Promise(function(N, K) {
+            var ce = k.apply(R, P);
             function pe(ye) {
-              Z(ue, N, Q, pe, de, "next", ye);
+              ee(ce, N, K, pe, de, "next", ye);
             }
             function de(ye) {
-              Z(ue, N, Q, pe, de, "throw", ye);
+              ee(ce, N, K, pe, de, "throw", ye);
             }
             pe(void 0);
           });
         };
       }
       e("96cf"), e("caad"), e("2532");
-      var ee, ie, be = function() {
-        var k = D(regeneratorRuntime.mark(function I(P, N, Q, ue) {
+      var ne, re, ke = function() {
+        var k = D(regeneratorRuntime.mark(function R(P, N, K, ce) {
           return regeneratorRuntime.wrap(function(pe) {
             for (; ; ) switch (pe.prev = pe.next) {
               case 0:
-                return pe.next = 2, R.a.post("", { lib: ue, lpXis: P, lpYis: N, lpCis: Q });
+                return pe.next = 2, U.a.post("", { lib: ce, lpXis: P, lpYis: N, lpCis: K });
               case 2:
                 return pe.abrupt("return", pe.sent);
               case 3:
               case "end":
                 return pe.stop();
             }
-          }, I);
+          }, R);
         }));
-        return function(I, P, N, Q) {
+        return function(R, P, N, K) {
           return k.apply(this, arguments);
         };
-      }(), ge = Object(t.defineComponent)({ name: "PaintBoard", props: { lib: String }, setup: function(k) {
-        var I = T(), P = Object(t.reactive)({ width: 0, height: 0, isMouseDown: !1, x: 0, y: 0, oldX: 0, oldY: 0, clickX: [], clickY: [], clickC: [] }), N = Object(t.ref)(null);
-        function Q() {
-          return ue.apply(this, arguments);
+      }(), he = Object(t.defineComponent)({ name: "PaintBoard", props: { lib: String }, setup: function(k) {
+        var R = T(), P = Object(t.reactive)({ width: 0, height: 0, isMouseDown: !1, x: 0, y: 0, oldX: 0, oldY: 0, clickX: [], clickY: [], clickC: [] }), N = Object(t.ref)(null);
+        function K() {
+          return ce.apply(this, arguments);
         }
-        function ue() {
-          return ue = D(regeneratorRuntime.mark(function Be() {
-            var Ge, ze;
-            return regeneratorRuntime.wrap(function(nt) {
-              for (; ; ) switch (nt.prev = nt.next) {
+        function ce() {
+          return ce = D(regeneratorRuntime.mark(function $e() {
+            var Xe, qe;
+            return regeneratorRuntime.wrap(function(tt) {
+              for (; ; ) switch (tt.prev = tt.next) {
                 case 0:
-                  return nt.next = 2, be(P.clickX, P.clickY, P.clickC, k.lib);
+                  return tt.next = 2, ke(P.clickX, P.clickY, P.clickC, k.lib);
                 case 2:
-                  Ge = nt.sent, ze = Ge.data, y.emit("getWordsFromServer", (ze == null ? void 0 : ze.v) || "");
+                  Xe = tt.sent, qe = Xe.data, y.emit("getWordsFromServer", (qe == null ? void 0 : qe.v) || "");
                 case 5:
                 case "end":
-                  return nt.stop();
+                  return tt.stop();
               }
-            }, Be);
-          })), ue.apply(this, arguments);
+            }, $e);
+          })), ce.apply(this, arguments);
         }
         function pe() {
-          N.value && ee && (P.clickX = [], P.clickY = [], P.clickC = [], ee.clearRect(0, 0, P.width, P.height));
+          N.value && ne && (P.clickX = [], P.clickY = [], P.clickC = [], ne.clearRect(0, 0, P.width, P.height));
         }
-        function de(Be) {
-          if (Be.type.includes("mouse")) {
-            var Ge = Be;
-            return Math.floor(Ge.clientX - P.x);
+        function de($e) {
+          if ($e.type.includes("mouse")) {
+            var Xe = $e;
+            return Math.floor(Xe.clientX - P.x);
           }
-          if (Be.type.includes("touch")) {
-            var ze, nt = Be;
-            return Math.floor(((ze = nt.targetTouches[0]) === null || ze === void 0 ? void 0 : ze.clientX) - P.x);
+          if ($e.type.includes("touch")) {
+            var qe, tt = $e;
+            return Math.floor(((qe = tt.targetTouches[0]) === null || qe === void 0 ? void 0 : qe.clientX) - P.x);
           }
           return 0;
         }
-        function ye(Be) {
-          if (Be.type.includes("mouse")) {
-            var Ge = Be;
-            return Math.floor(Ge.clientY - P.y);
+        function ye($e) {
+          if ($e.type.includes("mouse")) {
+            var Xe = $e;
+            return Math.floor(Xe.clientY - P.y);
           }
-          if (Be.type.includes("touch")) {
-            var ze, nt = Be;
-            return Math.floor(((ze = nt.targetTouches[0]) === null || ze === void 0 ? void 0 : ze.clientY) - P.y);
+          if ($e.type.includes("touch")) {
+            var qe, tt = $e;
+            return Math.floor(((qe = tt.targetTouches[0]) === null || qe === void 0 ? void 0 : qe.clientY) - P.y);
           }
           return 0;
         }
-        function Ve(Be) {
-          if (ee) {
+        function Me($e) {
+          if (ne) {
             P.isMouseDown = !0;
-            var Ge = de(Be), ze = ye(Be);
-            clearTimeout(ie), P.oldX = Ge, P.oldY = ze, ee.beginPath();
+            var Xe = de($e), qe = ye($e);
+            clearTimeout(re), P.oldX = Xe, P.oldY = qe, ne.beginPath();
           }
         }
-        function qe(Be) {
-          if (ee && (Be.preventDefault(), P.isMouseDown)) {
-            var Ge = de(Be), ze = ye(Be);
-            P.clickX.push(Ge), P.clickY.push(ze), P.clickC.push(0), ee.strokeStyle = I == null ? void 0 : I.color, ee.fillStyle = I == null ? void 0 : I.color, ee.lineWidth = 4, ee.lineCap = "round", ee.moveTo(P.oldX, P.oldY), ee.lineTo(Ge, ze), ee.stroke(), P.oldX = Ge, P.oldY = ze;
+        function We($e) {
+          if (ne && ($e.preventDefault(), P.isMouseDown)) {
+            var Xe = de($e), qe = ye($e);
+            P.clickX.push(Xe), P.clickY.push(qe), P.clickC.push(0), ne.strokeStyle = R == null ? void 0 : R.color, ne.fillStyle = R == null ? void 0 : R.color, ne.lineWidth = 4, ne.lineCap = "round", ne.moveTo(P.oldX, P.oldY), ne.lineTo(Xe, qe), ne.stroke(), P.oldX = Xe, P.oldY = qe;
           }
         }
         function Qe() {
-          P.isMouseDown && (P.isMouseDown = !1, ie = setTimeout(function() {
+          P.isMouseDown && (P.isMouseDown = !1, re = setTimeout(function() {
             pe();
-          }, 1500), P.clickC.pop(), P.clickC.push(1), Q());
+          }, 1500), P.clickC.pop(), P.clickC.push(1), K());
         }
-        function Xe() {
+        function Ye() {
           Object(t.nextTick)(function() {
             if (document.querySelector(".paint-board")) {
-              var Be = document.querySelector(".paint-board").getBoundingClientRect();
-              P.x = Be.x, P.y = Be.y, P.width = parseFloat(window.getComputedStyle(document.querySelector(".paint-board")).width), P.height = parseFloat(window.getComputedStyle(document.querySelector(".paint-board")).height);
+              var $e = document.querySelector(".paint-board").getBoundingClientRect();
+              P.x = $e.x, P.y = $e.y, P.width = parseFloat(window.getComputedStyle(document.querySelector(".paint-board")).width), P.height = parseFloat(window.getComputedStyle(document.querySelector(".paint-board")).height);
             }
           });
         }
         function gt() {
-          var Be;
-          ee = (Be = N.value) === null || Be === void 0 ? void 0 : Be.getContext("2d"), pe(), Xe(), window.addEventListener("animationend", Xe), window.addEventListener("resize", Xe), window.addEventListener("scroll", Xe);
+          var $e;
+          ne = ($e = N.value) === null || $e === void 0 ? void 0 : $e.getContext("2d"), pe(), Ye(), window.addEventListener("animationend", Ye), window.addEventListener("resize", Ye), window.addEventListener("scroll", Ye);
         }
         return Object(t.onMounted)(function() {
           gt(), y.on("updateBound", function() {
-            Xe();
+            Ye();
           });
         }), Object(t.onUnmounted)(function() {
-          window.removeEventListener("animationend", Xe), window.removeEventListener("resize", Xe), window.removeEventListener("scroll", Xe), y.remove("updateBound");
-        }), f(f({}, Object(t.toRefs)(P)), {}, { move: qe, down: Ve, mouseup: Qe, canvasRef: N });
+          window.removeEventListener("animationend", Ye), window.removeEventListener("resize", Ye), window.removeEventListener("scroll", Ye), y.remove("updateBound");
+        }), f(f({}, Object(t.toRefs)(P)), {}, { move: We, down: Me, mouseup: Qe, canvasRef: N });
       } });
-      ge.render = B;
-      var ce = ge;
-      function Se(k, I, P, N, Q, ue) {
+      he.render = I;
+      var ue = he;
+      function Se(k, R, P, N, K, ce) {
         var pe = Object(t.resolveComponent)("svg-icon");
-        return Object(t.openBlock)(), Object(t.createBlock)("button", { class: ["key-board-button", "key-board-button-".concat(k.type), { "key-board-button-active": k.isUpper && k.type === "upper" || k.isNum && k.type === "change2num" || k.isSymbol && k.type === "#+=" }], style: k.getStyle, onClick: I[1] || (I[1] = function() {
+        return Object(t.openBlock)(), Object(t.createBlock)("button", { class: ["key-board-button", "key-board-button-".concat(k.type), { "key-board-button-active": k.isUpper && k.type === "upper" || k.isNum && k.type === "change2num" || k.isSymbol && k.type === "#+=" }], style: k.getStyle, onClick: R[1] || (R[1] = function() {
           return k.click && k.click.apply(k, arguments);
-        }), onMouseenter: I[2] || (I[2] = function(de) {
+        }), onMouseenter: R[2] || (R[2] = function(de) {
           return k.isHoverStatus = !0;
-        }), onMouseleave: I[3] || (I[3] = function(de) {
+        }), onMouseleave: R[3] || (R[3] = function(de) {
           return k.isHoverStatus = !1;
         }) }, [k.type === "upper" || k.type === "delete" || k.type === "handwrite" || k.type === "close" || k.type === "back" ? (Object(t.openBlock)(), Object(t.createBlock)(pe, { key: 0, "icon-class": k.type }, null, 8, ["icon-class"])) : (Object(t.openBlock)(), Object(t.createBlock)("span", { key: 1, innerHTML: k.getCode }, null, 8, ["innerHTML"]))], 38);
       }
-      var Ee = Object(t.defineComponent)({ name: "KeyCodeButton", components: { SvgIcon: Ue }, props: { type: String, data: String, isCn: Boolean, isNum: Boolean, isUpper: Boolean, isSymbol: Boolean }, emits: ["click"], setup: function(k, I) {
-        var P = I.emit, N = T(), Q = Object(t.ref)(!1), ue = Object(t.computed)(function() {
+      var Ee = Object(t.defineComponent)({ name: "KeyCodeButton", components: { SvgIcon: Ue }, props: { type: String, data: String, isCn: Boolean, isNum: Boolean, isUpper: Boolean, isSymbol: Boolean }, emits: ["click"], setup: function(k, R) {
+        var P = R.emit, N = T(), K = Object(t.ref)(!1), ce = Object(t.computed)(function() {
           return k.type === "change2lang" ? k.isCn ? "<label>中</label>/EN" : "<label>EN</label>/中" : k.isUpper ? k.data.toUpperCase() : k.data;
         }), pe = Object(t.computed)(function() {
-          return k.isUpper && k.type === "upper" || k.isNum && k.type === "change2num" || k.isSymbol && k.type === "#+=" || Q.value ? { color: "#f5f5f5", background: N == null ? void 0 : N.color } : { color: N == null ? void 0 : N.color, background: "#f5f5f5" };
+          return k.isUpper && k.type === "upper" || k.isNum && k.type === "change2num" || k.isSymbol && k.type === "#+=" || K.value ? { color: "#f5f5f5", background: N == null ? void 0 : N.color } : { color: N == null ? void 0 : N.color, background: "#f5f5f5" };
         });
         function de(ye) {
           ye.preventDefault(), P("click", { data: k.isUpper ? k.data.toUpperCase() : k.data, type: k.type });
         }
-        return { isHoverStatus: Q, getStyle: pe, getCode: ue, click: de };
+        return { isHoverStatus: K, getStyle: pe, getCode: ce, click: de };
       } });
       e("de23"), Ee.render = Se;
-      var De = Ee, re = Object(t.defineComponent)({ name: "PaintPart", components: { PaintBoard: ce, KeyCodeButton: De }, setup: function(k, I) {
-        var P = I.emit, N = T(), Q = Object(t.reactive)({ handBoardOperList: [{ data: "中/EN", type: "change2lang" }, { data: "", type: "back" }, { data: "", type: "delete" }, { data: "", type: "close" }], isCn: !0 });
-        function ue(pe) {
+      var se = Ee, $ = Object(t.defineComponent)({ name: "PaintPart", components: { PaintBoard: ue, KeyCodeButton: se }, setup: function(k, R) {
+        var P = R.emit, N = T(), K = Object(t.reactive)({ handBoardOperList: [{ data: "中/EN", type: "change2lang" }, { data: "", type: "back" }, { data: "", type: "delete" }, { data: "", type: "close" }], isCn: !0 });
+        function ce(pe) {
           var de = pe.data, ye = pe.type;
           switch (ye) {
             case "close":
               N == null || N.closeKeyBoard();
               break;
             case "back":
-              N == null || N.changeDefaultBoard(), y.emit("resultReset"), y.emit("keyBoardChange", Q.isCn && "CN");
+              N == null || N.changeDefaultBoard(), y.emit("resultReset"), y.emit("keyBoardChange", K.isCn && "CN");
               break;
             case "change2lang":
-              Q.isCn = !Q.isCn;
+              K.isCn = !K.isCn;
               break;
             case "delete":
               P("trigger", { data: de, type: ye });
               break;
           }
         }
-        return f({ click: ue }, Object(t.toRefs)(Q));
+        return f({ click: ce }, Object(t.toRefs)(K));
       } });
-      e("9aaf"), re.render = et, re.__scopeId = "data-v-1b5e0983";
-      var M = re, G = Object(t.withScopeId)("data-v-4b78e5a1");
+      e("9aaf"), $.render = et, $.__scopeId = "data-v-1b5e0983";
+      var G = $, ze = Object(t.withScopeId)("data-v-4b78e5a1");
       Object(t.pushScopeId)("data-v-4b78e5a1");
-      var Ke = { class: "default-key-board" }, dt = { class: "line line4" };
+      var it = { class: "default-key-board" }, dt = { class: "line line4" };
       Object(t.popScopeId)();
-      var K = G(function(k, I, P, N, Q, ue) {
+      var z = ze(function(k, R, P, N, K, ce) {
         var pe = Object(t.resolveComponent)("KeyCodeButton");
-        return Object(t.openBlock)(), Object(t.createBlock)("div", Ke, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(k.lineList, function(de, ye) {
-          return Object(t.openBlock)(), Object(t.createBlock)("div", { class: ["line", "line".concat(ye + 1)], key: ye }, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(de, function(Ve) {
-            return Object(t.openBlock)(), Object(t.createBlock)(pe, { isUpper: k.isUpper, key: Ve, type: Ve, data: Ve, isSymbol: k.isSymbol, onClick: k.click }, null, 8, ["isUpper", "type", "data", "isSymbol", "onClick"]);
+        return Object(t.openBlock)(), Object(t.createBlock)("div", it, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(k.lineList, function(de, ye) {
+          return Object(t.openBlock)(), Object(t.createBlock)("div", { class: ["line", "line".concat(ye + 1)], key: ye }, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(de, function(Me) {
+            return Object(t.openBlock)(), Object(t.createBlock)(pe, { isUpper: k.isUpper, key: Me, type: Me, data: Me, isSymbol: k.isSymbol, onClick: k.click }, null, 8, ["isUpper", "type", "data", "isSymbol", "onClick"]);
           }), 128))], 2);
         }), 128)), Object(t.createVNode)("div", dt, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(k.line4, function(de) {
           return Object(t.openBlock)(), Object(t.createBlock)(pe, { key: de.type, type: de.type, data: de.data, isCn: k.isCn, isNum: k.isNum, onClick: k.click }, null, 8, ["type", "data", "isCn", "isNum", "onClick"]);
         }), 128))])]);
-      }), se = (e("a434"), { line1: ["[", "]", "{", "}", "+", "-", "*", "/", "%", "="], line2: ["_", "—", "|", "~", "^", "《", "》", "$", "&"], line3: ["#+=", "……", ",", "?", "!", ".", "’", "'", "delete"] }), fe = { line1: ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"], line2: ["a", "s", "d", "f", "g", "h", "j", "k", "l"], line3: ["upper", "z", "x", "c", "v", "b", "n", "m", "delete"] }, he = { line1: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"], line2: ["-", "/", ":", "(", ")", "¥", "@", "“", "”"], line3: ["#+=", "。", "，", "、", "？", "！", ".", ";", "delete"] }, q = [{ data: ".?123", type: "change2num" }, { data: "", type: "change2lang" }, { data: " ", type: "space" }, { data: "", type: "close" }], oe = Object(t.defineComponent)({ name: "DefaultKeyBoard", components: { KeyCodeButton: De }, emits: ["translate", "trigger", "change"], setup: function(k, I) {
-        var P = I.emit, N = T(), Q = Object(t.reactive)({ lineList: [fe.line1, fe.line2, fe.line3], line4: [], isUpper: !1, isCn: !0, isNum: !1, isSymbol: !1, oldVal: "" });
-        function ue() {
+      }), ae = (e("a434"), { line1: ["[", "]", "{", "}", "+", "-", "*", "/", "%", "="], line2: ["_", "—", "|", "~", "^", "《", "》", "$", "&"], line3: ["#+=", "……", ",", "?", "!", ".", "’", "'", "delete"] }), fe = { line1: ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"], line2: ["a", "s", "d", "f", "g", "h", "j", "k", "l"], line3: ["upper", "z", "x", "c", "v", "b", "n", "m", "delete"] }, me = { line1: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"], line2: ["-", "/", ":", "(", ")", "¥", "@", "“", "”"], line3: ["#+=", "。", "，", "、", "？", "！", ".", ";", "delete"] }, q = [{ data: ".?123", type: "change2num" }, { data: "", type: "change2lang" }, { data: " ", type: "space" }, { data: "", type: "close" }], oe = Object(t.defineComponent)({ name: "DefaultKeyBoard", components: { KeyCodeButton: se }, emits: ["translate", "trigger", "change"], setup: function(k, R) {
+        var P = R.emit, N = T(), K = Object(t.reactive)({ lineList: [fe.line1, fe.line2, fe.line3], line4: [], isUpper: !1, isCn: !0, isNum: !1, isSymbol: !1, oldVal: "" });
+        function ce() {
           var de;
-          Q.line4 = JSON.parse(JSON.stringify(q)), N != null && (de = N.modeList) !== null && de !== void 0 && de.find(function(ye) {
+          K.line4 = JSON.parse(JSON.stringify(q)), N != null && (de = N.modeList) !== null && de !== void 0 && de.find(function(ye) {
             return ye === "handwrite";
-          }) && N !== null && N !== void 0 && N.handApi && Q.line4.splice(2, 0, { data: "", type: "handwrite" });
+          }) && N !== null && N !== void 0 && N.handApi && K.line4.splice(2, 0, { data: "", type: "handwrite" });
         }
         function pe(de) {
-          var ye = de.data, Ve = de.type;
-          switch (Ve) {
+          var ye = de.data, Me = de.type;
+          switch (Me) {
             case "close":
-              Q.oldVal = "", N == null || N.closeKeyBoard();
+              K.oldVal = "", N == null || N.closeKeyBoard();
               break;
             case "upper":
-              Q.oldVal = "", Q.isUpper = !Q.isUpper;
+              K.oldVal = "", K.isUpper = !K.isUpper;
               break;
             case "change2lang":
-              Q.isCn = !Q.isCn, Q.isNum || Q.isSymbol || y.emit("keyBoardChange", Q.isCn ? "CN" : "EN");
+              K.isCn = !K.isCn, K.isNum || K.isSymbol || y.emit("keyBoardChange", K.isCn ? "CN" : "EN");
               break;
             case "change2num":
-              if (Q.isNum = !Q.isNum, Q.isSymbol = !1, Q.isNum) {
-                var qe;
+              if (K.isNum = !K.isNum, K.isSymbol = !1, K.isNum) {
+                var We;
                 y.emit("keyBoardChange", "number");
-                var Qe = JSON.parse(JSON.stringify(he.line3));
-                N != null && (qe = N.modeList) !== null && qe !== void 0 && qe.find(function(Xe) {
-                  return Xe === "symbol";
-                }) || (Qe.shift(), Qe.unshift("+")), Q.lineList = [he.line1, he.line2, Qe];
-              } else y.emit("keyBoardChange", Q.isCn ? "CN" : "EN"), Q.lineList = [fe.line1, fe.line2, fe.line3];
+                var Qe = JSON.parse(JSON.stringify(me.line3));
+                N != null && (We = N.modeList) !== null && We !== void 0 && We.find(function(Ye) {
+                  return Ye === "symbol";
+                }) || (Qe.shift(), Qe.unshift("+")), K.lineList = [me.line1, me.line2, Qe];
+              } else y.emit("keyBoardChange", K.isCn ? "CN" : "EN"), K.lineList = [fe.line1, fe.line2, fe.line3];
               break;
             case "#+=":
-              Q.isSymbol = !Q.isSymbol, Q.isSymbol ? (y.emit("keyBoardChange", "symbol"), Q.lineList = [se.line1, se.line2, se.line3]) : (y.emit("keyBoardChange", "number"), Q.lineList = [he.line1, he.line2, he.line3]);
+              K.isSymbol = !K.isSymbol, K.isSymbol ? (y.emit("keyBoardChange", "symbol"), K.lineList = [ae.line1, ae.line2, ae.line3]) : (y.emit("keyBoardChange", "number"), K.lineList = [me.line1, me.line2, me.line3]);
               break;
             case "handwrite":
             case "delete":
-              Q.isCn && Ve === "delete" && Q.oldVal ? (Q.oldVal = Q.oldVal.substr(0, Q.oldVal.length - 1), P("translate", Q.oldVal)) : (Ve === "handwrite" && y.emit("keyBoardChange", "handwrite"), P("trigger", { data: ye, type: Ve }));
+              K.isCn && Me === "delete" && K.oldVal ? (K.oldVal = K.oldVal.substr(0, K.oldVal.length - 1), P("translate", K.oldVal)) : (Me === "handwrite" && y.emit("keyBoardChange", "handwrite"), P("trigger", { data: ye, type: Me }));
               break;
             default:
-              !Q.isCn || Q.isNum || Q.isSymbol ? P("change", ye) : (P("translate", Q.oldVal + ye), Q.oldVal = Q.oldVal + ye);
+              !K.isCn || K.isNum || K.isSymbol ? P("change", ye) : (P("translate", K.oldVal + ye), K.oldVal = K.oldVal + ye);
               break;
           }
         }
-        return ue(), Object(t.onMounted)(function() {
+        return ce(), Object(t.onMounted)(function() {
           y.on("resultReset", function() {
-            Q.oldVal = "";
+            K.oldVal = "";
           });
-        }), f(f({}, Object(t.toRefs)(Q)), {}, { click: pe });
+        }), f(f({}, Object(t.toRefs)(K)), {}, { click: pe });
       } });
-      e("f8b0"), oe.render = K, oe.__scopeId = "data-v-4b78e5a1";
-      var le = oe, me = { a: "阿啊呵腌嗄吖锕", e: "额阿俄恶鹅遏鄂厄饿峨扼娥鳄哦蛾噩愕讹锷垩婀鹗萼谔莪腭锇颚呃阏屙苊轭", ai: "爱埃艾碍癌哀挨矮隘蔼唉皑哎霭捱暧嫒嗳瑷嗌锿砹", ei: "诶", xi: "系西席息希习吸喜细析戏洗悉锡溪惜稀袭夕洒晰昔牺腊烯熙媳栖膝隙犀蹊硒兮熄曦禧嬉玺奚汐徙羲铣淅嘻歙熹矽蟋郗唏皙隰樨浠忾蜥檄郄翕阋鳃舾屣葸螅咭粞觋欷僖醯鼷裼穸饩舄禊诶菥蓰", yi: "一以已意议义益亿易医艺食依移衣异伊仪宜射遗疑毅谊亦疫役忆抑尾乙译翼蛇溢椅沂泄逸蚁夷邑怡绎彝裔姨熠贻矣屹颐倚诣胰奕翌疙弈轶蛾驿壹猗臆弋铱旖漪迤佚翊诒怿痍懿饴峄揖眙镒仡黟肄咿翳挹缢呓刈咦嶷羿钇殪荑薏蜴镱噫癔苡悒嗌瘗衤佾埸圯舣酏劓", an: "安案按岸暗鞍氨俺胺铵谙庵黯鹌桉埯犴揞厂广", han: "厂汉韩含旱寒汗涵函喊憾罕焊翰邯撼瀚憨捍酣悍鼾邗颔蚶晗菡旰顸犴焓撖", ang: "昂仰盎肮", ao: "奥澳傲熬凹鳌敖遨鏖袄坳翱嗷拗懊岙螯骜獒鏊艹媪廒聱", wa: "瓦挖娃洼袜蛙凹哇佤娲呙腽", yu: "于与育余预域予遇奥语誉玉鱼雨渔裕愈娱欲吁舆宇羽逾豫郁寓吾狱喻御浴愉禹俞邪榆愚渝尉淤虞屿峪粥驭瑜禺毓钰隅芋熨瘀迂煜昱汩於臾盂聿竽萸妪腴圄谕觎揄龉谀俣馀庾妤瘐鬻欤鹬阈嵛雩鹆圉蜮伛纡窬窳饫蓣狳肀舁蝓燠", niu: "牛纽扭钮拗妞忸狃", o: "哦噢喔", ba: "把八巴拔伯吧坝爸霸罢芭跋扒叭靶疤笆耙鲅粑岜灞钯捌菝魃茇", pa: "怕帕爬扒趴琶啪葩耙杷钯筢", pi: "被批副否皮坏辟啤匹披疲罢僻毗坯脾譬劈媲屁琵邳裨痞癖陂丕枇噼霹吡纰砒铍淠郫埤濞睥芘蚍圮鼙罴蜱疋貔仳庀擗甓陴", bi: "比必币笔毕秘避闭佛辟壁弊彼逼碧鼻臂蔽拂泌璧庇痹毙弼匕鄙陛裨贲敝蓖吡篦纰俾铋毖筚荸薜婢哔跸濞秕荜愎睥妣芘箅髀畀滗狴萆嬖襞舭", bai: "百白败摆伯拜柏佰掰呗擘捭稗", bo: "波博播勃拨薄佛伯玻搏柏泊舶剥渤卜驳簿脖膊簸菠礴箔铂亳钵帛擘饽跛钹趵檗啵鹁擗踣", bei: "北被备倍背杯勃贝辈悲碑臂卑悖惫蓓陂钡狈呗焙碚褙庳鞴孛鹎邶鐾", ban: "办版半班般板颁伴搬斑扮拌扳瓣坂阪绊钣瘢舨癍", pan: "判盘番潘攀盼拚畔胖叛拌蹒磐爿蟠泮袢襻丬", bin: "份宾频滨斌彬濒殡缤鬓槟摈膑玢镔豳髌傧", bang: "帮邦彭旁榜棒膀镑绑傍磅蚌谤梆浜蒡", pang: "旁庞乓磅螃彷滂逄耪", beng: "泵崩蚌蹦迸绷甭嘣甏堋", bao: "报保包宝暴胞薄爆炮饱抱堡剥鲍曝葆瀑豹刨褒雹孢苞煲褓趵鸨龅勹", bu: "不部步布补捕堡埔卜埠簿哺怖钚卟瓿逋晡醭钸", pu: "普暴铺浦朴堡葡谱埔扑仆蒲曝瀑溥莆圃璞濮菩蹼匍噗氆攵镨攴镤", mian: "面棉免绵缅勉眠冕娩腼渑湎沔黾宀眄", po: "破繁坡迫颇朴泊婆泼魄粕鄱珀陂叵笸泺皤钋钷", fan: "反范犯繁饭泛翻凡返番贩烦拚帆樊藩矾梵蕃钒幡畈蘩蹯燔", fu: "府服副负富复福夫妇幅付扶父符附腐赴佛浮覆辅傅伏抚赋辐腹弗肤阜袱缚甫氟斧孚敷俯拂俘咐腑孵芙涪釜脯茯馥宓绂讣呋罘麸蝠匐芾蜉跗凫滏蝮驸绋蚨砩桴赙菔呒趺苻拊阝鲋怫稃郛莩幞祓艴黻黼鳆", ben: "本体奔苯笨夯贲锛畚坌", feng: "风丰封峰奉凤锋冯逢缝蜂枫疯讽烽俸沣酆砜葑唪", bian: "变便边编遍辩鞭辨贬匾扁卞汴辫砭苄蝙鳊弁窆笾煸褊碥忭缏", pian: "便片篇偏骗翩扁骈胼蹁谝犏缏", zhen: "镇真针圳振震珍阵诊填侦臻贞枕桢赈祯帧甄斟缜箴疹砧榛鸩轸稹溱蓁胗椹朕畛浈", biao: "表标彪镖裱飚膘飙镳婊骠飑杓髟鳔灬瘭", piao: "票朴漂飘嫖瓢剽缥殍瞟骠嘌莩螵", huo: "和活或货获火伙惑霍祸豁嚯藿锪蠖钬耠镬夥灬劐攉", bie: "别鳖憋瘪蹩", min: "民敏闽闵皿泯岷悯珉抿黾缗玟愍苠鳘", fen: "分份纷奋粉氛芬愤粪坟汾焚酚吩忿棼玢鼢瀵偾鲼", bing: "并病兵冰屏饼炳秉丙摒柄槟禀枋邴冫", geng: "更耕颈庚耿梗埂羹哽赓绠鲠", fang: "方放房防访纺芳仿坊妨肪邡舫彷枋鲂匚钫", xian: "现先县见线限显险献鲜洗宪纤陷闲贤仙衔掀咸嫌掺羡弦腺痫娴舷馅酰铣冼涎暹籼锨苋蚬跹岘藓燹鹇氙莶霰跣猃彡祆筅", fou: "不否缶", ca: "拆擦嚓礤", cha: "查察差茶插叉刹茬楂岔诧碴嚓喳姹杈汊衩搽槎镲苴檫馇锸猹", cai: "才采财材菜彩裁蔡猜踩睬", can: "参残餐灿惨蚕掺璨惭粲孱骖黪", shen: "信深参身神什审申甚沈伸慎渗肾绅莘呻婶娠砷蜃哂椹葚吲糁渖诜谂矧胂", cen: "参岑涔", san: "三参散伞叁糁馓毵", cang: "藏仓苍沧舱臧伧", zang: "藏脏葬赃臧奘驵", chen: "称陈沈沉晨琛臣尘辰衬趁忱郴宸谌碜嗔抻榇伧谶龀肜", cao: "草操曹槽糙嘈漕螬艚屮", ce: "策测册侧厕栅恻", ze: "责则泽择侧咋啧仄箦赜笮舴昃迮帻", zhai: "债择齐宅寨侧摘窄斋祭翟砦瘵哜", dao: "到道导岛倒刀盗稻蹈悼捣叨祷焘氘纛刂帱忉", ceng: "层曾蹭噌", zha: "查扎炸诈闸渣咋乍榨楂札栅眨咤柞喳喋铡蚱吒怍砟揸痄哳齄", chai: "差拆柴钗豺侪虿瘥", ci: "次此差词辞刺瓷磁兹慈茨赐祠伺雌疵鹚糍呲粢", zi: "资自子字齐咨滋仔姿紫兹孜淄籽梓鲻渍姊吱秭恣甾孳訾滓锱辎趑龇赀眦缁呲笫谘嵫髭茈粢觜耔", cuo: "措错磋挫搓撮蹉锉厝嵯痤矬瘥脞鹾", chan: "产单阐崭缠掺禅颤铲蝉搀潺蟾馋忏婵孱觇廛谄谗澶骣羼躔蒇冁", shan: "山单善陕闪衫擅汕扇掺珊禅删膳缮赡鄯栅煽姗跚鳝嬗潸讪舢苫疝掸膻钐剡蟮芟埏彡骟", zhan: "展战占站崭粘湛沾瞻颤詹斩盏辗绽毡栈蘸旃谵搌", xin: "新心信辛欣薪馨鑫芯锌忻莘昕衅歆囟忄镡", lian: "联连练廉炼脸莲恋链帘怜涟敛琏镰濂楝鲢殓潋裢裣臁奁莶蠊蔹", chang: "场长厂常偿昌唱畅倡尝肠敞倘猖娼淌裳徜昶怅嫦菖鲳阊伥苌氅惝鬯", zhang: "长张章障涨掌帐胀彰丈仗漳樟账杖璋嶂仉瘴蟑獐幛鄣嫜", chao: "超朝潮炒钞抄巢吵剿绰嘲晁焯耖怊", zhao: "着照招找召朝赵兆昭肇罩钊沼嘲爪诏濯啁棹笊", zhou: "调州周洲舟骤轴昼宙粥皱肘咒帚胄绉纣妯啁诌繇碡籀酎荮", che: "车彻撤尺扯澈掣坼砗屮", ju: "车局据具举且居剧巨聚渠距句拒俱柜菊拘炬桔惧矩鞠驹锯踞咀瞿枸掬沮莒橘飓疽钜趄踽遽琚龃椐苣裾榘狙倨榉苴讵雎锔窭鞫犋屦醵", cheng: "成程城承称盛抢乘诚呈净惩撑澄秤橙骋逞瞠丞晟铛埕塍蛏柽铖酲裎枨", rong: "容荣融绒溶蓉熔戎榕茸冗嵘肜狨蝾", sheng: "生声升胜盛乘圣剩牲甸省绳笙甥嵊晟渑眚", deng: "等登邓灯澄凳瞪蹬噔磴嶝镫簦戥", zhi: "制之治质职只志至指织支值知识直致执置止植纸拓智殖秩旨址滞氏枝芝脂帜汁肢挚稚酯掷峙炙栉侄芷窒咫吱趾痔蜘郅桎雉祉郦陟痣蛭帙枳踯徵胝栀贽祗豸鸷摭轵卮轾彘觯絷跖埴夂黹忮骘膣踬", zheng: "政正证争整征郑丁症挣蒸睁铮筝拯峥怔诤狰徵钲", tang: "堂唐糖汤塘躺趟倘棠烫淌膛搪镗傥螳溏帑羰樘醣螗耥铴瑭", chi: "持吃池迟赤驰尺斥齿翅匙痴耻炽侈弛叱啻坻眙嗤墀哧茌豉敕笞饬踟蚩柢媸魑篪褫彳鸱螭瘛眵傺", shi: "是时实事市十使世施式势视识师史示石食始士失适试什泽室似诗饰殖释驶氏硕逝湿蚀狮誓拾尸匙仕柿矢峙侍噬嗜栅拭嘘屎恃轼虱耆舐莳铈谥炻豕鲥饣螫酾筮埘弑礻蓍鲺贳", qi: "企其起期气七器汽奇齐启旗棋妻弃揭枝歧欺骑契迄亟漆戚岂稽岐琦栖缉琪泣乞砌祁崎绮祺祈凄淇杞脐麒圻憩芪伎俟畦耆葺沏萋骐鳍綦讫蕲屺颀亓碛柒啐汔綮萁嘁蛴槭欹芑桤丌蜞", chuai: "揣踹啜搋膪", tuo: "托脱拓拖妥驼陀沱鸵驮唾椭坨佗砣跎庹柁橐乇铊沲酡鼍箨柝", duo: "多度夺朵躲铎隋咄堕舵垛惰哆踱跺掇剁柁缍沲裰哚隳", xue: "学血雪削薛穴靴谑噱鳕踅泶彐", chong: "重种充冲涌崇虫宠忡憧舂茺铳艟", chou: "筹抽绸酬愁丑臭仇畴稠瞅踌惆俦瘳雠帱", qiu: "求球秋丘邱仇酋裘龟囚遒鳅虬蚯泅楸湫犰逑巯艽俅蝤赇鼽糗", xiu: "修秀休宿袖绣臭朽锈羞嗅岫溴庥馐咻髹鸺貅", chu: "出处础初助除储畜触楚厨雏矗橱锄滁躇怵绌搐刍蜍黜杵蹰亍樗憷楮", tuan: "团揣湍疃抟彖", zhui: "追坠缀揣椎锥赘惴隹骓缒", chuan: "传川船穿串喘椽舛钏遄氚巛舡", zhuan: "专转传赚砖撰篆馔啭颛", yuan: "元员院原源远愿园援圆缘袁怨渊苑宛冤媛猿垣沅塬垸鸳辕鸢瑗圜爰芫鼋橼螈眢箢掾", cuan: "窜攒篡蹿撺爨汆镩", chuang: "创床窗闯幢疮怆", zhuang: "装状庄壮撞妆幢桩奘僮戆", chui: "吹垂锤炊椎陲槌捶棰", chun: "春纯醇淳唇椿蠢鹑朐莼肫蝽", zhun: "准屯淳谆肫窀", cu: "促趋趣粗簇醋卒蹴猝蹙蔟殂徂", dun: "吨顿盾敦蹲墩囤沌钝炖盹遁趸砘礅", qu: "区去取曲趋渠趣驱屈躯衢娶祛瞿岖龋觑朐蛐癯蛆苣阒诎劬蕖蘧氍黢蠼璩麴鸲磲", xu: "需许续须序徐休蓄畜虚吁绪叙旭邪恤墟栩絮圩婿戌胥嘘浒煦酗诩朐盱蓿溆洫顼勖糈砉醑", chuo: "辍绰戳淖啜龊踔辶", zu: "组族足祖租阻卒俎诅镞菹", ji: "济机其技基记计系期际及集级几给积极己纪即继击既激绩急奇吉季齐疾迹鸡剂辑籍寄挤圾冀亟寂暨脊跻肌稽忌饥祭缉棘矶汲畸姬藉瘠骥羁妓讥稷蓟悸嫉岌叽伎鲫诘楫荠戟箕霁嵇觊麂畿玑笈犄芨唧屐髻戢佶偈笄跽蒺乩咭赍嵴虮掎齑殛鲚剞洎丌墼蕺彐芰哜", cong: "从丛匆聪葱囱琮淙枞骢苁璁", zong: "总从综宗纵踪棕粽鬃偬枞腙", cou: "凑辏腠楱", cui: "衰催崔脆翠萃粹摧璀瘁悴淬啐隹毳榱", wei: "为位委未维卫围违威伟危味微唯谓伪慰尾魏韦胃畏帷喂巍萎蔚纬潍尉渭惟薇苇炜圩娓诿玮崴桅偎逶倭猥囗葳隗痿猬涠嵬韪煨艉隹帏闱洧沩隈鲔軎", cun: "村存寸忖皴", zuo: "作做座左坐昨佐琢撮祚柞唑嘬酢怍笮阼胙", zuan: "钻纂攥缵躜", da: "大达打答搭沓瘩惮嗒哒耷鞑靼褡笪怛妲", dai: "大代带待贷毒戴袋歹呆隶逮岱傣棣怠殆黛甙埭诒绐玳呔迨", tai: "大台太态泰抬胎汰钛苔薹肽跆邰鲐酞骀炱", ta: "他它她拓塔踏塌榻沓漯獭嗒挞蹋趿遢铊鳎溻闼", dan: "但单石担丹胆旦弹蛋淡诞氮郸耽殚惮儋眈疸澹掸膻啖箪聃萏瘅赕", lu: "路六陆录绿露鲁卢炉鹿禄赂芦庐碌麓颅泸卤潞鹭辘虏璐漉噜戮鲈掳橹轳逯渌蓼撸鸬栌氇胪镥簏舻辂垆", tan: "谈探坦摊弹炭坛滩贪叹谭潭碳毯瘫檀痰袒坍覃忐昙郯澹钽锬", ren: "人任认仁忍韧刃纫饪妊荏稔壬仞轫亻衽", jie: "家结解价界接节她届介阶街借杰洁截姐揭捷劫戒皆竭桔诫楷秸睫藉拮芥诘碣嗟颉蚧孑婕疖桀讦疥偈羯袷哜喈卩鲒骱", yan: "研严验演言眼烟沿延盐炎燕岩宴艳颜殷彦掩淹阎衍铅雁咽厌焰堰砚唁焉晏檐蜒奄俨腌妍谚兖筵焱偃闫嫣鄢湮赝胭琰滟阉魇酽郾恹崦芫剡鼹菸餍埏谳讠厣罨", dang: "当党档荡挡宕砀铛裆凼菪谠", tao: "套讨跳陶涛逃桃萄淘掏滔韬叨洮啕绦饕鼗", tiao: "条调挑跳迢眺苕窕笤佻啁粜髫铫祧龆蜩鲦", te: "特忑忒铽慝", de: "的地得德底锝", dei: "得", di: "的地第提低底抵弟迪递帝敌堤蒂缔滴涤翟娣笛棣荻谛狄邸嘀砥坻诋嫡镝碲骶氐柢籴羝睇觌", ti: "体提题弟替梯踢惕剔蹄棣啼屉剃涕锑倜悌逖嚏荑醍绨鹈缇裼", tui: "推退弟腿褪颓蜕忒煺", you: "有由又优游油友右邮尤忧幼犹诱悠幽佑釉柚铀鱿囿酉攸黝莠猷蝣疣呦蚴莸莜铕宥繇卣牖鼬尢蚰侑", dian: "电点店典奠甸碘淀殿垫颠滇癫巅惦掂癜玷佃踮靛钿簟坫阽", tian: "天田添填甜甸恬腆佃舔钿阗忝殄畋栝掭", zhu: "主术住注助属逐宁著筑驻朱珠祝猪诸柱竹铸株瞩嘱贮煮烛苎褚蛛拄铢洙竺蛀渚伫杼侏澍诛茱箸炷躅翥潴邾槠舳橥丶瘃麈疰", nian: "年念酿辗碾廿捻撵拈蔫鲶埝鲇辇黏", diao: "调掉雕吊钓刁貂凋碉鲷叼铫铞", yao: "要么约药邀摇耀腰遥姚窑瑶咬尧钥谣肴夭侥吆疟妖幺杳舀窕窈曜鹞爻繇徭轺铫鳐崾珧", die: "跌叠蝶迭碟爹谍牒耋佚喋堞瓞鲽垤揲蹀", she: "设社摄涉射折舍蛇拾舌奢慑赦赊佘麝歙畲厍猞揲滠", ye: "业也夜叶射野液冶喝页爷耶邪咽椰烨掖拽曳晔谒腋噎揶靥邺铘揲", xie: "些解协写血叶谢械鞋胁斜携懈契卸谐泄蟹邪歇泻屑挟燮榭蝎撷偕亵楔颉缬邂鲑瀣勰榍薤绁渫廨獬躞", zhe: "这者着著浙折哲蔗遮辙辄柘锗褶蜇蛰鹧谪赭摺乇磔螫", ding: "定订顶丁鼎盯钉锭叮仃铤町酊啶碇腚疔玎耵", diu: "丢铥", ting: "听庭停厅廷挺亭艇婷汀铤烃霆町蜓葶梃莛", dong: "动东董冬洞懂冻栋侗咚峒氡恫胴硐垌鸫岽胨", tong: "同通统童痛铜桶桐筒彤侗佟潼捅酮砼瞳恸峒仝嗵僮垌茼", zhong: "中重种众终钟忠仲衷肿踵冢盅蚣忪锺舯螽夂", dou: "都斗读豆抖兜陡逗窦渎蚪痘蔸钭篼", du: "度都独督读毒渡杜堵赌睹肚镀渎笃竺嘟犊妒牍蠹椟黩芏髑", duan: "断段短端锻缎煅椴簖", dui: "对队追敦兑堆碓镦怼憝", rui: "瑞兑锐睿芮蕊蕤蚋枘", yue: "月说约越乐跃兑阅岳粤悦曰钥栎钺樾瀹龠哕刖", tun: "吞屯囤褪豚臀饨暾氽", hui: "会回挥汇惠辉恢徽绘毁慧灰贿卉悔秽溃荟晖彗讳诲珲堕诙蕙晦睢麾烩茴喙桧蛔洄浍虺恚蟪咴隳缋哕", wu: "务物无五武午吴舞伍污乌误亡恶屋晤悟吾雾芜梧勿巫侮坞毋诬呜钨邬捂鹜兀婺妩於戊鹉浯蜈唔骛仵焐芴鋈庑鼯牾怃圬忤痦迕杌寤阢", ya: "亚压雅牙押鸭呀轧涯崖邪芽哑讶鸦娅衙丫蚜碣垭伢氩桠琊揠吖睚痖疋迓岈砑", he: "和合河何核盖贺喝赫荷盒鹤吓呵苛禾菏壑褐涸阂阖劾诃颌嗬貉曷翮纥盍", wo: "我握窝沃卧挝涡斡渥幄蜗喔倭莴龌肟硪", en: "恩摁蒽", n: "嗯唔", er: "而二尔儿耳迩饵洱贰铒珥佴鸸鲕", fa: "发法罚乏伐阀筏砝垡珐", quan: "全权券泉圈拳劝犬铨痊诠荃醛蜷颧绻犭筌鬈悛辁畎", fei: "费非飞肥废菲肺啡沸匪斐蜚妃诽扉翡霏吠绯腓痱芾淝悱狒榧砩鲱篚镄", pei: "配培坏赔佩陪沛裴胚妃霈淠旆帔呸醅辔锫", ping: "平评凭瓶冯屏萍苹乒坪枰娉俜鲆", fo: "佛", hu: "和护许户核湖互乎呼胡戏忽虎沪糊壶葫狐蝴弧瑚浒鹄琥扈唬滹惚祜囫斛笏芴醐猢怙唿戽槲觳煳鹕冱瓠虍岵鹱烀轷", ga: "夹咖嘎尬噶旮伽尕钆尜", ge: "个合各革格歌哥盖隔割阁戈葛鸽搁胳舸疙铬骼蛤咯圪镉颌仡硌嗝鬲膈纥袼搿塥哿虼", ha: "哈蛤铪", xia: "下夏峡厦辖霞夹虾狭吓侠暇遐瞎匣瑕唬呷黠硖罅狎瘕柙", gai: "改该盖概溉钙丐芥赅垓陔戤", hai: "海还害孩亥咳骸骇氦嗨胲醢", gan: "干感赶敢甘肝杆赣乾柑尴竿秆橄矸淦苷擀酐绀泔坩旰疳澉", gang: "港钢刚岗纲冈杠缸扛肛罡戆筻", jiang: "将强江港奖讲降疆蒋姜浆匠酱僵桨绛缰犟豇礓洚茳糨耩", hang: "行航杭巷夯吭桁沆绗颃", gong: "工公共供功红贡攻宫巩龚恭拱躬弓汞蚣珙觥肱廾", hong: "红宏洪轰虹鸿弘哄烘泓訇蕻闳讧荭黉薨", guang: "广光逛潢犷胱咣桄", qiong: "穷琼穹邛茕筇跫蛩銎", gao: "高告搞稿膏糕镐皋羔锆杲郜睾诰藁篙缟槁槔", hao: "好号毫豪耗浩郝皓昊皋蒿壕灏嚎濠蚝貉颢嗥薅嚆", li: "理力利立里李历例离励礼丽黎璃厉厘粒莉梨隶栗荔沥犁漓哩狸藜罹篱鲤砺吏澧俐骊溧砾莅锂笠蠡蛎痢雳俪傈醴栎郦俚枥喱逦娌鹂戾砬唳坜疠蜊黧猁鬲粝蓠呖跞疬缡鲡鳢嫠詈悝苈篥轹", jia: "家加价假佳架甲嘉贾驾嫁夹稼钾挟拮迦伽颊浃枷戛荚痂颉镓笳珈岬胛袈郏葭袷瘕铗跏蛱恝哿", luo: "落罗络洛逻螺锣骆萝裸漯烙摞骡咯箩珞捋荦硌雒椤镙跞瘰泺脶猡倮蠃", ke: "可科克客刻课颗渴壳柯棵呵坷恪苛咳磕珂稞瞌溘轲窠嗑疴蝌岢铪颏髁蚵缂氪骒钶锞", qia: "卡恰洽掐髂袷咭葜", gei: "给", gen: "根跟亘艮哏茛", hen: "很狠恨痕哏", gou: "构购够句沟狗钩拘勾苟垢枸篝佝媾诟岣彀缑笱鞲觏遘", kou: "口扣寇叩抠佝蔻芤眍筘", gu: "股古顾故固鼓骨估谷贾姑孤雇辜菇沽咕呱锢钴箍汩梏痼崮轱鸪牯蛊诂毂鹘菰罟嘏臌觚瞽蛄酤牿鲴", pai: "牌排派拍迫徘湃俳哌蒎", gua: "括挂瓜刮寡卦呱褂剐胍诖鸹栝呙", tou: "投头透偷愉骰亠", guai: "怪拐乖", kuai: "会快块筷脍蒯侩浍郐蒉狯哙", guan: "关管观馆官贯冠惯灌罐莞纶棺斡矜倌鹳鳏盥掼涫", wan: "万完晚湾玩碗顽挽弯蔓丸莞皖宛婉腕蜿惋烷琬畹豌剜纨绾脘菀芄箢", ne: "呢哪呐讷疒", gui: "规贵归轨桂柜圭鬼硅瑰跪龟匮闺诡癸鳜桧皈鲑刽晷傀眭妫炅庋簋刿宄匦", jun: "军均俊君峻菌竣钧骏龟浚隽郡筠皲麇捃", jiong: "窘炯迥炅冂扃", jue: "决绝角觉掘崛诀獗抉爵嚼倔厥蕨攫珏矍蹶谲镢鳜噱桷噘撅橛孓觖劂爝", gun: "滚棍辊衮磙鲧绲丨", hun: "婚混魂浑昏棍珲荤馄诨溷阍", guo: "国过果郭锅裹帼涡椁囗蝈虢聒埚掴猓崞蜾呙馘", hei: "黑嘿嗨", kan: "看刊勘堪坎砍侃嵌槛瞰阚龛戡凵莰", heng: "衡横恒亨哼珩桁蘅", mo: "万没么模末冒莫摩墨默磨摸漠脉膜魔沫陌抹寞蘑摹蓦馍茉嘿谟秣蟆貉嫫镆殁耱嬷麽瘼貊貘", peng: "鹏朋彭膨蓬碰苹棚捧亨烹篷澎抨硼怦砰嘭蟛堋", hou: "后候厚侯猴喉吼逅篌糇骺後鲎瘊堠", hua: "化华划话花画滑哗豁骅桦猾铧砉", huai: "怀坏淮徊槐踝", huan: "还环换欢患缓唤焕幻痪桓寰涣宦垸洹浣豢奂郇圜獾鲩鬟萑逭漶锾缳擐", xun: "讯训迅孙寻询循旬巡汛勋逊熏徇浚殉驯鲟薰荀浔洵峋埙巽郇醺恂荨窨蕈曛獯", huang: "黄荒煌皇凰慌晃潢谎惶簧璜恍幌湟蝗磺隍徨遑肓篁鳇蟥癀", nai: "能乃奶耐奈鼐萘氖柰佴艿", luan: "乱卵滦峦鸾栾銮挛孪脔娈", qie: "切且契窃茄砌锲怯伽惬妾趄挈郄箧慊", jian: "建间件见坚检健监减简艰践兼鉴键渐柬剑尖肩舰荐箭浅剪俭碱茧奸歼拣捡煎贱溅槛涧堑笺谏饯锏缄睑謇蹇腱菅翦戬毽笕犍硷鞯牮枧湔鲣囝裥踺搛缣鹣蒹谫僭戋趼楗", nan: "南难男楠喃囡赧腩囝蝻", qian: "前千钱签潜迁欠纤牵浅遣谦乾铅歉黔谴嵌倩钳茜虔堑钎骞阡掮钤扦芊犍荨仟芡悭缱佥愆褰凵肷岍搴箝慊椠", qiang: "强抢疆墙枪腔锵呛羌蔷襁羟跄樯戕嫱戗炝镪锖蜣", xiang: "向项相想乡象响香降像享箱羊祥湘详橡巷翔襄厢镶飨饷缃骧芗庠鲞葙蟓", jiao: "教交较校角觉叫脚缴胶轿郊焦骄浇椒礁佼蕉娇矫搅绞酵剿嚼饺窖跤蛟侥狡姣皎茭峤铰醮鲛湫徼鹪僬噍艽挢敫", zhuo: "着著缴桌卓捉琢灼浊酌拙茁涿镯淖啄濯焯倬擢斫棹诼浞禚", qiao: "桥乔侨巧悄敲俏壳雀瞧翘窍峭锹撬荞跷樵憔鞘橇峤诮谯愀鞒硗劁缲", xiao: "小效销消校晓笑肖削孝萧俏潇硝宵啸嚣霄淆哮筱逍姣箫骁枭哓绡蛸崤枵魈", si: "司四思斯食私死似丝饲寺肆撕泗伺嗣祀厮驷嘶锶俟巳蛳咝耜笥纟糸鸶缌澌姒汜厶兕", kai: "开凯慨岂楷恺揩锴铠忾垲剀锎蒈", jin: "进金今近仅紧尽津斤禁锦劲晋谨筋巾浸襟靳瑾烬缙钅矜觐堇馑荩噤廑妗槿赆衿卺", qin: "亲勤侵秦钦琴禽芹沁寝擒覃噙矜嗪揿溱芩衾廑锓吣檎螓", jing: "经京精境竞景警竟井惊径静劲敬净镜睛晶颈荆兢靖泾憬鲸茎腈菁胫阱旌粳靓痉箐儆迳婧肼刭弪獍", ying: "应营影英景迎映硬盈赢颖婴鹰荧莹樱瑛蝇萦莺颍膺缨瀛楹罂荥萤鹦滢蓥郢茔嘤璎嬴瘿媵撄潆", jiu: "就究九酒久救旧纠舅灸疚揪咎韭玖臼柩赳鸠鹫厩啾阄桕僦鬏", zui: "最罪嘴醉咀蕞觜", juan: "卷捐圈眷娟倦绢隽镌涓鹃鄄蠲狷锩桊", suan: "算酸蒜狻", yun: "员运云允孕蕴韵酝耘晕匀芸陨纭郧筠恽韫郓氲殒愠昀菀狁", qun: "群裙逡麇", ka: "卡喀咖咔咯佧胩", kang: "康抗扛慷炕亢糠伉钪闶", keng: "坑铿吭", kao: "考靠烤拷铐栲尻犒", ken: "肯垦恳啃龈裉", yin: "因引银印音饮阴隐姻殷淫尹荫吟瘾寅茵圻垠鄞湮蚓氤胤龈窨喑铟洇狺夤廴吲霪茚堙", kong: "空控孔恐倥崆箜", ku: "苦库哭酷裤枯窟挎骷堀绔刳喾", kua: "跨夸垮挎胯侉", kui: "亏奎愧魁馈溃匮葵窥盔逵睽馗聩喟夔篑岿喹揆隗傀暌跬蒉愦悝蝰", kuan: "款宽髋", kuang: "况矿框狂旷眶匡筐邝圹哐贶夼诳诓纩", que: "确却缺雀鹊阙瘸榷炔阕悫", kun: "困昆坤捆琨锟鲲醌髡悃阃", kuo: "扩括阔廓蛞", la: "拉落垃腊啦辣蜡喇剌旯砬邋瘌", lai: "来莱赖睐徕籁涞赉濑癞崃疠铼", lan: "兰览蓝篮栏岚烂滥缆揽澜拦懒榄斓婪阑褴罱啉谰镧漤", lin: "林临邻赁琳磷淋麟霖鳞凛拎遴蔺吝粼嶙躏廪檩啉辚膦瞵懔", lang: "浪朗郎廊狼琅榔螂阆锒莨啷蒗稂", liang: "量两粮良辆亮梁凉谅粱晾靓踉莨椋魉墚", lao: "老劳落络牢捞涝烙姥佬崂唠酪潦痨醪铑铹栳耢", mu: "目模木亩幕母牧莫穆姆墓慕牟牡募睦缪沐暮拇姥钼苜仫毪坶", le: "了乐勒肋叻鳓嘞仂泐", lei: "类累雷勒泪蕾垒磊擂镭肋羸耒儡嫘缧酹嘞诔檑", sui: "随岁虽碎尿隧遂髓穗绥隋邃睢祟濉燧谇眭荽", lie: "列烈劣裂猎冽咧趔洌鬣埒捩躐", leng: "冷愣棱楞塄", ling: "领令另零灵龄陵岭凌玲铃菱棱伶羚苓聆翎泠瓴囹绫呤棂蛉酃鲮柃", lia: "俩", liao: "了料疗辽廖聊寥缪僚燎缭撂撩嘹潦镣寮蓼獠钌尥鹩", liu: "流刘六留柳瘤硫溜碌浏榴琉馏遛鎏骝绺镏旒熘鹨锍", lun: "论轮伦仑纶沦抡囵", lv: "率律旅绿虑履吕铝屡氯缕滤侣驴榈闾偻褛捋膂稆", lou: "楼露漏陋娄搂篓喽镂偻瘘髅耧蝼嵝蒌", mao: "贸毛矛冒貌茂茅帽猫髦锚懋袤牦卯铆耄峁瑁蟊茆蝥旄泖昴瞀", long: "龙隆弄垄笼拢聋陇胧珑窿茏咙砻垅泷栊癃", nong: "农浓弄脓侬哝", shuang: "双爽霜孀泷", shu: "术书数属树输束述署朱熟殊蔬舒疏鼠淑叔暑枢墅俞曙抒竖蜀薯梳戍恕孰沭赎庶漱塾倏澍纾姝菽黍腧秫毹殳疋摅", shuai: "率衰帅摔甩蟀", lve: "略掠锊", ma: "么马吗摩麻码妈玛嘛骂抹蚂唛蟆犸杩", me: "么麽", mai: "买卖麦迈脉埋霾荬劢", man: "满慢曼漫埋蔓瞒蛮鳗馒幔谩螨熳缦镘颟墁鞔", mi: "米密秘迷弥蜜谜觅靡泌眯麋猕谧咪糜宓汨醚嘧弭脒冖幂祢縻蘼芈糸敉", men: "们门闷瞒汶扪焖懑鞔钔", mang: "忙盲茫芒氓莽蟒邙硭漭", meng: "蒙盟梦猛孟萌氓朦锰檬勐懵蟒蜢虻黾蠓艨甍艋瞢礞", miao: "苗秒妙描庙瞄缪渺淼藐缈邈鹋杪眇喵", mou: "某谋牟缪眸哞鍪蛑侔厶", miu: "缪谬", mei: "美没每煤梅媒枚妹眉魅霉昧媚玫酶镁湄寐莓袂楣糜嵋镅浼猸鹛", wen: "文问闻稳温纹吻蚊雯紊瘟汶韫刎璺玟阌", mie: "灭蔑篾乜咩蠛", ming: "明名命鸣铭冥茗溟酩瞑螟暝", na: "内南那纳拿哪娜钠呐捺衲镎肭", nei: "内那哪馁", nuo: "难诺挪娜糯懦傩喏搦锘", ruo: "若弱偌箬", nang: "囊馕囔曩攮", nao: "脑闹恼挠瑙淖孬垴铙桡呶硇猱蛲", ni: "你尼呢泥疑拟逆倪妮腻匿霓溺旎昵坭铌鲵伲怩睨猊", nen: "嫩恁", neng: "能", nin: "您恁", niao: "鸟尿溺袅脲茑嬲", nie: "摄聂捏涅镍孽捻蘖啮蹑嗫臬镊颞乜陧", niang: "娘酿", ning: "宁凝拧泞柠咛狞佞聍甯", nu: "努怒奴弩驽帑孥胬", nv: "女钕衄恧", ru: "入如女乳儒辱汝茹褥孺濡蠕嚅缛溽铷洳薷襦颥蓐", nuan: "暖", nve: "虐疟", re: "热若惹喏", ou: "区欧偶殴呕禺藕讴鸥瓯沤耦怄", pao: "跑炮泡抛刨袍咆疱庖狍匏脬", pou: "剖掊裒", pen: "喷盆湓", pie: "瞥撇苤氕丿", pin: "品贫聘频拼拚颦姘嫔榀牝", se: "色塞瑟涩啬穑铯槭", qing: "情青清请亲轻庆倾顷卿晴氢擎氰罄磬蜻箐鲭綮苘黥圊檠謦", zan: "赞暂攒堑昝簪糌瓒錾趱拶", shao: "少绍召烧稍邵哨韶捎勺梢鞘芍苕劭艄筲杓潲", sao: "扫骚嫂梢缫搔瘙臊埽缲鳋", sha: "沙厦杀纱砂啥莎刹杉傻煞鲨霎嗄痧裟挲铩唼歃", xuan: "县选宣券旋悬轩喧玄绚渲璇炫萱癣漩眩暄煊铉楦泫谖痃碹揎镟儇", ran: "然染燃冉苒髯蚺", rang: "让壤攘嚷瓤穰禳", rao: "绕扰饶娆桡荛", reng: "仍扔", ri: "日", rou: "肉柔揉糅鞣蹂", ruan: "软阮朊", run: "润闰", sa: "萨洒撒飒卅仨脎", suo: "所些索缩锁莎梭琐嗦唆唢娑蓑羧挲桫嗍睃", sai: "思赛塞腮噻鳃", shui: "说水税谁睡氵", sang: "桑丧嗓搡颡磉", sen: "森", seng: "僧", shai: "筛晒", shang: "上商尚伤赏汤裳墒晌垧觞殇熵绱", xing: "行省星腥猩惺兴刑型形邢饧醒幸杏性姓陉荇荥擤悻硎", shou: "收手受首售授守寿瘦兽狩绶艏扌", shuo: "说数硕烁朔铄妁槊蒴搠", su: "速素苏诉缩塑肃俗宿粟溯酥夙愫簌稣僳谡涑蔌嗉觫", shua: "刷耍唰", shuan: "栓拴涮闩", shun: "顺瞬舜吮", song: "送松宋讼颂耸诵嵩淞怂悚崧凇忪竦菘", sou: "艘搜擞嗽嗖叟馊薮飕嗾溲锼螋瞍", sun: "损孙笋荪榫隼狲飧", teng: "腾疼藤滕誊", tie: "铁贴帖餮萜", tu: "土突图途徒涂吐屠兔秃凸荼钍菟堍酴", wai: "外歪崴", wang: "王望往网忘亡旺汪枉妄惘罔辋魍", weng: "翁嗡瓮蓊蕹", zhua: "抓挝爪", yang: "样养央阳洋扬杨羊详氧仰秧痒漾疡泱殃恙鸯徉佯怏炀烊鞅蛘", xiong: "雄兄熊胸凶匈汹芎", yo: "哟唷", yong: "用永拥勇涌泳庸俑踊佣咏雍甬镛臃邕蛹恿慵壅痈鳙墉饔喁", za: "杂扎咱砸咋匝咂拶", zai: "在再灾载栽仔宰哉崽甾", zao: "造早遭枣噪灶燥糟凿躁藻皂澡蚤唣", zei: "贼", zen: "怎谮", zeng: "增曾综赠憎锃甑罾缯", zhei: "这", zou: "走邹奏揍诹驺陬楱鄹鲰", zhuai: "转拽", zun: "尊遵鳟樽撙", dia: "嗲", nou: "耨" }, We = e("ec57"), Ye = function(k) {
+      e("f8b0"), oe.render = z, oe.__scopeId = "data-v-4b78e5a1";
+      var le = oe, ge = { a: "阿啊呵腌嗄吖锕", e: "额阿俄恶鹅遏鄂厄饿峨扼娥鳄哦蛾噩愕讹锷垩婀鹗萼谔莪腭锇颚呃阏屙苊轭", ai: "爱埃艾碍癌哀挨矮隘蔼唉皑哎霭捱暧嫒嗳瑷嗌锿砹", ei: "诶", xi: "系西席息希习吸喜细析戏洗悉锡溪惜稀袭夕洒晰昔牺腊烯熙媳栖膝隙犀蹊硒兮熄曦禧嬉玺奚汐徙羲铣淅嘻歙熹矽蟋郗唏皙隰樨浠忾蜥檄郄翕阋鳃舾屣葸螅咭粞觋欷僖醯鼷裼穸饩舄禊诶菥蓰", yi: "一以已意议义益亿易医艺食依移衣异伊仪宜射遗疑毅谊亦疫役忆抑尾乙译翼蛇溢椅沂泄逸蚁夷邑怡绎彝裔姨熠贻矣屹颐倚诣胰奕翌疙弈轶蛾驿壹猗臆弋铱旖漪迤佚翊诒怿痍懿饴峄揖眙镒仡黟肄咿翳挹缢呓刈咦嶷羿钇殪荑薏蜴镱噫癔苡悒嗌瘗衤佾埸圯舣酏劓", an: "安案按岸暗鞍氨俺胺铵谙庵黯鹌桉埯犴揞厂广", han: "厂汉韩含旱寒汗涵函喊憾罕焊翰邯撼瀚憨捍酣悍鼾邗颔蚶晗菡旰顸犴焓撖", ang: "昂仰盎肮", ao: "奥澳傲熬凹鳌敖遨鏖袄坳翱嗷拗懊岙螯骜獒鏊艹媪廒聱", wa: "瓦挖娃洼袜蛙凹哇佤娲呙腽", yu: "于与育余预域予遇奥语誉玉鱼雨渔裕愈娱欲吁舆宇羽逾豫郁寓吾狱喻御浴愉禹俞邪榆愚渝尉淤虞屿峪粥驭瑜禺毓钰隅芋熨瘀迂煜昱汩於臾盂聿竽萸妪腴圄谕觎揄龉谀俣馀庾妤瘐鬻欤鹬阈嵛雩鹆圉蜮伛纡窬窳饫蓣狳肀舁蝓燠", niu: "牛纽扭钮拗妞忸狃", o: "哦噢喔", ba: "把八巴拔伯吧坝爸霸罢芭跋扒叭靶疤笆耙鲅粑岜灞钯捌菝魃茇", pa: "怕帕爬扒趴琶啪葩耙杷钯筢", pi: "被批副否皮坏辟啤匹披疲罢僻毗坯脾譬劈媲屁琵邳裨痞癖陂丕枇噼霹吡纰砒铍淠郫埤濞睥芘蚍圮鼙罴蜱疋貔仳庀擗甓陴", bi: "比必币笔毕秘避闭佛辟壁弊彼逼碧鼻臂蔽拂泌璧庇痹毙弼匕鄙陛裨贲敝蓖吡篦纰俾铋毖筚荸薜婢哔跸濞秕荜愎睥妣芘箅髀畀滗狴萆嬖襞舭", bai: "百白败摆伯拜柏佰掰呗擘捭稗", bo: "波博播勃拨薄佛伯玻搏柏泊舶剥渤卜驳簿脖膊簸菠礴箔铂亳钵帛擘饽跛钹趵檗啵鹁擗踣", bei: "北被备倍背杯勃贝辈悲碑臂卑悖惫蓓陂钡狈呗焙碚褙庳鞴孛鹎邶鐾", ban: "办版半班般板颁伴搬斑扮拌扳瓣坂阪绊钣瘢舨癍", pan: "判盘番潘攀盼拚畔胖叛拌蹒磐爿蟠泮袢襻丬", bin: "份宾频滨斌彬濒殡缤鬓槟摈膑玢镔豳髌傧", bang: "帮邦彭旁榜棒膀镑绑傍磅蚌谤梆浜蒡", pang: "旁庞乓磅螃彷滂逄耪", beng: "泵崩蚌蹦迸绷甭嘣甏堋", bao: "报保包宝暴胞薄爆炮饱抱堡剥鲍曝葆瀑豹刨褒雹孢苞煲褓趵鸨龅勹", bu: "不部步布补捕堡埔卜埠簿哺怖钚卟瓿逋晡醭钸", pu: "普暴铺浦朴堡葡谱埔扑仆蒲曝瀑溥莆圃璞濮菩蹼匍噗氆攵镨攴镤", mian: "面棉免绵缅勉眠冕娩腼渑湎沔黾宀眄", po: "破繁坡迫颇朴泊婆泼魄粕鄱珀陂叵笸泺皤钋钷", fan: "反范犯繁饭泛翻凡返番贩烦拚帆樊藩矾梵蕃钒幡畈蘩蹯燔", fu: "府服副负富复福夫妇幅付扶父符附腐赴佛浮覆辅傅伏抚赋辐腹弗肤阜袱缚甫氟斧孚敷俯拂俘咐腑孵芙涪釜脯茯馥宓绂讣呋罘麸蝠匐芾蜉跗凫滏蝮驸绋蚨砩桴赙菔呒趺苻拊阝鲋怫稃郛莩幞祓艴黻黼鳆", ben: "本体奔苯笨夯贲锛畚坌", feng: "风丰封峰奉凤锋冯逢缝蜂枫疯讽烽俸沣酆砜葑唪", bian: "变便边编遍辩鞭辨贬匾扁卞汴辫砭苄蝙鳊弁窆笾煸褊碥忭缏", pian: "便片篇偏骗翩扁骈胼蹁谝犏缏", zhen: "镇真针圳振震珍阵诊填侦臻贞枕桢赈祯帧甄斟缜箴疹砧榛鸩轸稹溱蓁胗椹朕畛浈", biao: "表标彪镖裱飚膘飙镳婊骠飑杓髟鳔灬瘭", piao: "票朴漂飘嫖瓢剽缥殍瞟骠嘌莩螵", huo: "和活或货获火伙惑霍祸豁嚯藿锪蠖钬耠镬夥灬劐攉", bie: "别鳖憋瘪蹩", min: "民敏闽闵皿泯岷悯珉抿黾缗玟愍苠鳘", fen: "分份纷奋粉氛芬愤粪坟汾焚酚吩忿棼玢鼢瀵偾鲼", bing: "并病兵冰屏饼炳秉丙摒柄槟禀枋邴冫", geng: "更耕颈庚耿梗埂羹哽赓绠鲠", fang: "方放房防访纺芳仿坊妨肪邡舫彷枋鲂匚钫", xian: "现先县见线限显险献鲜洗宪纤陷闲贤仙衔掀咸嫌掺羡弦腺痫娴舷馅酰铣冼涎暹籼锨苋蚬跹岘藓燹鹇氙莶霰跣猃彡祆筅", fou: "不否缶", ca: "拆擦嚓礤", cha: "查察差茶插叉刹茬楂岔诧碴嚓喳姹杈汊衩搽槎镲苴檫馇锸猹", cai: "才采财材菜彩裁蔡猜踩睬", can: "参残餐灿惨蚕掺璨惭粲孱骖黪", shen: "信深参身神什审申甚沈伸慎渗肾绅莘呻婶娠砷蜃哂椹葚吲糁渖诜谂矧胂", cen: "参岑涔", san: "三参散伞叁糁馓毵", cang: "藏仓苍沧舱臧伧", zang: "藏脏葬赃臧奘驵", chen: "称陈沈沉晨琛臣尘辰衬趁忱郴宸谌碜嗔抻榇伧谶龀肜", cao: "草操曹槽糙嘈漕螬艚屮", ce: "策测册侧厕栅恻", ze: "责则泽择侧咋啧仄箦赜笮舴昃迮帻", zhai: "债择齐宅寨侧摘窄斋祭翟砦瘵哜", dao: "到道导岛倒刀盗稻蹈悼捣叨祷焘氘纛刂帱忉", ceng: "层曾蹭噌", zha: "查扎炸诈闸渣咋乍榨楂札栅眨咤柞喳喋铡蚱吒怍砟揸痄哳齄", chai: "差拆柴钗豺侪虿瘥", ci: "次此差词辞刺瓷磁兹慈茨赐祠伺雌疵鹚糍呲粢", zi: "资自子字齐咨滋仔姿紫兹孜淄籽梓鲻渍姊吱秭恣甾孳訾滓锱辎趑龇赀眦缁呲笫谘嵫髭茈粢觜耔", cuo: "措错磋挫搓撮蹉锉厝嵯痤矬瘥脞鹾", chan: "产单阐崭缠掺禅颤铲蝉搀潺蟾馋忏婵孱觇廛谄谗澶骣羼躔蒇冁", shan: "山单善陕闪衫擅汕扇掺珊禅删膳缮赡鄯栅煽姗跚鳝嬗潸讪舢苫疝掸膻钐剡蟮芟埏彡骟", zhan: "展战占站崭粘湛沾瞻颤詹斩盏辗绽毡栈蘸旃谵搌", xin: "新心信辛欣薪馨鑫芯锌忻莘昕衅歆囟忄镡", lian: "联连练廉炼脸莲恋链帘怜涟敛琏镰濂楝鲢殓潋裢裣臁奁莶蠊蔹", chang: "场长厂常偿昌唱畅倡尝肠敞倘猖娼淌裳徜昶怅嫦菖鲳阊伥苌氅惝鬯", zhang: "长张章障涨掌帐胀彰丈仗漳樟账杖璋嶂仉瘴蟑獐幛鄣嫜", chao: "超朝潮炒钞抄巢吵剿绰嘲晁焯耖怊", zhao: "着照招找召朝赵兆昭肇罩钊沼嘲爪诏濯啁棹笊", zhou: "调州周洲舟骤轴昼宙粥皱肘咒帚胄绉纣妯啁诌繇碡籀酎荮", che: "车彻撤尺扯澈掣坼砗屮", ju: "车局据具举且居剧巨聚渠距句拒俱柜菊拘炬桔惧矩鞠驹锯踞咀瞿枸掬沮莒橘飓疽钜趄踽遽琚龃椐苣裾榘狙倨榉苴讵雎锔窭鞫犋屦醵", cheng: "成程城承称盛抢乘诚呈净惩撑澄秤橙骋逞瞠丞晟铛埕塍蛏柽铖酲裎枨", rong: "容荣融绒溶蓉熔戎榕茸冗嵘肜狨蝾", sheng: "生声升胜盛乘圣剩牲甸省绳笙甥嵊晟渑眚", deng: "等登邓灯澄凳瞪蹬噔磴嶝镫簦戥", zhi: "制之治质职只志至指织支值知识直致执置止植纸拓智殖秩旨址滞氏枝芝脂帜汁肢挚稚酯掷峙炙栉侄芷窒咫吱趾痔蜘郅桎雉祉郦陟痣蛭帙枳踯徵胝栀贽祗豸鸷摭轵卮轾彘觯絷跖埴夂黹忮骘膣踬", zheng: "政正证争整征郑丁症挣蒸睁铮筝拯峥怔诤狰徵钲", tang: "堂唐糖汤塘躺趟倘棠烫淌膛搪镗傥螳溏帑羰樘醣螗耥铴瑭", chi: "持吃池迟赤驰尺斥齿翅匙痴耻炽侈弛叱啻坻眙嗤墀哧茌豉敕笞饬踟蚩柢媸魑篪褫彳鸱螭瘛眵傺", shi: "是时实事市十使世施式势视识师史示石食始士失适试什泽室似诗饰殖释驶氏硕逝湿蚀狮誓拾尸匙仕柿矢峙侍噬嗜栅拭嘘屎恃轼虱耆舐莳铈谥炻豕鲥饣螫酾筮埘弑礻蓍鲺贳", qi: "企其起期气七器汽奇齐启旗棋妻弃揭枝歧欺骑契迄亟漆戚岂稽岐琦栖缉琪泣乞砌祁崎绮祺祈凄淇杞脐麒圻憩芪伎俟畦耆葺沏萋骐鳍綦讫蕲屺颀亓碛柒啐汔綮萁嘁蛴槭欹芑桤丌蜞", chuai: "揣踹啜搋膪", tuo: "托脱拓拖妥驼陀沱鸵驮唾椭坨佗砣跎庹柁橐乇铊沲酡鼍箨柝", duo: "多度夺朵躲铎隋咄堕舵垛惰哆踱跺掇剁柁缍沲裰哚隳", xue: "学血雪削薛穴靴谑噱鳕踅泶彐", chong: "重种充冲涌崇虫宠忡憧舂茺铳艟", chou: "筹抽绸酬愁丑臭仇畴稠瞅踌惆俦瘳雠帱", qiu: "求球秋丘邱仇酋裘龟囚遒鳅虬蚯泅楸湫犰逑巯艽俅蝤赇鼽糗", xiu: "修秀休宿袖绣臭朽锈羞嗅岫溴庥馐咻髹鸺貅", chu: "出处础初助除储畜触楚厨雏矗橱锄滁躇怵绌搐刍蜍黜杵蹰亍樗憷楮", tuan: "团揣湍疃抟彖", zhui: "追坠缀揣椎锥赘惴隹骓缒", chuan: "传川船穿串喘椽舛钏遄氚巛舡", zhuan: "专转传赚砖撰篆馔啭颛", yuan: "元员院原源远愿园援圆缘袁怨渊苑宛冤媛猿垣沅塬垸鸳辕鸢瑗圜爰芫鼋橼螈眢箢掾", cuan: "窜攒篡蹿撺爨汆镩", chuang: "创床窗闯幢疮怆", zhuang: "装状庄壮撞妆幢桩奘僮戆", chui: "吹垂锤炊椎陲槌捶棰", chun: "春纯醇淳唇椿蠢鹑朐莼肫蝽", zhun: "准屯淳谆肫窀", cu: "促趋趣粗簇醋卒蹴猝蹙蔟殂徂", dun: "吨顿盾敦蹲墩囤沌钝炖盹遁趸砘礅", qu: "区去取曲趋渠趣驱屈躯衢娶祛瞿岖龋觑朐蛐癯蛆苣阒诎劬蕖蘧氍黢蠼璩麴鸲磲", xu: "需许续须序徐休蓄畜虚吁绪叙旭邪恤墟栩絮圩婿戌胥嘘浒煦酗诩朐盱蓿溆洫顼勖糈砉醑", chuo: "辍绰戳淖啜龊踔辶", zu: "组族足祖租阻卒俎诅镞菹", ji: "济机其技基记计系期际及集级几给积极己纪即继击既激绩急奇吉季齐疾迹鸡剂辑籍寄挤圾冀亟寂暨脊跻肌稽忌饥祭缉棘矶汲畸姬藉瘠骥羁妓讥稷蓟悸嫉岌叽伎鲫诘楫荠戟箕霁嵇觊麂畿玑笈犄芨唧屐髻戢佶偈笄跽蒺乩咭赍嵴虮掎齑殛鲚剞洎丌墼蕺彐芰哜", cong: "从丛匆聪葱囱琮淙枞骢苁璁", zong: "总从综宗纵踪棕粽鬃偬枞腙", cou: "凑辏腠楱", cui: "衰催崔脆翠萃粹摧璀瘁悴淬啐隹毳榱", wei: "为位委未维卫围违威伟危味微唯谓伪慰尾魏韦胃畏帷喂巍萎蔚纬潍尉渭惟薇苇炜圩娓诿玮崴桅偎逶倭猥囗葳隗痿猬涠嵬韪煨艉隹帏闱洧沩隈鲔軎", cun: "村存寸忖皴", zuo: "作做座左坐昨佐琢撮祚柞唑嘬酢怍笮阼胙", zuan: "钻纂攥缵躜", da: "大达打答搭沓瘩惮嗒哒耷鞑靼褡笪怛妲", dai: "大代带待贷毒戴袋歹呆隶逮岱傣棣怠殆黛甙埭诒绐玳呔迨", tai: "大台太态泰抬胎汰钛苔薹肽跆邰鲐酞骀炱", ta: "他它她拓塔踏塌榻沓漯獭嗒挞蹋趿遢铊鳎溻闼", dan: "但单石担丹胆旦弹蛋淡诞氮郸耽殚惮儋眈疸澹掸膻啖箪聃萏瘅赕", lu: "路六陆录绿露鲁卢炉鹿禄赂芦庐碌麓颅泸卤潞鹭辘虏璐漉噜戮鲈掳橹轳逯渌蓼撸鸬栌氇胪镥簏舻辂垆", tan: "谈探坦摊弹炭坛滩贪叹谭潭碳毯瘫檀痰袒坍覃忐昙郯澹钽锬", ren: "人任认仁忍韧刃纫饪妊荏稔壬仞轫亻衽", jie: "家结解价界接节她届介阶街借杰洁截姐揭捷劫戒皆竭桔诫楷秸睫藉拮芥诘碣嗟颉蚧孑婕疖桀讦疥偈羯袷哜喈卩鲒骱", yan: "研严验演言眼烟沿延盐炎燕岩宴艳颜殷彦掩淹阎衍铅雁咽厌焰堰砚唁焉晏檐蜒奄俨腌妍谚兖筵焱偃闫嫣鄢湮赝胭琰滟阉魇酽郾恹崦芫剡鼹菸餍埏谳讠厣罨", dang: "当党档荡挡宕砀铛裆凼菪谠", tao: "套讨跳陶涛逃桃萄淘掏滔韬叨洮啕绦饕鼗", tiao: "条调挑跳迢眺苕窕笤佻啁粜髫铫祧龆蜩鲦", te: "特忑忒铽慝", de: "的地得德底锝", dei: "得", di: "的地第提低底抵弟迪递帝敌堤蒂缔滴涤翟娣笛棣荻谛狄邸嘀砥坻诋嫡镝碲骶氐柢籴羝睇觌", ti: "体提题弟替梯踢惕剔蹄棣啼屉剃涕锑倜悌逖嚏荑醍绨鹈缇裼", tui: "推退弟腿褪颓蜕忒煺", you: "有由又优游油友右邮尤忧幼犹诱悠幽佑釉柚铀鱿囿酉攸黝莠猷蝣疣呦蚴莸莜铕宥繇卣牖鼬尢蚰侑", dian: "电点店典奠甸碘淀殿垫颠滇癫巅惦掂癜玷佃踮靛钿簟坫阽", tian: "天田添填甜甸恬腆佃舔钿阗忝殄畋栝掭", zhu: "主术住注助属逐宁著筑驻朱珠祝猪诸柱竹铸株瞩嘱贮煮烛苎褚蛛拄铢洙竺蛀渚伫杼侏澍诛茱箸炷躅翥潴邾槠舳橥丶瘃麈疰", nian: "年念酿辗碾廿捻撵拈蔫鲶埝鲇辇黏", diao: "调掉雕吊钓刁貂凋碉鲷叼铫铞", yao: "要么约药邀摇耀腰遥姚窑瑶咬尧钥谣肴夭侥吆疟妖幺杳舀窕窈曜鹞爻繇徭轺铫鳐崾珧", die: "跌叠蝶迭碟爹谍牒耋佚喋堞瓞鲽垤揲蹀", she: "设社摄涉射折舍蛇拾舌奢慑赦赊佘麝歙畲厍猞揲滠", ye: "业也夜叶射野液冶喝页爷耶邪咽椰烨掖拽曳晔谒腋噎揶靥邺铘揲", xie: "些解协写血叶谢械鞋胁斜携懈契卸谐泄蟹邪歇泻屑挟燮榭蝎撷偕亵楔颉缬邂鲑瀣勰榍薤绁渫廨獬躞", zhe: "这者着著浙折哲蔗遮辙辄柘锗褶蜇蛰鹧谪赭摺乇磔螫", ding: "定订顶丁鼎盯钉锭叮仃铤町酊啶碇腚疔玎耵", diu: "丢铥", ting: "听庭停厅廷挺亭艇婷汀铤烃霆町蜓葶梃莛", dong: "动东董冬洞懂冻栋侗咚峒氡恫胴硐垌鸫岽胨", tong: "同通统童痛铜桶桐筒彤侗佟潼捅酮砼瞳恸峒仝嗵僮垌茼", zhong: "中重种众终钟忠仲衷肿踵冢盅蚣忪锺舯螽夂", dou: "都斗读豆抖兜陡逗窦渎蚪痘蔸钭篼", du: "度都独督读毒渡杜堵赌睹肚镀渎笃竺嘟犊妒牍蠹椟黩芏髑", duan: "断段短端锻缎煅椴簖", dui: "对队追敦兑堆碓镦怼憝", rui: "瑞兑锐睿芮蕊蕤蚋枘", yue: "月说约越乐跃兑阅岳粤悦曰钥栎钺樾瀹龠哕刖", tun: "吞屯囤褪豚臀饨暾氽", hui: "会回挥汇惠辉恢徽绘毁慧灰贿卉悔秽溃荟晖彗讳诲珲堕诙蕙晦睢麾烩茴喙桧蛔洄浍虺恚蟪咴隳缋哕", wu: "务物无五武午吴舞伍污乌误亡恶屋晤悟吾雾芜梧勿巫侮坞毋诬呜钨邬捂鹜兀婺妩於戊鹉浯蜈唔骛仵焐芴鋈庑鼯牾怃圬忤痦迕杌寤阢", ya: "亚压雅牙押鸭呀轧涯崖邪芽哑讶鸦娅衙丫蚜碣垭伢氩桠琊揠吖睚痖疋迓岈砑", he: "和合河何核盖贺喝赫荷盒鹤吓呵苛禾菏壑褐涸阂阖劾诃颌嗬貉曷翮纥盍", wo: "我握窝沃卧挝涡斡渥幄蜗喔倭莴龌肟硪", en: "恩摁蒽", n: "嗯唔", er: "而二尔儿耳迩饵洱贰铒珥佴鸸鲕", fa: "发法罚乏伐阀筏砝垡珐", quan: "全权券泉圈拳劝犬铨痊诠荃醛蜷颧绻犭筌鬈悛辁畎", fei: "费非飞肥废菲肺啡沸匪斐蜚妃诽扉翡霏吠绯腓痱芾淝悱狒榧砩鲱篚镄", pei: "配培坏赔佩陪沛裴胚妃霈淠旆帔呸醅辔锫", ping: "平评凭瓶冯屏萍苹乒坪枰娉俜鲆", fo: "佛", hu: "和护许户核湖互乎呼胡戏忽虎沪糊壶葫狐蝴弧瑚浒鹄琥扈唬滹惚祜囫斛笏芴醐猢怙唿戽槲觳煳鹕冱瓠虍岵鹱烀轷", ga: "夹咖嘎尬噶旮伽尕钆尜", ge: "个合各革格歌哥盖隔割阁戈葛鸽搁胳舸疙铬骼蛤咯圪镉颌仡硌嗝鬲膈纥袼搿塥哿虼", ha: "哈蛤铪", xia: "下夏峡厦辖霞夹虾狭吓侠暇遐瞎匣瑕唬呷黠硖罅狎瘕柙", gai: "改该盖概溉钙丐芥赅垓陔戤", hai: "海还害孩亥咳骸骇氦嗨胲醢", gan: "干感赶敢甘肝杆赣乾柑尴竿秆橄矸淦苷擀酐绀泔坩旰疳澉", gang: "港钢刚岗纲冈杠缸扛肛罡戆筻", jiang: "将强江港奖讲降疆蒋姜浆匠酱僵桨绛缰犟豇礓洚茳糨耩", hang: "行航杭巷夯吭桁沆绗颃", gong: "工公共供功红贡攻宫巩龚恭拱躬弓汞蚣珙觥肱廾", hong: "红宏洪轰虹鸿弘哄烘泓訇蕻闳讧荭黉薨", guang: "广光逛潢犷胱咣桄", qiong: "穷琼穹邛茕筇跫蛩銎", gao: "高告搞稿膏糕镐皋羔锆杲郜睾诰藁篙缟槁槔", hao: "好号毫豪耗浩郝皓昊皋蒿壕灏嚎濠蚝貉颢嗥薅嚆", li: "理力利立里李历例离励礼丽黎璃厉厘粒莉梨隶栗荔沥犁漓哩狸藜罹篱鲤砺吏澧俐骊溧砾莅锂笠蠡蛎痢雳俪傈醴栎郦俚枥喱逦娌鹂戾砬唳坜疠蜊黧猁鬲粝蓠呖跞疬缡鲡鳢嫠詈悝苈篥轹", jia: "家加价假佳架甲嘉贾驾嫁夹稼钾挟拮迦伽颊浃枷戛荚痂颉镓笳珈岬胛袈郏葭袷瘕铗跏蛱恝哿", luo: "落罗络洛逻螺锣骆萝裸漯烙摞骡咯箩珞捋荦硌雒椤镙跞瘰泺脶猡倮蠃", ke: "可科克客刻课颗渴壳柯棵呵坷恪苛咳磕珂稞瞌溘轲窠嗑疴蝌岢铪颏髁蚵缂氪骒钶锞", qia: "卡恰洽掐髂袷咭葜", gei: "给", gen: "根跟亘艮哏茛", hen: "很狠恨痕哏", gou: "构购够句沟狗钩拘勾苟垢枸篝佝媾诟岣彀缑笱鞲觏遘", kou: "口扣寇叩抠佝蔻芤眍筘", gu: "股古顾故固鼓骨估谷贾姑孤雇辜菇沽咕呱锢钴箍汩梏痼崮轱鸪牯蛊诂毂鹘菰罟嘏臌觚瞽蛄酤牿鲴", pai: "牌排派拍迫徘湃俳哌蒎", gua: "括挂瓜刮寡卦呱褂剐胍诖鸹栝呙", tou: "投头透偷愉骰亠", guai: "怪拐乖", kuai: "会快块筷脍蒯侩浍郐蒉狯哙", guan: "关管观馆官贯冠惯灌罐莞纶棺斡矜倌鹳鳏盥掼涫", wan: "万完晚湾玩碗顽挽弯蔓丸莞皖宛婉腕蜿惋烷琬畹豌剜纨绾脘菀芄箢", ne: "呢哪呐讷疒", gui: "规贵归轨桂柜圭鬼硅瑰跪龟匮闺诡癸鳜桧皈鲑刽晷傀眭妫炅庋簋刿宄匦", jun: "军均俊君峻菌竣钧骏龟浚隽郡筠皲麇捃", jiong: "窘炯迥炅冂扃", jue: "决绝角觉掘崛诀獗抉爵嚼倔厥蕨攫珏矍蹶谲镢鳜噱桷噘撅橛孓觖劂爝", gun: "滚棍辊衮磙鲧绲丨", hun: "婚混魂浑昏棍珲荤馄诨溷阍", guo: "国过果郭锅裹帼涡椁囗蝈虢聒埚掴猓崞蜾呙馘", hei: "黑嘿嗨", kan: "看刊勘堪坎砍侃嵌槛瞰阚龛戡凵莰", heng: "衡横恒亨哼珩桁蘅", mo: "万没么模末冒莫摩墨默磨摸漠脉膜魔沫陌抹寞蘑摹蓦馍茉嘿谟秣蟆貉嫫镆殁耱嬷麽瘼貊貘", peng: "鹏朋彭膨蓬碰苹棚捧亨烹篷澎抨硼怦砰嘭蟛堋", hou: "后候厚侯猴喉吼逅篌糇骺後鲎瘊堠", hua: "化华划话花画滑哗豁骅桦猾铧砉", huai: "怀坏淮徊槐踝", huan: "还环换欢患缓唤焕幻痪桓寰涣宦垸洹浣豢奂郇圜獾鲩鬟萑逭漶锾缳擐", xun: "讯训迅孙寻询循旬巡汛勋逊熏徇浚殉驯鲟薰荀浔洵峋埙巽郇醺恂荨窨蕈曛獯", huang: "黄荒煌皇凰慌晃潢谎惶簧璜恍幌湟蝗磺隍徨遑肓篁鳇蟥癀", nai: "能乃奶耐奈鼐萘氖柰佴艿", luan: "乱卵滦峦鸾栾銮挛孪脔娈", qie: "切且契窃茄砌锲怯伽惬妾趄挈郄箧慊", jian: "建间件见坚检健监减简艰践兼鉴键渐柬剑尖肩舰荐箭浅剪俭碱茧奸歼拣捡煎贱溅槛涧堑笺谏饯锏缄睑謇蹇腱菅翦戬毽笕犍硷鞯牮枧湔鲣囝裥踺搛缣鹣蒹谫僭戋趼楗", nan: "南难男楠喃囡赧腩囝蝻", qian: "前千钱签潜迁欠纤牵浅遣谦乾铅歉黔谴嵌倩钳茜虔堑钎骞阡掮钤扦芊犍荨仟芡悭缱佥愆褰凵肷岍搴箝慊椠", qiang: "强抢疆墙枪腔锵呛羌蔷襁羟跄樯戕嫱戗炝镪锖蜣", xiang: "向项相想乡象响香降像享箱羊祥湘详橡巷翔襄厢镶飨饷缃骧芗庠鲞葙蟓", jiao: "教交较校角觉叫脚缴胶轿郊焦骄浇椒礁佼蕉娇矫搅绞酵剿嚼饺窖跤蛟侥狡姣皎茭峤铰醮鲛湫徼鹪僬噍艽挢敫", zhuo: "着著缴桌卓捉琢灼浊酌拙茁涿镯淖啄濯焯倬擢斫棹诼浞禚", qiao: "桥乔侨巧悄敲俏壳雀瞧翘窍峭锹撬荞跷樵憔鞘橇峤诮谯愀鞒硗劁缲", xiao: "小效销消校晓笑肖削孝萧俏潇硝宵啸嚣霄淆哮筱逍姣箫骁枭哓绡蛸崤枵魈", si: "司四思斯食私死似丝饲寺肆撕泗伺嗣祀厮驷嘶锶俟巳蛳咝耜笥纟糸鸶缌澌姒汜厶兕", kai: "开凯慨岂楷恺揩锴铠忾垲剀锎蒈", jin: "进金今近仅紧尽津斤禁锦劲晋谨筋巾浸襟靳瑾烬缙钅矜觐堇馑荩噤廑妗槿赆衿卺", qin: "亲勤侵秦钦琴禽芹沁寝擒覃噙矜嗪揿溱芩衾廑锓吣檎螓", jing: "经京精境竞景警竟井惊径静劲敬净镜睛晶颈荆兢靖泾憬鲸茎腈菁胫阱旌粳靓痉箐儆迳婧肼刭弪獍", ying: "应营影英景迎映硬盈赢颖婴鹰荧莹樱瑛蝇萦莺颍膺缨瀛楹罂荥萤鹦滢蓥郢茔嘤璎嬴瘿媵撄潆", jiu: "就究九酒久救旧纠舅灸疚揪咎韭玖臼柩赳鸠鹫厩啾阄桕僦鬏", zui: "最罪嘴醉咀蕞觜", juan: "卷捐圈眷娟倦绢隽镌涓鹃鄄蠲狷锩桊", suan: "算酸蒜狻", yun: "员运云允孕蕴韵酝耘晕匀芸陨纭郧筠恽韫郓氲殒愠昀菀狁", qun: "群裙逡麇", ka: "卡喀咖咔咯佧胩", kang: "康抗扛慷炕亢糠伉钪闶", keng: "坑铿吭", kao: "考靠烤拷铐栲尻犒", ken: "肯垦恳啃龈裉", yin: "因引银印音饮阴隐姻殷淫尹荫吟瘾寅茵圻垠鄞湮蚓氤胤龈窨喑铟洇狺夤廴吲霪茚堙", kong: "空控孔恐倥崆箜", ku: "苦库哭酷裤枯窟挎骷堀绔刳喾", kua: "跨夸垮挎胯侉", kui: "亏奎愧魁馈溃匮葵窥盔逵睽馗聩喟夔篑岿喹揆隗傀暌跬蒉愦悝蝰", kuan: "款宽髋", kuang: "况矿框狂旷眶匡筐邝圹哐贶夼诳诓纩", que: "确却缺雀鹊阙瘸榷炔阕悫", kun: "困昆坤捆琨锟鲲醌髡悃阃", kuo: "扩括阔廓蛞", la: "拉落垃腊啦辣蜡喇剌旯砬邋瘌", lai: "来莱赖睐徕籁涞赉濑癞崃疠铼", lan: "兰览蓝篮栏岚烂滥缆揽澜拦懒榄斓婪阑褴罱啉谰镧漤", lin: "林临邻赁琳磷淋麟霖鳞凛拎遴蔺吝粼嶙躏廪檩啉辚膦瞵懔", lang: "浪朗郎廊狼琅榔螂阆锒莨啷蒗稂", liang: "量两粮良辆亮梁凉谅粱晾靓踉莨椋魉墚", lao: "老劳落络牢捞涝烙姥佬崂唠酪潦痨醪铑铹栳耢", mu: "目模木亩幕母牧莫穆姆墓慕牟牡募睦缪沐暮拇姥钼苜仫毪坶", le: "了乐勒肋叻鳓嘞仂泐", lei: "类累雷勒泪蕾垒磊擂镭肋羸耒儡嫘缧酹嘞诔檑", sui: "随岁虽碎尿隧遂髓穗绥隋邃睢祟濉燧谇眭荽", lie: "列烈劣裂猎冽咧趔洌鬣埒捩躐", leng: "冷愣棱楞塄", ling: "领令另零灵龄陵岭凌玲铃菱棱伶羚苓聆翎泠瓴囹绫呤棂蛉酃鲮柃", lia: "俩", liao: "了料疗辽廖聊寥缪僚燎缭撂撩嘹潦镣寮蓼獠钌尥鹩", liu: "流刘六留柳瘤硫溜碌浏榴琉馏遛鎏骝绺镏旒熘鹨锍", lun: "论轮伦仑纶沦抡囵", lv: "率律旅绿虑履吕铝屡氯缕滤侣驴榈闾偻褛捋膂稆", lou: "楼露漏陋娄搂篓喽镂偻瘘髅耧蝼嵝蒌", mao: "贸毛矛冒貌茂茅帽猫髦锚懋袤牦卯铆耄峁瑁蟊茆蝥旄泖昴瞀", long: "龙隆弄垄笼拢聋陇胧珑窿茏咙砻垅泷栊癃", nong: "农浓弄脓侬哝", shuang: "双爽霜孀泷", shu: "术书数属树输束述署朱熟殊蔬舒疏鼠淑叔暑枢墅俞曙抒竖蜀薯梳戍恕孰沭赎庶漱塾倏澍纾姝菽黍腧秫毹殳疋摅", shuai: "率衰帅摔甩蟀", lve: "略掠锊", ma: "么马吗摩麻码妈玛嘛骂抹蚂唛蟆犸杩", me: "么麽", mai: "买卖麦迈脉埋霾荬劢", man: "满慢曼漫埋蔓瞒蛮鳗馒幔谩螨熳缦镘颟墁鞔", mi: "米密秘迷弥蜜谜觅靡泌眯麋猕谧咪糜宓汨醚嘧弭脒冖幂祢縻蘼芈糸敉", men: "们门闷瞒汶扪焖懑鞔钔", mang: "忙盲茫芒氓莽蟒邙硭漭", meng: "蒙盟梦猛孟萌氓朦锰檬勐懵蟒蜢虻黾蠓艨甍艋瞢礞", miao: "苗秒妙描庙瞄缪渺淼藐缈邈鹋杪眇喵", mou: "某谋牟缪眸哞鍪蛑侔厶", miu: "缪谬", mei: "美没每煤梅媒枚妹眉魅霉昧媚玫酶镁湄寐莓袂楣糜嵋镅浼猸鹛", wen: "文问闻稳温纹吻蚊雯紊瘟汶韫刎璺玟阌", mie: "灭蔑篾乜咩蠛", ming: "明名命鸣铭冥茗溟酩瞑螟暝", na: "内南那纳拿哪娜钠呐捺衲镎肭", nei: "内那哪馁", nuo: "难诺挪娜糯懦傩喏搦锘", ruo: "若弱偌箬", nang: "囊馕囔曩攮", nao: "脑闹恼挠瑙淖孬垴铙桡呶硇猱蛲", ni: "你尼呢泥疑拟逆倪妮腻匿霓溺旎昵坭铌鲵伲怩睨猊", nen: "嫩恁", neng: "能", nin: "您恁", niao: "鸟尿溺袅脲茑嬲", nie: "摄聂捏涅镍孽捻蘖啮蹑嗫臬镊颞乜陧", niang: "娘酿", ning: "宁凝拧泞柠咛狞佞聍甯", nu: "努怒奴弩驽帑孥胬", nv: "女钕衄恧", ru: "入如女乳儒辱汝茹褥孺濡蠕嚅缛溽铷洳薷襦颥蓐", nuan: "暖", nve: "虐疟", re: "热若惹喏", ou: "区欧偶殴呕禺藕讴鸥瓯沤耦怄", pao: "跑炮泡抛刨袍咆疱庖狍匏脬", pou: "剖掊裒", pen: "喷盆湓", pie: "瞥撇苤氕丿", pin: "品贫聘频拼拚颦姘嫔榀牝", se: "色塞瑟涩啬穑铯槭", qing: "情青清请亲轻庆倾顷卿晴氢擎氰罄磬蜻箐鲭綮苘黥圊檠謦", zan: "赞暂攒堑昝簪糌瓒錾趱拶", shao: "少绍召烧稍邵哨韶捎勺梢鞘芍苕劭艄筲杓潲", sao: "扫骚嫂梢缫搔瘙臊埽缲鳋", sha: "沙厦杀纱砂啥莎刹杉傻煞鲨霎嗄痧裟挲铩唼歃", xuan: "县选宣券旋悬轩喧玄绚渲璇炫萱癣漩眩暄煊铉楦泫谖痃碹揎镟儇", ran: "然染燃冉苒髯蚺", rang: "让壤攘嚷瓤穰禳", rao: "绕扰饶娆桡荛", reng: "仍扔", ri: "日", rou: "肉柔揉糅鞣蹂", ruan: "软阮朊", run: "润闰", sa: "萨洒撒飒卅仨脎", suo: "所些索缩锁莎梭琐嗦唆唢娑蓑羧挲桫嗍睃", sai: "思赛塞腮噻鳃", shui: "说水税谁睡氵", sang: "桑丧嗓搡颡磉", sen: "森", seng: "僧", shai: "筛晒", shang: "上商尚伤赏汤裳墒晌垧觞殇熵绱", xing: "行省星腥猩惺兴刑型形邢饧醒幸杏性姓陉荇荥擤悻硎", shou: "收手受首售授守寿瘦兽狩绶艏扌", shuo: "说数硕烁朔铄妁槊蒴搠", su: "速素苏诉缩塑肃俗宿粟溯酥夙愫簌稣僳谡涑蔌嗉觫", shua: "刷耍唰", shuan: "栓拴涮闩", shun: "顺瞬舜吮", song: "送松宋讼颂耸诵嵩淞怂悚崧凇忪竦菘", sou: "艘搜擞嗽嗖叟馊薮飕嗾溲锼螋瞍", sun: "损孙笋荪榫隼狲飧", teng: "腾疼藤滕誊", tie: "铁贴帖餮萜", tu: "土突图途徒涂吐屠兔秃凸荼钍菟堍酴", wai: "外歪崴", wang: "王望往网忘亡旺汪枉妄惘罔辋魍", weng: "翁嗡瓮蓊蕹", zhua: "抓挝爪", yang: "样养央阳洋扬杨羊详氧仰秧痒漾疡泱殃恙鸯徉佯怏炀烊鞅蛘", xiong: "雄兄熊胸凶匈汹芎", yo: "哟唷", yong: "用永拥勇涌泳庸俑踊佣咏雍甬镛臃邕蛹恿慵壅痈鳙墉饔喁", za: "杂扎咱砸咋匝咂拶", zai: "在再灾载栽仔宰哉崽甾", zao: "造早遭枣噪灶燥糟凿躁藻皂澡蚤唣", zei: "贼", zen: "怎谮", zeng: "增曾综赠憎锃甑罾缯", zhei: "这", zou: "走邹奏揍诹驺陬楱鄹鲰", zhuai: "转拽", zun: "尊遵鳟樽撙", dia: "嗲", nou: "耨" }, Ve = e("ec57"), He = function(k) {
         return k.keys().map(k);
       };
-      Ye(We);
+      He(Ve);
       var at = [], je = null, st = Object(t.defineComponent)({ name: "KeyBoard", inheritAttrs: !1, props: { color: { type: String, default: "#eaa050" }, modeList: { type: Array, default: function() {
         return ["handwrite", "symbol"];
-      } }, blurHide: { type: Boolean, default: !0 }, showHandleBar: { type: Boolean, default: !0 }, modal: Boolean, closeOnClickModal: { type: Boolean, default: !0 }, handApi: String, animateClass: String, dargHandleText: String }, emits: ["keyChange", "change", "closed", "modalClick"], directives: { handleDrag: E }, components: { Result: z, SvgIcon: Ue, HandBoard: M, DefaultBoard: le }, setup: function(k, I) {
-        var P = I.emit, N = Object(t.reactive)({ showMode: "default", visible: !1, resultVal: {} }), Q = Object(t.ref)(null);
-        function ue(Te) {
-          var Le, Ie;
+      } }, blurHide: { type: Boolean, default: !0 }, showHandleBar: { type: Boolean, default: !0 }, modal: Boolean, closeOnClickModal: { type: Boolean, default: !0 }, handApi: String, animateClass: String, dargHandleText: String }, emits: ["keyChange", "change", "closed", "modalClick"], directives: { handleDrag: E }, components: { Result: Q, SvgIcon: Ue, HandBoard: G, DefaultBoard: le }, setup: function(k, R) {
+        var P = R.emit, N = Object(t.reactive)({ showMode: "default", visible: !1, resultVal: {} }), K = Object(t.ref)(null);
+        function ce(Te) {
+          var Le, Be;
           switch (Object(t.nextTick)(function() {
             y.emit("keyBoardChange", "CN");
           }), Te) {
             case "en":
               N.showMode = "default", Object(t.nextTick)(function() {
                 var Re;
-                (Re = Q.value) === null || Re === void 0 || Re.click({ data: "", type: "change2lang" });
+                (Re = K.value) === null || Re === void 0 || Re.click({ data: "", type: "change2lang" });
               });
               break;
             case "number":
               N.showMode = "default", Object(t.nextTick)(function() {
                 var Re;
-                (Re = Q.value) === null || Re === void 0 || Re.click({ data: ".?123", type: "change2num" });
+                (Re = K.value) === null || Re === void 0 || Re.click({ data: ".?123", type: "change2num" });
               });
               break;
             case "handwrite":
@@ -4577,11 +4578,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               })) : N.showMode = "default";
               break;
             case "symbol":
-              N.showMode = "default", (Ie = k.modeList) !== null && Ie !== void 0 && Ie.find(function(Re) {
+              N.showMode = "default", (Be = k.modeList) !== null && Be !== void 0 && Be.find(function(Re) {
                 return Re === "symbol";
               }) && Object(t.nextTick)(function() {
                 var Re, ut;
-                (Re = Q.value) === null || Re === void 0 || Re.click({ data: ".?123", type: "change2num" }), (ut = Q.value) === null || ut === void 0 || ut.click({ data: "#+=", type: "#+=" });
+                (Re = K.value) === null || Re === void 0 || Re.click({ data: ".?123", type: "change2num" }), (ut = K.value) === null || ut === void 0 || ut.click({ data: "#+=", type: "#+=" });
               });
               break;
             default:
@@ -4590,7 +4591,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
         }
         function pe(Te) {
-          if (N.visible = !0, je = Te.target, ue(je.getAttribute("data-mode")), document.querySelector(".key-board-modal")) {
+          if (N.visible = !0, je = Te.target, ce(je.getAttribute("data-mode")), document.querySelector(".key-board-modal")) {
             var Le = document.querySelector(".key-board-modal");
             Le.style.display = "block";
           }
@@ -4604,29 +4605,29 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         function ye() {
           k.closeOnClickModal && de(), P("modalClick");
         }
-        function Ve() {
+        function Me() {
           var Te;
           if (document.querySelector(".key-board-modal")) {
             var Le;
             (Le = document.querySelector(".key-board-modal")) === null || Le === void 0 || Le.addEventListener("click", ye);
           } else {
-            var Ie = document.createElement("div");
-            Ie.className = "key-board-modal", Ie.style.display = "none", (Te = document.querySelector("body")) === null || Te === void 0 || Te.appendChild(Ie), Ie.addEventListener("click", ye);
+            var Be = document.createElement("div");
+            Be.className = "key-board-modal", Be.style.display = "none", (Te = document.querySelector("body")) === null || Te === void 0 || Te.appendChild(Be), Be.addEventListener("click", ye);
           }
         }
-        function qe() {
+        function We() {
           k.handApi && ve(k.handApi), [].concat(b(document.querySelectorAll("input")), b(document.querySelectorAll("textarea"))).forEach(function(Te) {
             Te.getAttribute("data-mode") !== null && (at.push(Te), Te.addEventListener("focus", pe), k.blurHide && Te.addEventListener("blur", de));
           });
         }
         function Qe(Te) {
           if (!je) return "";
-          var Le = je, Ie = Le.selectionStart, Re = Le.selectionEnd;
-          if (!Ie || !Re) return "";
-          var ut = Te.substring(0, Ie - 1) + Te.substring(Re);
-          return Le.value = ut, Le.focus(), Le.selectionStart = Ie - 1, Le.selectionEnd = Ie - 1, ut;
+          var Le = je, Be = Le.selectionStart, Re = Le.selectionEnd;
+          if (!Be || !Re) return "";
+          var ut = Te.substring(0, Be - 1) + Te.substring(Re);
+          return Le.value = ut, Le.focus(), Le.selectionStart = Be - 1, Le.selectionEnd = Be - 1, ut;
         }
-        function Xe(Te) {
+        function Ye(Te) {
           var Le = Te.type;
           switch (Le) {
             case "handwrite":
@@ -4634,38 +4635,38 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               break;
             case "delete":
               if (!je) return;
-              var Ie = Qe(je.value);
-              je.value = Ie, P("change", Ie, je.getAttribute("data-prop") || je);
+              var Be = Qe(je.value);
+              je.value = Be, P("change", Be, je.getAttribute("data-prop") || je);
               break;
           }
         }
         function gt(Te, Le) {
           if (!je) return "";
-          var Ie = je, Re = Ie.selectionStart || 0, ut = Ie.selectionEnd || 0, Et = Te.substring(0, Re) + Le + Te.substring(ut);
-          return Ie.value = Et, Ie.focus(), Ie.selectionStart = Re + Le.length, Ie.selectionEnd = Re + Le.length, Et;
+          var Be = je, Re = Be.selectionStart || 0, ut = Be.selectionEnd || 0, Et = Te.substring(0, Re) + Le + Te.substring(ut);
+          return Be.value = Et, Be.focus(), Be.selectionStart = Re + Le.length, Be.selectionEnd = Re + Le.length, Et;
         }
-        function Be(Te) {
+        function $e(Te) {
           if (je) {
             var Le = gt(je.value, Te);
             je.value = Le, P("change", Le, je.getAttribute("data-prop") || je), P("keyChange", Te, je.getAttribute("data-prop") || je);
           }
         }
-        function Ge(Te) {
-          var Le = new RegExp("^".concat(Te, "\\w*")), Ie = Object.keys(me).filter(function(Re) {
+        function Xe(Te) {
+          var Le = new RegExp("^".concat(Te, "\\w*")), Be = Object.keys(ge).filter(function(Re) {
             return Le.test(Re);
           }).sort();
-          N.resultVal = { code: Te, value: Te ? Ie.length > 1 ? Ie.reduce(function(Re, ut) {
-            return Re + me[ut];
-          }, "") : me[Ie[0]] : "" }, je && P("keyChange", Te, je.getAttribute("data-prop") || je);
+          N.resultVal = { code: Te, value: Te ? Be.length > 1 ? Be.reduce(function(Re, ut) {
+            return Re + ge[ut];
+          }, "") : ge[Be[0]] : "" }, je && P("keyChange", Te, je.getAttribute("data-prop") || je);
         }
-        function ze() {
-          qe();
+        function qe() {
+          We();
         }
-        function nt() {
+        function tt() {
           return je;
         }
         return Object(t.onMounted)(function() {
-          k.modal && Ve(), qe(), y.on("resultReset", function() {
+          k.modal && Me(), We(), y.on("resultReset", function() {
             N.resultVal = {};
           });
         }), Object(t.onUnmounted)(function() {
@@ -4673,18 +4674,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           (Te = document.querySelector(".key-board-modal")) === null || Te === void 0 || Te.removeEventListener("click", ye), at.forEach(function(Le) {
             Le.removeEventListener("focus", pe), Le.removeEventListener("blur", de);
           });
-        }), U(Object(t.reactive)({ color: k.color, modeList: k.modeList, handApi: k.handApi, closeKeyBoard: function() {
+        }), F(Object(t.reactive)({ color: k.color, modeList: k.modeList, handApi: k.handApi, closeKeyBoard: function() {
           de();
         }, changeDefaultBoard: function() {
           N.showMode = "default";
-        } })), f(f({}, Object(t.toRefs)(N)), {}, { defaultBoardRef: Q, getCurrentInput: nt, translate: Ge, reSignUp: ze, trigger: Xe, change: Be });
+        } })), f(f({}, Object(t.toRefs)(N)), {}, { defaultBoardRef: K, getCurrentInput: tt, translate: Xe, reSignUp: qe, trigger: Ye, change: $e });
       } });
       st.render = s;
-      var Je = st;
-      Je.install = function(k) {
-        k.component(Je.name, Je);
+      var Ge = st;
+      Ge.install = function(k) {
+        k.component(Ge.name, Ge);
       };
-      var wt = Je, $t = wt;
+      var wt = Ge, $t = wt;
       d.default = $t;
     }, fb6a: function(i, d, e) {
       var n = e("23e7"), o = e("861d"), r = e("e8b5"), t = e("23cb"), a = e("50c4"), u = e("fc6a"), s = e("8418"), l = e("b622"), c = e("1dde"), f = c("slice"), v = l("species"), p = [].slice, h = Math.max;
@@ -4715,11 +4716,11 @@ const Pt = /* @__PURE__ */ qo(zo);
 Rt({
   components: { KeyBoard: Pt },
   setup() {
-    function ke(te, X) {
+    function xe(te, X) {
       console.log("change value ---->", te), console.log("change input dom ---->", X);
     }
     return {
-      change: ke
+      change: xe
     };
   }
 });
@@ -4731,8 +4732,8 @@ const Ko = { class: "wifi-component" }, Qo = { class: "row" }, Ho = { class: "co
   class: "no-wifi"
 }, or = ["onClick"], rr = { class: "wifi-ssid" }, ir = { class: "signal-strength" }, ar = {
   __name: "WiFi",
-  setup(ke) {
-    const { sendToPyQt: te } = tt(), X = Y("未连接"), i = Y("无网络"), d = Y("未知"), e = Y(""), n = Y(""), o = Y(!1), r = Y([]), t = Y(null), a = () => {
+  setup(xe) {
+    const { sendToPyQt: te } = Ze(), X = Y("未连接"), i = Y("无网络"), d = Y("未知"), e = Y(""), n = Y(""), o = Y(!1), r = Y([]), t = Y(null), a = () => {
       te("check_wifi_status", {});
     }, u = () => {
       t.value = setInterval(a, 5e3);
@@ -4741,7 +4742,7 @@ const Ko = { class: "wifi-component" }, Qo = { class: "row" }, Ho = { class: "co
     };
     ht(() => {
       u();
-      const { message: m } = tt();
+      const { message: m } = Ze();
       lt(m, (g) => {
         if (g && g.type === "wifi_list") {
           const b = JSON.parse(g.content);
@@ -4770,7 +4771,7 @@ const Ko = { class: "wifi-component" }, Qo = { class: "row" }, Ho = { class: "co
     }, h = (m, g) => {
       g.placeholder === "WiFi 名称" ? e.value = m : g.placeholder === "WiFi 密码" && (n.value = m);
     };
-    return (m, g) => (we(), xe("div", Ko, [
+    return (m, g) => (be(), we("div", Ko, [
       _("div", Qo, [
         _("div", Ho, [
           pt(_("input", {
@@ -4806,21 +4807,21 @@ const Ko = { class: "wifi-component" }, Qo = { class: "row" }, Ho = { class: "co
           ])
         ])
       ]),
-      Ze(Ut(Pt), {
+      Je(Ut(Pt), {
         color: "#2c3e50",
         showHandleBar: !1,
         closeOnClickModal: !1,
         onChange: h,
         class: "scaled-keyboard"
       }),
-      o.value ? (we(), xe("div", Zo, [
+      o.value ? (be(), we("div", Zo, [
         _("div", er, [
           g[4] || (g[4] = _("h2", null, "可用的WiFi网络", -1)),
           _("div", tr, [
-            r.value.length === 0 ? (we(), xe("div", nr, g[3] || (g[3] = [
+            r.value.length === 0 ? (be(), we("div", nr, g[3] || (g[3] = [
               _("div", { class: "loading-spinner" }, null, -1),
               _("div", null, "搜索中...", -1)
-            ]))) : (we(!0), xe(rt, { key: 1 }, it(r.value, (b) => (we(), xe("div", {
+            ]))) : (be(!0), we(ot, { key: 1 }, rt(r.value, (b) => (be(), we("div", {
               key: b.ssid,
               class: "wifi-item",
               onClick: (S) => v(b)
@@ -4853,8 +4854,8 @@ const Ko = { class: "wifi-component" }, Qo = { class: "row" }, Ho = { class: "co
     }
   },
   emits: ["update:modelValue", "update:showKeyboard"],
-  setup(ke, { emit: te }) {
-    const X = ke, i = te, d = Y([
+  setup(xe, { emit: te }) {
+    const X = xe, i = te, d = Y([
       ["7", "8", "9"],
       ["4", "5", "6"],
       ["1", "2", "3"],
@@ -4866,17 +4867,17 @@ const Ko = { class: "wifi-component" }, Qo = { class: "row" }, Ho = { class: "co
     const n = (o) => {
       o === "清除" ? e.value = "" : o === "确定" ? (i("update:modelValue", e.value), i("update:showKeyboard", !1)) : e.value += o;
     };
-    return (o, r) => ke.showKeyboard ? (we(), xe("div", ur, [
+    return (o, r) => xe.showKeyboard ? (be(), we("div", ur, [
       _("div", cr, [
         _("div", lr, Ce(e.value), 1),
-        (we(!0), xe(rt, null, it(d.value, (t) => (we(), xe("div", {
+        (be(!0), we(ot, null, rt(d.value, (t) => (be(), we("div", {
           key: t.join(),
           class: "row"
         }, [
-          (we(!0), xe(rt, null, it(t, (a) => (we(), xe("button", {
+          (be(!0), we(ot, null, rt(t, (a) => (be(), we("button", {
             key: a,
             onClick: (u) => n(a),
-            class: ot({ "function-key": a === "清除" || a === "确定" })
+            class: nt({ "function-key": a === "清除" || a === "确定" })
           }, Ce(a), 11, dr))), 128))
         ]))), 128))
       ])
@@ -4888,14 +4889,14 @@ const Ko = { class: "wifi-component" }, Qo = { class: "row" }, Ho = { class: "co
 }, br = { class: "modal-content" }, wr = {
   __name: "Lock",
   emits: ["messageFromA"],
-  setup(ke, { emit: te }) {
-    const { sendToPyQt: X } = tt(), i = bt({
+  setup(xe, { emit: te }) {
+    const { sendToPyQt: X } = Ze(), i = bt({
       isPyQtWebEngine: !1
     }), d = Y("未激活"), e = Y(0), n = Y(""), o = Y(""), r = Y(!1), t = Y(7776e3);
     let a, u;
     const s = Y(0), l = Y(1), c = Y(null), f = Y(!1), v = Y(!1), p = yt(() => d.value === "未激活" ? "设备状态: 未激活" : d.value === "永久激活" ? "设备状态: 已永久激活" : `即将第 ${l.value} 次锁定 - 剩余时间: ${h.value}`), h = yt(() => {
-      const H = Math.floor(e.value / 86400), W = Math.floor(e.value % (24 * 60 * 60) / (60 * 60)), U = Math.floor(e.value % (60 * 60) / 60), T = e.value % 60;
-      return `${H}天 ${W.toString().padStart(2, "0")}:${U.toString().padStart(2, "0")}:${T.toString().padStart(2, "0")}`;
+      const H = Math.floor(e.value / 86400), W = Math.floor(e.value % (24 * 60 * 60) / (60 * 60)), F = Math.floor(e.value % (60 * 60) / 60), T = e.value % 60;
+      return `${H}天 ${W.toString().padStart(2, "0")}:${F.toString().padStart(2, "0")}:${T.toString().padStart(2, "0")}`;
     }), m = yt(() => d.value === "未激活" ? "按住以激活设备" : `设备码：${n.value}`);
     function g(H) {
       d.value === "未激活" && (H.target.setPointerCapture(H.pointerId), s.value = 0, u = setInterval(() => {
@@ -4924,7 +4925,7 @@ const Ko = { class: "wifi-component" }, Qo = { class: "row" }, Ho = { class: "co
       e.value = Math.max(0, Math.floor((W - H) / 1e3));
     }
     function j() {
-      r.value = !0, document.body.style.overflow = "hidden", clearInterval(a), ae();
+      r.value = !0, document.body.style.overflow = "hidden", clearInterval(a), ie();
     }
     function E() {
       L(o.value);
@@ -4940,7 +4941,7 @@ const Ko = { class: "wifi-component" }, Qo = { class: "row" }, Ho = { class: "co
     function O() {
       d.value = "永久激活", r.value = !1, document.body.style.overflow = "auto", clearInterval(a);
     }
-    function F() {
+    function M() {
       r.value = !1, document.body.style.overflow = "auto", l.value++, a && clearInterval(a), w();
     }
     St(() => {
@@ -4948,35 +4949,35 @@ const Ko = { class: "wifi-component" }, Qo = { class: "row" }, Ho = { class: "co
     }), ht(() => {
       if (i.isPyQtWebEngine = typeof window.qt < "u" && window.qt.webChannelTransport, i.isPyQtWebEngine) {
         console.log("在PyQt QWebEngine环境中运行");
-        const { message: H } = tt();
+        const { message: H } = Ze();
         lt(H, (W) => {
           if (W && W.type === "confirm_lock_password")
             try {
-              const U = JSON.parse(W.content);
-              U.target === "attemptUnlock" && (U.result === "success" ? (r.value ? c.value = Date.now() : c.value = c.value + t.value * 1e3, X("update_baseTime", c.value), F(), X("Lock_set_response", { method: "extendLockTime", args: { baseTime: c.value } })) : U.result === "forever_success" ? (O(), X("Lock_set_response", { method: "permanentUnlock", args: {} })) : X("Lock_set_response", { method: "unlockFailed", args: {} }));
-            } catch (U) {
-              console.error("Failed to parse confirm lock password :", U);
+              const F = JSON.parse(W.content);
+              F.target === "attemptUnlock" && (F.result === "success" ? (r.value ? c.value = Date.now() : c.value = c.value + t.value * 1e3, X("update_baseTime", c.value), M(), X("Lock_set_response", { method: "extendLockTime", args: { baseTime: c.value } })) : F.result === "forever_success" ? (O(), X("Lock_set_response", { method: "permanentUnlock", args: {} })) : X("Lock_set_response", { method: "unlockFailed", args: {} }));
+            } catch (F) {
+              console.error("Failed to parse confirm lock password :", F);
             }
           else if (W && W.type === "device_activated")
             try {
-              const U = JSON.parse(W.content);
-              x(U.device_random_code, U.device_base_time);
-            } catch (U) {
-              console.error("Failed to parse device activation result:", U);
+              const F = JSON.parse(W.content);
+              x(F.device_random_code, F.device_base_time);
+            } catch (F) {
+              console.error("Failed to parse device activation result:", F);
             }
           else if (W && W.type === "device_info")
             try {
-              const U = JSON.parse(W.content);
-              d.value = U.device_status, n.value = U.device_random_code, l.value = U.device_lock_count, c.value = U.device_base_time, U.device_status === "已激活" ? w() : U.device_status === "永久激活" && O();
-            } catch (U) {
-              console.error("Failed to parse device status:", U);
+              const F = JSON.parse(W.content);
+              d.value = F.device_status, n.value = F.device_random_code, l.value = F.device_lock_count, c.value = F.device_base_time, F.device_status === "已激活" ? w() : F.device_status === "永久激活" && O();
+            } catch (F) {
+              console.error("Failed to parse device status:", F);
             }
           else if (W && W.type === "Lock_init")
             V();
           else if (W && W.type === "Lock_set") {
             console.log("Lock_set:", W.content);
-            const U = JSON.parse(W.content);
-            U.method === "requestActivation" ? C() : U.method === "attemptUnlock" && L(U.args.password);
+            const F = JSON.parse(W.content);
+            F.method === "requestActivation" ? C() : F.method === "attemptUnlock" && L(F.args.password);
           }
         });
       } else
@@ -4997,7 +4998,7 @@ const Ko = { class: "wifi-component" }, Qo = { class: "row" }, Ho = { class: "co
         showModalUnlockKeyboard: v.value
       };
       console.log("Sending Lock initial state:", H), X("Lock_init_response", H);
-    }, J = te, ae = () => {
+    }, J = te, ie = () => {
       J("messageFromA", {
         content: "hello",
         // 消息内容
@@ -5005,7 +5006,7 @@ const Ko = { class: "wifi-component" }, Qo = { class: "row" }, Ho = { class: "co
         // 时间戳
       });
     };
-    return (H, W) => (we(), xe("div", pr, [
+    return (H, W) => (be(), we("div", pr, [
       _("div", vr, [
         _("div", hr, Ce(p.value), 1),
         _("button", {
@@ -5025,10 +5026,10 @@ const Ko = { class: "wifi-component" }, Qo = { class: "row" }, Ho = { class: "co
       ]),
       _("div", gr, [
         pt(_("input", {
-          "onUpdate:modelValue": W[0] || (W[0] = (U) => o.value = U),
+          "onUpdate:modelValue": W[0] || (W[0] = (F) => o.value = F),
           placeholder: "输入解锁密钥",
           readonly: "",
-          onFocus: W[1] || (W[1] = (U) => f.value = !0)
+          onFocus: W[1] || (W[1] = (F) => f.value = !0)
         }, null, 544), [
           [mt, o.value]
         ]),
@@ -5037,16 +5038,16 @@ const Ko = { class: "wifi-component" }, Qo = { class: "row" }, Ho = { class: "co
           onClick: E
         }, "解锁")
       ]),
-      r.value ? (we(), xe("div", yr, [
+      r.value ? (be(), we("div", yr, [
         _("div", br, [
           W[8] || (W[8] = _("h3", null, "设备已锁定", -1)),
           _("h3", null, "第 " + Ce(l.value) + " 次锁定", 1),
           _("h3", null, "设备随机码: " + Ce(n.value), 1),
           pt(_("input", {
-            "onUpdate:modelValue": W[2] || (W[2] = (U) => o.value = U),
+            "onUpdate:modelValue": W[2] || (W[2] = (F) => o.value = F),
             placeholder: "输入解锁密钥",
             readonly: "",
-            onFocus: W[3] || (W[3] = (U) => v.value = !0)
+            onFocus: W[3] || (W[3] = (F) => v.value = !0)
           }, null, 544), [
             [mt, o.value]
           ]),
@@ -5056,35 +5057,35 @@ const Ko = { class: "wifi-component" }, Qo = { class: "row" }, Ho = { class: "co
           }, "解锁")
         ])
       ])) : ct("", !0),
-      Ze(Ct, {
+      Je(Ct, {
         modelValue: o.value,
-        "onUpdate:modelValue": W[4] || (W[4] = (U) => o.value = U),
+        "onUpdate:modelValue": W[4] || (W[4] = (F) => o.value = F),
         showKeyboard: f.value,
-        "onUpdate:showKeyboard": W[5] || (W[5] = (U) => f.value = U)
+        "onUpdate:showKeyboard": W[5] || (W[5] = (F) => f.value = F)
       }, null, 8, ["modelValue", "showKeyboard"]),
-      Ze(Ct, {
+      Je(Ct, {
         modelValue: o.value,
-        "onUpdate:modelValue": W[6] || (W[6] = (U) => o.value = U),
+        "onUpdate:modelValue": W[6] || (W[6] = (F) => o.value = F),
         showKeyboard: v.value,
-        "onUpdate:showKeyboard": W[7] || (W[7] = (U) => v.value = U)
+        "onUpdate:showKeyboard": W[7] || (W[7] = (F) => v.value = F)
       }, null, 8, ["modelValue", "showKeyboard"])
     ]));
   }
 }, xr = /* @__PURE__ */ vt(wr, [["__scopeId", "data-v-3d3fd364"]]), kr = { class: "app-container" }, Sr = {
   __name: "App",
-  setup(ke) {
+  setup(xe) {
     Mt();
     const te = Y(""), X = (i) => {
       te.value = i;
     };
-    return (i, d) => (we(), xe("div", kr, [
+    return (i, d) => (be(), we("div", kr, [
       d[0] || (d[0] = _("h1", null, "涪特智能养护台车控制系统", -1)),
-      Ze(Un),
-      Ze(Vo),
-      Ze(ln),
-      Ze(To, { message: te.value }, null, 8, ["message"]),
-      Ze(sr),
-      Ze(xr, { onMessageFromA: X })
+      Je(Un),
+      Je(Vo),
+      Je(ln),
+      Je(To, { message: te.value }, null, 8, ["message"]),
+      Je(sr),
+      Je(xr, { onMessageFromA: X })
     ]));
   }
 };

@@ -18,7 +18,7 @@ class StateMachine:
         self.qtSignalHandler = node.qtSignalHandler
         self.control_utils = node.control_utils
     
-    def transition(self, side_temperature, top_temperature):
+    def transition(self, temperature):
       old_state = self.state
       changed = True
       
@@ -28,16 +28,16 @@ class StateMachine:
           if self.state == State.S0:
               self.state = State.S1
               changed = True
-          if self.state == State.S1 and top_temperature > self.qtSignalHandler.temp_upper_limit:
+          if self.state == State.S1 and temperature > (self.qtSignalHandler.temp_upper_limit+self.qtSignalHandler.temp_lower_limit)/2:
               self.state = State.S2
               changed = True
-          elif self.state == State.S2 and side_temperature > self.qtSignalHandler.temp_upper_limit:
+          elif self.state == State.S2 and temperature > self.qtSignalHandler.temp_upper_limit:
               self.state = State.S3
               changed = True 
-          elif self.state == State.S3 and side_temperature < self.qtSignalHandler.temp_lower_limit:
+          elif self.state == State.S3 and temperature < (self.qtSignalHandler.temp_lower_limit+self.qtSignalHandler.temp_upper_limit)/2:
               self.state = State.S4
               changed = True
-          elif self.state == State.S4 and top_temperature < self.qtSignalHandler.temp_upper_limit:
+          elif self.state == State.S4 and temperature < self.qtSignalHandler.temp_lower_limit:
               self.state = State.S1
               changed = True
               
@@ -47,13 +47,12 @@ class StateMachine:
     def get_state(self):
         return self.state
         
-    def run(self, side_temperature, top_temperature, humidity):
+    def run(self, temperature, humidity):
         self.qtSignalHandler.sensor_avg_data_updated.emit({
-            "side_temperature": round(side_temperature, 1),
-            "top_temperature": round(top_temperature, 1), 
+            "temperature": round(temperature, 1), 
             "humidity": round(humidity, 1)
         })
-        if self.transition(side_temperature=side_temperature, top_temperature=top_temperature):
+        if self.transition(temperature):
             logger.info(f"Transition successful! New state: {self.state}")
             self.qtSignalHandler.state_machine_updated.emit(self.state.value)
         if self.state == State.S1:

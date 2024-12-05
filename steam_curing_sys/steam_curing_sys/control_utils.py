@@ -32,7 +32,7 @@ class ControlUtils():
         self.switch_to_sprinkler = False
 
         # debug时不连接Modbus服务器
-        self.debug = False
+        self.debug = True
 
         self.output_num = 16 # 输出数量
 
@@ -44,7 +44,9 @@ class ControlUtils():
         self.spray_engine_output_addr = 0
         self.left_steam_output_addr = 1
         self.right_steam_output_addr = 2
-        self.sprinkler_output_addr = 3
+        self.sprinkler_car_output_addr = 3
+        self.sprinkler_tank1_output_addr = 4
+        self.sprinkler_tank2_output_addr = 5
 
         if not self.debug:
             try:
@@ -121,7 +123,9 @@ class ControlUtils():
         if not self.sprinkler_on:
             logger.info('Turning sprinkler ON')
             self.sprinkler_on = True
-            self.control_output(self.sprinkler_output_addr, True)
+            self.control_output(self.sprinkler_car_output_addr, True)
+            self.control_output(self.sprinkler_tank1_output_addr, True)
+            self.control_output(self.sprinkler_tank2_output_addr, True)
             return True
         else:
             return False
@@ -130,7 +134,9 @@ class ControlUtils():
         if self.sprinkler_on:
             logger.info('Turning sprinkler OFF')
             self.sprinkler_on = False
-            self.control_output(self.sprinkler_output_addr, False)
+            self.control_output(self.sprinkler_car_output_addr, False)
+            self.control_output(self.sprinkler_tank1_output_addr, False)
+            self.control_output(self.sprinkler_tank2_output_addr, False)
             return True
         else:
             return False

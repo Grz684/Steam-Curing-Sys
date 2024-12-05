@@ -70,10 +70,6 @@ class SensorSubscriberNode(Node):
         if self.qtSignalHandler.get_sprinkler_system_state():
             updated_temp_data = {sensor: value for sensor, value in self.temp_data.items() if value != -1}
             updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
-            # 更正后的代码
-            group1 = {sensor: value for sensor, value in updated_temp_data.items() if int(sensor.split('_')[2]) in [1,4,7]}
-            group2 = {sensor: value for sensor, value in updated_temp_data.items() if int(sensor.split('_')[2]) in [2,5,8]}
-            group3 = {sensor: value for sensor, value in updated_temp_data.items() if int(sensor.split('_')[2]) in [3,6,9]}
             
             # flag_left_side_needheat = False
             # flag_left_side_overheat = False
@@ -81,34 +77,23 @@ class SensorSubscriberNode(Node):
             # flag_right_side_overheat = False
             # flag_top_needheat = False
 
-            top_temp_avg = -1
-            side_temp_avg = -1
+            temp_avg = -1
             updated_humidity_data_avg = -1
             
             # temperature_sensor_1~5分成一组，6~10分成一组，11~15分成一组，group1和3为左右拱腰，group2为拱顶
-            if group1 and group2 and group3 and updated_humidity_data:
-                group1_avg = sum(group1.values()) / len(group1)
-                group3_avg = sum(group3.values()) / len(group3)
-                group2_avg = sum(group2.values()) / len(group2)
-                top_temp_avg = group2_avg
-                side_temp_avg = (group1_avg + group3_avg) / 2
+            if updated_temp_data and updated_humidity_data:
+                updated_temp_data_avg = sum(updated_temp_data.values()) / len(updated_temp_data)
                 updated_humidity_data_avg = sum(updated_humidity_data.values()) / len(updated_humidity_data)
 
-                self.state_machine.run(side_temp_avg, top_temp_avg, updated_humidity_data_avg)
+                self.state_machine.run(updated_temp_data_avg, updated_humidity_data_avg)
             else:
-                if group1 and group3:
-                    group1_avg = sum(group1.values()) / len(group1)
-                    group3_avg = sum(group3.values()) / len(group3)
-                    side_temp_avg = (group1_avg + group3_avg) / 2
-                if group2:
-                    group2_avg = sum(group2.values()) / len(group2)
-                    top_temp_avg = group2_avg
+                if updated_temp_data:
+                    updated_temp_data_avg = sum(updated_temp_data.values()) / len(updated_temp_data)
                 if updated_humidity_data:
                     updated_humidity_data_avg = sum(updated_humidity_data.values()) / len(updated_humidity_data)
 
                 self.qtSignalHandler.sensor_avg_data_updated.emit({
-                    "side_temperature": round(side_temp_avg, 1),
-                    "top_temperature": round(top_temp_avg, 1), 
+                    "temperature": round(updated_temp_data_avg, 1),
                     "humidity": round(updated_humidity_data_avg, 1)
                 })
             
