@@ -246,66 +246,40 @@ watch(() => props.message, (newMsg) => {
 const currentState = ref('S0');
 const centerX = 400;
 const centerY = 200;
-const radius = 120;
+const radius = 100;
 
 const states = ref([
-  { x: centerX, y: centerY - radius, label: 'S1', text1: '打开全部', text2: '四个蒸汽机' },
-  { x: centerX + radius, y: centerY, label: 'S2', text1: '关闭一半蒸汽机', text2: '只打开两个蒸汽机' },
-  { x: centerX, y: centerY + radius, label: 'S3', text1: '关闭全部蒸汽机', text2: '根据湿度开/关造雾机' },
-  { x: centerX - radius, y: centerY, label: 'S4', text1: '打开两个蒸汽机', text2: '自动关闭造雾机' }
+  { x: centerX, y: centerY - radius, label: 'S1', text1: '打开全部', text2: '蒸汽机' },
+  { x: centerX, y: centerY + radius, label: 'S2', text1: '关闭全部蒸汽机', text2: '根据湿度开/关造雾机' }
 ]);
 
 const transitions = ref([
   {
-    path: `M ${centerX + 80} ${centerY - radius} Q ${centerX + radius} ${centerY - radius} ${centerX + radius} ${centerY - 40}`,
-    lineStart: { x: centerX + radius - 40, y: centerY - radius + 40 },
-    conditionX: centerX + radius + 100,
-    conditionY: centerY - radius + 40,
+    path: `M ${centerX + 80} ${centerY - radius} Q ${centerX + radius} ${centerY} ${centerX + 80} ${centerY + radius}`,
+    lineStart: { x: centerX + 40, y: centerY },
+    conditionX: centerX + radius + 60,
+    conditionY: centerY,
     condition: 'C1',
     text1: '平均温度',
-    text2: '高于(温度上限+温度下限)/2'
+    text2: '高于设定的温度上限'
   },
   {
-    path: `M ${centerX + radius} ${centerY + 40} Q ${centerX + radius} ${centerY + radius} ${centerX + 80} ${centerY + radius}`,
-    lineStart: { x: centerX + radius - 40, y: centerY + radius - 40 },
-    conditionX: centerX + radius + 100,
-    conditionY: centerY + radius - 40,
+    path: `M ${centerX - 80} ${centerY + radius} Q ${centerX - radius} ${centerY} ${centerX - 80} ${centerY - radius}`,
+    lineStart: { x: centerX - 40, y: centerY },
+    conditionX: centerX - radius - 60,
+    conditionY: centerY,
     condition: 'C2',
     text1: '平均温度',
-    text2: '高于温度上限'
-  },
-  {
-    path: `M ${centerX - 80} ${centerY + radius} Q ${centerX - radius} ${centerY + radius} ${centerX - radius} ${centerY + 40}`,
-    lineStart: { x: centerX - radius + 40, y: centerY + radius - 40 },
-    conditionX: centerX - radius - 100,
-    conditionY: centerY + radius - 40,
-    condition: 'C3',
-    text1: '平均温度',
-    text2: '低于(温度上限+温度下限)/2'
-  },
-  {
-    path: `M ${centerX - radius} ${centerY - 40} Q ${centerX - radius} ${centerY - radius} ${centerX - 80} ${centerY - radius}`,
-    lineStart: { x: centerX - radius + 40, y: centerY - radius + 40 },
-    conditionX: centerX - radius - 100,
-    conditionY: centerY - radius + 40,
-    condition: 'C4',
-    text1: '平均温度',
-    text2: '低于温度下限'
+    text2: '低于设定的温度下限'
   }
 ]);
 
 // 添加状态改变方法
 const changeState = (state) => {
-  if (state === 0) {
-    currentState.value = 'S0';
-  } else if (state === 1) {
+  if (state === 1) {
     currentState.value = 'S1';
   } else if (state === 2) {
     currentState.value = 'S2';
-  } else if (state === 3) {
-    currentState.value = 'S3';
-  } else if (state === 4) {
-    currentState.value = 'S4';
   }
 };
 

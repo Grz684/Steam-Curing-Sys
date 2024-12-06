@@ -9,8 +9,6 @@ class State(Enum):
     S0 = 0
     S1 = 1
     S2 = 2 
-    S3 = 3
-    S4 = 4
 
 class StateMachine:
     def __init__(self, node):
@@ -28,17 +26,11 @@ class StateMachine:
           if self.state == State.S0:
               self.state = State.S1
               changed = True
-          if self.state == State.S1 and temperature > (self.qtSignalHandler.temp_upper_limit+self.qtSignalHandler.temp_lower_limit)/2:
+          if self.state == State.S1 and temperature > self.qtSignalHandler.temp_upper_limit:
               self.state = State.S2
               changed = True
-          elif self.state == State.S2 and temperature > self.qtSignalHandler.temp_upper_limit:
-              self.state = State.S3
-              changed = True 
-          elif self.state == State.S3 and temperature < (self.qtSignalHandler.temp_lower_limit+self.qtSignalHandler.temp_upper_limit)/2:
-              self.state = State.S4
-              changed = True
-          elif self.state == State.S4 and temperature < self.qtSignalHandler.temp_lower_limit:
-              self.state = State.S1
+          elif self.state == State.S2 and temperature < self.qtSignalHandler.temp_lower_limit:
+              self.state = State.S0
               changed = True
               
       # 返回是否发生过状态转换        
@@ -68,17 +60,6 @@ class StateMachine:
                 self.qtSignalHandler.spray_engine_status_updated.emit(False)
         elif self.state == State.S2:
             result1 = self.control_utils.turn_left_steam_off()
-            result2 = self.control_utils.turn_right_steam_on()
-            if result1:
-                self.qtSignalHandler.left_steam_status_updated.emit(False)
-            if result2:
-                self.qtSignalHandler.right_steam_status_updated.emit(True)
-
-            result = self.control_utils.turn_spray_engine_off()
-            if result:
-                self.qtSignalHandler.spray_engine_status_updated.emit(False)
-        elif self.state == State.S3:
-            result1 = self.control_utils.turn_left_steam_off()
             result2 = self.control_utils.turn_right_steam_off()
             if result1:
                 self.qtSignalHandler.left_steam_status_updated.emit(False)
@@ -93,16 +74,4 @@ class StateMachine:
                 result = self.control_utils.turn_spray_engine_off()
                 if result:
                     self.qtSignalHandler.spray_engine_status_updated.emit(False)
-            
-        elif self.state == State.S4:
-            result1 = self.control_utils.turn_left_steam_off()
-            result2 = self.control_utils.turn_right_steam_on()
-            if result1:
-                self.qtSignalHandler.left_steam_status_updated.emit(False)
-            if result2:
-                self.qtSignalHandler.right_steam_status_updated.emit(True)
-
-            result = self.control_utils.turn_spray_engine_off()
-            if result:
-                self.qtSignalHandler.spray_engine_status_updated.emit(False)
         

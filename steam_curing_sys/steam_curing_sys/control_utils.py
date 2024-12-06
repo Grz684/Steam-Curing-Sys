@@ -32,9 +32,9 @@ class ControlUtils():
         self.switch_to_sprinkler = False
 
         # debug时不连接Modbus服务器
-        self.debug = True
+        self.debug = False
 
-        self.output_num = 16 # 输出数量
+        self.output_num = 6 # 输出数量
 
         # 四设备情况
         self.spray_engine_on = False
