@@ -3,8 +3,8 @@
     <h2>集成控制系统【定时喷淋->循环养护->定时喷淋按时间设置交替运行】</h2>
 
     <div class="label-box" >
-      <label>适用于9传感器+0606数字开关+喷淋小车+两组蒸汽机+超声波造雾机的养护系统</label><br>
-      <label>在数字开关上，output1控制造雾机开/关，output2控制蒸汽机（组1）开/关，output3控制（组2）蒸汽机开/关，output4连接喷淋小车前进/后退互锁电路，output5控制喷淋水泵1，output6控制喷淋水泵2</label>
+      <label>适用于9传感器+16输出数字开关+12组喷淋+两组蒸汽机+超声波造雾机的养护系统</label><br>
+      <label>在数字开关上，output1控制蒸汽机（组1）开/关，output2控制（组2）蒸汽机开/关，output3~14分别控制12组喷淋头开/闭，output15控制喷淋水泵，output16控制造雾机开/关</label>
     </div>
     
     <div class="mode-controls">
@@ -24,15 +24,14 @@
         <!-- Left Box - Sprinkler -->
         <div class="left-box">
           <h3>定时喷淋系统</h3>
-          <div class="steam_engine">
-            <div class="status" :class="{ 'on': sprinklerEngineOn }">
-              <div class="status-indicator"></div>
-              {{ sprinklerEngineOn ? '开' : '关' }}
-            </div>
-            <button @click="click_toggleSprinklerEngine" :disabled="isAutoMode" class="control-btn">
-              {{ sprinklerEngineOn ? '关闭' : '开启' }}
-            </button>
+          <div class="visualization">
+          <div v-for="n in 12" :key="n" class="sprinkler" 
+               :class="{ active: isAutoMode ? activeSprinkler === n : waterLevels[n-1] > 0 }"
+               @click="!isAutoMode && toggleManualSprinkler(n)">
+            <div class="water" :style="{ height: waterHeight(n) + '%' }"></div>
+            <span>{{ n }}</span>
           </div>
+        </div>
           <div class="text_status">{{ statusMessage }}</div>
         </div>
 
@@ -41,7 +40,7 @@
           <h3>定时喷淋/循环养护系统时间设置</h3>
           <div class="controls">
             <div class="input-group">
-              <label>喷淋系统工作时间 (秒):</label>
+              <label>单个喷淋头工作时间 (秒):</label>
               <input 
                 type="text" 
                 :value="tempSingleRunTime" 
@@ -197,6 +196,10 @@ const tempRunIntervalTime = ref(currentRunIntervalTime.value);
 const tempLoopInterval = ref(currentLoopInterval.value);
 const currentPhase = ref('');
 const remainingTime = ref(0);
+
+const waterLevels = ref(Array(12).fill(0));
+const activeSprinkler = ref(0);
+const chose_n = ref(0);
 
 // Shared state
 const isAutoMode = ref(true);
@@ -427,6 +430,9 @@ const sendInitialState = () => {
     isAutoMode: isAutoMode.value,
     isRunning: isRunning.value,
     phaseStartTime: phaseStartTime.value,
+    waterLevels: waterLevels.value,
+    activeSprinkler: activeSprinkler.value,
+    chose_n : chose_n.value
   };
 
   sendToPyQt('IntegratedControlSystem_init_response', initialState);
@@ -435,7 +441,7 @@ const sendInitialState = () => {
 const statusMessage = computed(() => {
   if (!isAutoMode.value) return '手动模式';
   if (!isRunning.value) return '喷淋系统未运行';
-  if (currentPhase.value === 'run') return `喷淋系统正在运行，剩余 ${remainingTime.value+1} 秒`;
+  if (currentPhase.value === 'run') return `喷头 ${activeSprinkler.value} 正在运行，剩余 ${remainingTime.value+1} 秒`;
   if (currentPhase.value === 'interval') return `运行间隔中，剩余 ${remainingTime.value+1} 秒`;
   if (currentPhase.value === 'loop') return `循环养护系统工作中，离下次喷淋剩余 ${remainingTime.value+1} 秒`;
   return '';
@@ -479,8 +485,18 @@ async function setMode(mode) {
         await toggleRightSteamEngine();
       }
 
-      if (sprinklerEngineOn.value) {
-        await toggleSprinklerEngine();
+      // if (sprinklerEngineOn.value) {
+      //   await toggleSprinklerEngine();
+      // }
+      // 找出当前激活的喷头（如果有）
+      const activeIndex = waterLevels.value.findIndex(level => level === 100);
+      if (activeIndex !== -1) {
+        waterLevels.value[activeIndex] = 0;
+        if (environment.isPyQtWebEngine) {
+          sendToPyQt('controlSprinkler', { target: "manual_control_sprayer", index: activeIndex+1, state: 0 });
+          // 水泵关闭
+          sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
+        }
       }
     }
     else {
@@ -612,6 +628,7 @@ async function startSystem() {
   sendToPyQt('IntegratedControlSystem_set_response', { method: 'startSystem', args: {} });
   if (isRunning.value || !isAutoMode.value) return;
   isRunning.value = true;
+  waterLevels.value = Array(12).fill(0);
   await runCycle();
 }
 
@@ -619,6 +636,12 @@ async function stopSystem() {
   sendToPyQt('IntegratedControlSystem_set_response', { method: 'stopSystem', args: {} });
   // 停止自动系统时，关闭当前喷头，停止喷雾循环
   if (environment.isPyQtWebEngine) {
+    if (activeSprinkler.value > 0) {
+      sendToPyQt('controlSprinkler', { target: "auto_control_sprayer", index: activeSprinkler.value, state: 0 });
+      // 水泵关闭
+      sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
+    }
+
     sendToPyQt('controlSprinkler', { target: 'setState', state: false });
   }
 
@@ -644,13 +667,18 @@ async function stopSystem() {
 
 function stopSystemWithoutSend() {
   isRunning.value = false;
+  clearInterval(waterTimer);
   clearAllTimers();
 
+  activeSprinkler.value = 0;
   currentPhase.value = '';
+  waterLevels.value = Array(12).fill(0);
   remainingTime.value = 0;
 }
 
 async function runCycle() {
+  activeSprinkler.value = 1;
+  sendToPyQt('controlSprinkler', { target: "tankWork" , state: 1 });
   runSprinkler();
 }
 
@@ -672,14 +700,29 @@ function runSprinkler() {
   phaseStartTime.value = Date.now();
   updateRemainingTime();
 
-  sendToPyQt('setEngineState', { engine: 'sprinklerEngine', state: true });
-  sprinklerEngineOn.value = true;
+  let startTime = Date.now();
+  sendToPyQt('controlSprinkler', { target: "auto_control_sprayer", index: activeSprinkler.value, state: 1 });
+
+  waterTimer = setInterval(() => {
+    let elapsedTime = Date.now() - startTime;
+    let progress = Math.min(elapsedTime / (currentSingleRunTime.value * 1000), 1);
+    waterLevels.value[activeSprinkler.value - 1] = progress * 100;
+  }, 100);
 
   timer = setTimeout(async () => {
-    sendToPyQt('setEngineState', { engine: 'sprinklerEngine', state: false });
-    sprinklerEngineOn.value = false;
+    clearInterval(waterTimer);
+    if (activeSprinkler.value < 12) {
+      waterLevels.value[activeSprinkler.value - 1] = 0;
+      sendToPyQt('controlSprinkler', { target: "auto_control_sprayer", index: activeSprinkler.value, state: 0 });
+      activeSprinkler.value++;
+      runSprinkler();
+    } else {
+      waterLevels.value[activeSprinkler.value - 1] = 0;
+      sendToPyQt('controlSprinkler', { target: "auto_control_sprayer", index: activeSprinkler.value, state: 0 });
       
+      sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
       runLoopInterval();
+    }
   }, currentSingleRunTime.value * 1000);
 
   timers.value.push(timer);
@@ -700,6 +743,7 @@ async function runLoopInterval() {
     updateRemainingTime();
 
     timer = setTimeout(async () => {
+      waterLevels.value = Array(12).fill(0);
 
       sendToPyQt('controlSprinkler', { target: 'setState', state: false });
       if (sprayEngineOn.value) {
@@ -722,6 +766,53 @@ async function runLoopInterval() {
     }, currentLoopInterval.value * 1000);
 
     timers.value.push(timer);
+}
+
+function waterHeight(n) {
+  return waterLevels.value[n - 1];
+}
+
+async function toggleManualSprinkler(n) {
+  if (isAutoMode.value) return;
+
+  sendToPyQt('IntegratedControlSystem_set_response', { method: 'toggleManualSprinkler', args: { n: n } });
+  
+  // 找出当前激活的喷头（如果有）
+  const activeIndex = waterLevels.value.findIndex(level => level === 100);
+  
+  // 检查当前点击的喷头是否已经激活
+  if (waterLevels.value[n - 1] > 0) {
+    // 如果已激活，则关闭它
+    waterLevels.value[n - 1] = 0;
+    if (environment.isPyQtWebEngine) {
+      // 喷淋系统关闭
+      sendToPyQt('controlSprinkler', { target: "manual_control_sprayer", index: n, state: 0 });
+      sendToPyQt('controlSprinkler', { target: "tankWork" , state: 0 });
+    }
+  } else {
+    // 如果未激活，关闭当前激活的喷头（如果有），然后激活新的喷头
+    if (activeIndex !== -1) {
+      waterLevels.value[activeIndex] = 0;
+      if (environment.isPyQtWebEngine) {
+        sendToPyQt('controlSprinkler', { target: "manual_control_sprayer", index: activeIndex+1, state: 0 });
+      }
+      // 激活新的喷头
+      waterLevels.value[n - 1] = 100;
+      if (environment.isPyQtWebEngine) {
+        sendToPyQt('controlSprinkler', { target: "manual_control_sprayer", index: n, state: 1 });
+      }
+    }
+    else {
+      // 激活新的喷头
+      // 喷淋系统打开
+      chose_n.value = n;
+      sendToPyQt('controlSprinkler', { target: "tankWork" , state: 1 });
+      waterLevels.value[n - 1] = 100;
+      if (environment.isPyQtWebEngine) {
+        sendToPyQt('controlSprinkler', { target: "manual_control_sprayer", index: n, state: 1 });
+      }
+    }
+  }
 }
 </script>
   
@@ -1043,5 +1134,40 @@ label {
   .control-item {
     margin-bottom: 20px;
   }
+}
+
+.visualization {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sprinkler {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: black;
+  position: relative;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  border: 2px solid #ccc;
+  cursor: pointer;
+}
+
+.sprinkler.active {
+  border-color: #4CAF50;
+}
+
+.water {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(33, 150, 243, 0.5);
+  transition: height 0.1s linear;
 }
 </style>

@@ -19,8 +19,6 @@ class ControlUtils():
         self.zone1_output_addr = 0
         self.zone2_output_addr = 1
 
-        self.sprinkler_base_addr = 2
-
         self.dolly_move_addr = 2
         self.dolly_move_addr_back_up = 3
         self.pulse_addr = 4
@@ -34,20 +32,25 @@ class ControlUtils():
         # debug时不连接Modbus服务器
         self.debug = False
 
-        self.output_num = 6 # 输出数量
+        self.output_num = 16 # 输出数量
 
         # 四设备情况
         self.spray_engine_on = False
         self.left_steam_on = False
         self.right_steam_on = False
         self.sprinkler_on = False
-        self.spray_engine_output_addr = 0
-        self.left_steam_output_addr = 1
-        self.right_steam_output_addr = 2
+        self.left_steam_output_addr = 0
+        self.right_steam_output_addr = 1
+
+        self.sprinkler_base_addr = 2
+
         self.sprinkler_car_output_addr = 3
         self.sprinkler_tank1_output_addr = 4
         self.sprinkler_tank2_output_addr = 5
 
+        self.tank_output = 14
+        self.spray_engine_output_addr = 15
+        
         if not self.debug:
             try:
                 self.dio_client = ModbusTcpClient(self.dio_ip, port=self.dio_port)
@@ -161,13 +164,13 @@ class ControlUtils():
         if state:
             if not self.tank_is_work:
                 self.tank_is_work = True
-                self.control_output(14, True)
+                self.control_output(self.tank_output, True)
                 return True
             return False
         else:
             if self.tank_is_work:
                 self.tank_is_work = False
-                self.control_output(14, False)
+                self.control_output(self.tank_output, False)
                 return True
             return False
 
