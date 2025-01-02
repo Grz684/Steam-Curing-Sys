@@ -8,6 +8,7 @@ import random
 import logging
 from pymodbus.client import ModbusTcpClient
 import concurrent.futures
+import struct
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -20,14 +21,14 @@ class TempHumidityPublisher(Node):
           
         self.srv = self.create_service(Trigger, 'get_sensor_data', self.get_sensor_data_callback)
 
-        self.ip_address = '192.168.166.8'  # 请替换为您的实际IP地址
-        self.base_port = 1024  # COM1 对应的起始端口号
+        self.ip_address = '192.168.166.8'
+        self.base_port = 1024
 
         self.sensor_num = 4
         
-        # 创建16个ModbusTcpClient，每个对应一个传感器
+        # 创建4个ModbusTcpClient
         self.modbus_clients = [
-            ModbusTcpClient(self.ip_address, port=self.base_port + i, timeout=0.1)
+            ModbusTcpClient(self.ip_address, port=self.base_port + i, timeout=0.5)
             for i in range(self.sensor_num)
         ]
 
@@ -40,22 +41,43 @@ class TempHumidityPublisher(Node):
                 if not client.connect():
                     return None, None
 
-            # 读取两个寄存器，起始地址为0x0001
-            result = client.read_holding_registers(address=0x0001, count=2, slave=1)
-            
-            if not result.isError():
-                temp_raw = result.registers[0]
-                humi_raw = result.registers[1]
+            # 前两个传感器使用原来的方法读取温湿度
+            if client_index < 2:
+                result = client.read_holding_registers(address=0x0001, count=2, slave=1)
                 
-                temperature = temp_raw / 10.0
-                humidity = humi_raw / 10.0
-                
-                return temperature, humidity
+                if not result.isError():
+                    temp_raw = result.registers[0]
+                    humi_raw = result.registers[1]
+                    
+                    temperature = temp_raw / 10.0
+                    humidity = humi_raw / 10.0
+                    
+                    return temperature, humidity
+                else:
+                    return None, None
+            # 后两个传感器只读取温度，使用新协议
             else:
-                # self.get_logger().error(f"读取错误: {result}")
-                return None, None
+                # 发送查询帧
+                result = client.read_holding_registers(
+                    address=0x00,  # 起始寄存器地址
+                    count=1,       # 读取1个寄存器
+                    slave=0x01     # 设备地址
+                )
+                
+                if not result.isError():
+                    temp_raw = result.registers[0]
+                    # 处理温度数据（负数采用补码形式）
+                    if temp_raw > 32767:  # 负温度
+                        temperature = (temp_raw - 65536) / 10.0
+                    else:
+                        temperature = temp_raw / 10.0
+                    
+                    return temperature, None  # 只返回温度，湿度为None
+                else:
+                    return None, None
+
         except Exception as e:
-            # self.get_logger().error(f"通信异常: {e}")
+            logger.error(f"通信异常: {e}")
             return None, None
 
     def read_all_sensors(self):
@@ -68,21 +90,24 @@ class TempHumidityPublisher(Node):
                 index = future_to_index[future]
                 try:
                     temp, humi = future.result()
-                    if temp is not None and humi is not None:
+                    if temp is not None:
                         temperatures[f'temperature_sensor_{index+1}'] = round(temp, 2)
-                        humidities[f'humidity_sensor_{index+1}'] = round(humi, 2)
                     else:
                         temperatures[f'temperature_sensor_{index+1}'] = -1
+
+                    # 只有前两个传感器有湿度数据
+                    # if index >= 2:
+                    if humi is not None:
+                        humidities[f'humidity_sensor_{index+1}'] = round(humi, 2)
+                    else:
                         humidities[f'humidity_sensor_{index+1}'] = -1
                 except Exception as exc:
-                    # self.get_logger().error(f'设备 {index+1} 生成了异常: {exc}')
                     temperatures[f'temperature_sensor_{index+1}'] = -1
                     humidities[f'humidity_sensor_{index+1}'] = -1
 
         return temperatures, humidities
 
     def get_sensor_data_callback(self, request, response):
-        # 模拟获取16个温度和16个湿度数据
         temperatures, humidities = self.read_all_sensors()
         
         data = {
@@ -103,7 +128,6 @@ def main(args=None):
     rclpy.init(args=args)
     temp_humidity_publisher = TempHumidityPublisher()
     
-    # 添加标志来跟踪节点和 rclpy 是否已被关闭
     node_destroyed = False
     rclpy_shutdown = False
 
@@ -118,7 +142,6 @@ def main(args=None):
             rclpy.shutdown()
             rclpy_shutdown = True
 
-    # 设置信号处理器
     signal.signal(signal.SIGINT, signal_handler)
 
     try:

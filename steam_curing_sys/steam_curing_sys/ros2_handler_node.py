@@ -17,8 +17,8 @@ class SensorSubscriberNode(Node):
         self.qtSignalHandler = qtSignalHandler
         self.sensor_num = qtSignalHandler.sensor_num
         
-        self.temp_data = {f'temperature_sensor_{i}': -1 for i in range(1, self.sensor_num + 1)}  # 修改为 16 个传感器
-        self.humidity_data = {f'humidity_sensor_{i}': -1 for i in range(1, self.sensor_num + 1)}  # 修改为 16 个传感器
+        self.temp_data = {f'temperature_sensor_{i}': -1 for i in range(1, self.sensor_num + 1)}  # 修改为 4 个传感器
+        self.humidity_data = {f'humidity_sensor_{i}': -1 for i in range(1, self.sensor_num + 1-2)}  # 只有两个湿度传感器
 
         self.db_name = 'sensor_data.db'
         self.conn, self.cursor = self.initialize_database(self.db_name)
@@ -39,7 +39,7 @@ class SensorSubscriberNode(Node):
         self.previous_direction_states = None
 
         # Create timer, calling every 0.5 seconds
-        self.read_input_timer = self.create_timer(0.5, self.read_input_timer_callback)
+        # self.read_input_timer = self.create_timer(0.5, self.read_input_timer_callback)
 
         # 用于测试
         self.water_protection_sub = self.create_subscription(
@@ -224,6 +224,7 @@ class SensorSubscriberNode(Node):
             response = future.result()  # 获取服务的响应
             if response.success:
                 data = json.loads(response.message)
+                # logger.info(f'获取传感器数据: {data}')
                 
                 self.temp_data = data["temperatures"]
                 self.humidity_data = data["humidities"]
@@ -250,12 +251,20 @@ class SensorSubscriberNode(Node):
         for i in range(1, self.sensor_num + 1):  # 修改为 16 个传感器
             temp_sensor_name = f'temperature_sensor_{i}'
             temp_value = self.temp_data[temp_sensor_name]
-            if temp_value != -1:
-                sensor_data.append((f'温感{i}', f'{temp_value:.1f}°C'))
+            # 前两个温感是水下
+            if i <= 2:
+                if temp_value != -1:
+                    sensor_data.append((f'温感{i}', f'{temp_value:.1f}°C'))
+                else:
+                    sensor_data.append((f'温感{i}', '未知'))
+            # 后两个温感是水上
             else:
-                sensor_data.append((f'温感{i}', '未知'))
+                if temp_value != -1:
+                    sensor_data.append((f'温感{i}', f'{temp_value:.1f}°C'))
+                else:
+                    sensor_data.append((f'温感{i}', '未知'))
         
-        for i in range(1, self.sensor_num + 1):  # 修改为 16 个传感器
+        for i in range(1, self.sensor_num + 1-2):  # 两个湿度传感器
             humidity_sensor_name = f'humidity_sensor_{i}'
             humidity_value = self.humidity_data[humidity_sensor_name]
             if humidity_value != -1:
@@ -289,7 +298,7 @@ class SensorSubscriberNode(Node):
             CREATE TABLE IF NOT EXISTS sensor_data (
                 timestamp TEXT PRIMARY KEY,
                 temp_1 REAL, temp_2 REAL, temp_3 REAL, temp_4 REAL,
-                hum_1 REAL, hum_2 REAL, hum_3 REAL, hum_4 REAL
+                hum_1 REAL, hum_2 REAL
             )
             ''')
 
@@ -325,7 +334,7 @@ class SensorSubscriberNode(Node):
             self.save_to_db_count = 0
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             data = {f"temp_{i}": None for i in range(1, self.sensor_num + 1)}
-            data.update({f"hum_{i}": None for i in range(1, self.sensor_num + 1)})
+            data.update({f"hum_{i}": None for i in range(1, self.sensor_num + 1-2)})
             
             for sensor, value in sensor_data:
                 if '温感' in sensor:
