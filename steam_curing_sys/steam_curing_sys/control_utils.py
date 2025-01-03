@@ -14,8 +14,13 @@ class ModbusControlException(Exception):
 class ControlUtils():
     def __init__(self):
         self.lock = threading.Lock()
-        self.zone1_heater_on = False
-        self.zone2_heater_on = False
+        # self.zone1_heater_on = False
+        # self.zone2_heater_on = False
+        # 配置加热和喷淋端口
+        self.spray_addr = 0
+        self.heater_addr = 1
+
+        self.heater_on = False
 
         self.zone1_humidifier_on = False
         self.zone2_humidifier_on = False
@@ -143,25 +148,37 @@ class ControlUtils():
                 except ModbusException as e:
                     raise ModbusControlException(f"Modbus错误: {e}")
         
-    def turn_zone1_heater_on(self):
-        if not self.zone1_heater_on:
-            self.zone1_heater_on = True
-            logger.info('Turning zone1 heater ON')
+    # def turn_zone1_heater_on(self):
+    #     if not self.zone1_heater_on:
+    #         self.zone1_heater_on = True
+    #         logger.info('Turning zone1 heater ON')
 
-    def turn_zone1_heater_off(self):
-        if self.zone1_heater_on:
-            self.zone1_heater_on = False
-            logger.info('Turning zone1 heater OFF')
+    # def turn_zone1_heater_off(self):
+    #     if self.zone1_heater_on:
+    #         self.zone1_heater_on = False
+    #         logger.info('Turning zone1 heater OFF')
 
-    def turn_zone2_heater_on(self):
-        if not self.zone2_heater_on:
-            self.zone2_heater_on = True
-            logger.info('Turning zone2 heater ON')
+    # def turn_zone2_heater_on(self):
+    #     if not self.zone2_heater_on:
+    #         self.zone2_heater_on = True
+    #         logger.info('Turning zone2 heater ON')
 
-    def turn_zone2_heater_off(self):
-        if self.zone2_heater_on:
-            self.zone2_heater_on = False
-            logger.info('Turning zone2 heater OFF')
+    # def turn_zone2_heater_off(self):
+    #     if self.zone2_heater_on:
+    #         self.zone2_heater_on = False
+    #         logger.info('Turning zone2 heater OFF')
+
+    def turn_heat_engine_on(self):
+        if not self.heater_on:
+            self.heater_on = True
+            logger.info('Turning heat engine ON')
+            self.control_output(self.heater_addr, True)
+
+    def turn_heat_engine_off(self):
+        if self.heater_on:
+            self.heater_on = False
+            logger.info('Turning heat engine OFF')
+            self.control_output(self.heater_addr, False)
 
     def turn_zone1_humidifier_on(self):
         if not self.zone1_humidifier_on:
@@ -189,24 +206,29 @@ class ControlUtils():
                 
     def turn_dolly_on(self, one_side_flag):
         if not self.dolly_on:
-            logger.info('Turning dolly ON')
+            logger.info('Turning 喷雾 ON')
             self.dolly_on = True
-            if one_side_flag:
-                self.one_side_flag = True
-                self.control_output(self.dolly_move_addr, True)
-                self.control_output(self.dolly_move_addr_back_up, True)
-                # if self.single_zone2_open:
-                #     self.control_output(self.zone2_output_addr, True)
-                #     self.control_output(self.zone1_output_addr, False)
-                # else:
-                #     self.control_output(self.zone2_output_addr, False)
-                #     self.control_output(self.zone1_output_addr, True)
-            else:
-                self.one_side_flag = False
-                self.control_output(self.dolly_move_addr, True)
-                self.control_output(self.dolly_move_addr_back_up, True)
-                self.control_output(self.zone2_output_addr, True)
-                self.control_output(self.zone1_output_addr, True)
+            self.control_output(self.spray_addr, True)
+
+        # if not self.dolly_on:
+        #     logger.info('Turning dolly ON')
+        #     self.dolly_on = True
+        #     if one_side_flag:
+        #         self.one_side_flag = True
+        #         self.control_output(self.dolly_move_addr, True)
+        #         self.control_output(self.dolly_move_addr_back_up, True)
+        #         # if self.single_zone2_open:
+        #         #     self.control_output(self.zone2_output_addr, True)
+        #         #     self.control_output(self.zone1_output_addr, False)
+        #         # else:
+        #         #     self.control_output(self.zone2_output_addr, False)
+        #         #     self.control_output(self.zone1_output_addr, True)
+        #     else:
+        #         self.one_side_flag = False
+        #         self.control_output(self.dolly_move_addr, True)
+        #         self.control_output(self.dolly_move_addr_back_up, True)
+        #         self.control_output(self.zone2_output_addr, True)
+        #         self.control_output(self.zone1_output_addr, True)
             # self.control_output(self.pulse_addr, True)
             # # 使用线程来处理延迟关闭pulse
             # threading.Thread(target=self._delayed_pulse_off, daemon=True).start()
@@ -238,17 +260,17 @@ class ControlUtils():
     #             self.control_output(self.zone1_output_addr, False)
     #             self.control_output(self.zone2_output_addr, True)
 
-    def control_dolly_side(self, side):
-        if side == "left":
-            self.single_zone2_open = True
-            if self.one_side_flag and self.dolly_on:
-                self.control_output(self.zone2_output_addr, True)
-                self.control_output(self.zone1_output_addr, False)
-        else:
-            self.single_zone2_open = False
-            if self.one_side_flag and self.dolly_on:
-                self.control_output(self.zone1_output_addr, True)
-                self.control_output(self.zone2_output_addr, False)
+    # def control_dolly_side(self, side):
+    #     if side == "left":
+    #         self.single_zone2_open = True
+    #         if self.one_side_flag and self.dolly_on:
+    #             self.control_output(self.zone2_output_addr, True)
+    #             self.control_output(self.zone1_output_addr, False)
+    #     else:
+    #         self.single_zone2_open = False
+    #         if self.one_side_flag and self.dolly_on:
+    #             self.control_output(self.zone1_output_addr, True)
+    #             self.control_output(self.zone2_output_addr, False)
         
 
     def _delayed_pulse_off(self):
@@ -257,12 +279,13 @@ class ControlUtils():
 
     def turn_dolly_off(self):
         if self.dolly_on:
-            logger.info('Turning dolly OFF')
+            logger.info('Turning 喷雾 OFF')
             self.dolly_on = False
-            self.control_output(self.dolly_move_addr, False)
-            self.control_output(self.dolly_move_addr_back_up, False)
-            self.control_output(self.zone2_output_addr, False)
-            self.control_output(self.zone1_output_addr, False)
+            self.control_output(self.spray_addr, False)
+            # self.control_output(self.dolly_move_addr, False)
+            # self.control_output(self.dolly_move_addr_back_up, False)
+            # self.control_output(self.zone2_output_addr, False)
+            # self.control_output(self.zone1_output_addr, False)
 
     def turn_all_off(self):
         for i in range(self.output_num):

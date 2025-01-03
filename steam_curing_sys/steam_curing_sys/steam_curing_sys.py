@@ -34,6 +34,8 @@ def main():
     qtSignalHandler.right_steam_status_updated.connect(ex.update_right_steam_status)
 
     qtSignalHandler.update_dolly_state.connect(ex.update_dolly_state)
+    qtSignalHandler.update_heat_engine_status.connect(ex.update_heat_engine_status)
+
     qtSignalHandler.update_water_tank_status.connect(ex.update_water_tank_status)
     ex.bridge.dataExport.connect(qtSignalHandler.export_data)
     ex.bridge.lockPasswordCheck.connect(qtSignalHandler.check_password)
@@ -46,6 +48,8 @@ def main():
     ex.bridge.updataBaseTime.connect(qtSignalHandler.update_baseTime)
     ex.bridge.sensor_data_adjustments.connect(qtSignalHandler.sensor_data_adjustments)
     qtSignalHandler.update_adjust_settings.connect(ex.update_adjust_settings)
+
+    qtSignalHandler.sensor_avg_data_updated.connect(ex.update_sensor_avg_data)
 
     try:
         qtSignalHandler.control_utils = ControlUtils()

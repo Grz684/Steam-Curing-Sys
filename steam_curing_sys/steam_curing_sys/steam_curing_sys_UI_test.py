@@ -346,6 +346,11 @@ class MainWindow(QMainWindow):
 
         self.export_progress_dialog = None
 
+    def update_sensor_avg_data(self, sensor_data):
+        msg_type = "update_sensor_avg_data"
+        # logger.info(f"Send sensor average data: {sensor_data}")
+        self.bridge.send_message(msg_type, json.dumps(sensor_data))
+
     def update_device_info(self, device_info):
         msg_type = "device_info"
         logger.info(f"Send device info: {device_info}")
@@ -445,6 +450,10 @@ class MainWindow(QMainWindow):
         msg_type = "update_dolly_state"
         self.bridge.send_message(msg_type, state)
         self.bridge.mqtt_client.publish(json.dumps({"command": "update_dolly_state", "data": state}))
+
+    def update_heat_engine_status(self, status):
+        msg_type = "update_heat_engine_status"
+        self.bridge.send_message(msg_type, status)
 
     def update_sensor_data(self, sensor_data):
         # 将 sensor_data 转换为字典

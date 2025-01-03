@@ -1,40 +1,41 @@
 <template>
-  <div class="cart-system">
-    <div class="label-box" >
-      <label>在数字开关上，output1控制左侧养护开/关，output2控制右侧养护开/关，output3与output4控制小车运动</label><br>
+  <h2> 喷雾系统【数字开关output1控制】 </h2>
+  <div class="label-box" >
+      <label>自动模式下，当平均湿度低于设置的湿度下限时，喷雾开启；当平均湿度高于设置的湿度上限时，喷雾关闭</label><br>
     </div>
+  <div class="cart-system">
     <!-- 新增的缺水保护功能 -->
-    <div class="water-protection">
+    <!-- <div class="water-protection">
       <div class="water-tank" :class="{ 'low-water': leftTankLowWater }">
         左水箱: {{ leftTankLowWater ? '缺水' : '正常' }}
       </div>
       <div class="water-tank" :class="{ 'low-water': rightTankLowWater }">
         右水箱: {{ rightTankLowWater ? '缺水' : '正常' }}
       </div>
-    </div>
+    </div> -->
 
     <div class="mode-group">
       <div class="mode-group-left">
         <button class="mode-button" :class="{ active: mode === 'semi-auto' && !low_water}" :disabled="low_water" @click="mode === 'auto' ? setMode('semi-auto') : () => {}">半自动模式</button>
         <button class="mode-button" :class="{ active: mode === 'auto' && !low_water}" :disabled="low_water" @click="mode === 'semi-auto' ? setMode('auto') : () => {}">自动模式</button>
       </div>
-      <div class="mode-group-right">
+      <!-- <div class="mode-group-right">
         <button class="mode-button" :class="{ active: tankmode === 'both-side' && !low_water}" :disabled="low_water" @click="tankmode === 'one-side' ? setTankMode('both-side') : () => {}">双边养护</button>
         <button class="mode-button" :class="{ active: tankmode === 'one-side' && !low_water}" :disabled="low_water" @click="tankmode === 'both-side' ? setTankMode('one-side') : () => {}">单边交替养护</button>
-      </div>
+      </div> -->
     </div>
     
     <div class="mode-content">
       <div v-if="mode === 'semi-auto'">
         <div class="controls">
           <div class="input-group">
-            <label>小车运行时间 (秒):</label>
+            <label>喷雾运行时间 (秒):</label>
             <div class="input-wrapper" @click="showRunTimeKeyboard = true">
               {{ tempRunTime }}
             </div>
           </div>
           <div class="input-group">
-            <label>小车暂停时间 (秒):</label>
+            <label>喷雾暂停时间 (秒):</label>
             <div class="input-wrapper" @click="showIntervalTimeKeyboard = true">
               {{ tempIntervalTime }}
             </div>
@@ -60,8 +61,8 @@
       </div>
 
       <div v-else class="auto-mode-container">
-        <div class="auto-mode-title">自动模式受传感器湿度控制</div>
-        <div class="auto-mode-status" :class="{ 'working': autoModeStatus === '小车正在运行' }">
+        <div class="auto-mode-title">自动模式受传感器湿度控制, {{ newStatusMessage }}</div>
+        <div class="auto-mode-status" :class="{ 'working': autoModeStatus === '喷雾正在运行' }">
           {{ autoModeStatus }}
         </div>
         <div class="auto-mode-placeholder"></div>
@@ -82,7 +83,7 @@
 </template>
 
 <script setup>
-import { ref, watch, reactive, onMounted, onUnmounted } from 'vue';
+import { ref, watch, reactive, onMounted, onUnmounted, computed } from 'vue';
 import { useWebChannel } from './useWebChannel';
 import NumericKeyboard from './NumericKeyboard.vue';
 
@@ -96,8 +97,8 @@ const nextRunTime = ref(currentRunTime.value);
 const nextIntervalTime = ref(currentIntervalTime.value);
 const isRunning = ref(false);
 const progress = ref(0);
-const statusMessage = ref('系统就绪');
-const autoModeStatus = ref('小车尚未工作');
+const statusMessage = ref('半自动模式');
+const autoModeStatus = ref('喷雾尚未工作');
 const showRunTimeKeyboard = ref(false);
 const showIntervalTimeKeyboard = ref(false);
 const low_water = ref(false);
@@ -109,10 +110,19 @@ const rightTankLowWater = ref(false);
 
 const phaseStartTime = ref(0);
 
+const avg_humidity = ref("未知");
+const sensor_error = ref(false);
+
 const { sendToPyQt } = useWebChannel();
   
 const environment = reactive({
   isPyQtWebEngine: false
+});
+
+const newStatusMessage = computed(() => {
+  if (mode.value === "auto" && sensor_error.value === false) return `当前平均湿度: ${avg_humidity.value}%`;
+  if (mode.value === "auto" && sensor_error.value === true) return `当前平均湿度: ${avg_humidity.value}%, 无法使用自动模式, 请检查异常传感器`;
+  return " ";
 });
 
 onMounted(() => {
@@ -138,10 +148,10 @@ onMounted(() => {
       }
       else if (newMessage && newMessage.type === 'update_dolly_state') {
         if (newMessage.content) {
-          updateAutoModeStatus("小车正在运行");
+          updateAutoModeStatus("喷雾正在运行");
         }
         else {
-          updateAutoModeStatus("小车尚未工作");
+          updateAutoModeStatus("喷雾尚未工作");
         }
       }
       // 新增的水箱状态更新逻辑
@@ -202,6 +212,20 @@ onMounted(() => {
           setTankMode(set_pak.args.newMode);
         }
       }
+      else if (newMessage && newMessage.type === 'update_sensor_avg_data') {
+          console.log('Received sensor avg data:', newMessage.content);
+          const data = JSON.parse(newMessage.content);
+          if (data.type === 'humidity') {
+            if (data.value !== -1) {
+              avg_humidity.value = String(data.value);
+              sensor_error.value = false;
+            }
+            else {
+              sensor_error.value = true;
+              avg_humidity.value = '未知';
+            }
+          }
+        }
     });
   } else {
     console.log('在普通网页环境中运行');
@@ -271,7 +295,7 @@ const setMode = (newMode) => {
     }
     else {
       stopDolly();
-      updateAutoModeStatus("小车尚未工作");
+      updateAutoModeStatus("喷雾尚未工作");
       sendToPyQt('controlDolly', { target: 'setMode', mode: 'semi-auto' });
     }
   }
@@ -313,7 +337,7 @@ const stopSystem = () => {
   isRunning.value = false;
   cancelAnimationFrame(animationFrame);
   progress.value = 0;
-  statusMessage.value = '系统就绪';
+  statusMessage.value = '半自动模式';
 };
 
 function stopDolly() {
@@ -357,7 +381,7 @@ function startDolly() {
 
 const runCart = () => {
   startDolly();
-  statusMessage.value = '小车运行中';
+  statusMessage.value = '喷雾运行中';
   progress.value = 0;
   const startTime = Date.now();
   phaseStartTime.value = startTime;
@@ -368,7 +392,7 @@ const runCart = () => {
     const elapsed = (Date.now() - startTime) / 1000;
     const remaining = Math.max(0, currentRunTime.value - elapsed);
     progress.value = (elapsed / currentRunTime.value) * 100;
-    statusMessage.value = `小车运行中: 剩余 ${remaining.toFixed(1)} 秒`;
+    statusMessage.value = `喷雾运行中: 剩余 ${remaining.toFixed(1)} 秒`;
     
     if (elapsed < currentRunTime.value && isRunning.value) {
       animationFrame = requestAnimationFrame(updateProgress);
@@ -416,8 +440,19 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* 标题样式 */
+h2, h3, h4, h5 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+h2 { font-size: 20px; }
+h3 { font-size: 20px; }
+h4 { font-size: 18px; }
+h5 { font-size: 16px; }
+
 .cart-system {
-  margin-top: 20px;
+  margin-top: 0px;
   background-color: white;
   padding: 20px;
   border-radius: 15px;
@@ -618,7 +653,7 @@ button:disabled {
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 }
 
 .label-box label {

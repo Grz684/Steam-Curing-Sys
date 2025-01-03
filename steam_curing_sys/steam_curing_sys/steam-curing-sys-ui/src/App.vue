@@ -6,8 +6,14 @@
     <SensorSettings />
     <!-- <SteamEngineControl />
     <SprinklerSystem /> -->
-    <!-- <IntegratedControlSystem :message="messageForB"/> -->
-    <CartSystem :message="messageForB"/>
+    <div class="control-row">
+      <div class="control-item">
+        <IntegratedControlSystem :message="messageForB"/>
+      </div>
+      <div class="control-item">
+        <CartSystem :message="messageForB"/>
+      </div>
+    </div>
     <WiFi />
     <Lock @messageFromA="handleMessage"/>
   </div>
@@ -59,4 +65,26 @@ h1 {
   font-size: 28px;
 }
 
+.control-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* 确保顶端对齐 */
+  gap: 30px; /* 增加间距 */
+  margin: 10px 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 20px; /* 可以添加左右内边距 */
+}
+
+.control-item {
+  flex: 1;
+  min-width: 0;
+  max-width: calc(50% - 15px); /* 考虑到间距的宽度计算 */
+}
+
+.control-item > * {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
 </style>

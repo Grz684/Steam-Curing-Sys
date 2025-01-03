@@ -76,11 +76,35 @@ class SensorSubscriberNode(Node):
 
     def sprinkler_timer_callback(self):
         if self.qtSignalHandler.get_sprinkler_system_state():
-            updated_temp_data = {sensor: value for sensor, value in self.temp_data.items() if value != -1}
-            updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
+            # 只取后两个温度传感器
+            updated_temp_data = {
+                sensor: value 
+                for sensor, value in self.temp_data.items() 
+                if sensor in ('temperature_sensor_3', 'temperature_sensor_4') 
+                and value != -1
+            }
+            # updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
 
-            if updated_temp_data or updated_humidity_data:
-                self.process_sprinkler_data(updated_humidity_data)
+            if updated_temp_data:
+                updated_temp_data_avg = sum(updated_temp_data.values()) / len(updated_temp_data)
+                self.qtSignalHandler.sensor_avg_data_updated.emit({
+                    "type": "temp",
+                    "value": round(updated_temp_data_avg, 1)
+                })
+                if updated_temp_data_avg < self.qtSignalHandler.temp_lower_limit:
+                    # 开启两水泵
+                    self.control_utils.turn_heat_engine_on()
+                    self.qtSignalHandler.update_heat_engine_status.emit(True)
+                elif updated_temp_data_avg > self.qtSignalHandler.temp_upper_limit:
+                    self.control_utils.turn_heat_engine_off()
+                    self.qtSignalHandler.update_heat_engine_status.emit(False)
+
+            else:
+                self.qtSignalHandler.sensor_avg_data_updated.emit({
+                    "type": "temp",
+                    "value": -1
+                })
+                # self.process_sprinkler_data(updated_temp_data)
                 # self.process_data_zone1(
                 #     {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(1, 9)]},  # 修改为前 8 个传感器
                 #     {k: v for k, v in updated_humidity_data.items() if k in [f'humidity_sensor_{i}' for i in range(1, 9)]}  # 修改为前 8 个传感器
@@ -92,11 +116,27 @@ class SensorSubscriberNode(Node):
 
     def dolly_timer_callback(self):
         if self.qtSignalHandler.get_dolly_auto_mode():
-            updated_temp_data = {sensor: value for sensor, value in self.temp_data.items() if value != -1}
             updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
 
-            if updated_temp_data or updated_humidity_data:
-                self.process_data(updated_humidity_data)
+            if updated_humidity_data:
+                updated_humidity_data_avg = sum(updated_humidity_data.values()) / len(updated_humidity_data)
+
+                if updated_humidity_data_avg < self.qtSignalHandler.humidity_lower_limit:
+                    self.control_utils.turn_dolly_on(self.qtSignalHandler.one_side_flag)
+                    self.qtSignalHandler.update_dolly_state.emit(True)
+                elif updated_humidity_data_avg > self.qtSignalHandler.humidity_upper_limit:
+                    self.control_utils.turn_dolly_off()
+                    self.qtSignalHandler.update_dolly_state.emit(False)
+                    
+                self.qtSignalHandler.sensor_avg_data_updated.emit({
+                    "type": "humidity",
+                    "value": round(updated_humidity_data_avg, 1)
+                })
+            else:
+                self.qtSignalHandler.sensor_avg_data_updated.emit({
+                    "type": "humidity",
+                    "value": -1
+                })
 
     # def process_data_zone1(self, temp_data, humidity_data):
     #     if temp_data:
@@ -128,35 +168,35 @@ class SensorSubscriberNode(Node):
     #             self.control_utils.turn_zone2_humidifier_off()
     #             self.qtSignalHandler.right_steam_status_updated.emit(False)
 
-    def process_sprinkler_data(self, humidity_data):
-        if humidity_data:
-            if any(humidity < self.qtSignalHandler.humidity_lower_limit for humidity in humidity_data.values()):
-                # 开启两水泵
-                result = self.control_utils.control_tank(True)
-                self.control_utils.turn_zone1_humidifier_on()
-                if result:
-                    self.qtSignalHandler.left_steam_status_updated.emit(True)
-                self.control_utils.turn_zone2_humidifier_on()
-                if result:
-                    self.qtSignalHandler.right_steam_status_updated.emit(True)
-            elif all(humidity > self.qtSignalHandler.humidity_upper_limit for humidity in humidity_data.values()):
-                # 关闭两水泵
-                result = self.control_utils.control_tank(False)
-                self.control_utils.turn_zone1_humidifier_off()
-                if result:
-                    self.qtSignalHandler.left_steam_status_updated.emit(False)
-                self.control_utils.turn_zone2_humidifier_off()
-                if result:
-                    self.qtSignalHandler.right_steam_status_updated.emit(False)
+    # def process_sprinkler_data(self, temp_data):
+    #     if temp_data:
+    #         if any(humidity < self.qtSignalHandler.humidity_lower_limit for humidity in temp_data.values()):
+    #             # 开启两水泵
+    #             result = self.control_utils.control_tank(True)
+    #             self.control_utils.turn_zone1_humidifier_on()
+    #             if result:
+    #                 self.qtSignalHandler.left_steam_status_updated.emit(True)
+    #             self.control_utils.turn_zone2_humidifier_on()
+    #             if result:
+    #                 self.qtSignalHandler.right_steam_status_updated.emit(True)
+    #         elif all(humidity > self.qtSignalHandler.humidity_upper_limit for humidity in temp_data.values()):
+    #             # 关闭两水泵
+    #             result = self.control_utils.control_tank(False)
+    #             self.control_utils.turn_zone1_humidifier_off()
+    #             if result:
+    #                 self.qtSignalHandler.left_steam_status_updated.emit(False)
+    #             self.control_utils.turn_zone2_humidifier_off()
+    #             if result:
+    #                 self.qtSignalHandler.right_steam_status_updated.emit(False)
 
-    def process_data(self, humidity_data):
-        if humidity_data:
-            if any(humidity < self.qtSignalHandler.humidity_lower_limit for humidity in humidity_data.values()):
-                self.control_utils.turn_dolly_on(self.qtSignalHandler.one_side_flag)
-                self.qtSignalHandler.update_dolly_state.emit(True)
-            elif all(humidity > self.qtSignalHandler.humidity_upper_limit for humidity in humidity_data.values()):
-                self.control_utils.turn_dolly_off()
-                self.qtSignalHandler.update_dolly_state.emit(False)
+    # def process_data(self, humidity_data):
+    #     if humidity_data:
+    #         if any(humidity < self.qtSignalHandler.humidity_lower_limit for humidity in humidity_data.values()):
+    #             self.control_utils.turn_dolly_on(self.qtSignalHandler.one_side_flag)
+    #             self.qtSignalHandler.update_dolly_state.emit(True)
+    #         elif all(humidity > self.qtSignalHandler.humidity_upper_limit for humidity in humidity_data.values()):
+    #             self.control_utils.turn_dolly_off()
+    #             self.qtSignalHandler.update_dolly_state.emit(False)
 
     def read_input_timer_callback(self):
         result = self.control_utils.read_input()

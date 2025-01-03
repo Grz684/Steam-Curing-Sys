@@ -39,6 +39,9 @@ class QtSignalHandler(QObject):
     device_activated = pyqtSignal(dict)
     update_device_info = pyqtSignal(dict)
     update_adjust_settings = pyqtSignal(dict)
+
+    sensor_avg_data_updated = pyqtSignal(dict)
+    update_heat_engine_status = pyqtSignal(bool)
     
     # error_occurred = pyqtSignal(str)  # 添加错误信号
 
@@ -194,10 +197,8 @@ class QtSignalHandler(QObject):
 
     def manual_steam_engine_state(self, state):
         logger.info(f"Steam engine state: {state}")
-        if state["engine"] == "left":
-            self.control_utils.turn_zone1_humidifier_on() if state["state"] else self.control_utils.turn_zone1_humidifier_off()
-        elif state["engine"] == "right":
-            self.control_utils.turn_zone2_humidifier_on() if state["state"] else self.control_utils.turn_zone2_humidifier_off()
+        if state["engine"] == "heatEngine":
+            self.control_utils.turn_heat_engine_on() if state["state"] else self.control_utils.turn_heat_engine_off()
 
     def dolly_control(self, control):
         if control["target"] == "setState":
@@ -205,6 +206,7 @@ class QtSignalHandler(QObject):
             dolly_state = control["dolly_state"]
             if dolly_state:
                 self.dolly_state = True
+                # 这里dolly用于控制喷雾机
                 self.control_utils.turn_dolly_on(self.one_side_flag)
             else:
                 self.dolly_state = False
@@ -219,15 +221,15 @@ class QtSignalHandler(QObject):
             else:
                 with self.dolly_mode_lock:
                     self.dolly_auto_mode = False
-        elif control["target"] == "setTankMode":
-            if control['mode'] == "one-side":
-                if not self.one_side_flag:
-                    self.one_side_flag = True
-                    self.control_utils.adjust_dolly_to_one_side()
-            else:
-                if self.one_side_flag:
-                    self.one_side_flag = False
-                    self.control_utils.adjust_dolly_to_both_side()
+        # elif control["target"] == "setTankMode":
+        #     if control['mode'] == "one-side":
+        #         if not self.one_side_flag:
+        #             self.one_side_flag = True
+        #             self.control_utils.adjust_dolly_to_one_side()
+        #     else:
+        #         if self.one_side_flag:
+        #             self.one_side_flag = False
+        #             self.control_utils.adjust_dolly_to_both_side()
             
         logger.info(f"Control dolly: {control}")
 
@@ -235,40 +237,44 @@ class QtSignalHandler(QObject):
         if control["target"] == "setMode":
             mode = control["mode"]
             if mode == "auto":
-                logger.info('Sprinkler Auto Mode chosen')
-                
-            else:
-                # 自动-->手动
-                logger.info('Sprinkler Manual Mode chosen')
-
-        elif control["target"] == "setState":
-            if control["state"]:
-                logger.info('Sprinkler System turned ON')
+                logger.info('Heater Auto Mode chosen')
+                # 这是给heater用的
                 with self.sprinkler_system_lock:
                     self.sprinkler_system_on = True
             else:
-                logger.info('Sprinkler System turned OFF')
+                # 自动-->手动
+                logger.info('Heater Manual Mode chosen')
                 with self.sprinkler_system_lock:
                     self.sprinkler_system_on = False
 
-        elif control["target"] == "settings":
-            settings = json.loads(control["settings"])
-            logger.info(f"Receive Sprinkler settings: {settings}")
-            run_time = settings["sprinkler_single_run_time"]
-            run_interval_time = settings["sprinkler_run_interval_time"]
-            loop_time = settings["sprinkler_loop_interval"]
-            self.save_sprinkler_settings(run_time, run_interval_time, loop_time)
+        # elif control["target"] == "setState":
+        #     if control["state"]:
+        #         logger.info('Sprinkler System turned ON')
+        #         with self.sprinkler_system_lock:
+        #             self.sprinkler_system_on = True
+        #     else:
+        #         logger.info('Sprinkler System turned OFF')
+        #         with self.sprinkler_system_lock:
+        #             self.sprinkler_system_on = False
 
-        elif control["target"] in ["manual_control_sprayer", "auto_control_sprayer"]:
-            self.sprayer_control(control["index"], control["state"])
+        # elif control["target"] == "settings":
+        #     settings = json.loads(control["settings"])
+        #     logger.info(f"Receive Sprinkler settings: {settings}")
+        #     run_time = settings["sprinkler_single_run_time"]
+        #     run_interval_time = settings["sprinkler_run_interval_time"]
+        #     loop_time = settings["sprinkler_loop_interval"]
+        #     self.save_sprinkler_settings(run_time, run_interval_time, loop_time)
 
-        elif control["target"] == "tankWork":
-            logger.info(f"tankWork: {control['state']}")
-            self.control_utils.control_tank(control["state"])
+        # elif control["target"] in ["manual_control_sprayer", "auto_control_sprayer"]:
+        #     self.sprayer_control(control["index"], control["state"])
 
-        elif control["target"] == "switchToSprinkler":
-            logger.info(f"switchToSprinkler: {control['state']}")
-            self.control_utils.control_switch(control["state"])
+        # elif control["target"] == "tankWork":
+        #     logger.info(f"tankWork: {control['state']}")
+        #     self.control_utils.control_tank(control["state"])
+
+        # elif control["target"] == "switchToSprinkler":
+        #     logger.info(f"switchToSprinkler: {control['state']}")
+        #     self.control_utils.control_switch(control["state"])
 
     def get_sprinkler_system_state(self):
         with self.sprinkler_system_lock:
