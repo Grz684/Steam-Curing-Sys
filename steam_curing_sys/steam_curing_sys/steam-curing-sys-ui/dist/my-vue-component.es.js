@@ -1,4 +1,4 @@
-import Nt, { ref as V, onMounted as dt, provide as wt, readonly as xt, inject as kt, watch as et, openBlock as xe, createElementBlock as ke, createElementVNode as k, toDisplayString as Oe, Fragment as ot, renderList as ct, normalizeClass as nt, createCommentVNode as st, reactive as yt, createVNode as ze, withDirectives as lt, vModelRadio as Ot, createTextVNode as ft, vModelText as ht, computed as vt, onUnmounted as _t, normalizeStyle as gt, vModelCheckbox as Rt, defineComponent as $t, unref as Bt } from "vue";
+import Nt, { ref as V, onMounted as dt, provide as bt, readonly as wt, inject as xt, watch as et, openBlock as xe, createElementBlock as ke, createElementVNode as _, toDisplayString as Te, Fragment as ot, renderList as ct, normalizeClass as nt, createCommentVNode as st, reactive as gt, createVNode as ze, withDirectives as lt, vModelRadio as Ot, createTextVNode as ft, vModelText as ht, computed as vt, onUnmounted as _t, normalizeStyle as kt, vModelCheckbox as Rt, defineComponent as $t, unref as Bt } from "vue";
 const Et = Symbol(), Ct = Symbol(), Tt = Symbol();
 function It(be, Y) {
   be && be.messageSignal ? be.messageSignal.connect((X) => {
@@ -19,10 +19,10 @@ function Ut() {
   }
   dt(() => {
     document.readyState === "complete" || document.readyState === "interactive" ? i() : document.addEventListener("DOMContentLoaded", i);
-  }), wt(Et, xt(be)), wt(Ct, xt(Y)), wt(Tt, xt(X));
+  }), bt(Et, wt(be)), bt(Ct, wt(Y)), bt(Tt, wt(X));
 }
 function Xe() {
-  const be = kt(Et), Y = kt(Ct), X = kt(Tt);
+  const be = xt(Et), Y = xt(Ct), X = xt(Tt);
   return (!be || !Y || !X) && console.error("WebChannel not properly provided. Make sure to call provideWebChannel in a parent component."), {
     channel: be,
     bridge: Y,
@@ -77,8 +77,8 @@ const ut = (be, Y) => {
       o === "清除" ? e.value = "" : o === "确定" ? (i("update:modelValue", parseFloat(e.value) || 0), i("update:showKeyboard", !1)) : e.value += o;
     };
     return (o, r) => be.showKeyboard ? (xe(), ke("div", Dt, [
-      k("div", Ft, [
-        k("div", Mt, Oe(e.value), 1),
+      _("div", Ft, [
+        _("div", Mt, Te(e.value), 1),
         (xe(!0), ke(ot, null, ct(d.value, (t) => (xe(), ke("div", {
           key: t.join(),
           class: "row"
@@ -87,7 +87,7 @@ const ut = (be, Y) => {
             key: a,
             onClick: (u) => n(a),
             class: nt({ "function-key": a === "清除" || a === "确定" })
-          }, Oe(a), 11, Vt))), 128))
+          }, Te(a), 11, Vt))), 128))
         ]))), 128))
       ])
     ])) : st("", !0);
@@ -95,7 +95,7 @@ const ut = (be, Y) => {
 }, pt = /* @__PURE__ */ ut(Wt, [["__scopeId", "data-v-541feda2"]]), qt = { class: "settings-container" }, Kt = { class: "setting-group" }, zt = { class: "setting-item" }, Qt = { class: "setting-controls" }, Ht = ["value"], Gt = { class: "setting-item" }, Jt = { class: "setting-controls" }, Yt = ["value"], Xt = { class: "setting-group" }, Zt = { class: "setting-item" }, en = { class: "setting-controls" }, tn = ["value"], nn = { class: "setting-item" }, on = { class: "setting-controls" }, rn = ["value"], an = {
   __name: "SensorSettings",
   setup(be) {
-    const { sendToPyQt: Y } = Xe(), X = yt({
+    const { sendToPyQt: Y } = Xe(), X = gt({
       isPyQtWebEngine: !1
     }), i = V(35), d = V(25), e = V(95), n = V(90), o = V(!1), r = V(null), t = V("");
     dt(() => {
@@ -145,75 +145,75 @@ const ut = (be, Y) => {
       isNaN(v) || (r.value === "tempUpper" ? (i.value = v, u("upper")) : r.value === "tempLower" ? (d.value = v, u("lower")) : r.value === "humidityUpper" ? (e.value = v, s("upper")) : r.value === "humidityLower" && (n.value = v, s("lower"))), r.value = null;
     };
     return (g, v) => (xe(), ke("div", qt, [
-      k("div", Kt, [
-        v[15] || (v[15] = k("h2", null, "温度设置 (°C)", -1)),
-        k("div", zt, [
-          v[13] || (v[13] = k("span", { class: "setting-label" }, "上限：", -1)),
-          k("div", Qt, [
-            k("button", {
+      _("div", Kt, [
+        v[15] || (v[15] = _("h2", null, "温度设置 (°C)", -1)),
+        _("div", zt, [
+          v[13] || (v[13] = _("span", { class: "setting-label" }, "上限：", -1)),
+          _("div", Qt, [
+            _("button", {
               onClick: v[0] || (v[0] = (p) => a("tempUpper", -1))
             }, "-"),
-            k("input", {
+            _("input", {
               type: "text",
               value: i.value,
               onFocus: v[1] || (v[1] = (p) => l("tempUpper")),
               readonly: ""
             }, null, 40, Ht),
-            k("button", {
+            _("button", {
               onClick: v[2] || (v[2] = (p) => a("tempUpper", 1))
             }, "+")
           ])
         ]),
-        k("div", Gt, [
-          v[14] || (v[14] = k("span", { class: "setting-label" }, "下限：", -1)),
-          k("div", Jt, [
-            k("button", {
+        _("div", Gt, [
+          v[14] || (v[14] = _("span", { class: "setting-label" }, "下限：", -1)),
+          _("div", Jt, [
+            _("button", {
               onClick: v[3] || (v[3] = (p) => a("tempLower", -1))
             }, "-"),
-            k("input", {
+            _("input", {
               type: "text",
               value: d.value,
               onFocus: v[4] || (v[4] = (p) => l("tempLower")),
               readonly: ""
             }, null, 40, Yt),
-            k("button", {
+            _("button", {
               onClick: v[5] || (v[5] = (p) => a("tempLower", 1))
             }, "+")
           ])
         ])
       ]),
-      k("div", Xt, [
-        v[18] || (v[18] = k("h2", null, "湿度设置 (%)", -1)),
-        k("div", Zt, [
-          v[16] || (v[16] = k("span", { class: "setting-label" }, "上限：", -1)),
-          k("div", en, [
-            k("button", {
+      _("div", Xt, [
+        v[18] || (v[18] = _("h2", null, "湿度设置 (%)", -1)),
+        _("div", Zt, [
+          v[16] || (v[16] = _("span", { class: "setting-label" }, "上限：", -1)),
+          _("div", en, [
+            _("button", {
               onClick: v[6] || (v[6] = (p) => a("humidityUpper", -1))
             }, "-"),
-            k("input", {
+            _("input", {
               type: "text",
               value: e.value,
               onFocus: v[7] || (v[7] = (p) => l("humidityUpper")),
               readonly: ""
             }, null, 40, tn),
-            k("button", {
+            _("button", {
               onClick: v[8] || (v[8] = (p) => a("humidityUpper", 1))
             }, "+")
           ])
         ]),
-        k("div", nn, [
-          v[17] || (v[17] = k("span", { class: "setting-label" }, "下限：", -1)),
-          k("div", on, [
-            k("button", {
+        _("div", nn, [
+          v[17] || (v[17] = _("span", { class: "setting-label" }, "下限：", -1)),
+          _("div", on, [
+            _("button", {
               onClick: v[9] || (v[9] = (p) => a("humidityLower", -1))
             }, "-"),
-            k("input", {
+            _("input", {
               type: "text",
               value: n.value,
               onFocus: v[10] || (v[10] = (p) => l("humidityLower")),
               readonly: ""
             }, null, 40, rn),
-            k("button", {
+            _("button", {
               onClick: v[11] || (v[11] = (p) => a("humidityLower", 1))
             }, "+")
           ])
@@ -258,8 +258,8 @@ const ut = (be, Y) => {
       o === "清除" ? e.value = "" : o === "确定" ? (i("update:modelValue", parseFloat(e.value) || 0), i("update:showKeyboard", !1)) : o === "-" ? e.value.startsWith("-") ? e.value = e.value.slice(1) : e.value = "-" + e.value : o === "." && e.value.includes(".") || (e.value += o);
     };
     return (o, r) => be.showKeyboard ? (xe(), ke("div", un, [
-      k("div", ln, [
-        k("div", cn, Oe(e.value), 1),
+      _("div", ln, [
+        _("div", cn, Te(e.value), 1),
         (xe(!0), ke(ot, null, ct(d.value, (t) => (xe(), ke("div", {
           key: t.join(),
           class: "row"
@@ -271,7 +271,7 @@ const ut = (be, Y) => {
               "function-key": ["清除", "确定"].includes(a),
               "operator-key": a === "-"
             })
-          }, Oe(a), 11, dn))), 128))
+          }, Te(a), 11, dn))), 128))
         ]))), 128))
       ])
     ])) : st("", !0);
@@ -340,43 +340,43 @@ const ut = (be, Y) => {
       }
     };
     return (l, f) => (xe(), ke("div", vn, [
-      k("div", hn, [
-        f[7] || (f[7] = k("h2", null, "温度传感器【温感1与温感2为温湿度传感器温度数据，温感3与温感4为水下温度数据】", -1)),
-        k("div", mn, [
-          k("div", gn, [
+      _("div", hn, [
+        f[7] || (f[7] = _("h2", null, "温度传感器【温感1与温感2为温湿度传感器温度数据，温感3与温感4分别为左侧水箱、右侧水箱温度数据】", -1)),
+        _("div", mn, [
+          _("div", gn, [
             (xe(!0), ke(ot, null, ct(Y.value.temperature, (g, v) => (xe(), ke("div", {
               key: v,
               class: "sensor-card",
               onClick: (p) => o.value ? s("temperature", v) : null
             }, [
-              k("div", bn, Oe(v), 1),
-              k("div", wn, Oe(g), 1)
+              _("div", bn, Te(v), 1),
+              _("div", wn, Te(g), 1)
             ], 8, yn))), 128))
           ])
         ])
       ]),
-      k("div", xn, [
-        f[8] || (f[8] = k("h2", null, "湿度传感器", -1)),
-        k("div", kn, [
-          k("div", _n, [
+      _("div", xn, [
+        f[8] || (f[8] = _("h2", null, "湿度传感器【湿感1与湿感2分别为左侧、右侧湿度数据】", -1)),
+        _("div", kn, [
+          _("div", _n, [
             (xe(!0), ke(ot, null, ct(Y.value.humidity, (g, v) => (xe(), ke("div", {
               key: v,
               class: "sensor-card",
               onClick: (p) => o.value ? s("humidity", v) : null
             }, [
-              k("div", On, Oe(v), 1),
-              k("div", jn, Oe(g), 1)
+              _("div", On, Te(v), 1),
+              _("div", jn, Te(g), 1)
             ], 8, Sn))), 128))
           ])
         ])
       ]),
       d.value ? (xe(), ke("div", En, [
-        k("div", Cn, [
-          k("h3", null, "调整传感器: " + Oe(i.value), 1),
-          k("div", Tn, [
-            k("div", Ln, [
-              k("label", null, [
-                lt(k("input", {
+        _("div", Cn, [
+          _("h3", null, "调整传感器: " + Te(i.value), 1),
+          _("div", Tn, [
+            _("div", Ln, [
+              _("label", null, [
+                lt(_("input", {
                   type: "radio",
                   "onUpdate:modelValue": f[0] || (f[0] = (g) => e.value = g),
                   value: "offset"
@@ -385,8 +385,8 @@ const ut = (be, Y) => {
                 ]),
                 f[9] || (f[9] = ft(" 调整偏移值 "))
               ]),
-              k("label", null, [
-                lt(k("input", {
+              _("label", null, [
+                lt(_("input", {
                   type: "radio",
                   "onUpdate:modelValue": f[1] || (f[1] = (g) => e.value = g),
                   value: "value"
@@ -396,8 +396,8 @@ const ut = (be, Y) => {
                 f[10] || (f[10] = ft(" 直接设置值 "))
               ])
             ]),
-            k("div", An, [
-              lt(k("input", {
+            _("div", An, [
+              lt(_("input", {
                 type: "text",
                 "onUpdate:modelValue": f[2] || (f[2] = (g) => u.value = g),
                 readonly: "",
@@ -408,11 +408,11 @@ const ut = (be, Y) => {
               ])
             ])
           ]),
-          k("div", Nn, [
-            k("button", {
+          _("div", Nn, [
+            _("button", {
               onClick: f[4] || (f[4] = (g) => d.value = !1)
             }, "取消"),
-            k("button", {
+            _("button", {
               onClick: c,
               class: "primary"
             }, "确定")
@@ -427,10 +427,10 @@ const ut = (be, Y) => {
       ])) : st("", !0)
     ]));
   }
-}, $n = /* @__PURE__ */ ut(Rn, [["__scopeId", "data-v-c3e3c1ad"]]), Bn = { class: "cart-system" }, In = { class: "mode-group" }, Un = { class: "mode-group-left" }, Dn = ["disabled"], Fn = ["disabled"], Mn = { class: "mode-content" }, Vn = { key: 0 }, Wn = { class: "spray-systems" }, qn = { class: "spray-system" }, Kn = { class: "controls" }, zn = { class: "input-group" }, Qn = { class: "input-group" }, Hn = { class: "button-group" }, Gn = ["disabled"], Jn = ["disabled"], Yn = { class: "visualization" }, Xn = { class: "progress-bar" }, Zn = { class: "status" }, eo = { class: "spray-system" }, to = { class: "controls" }, no = { class: "input-group" }, oo = { class: "input-group" }, ro = { class: "button-group" }, io = ["disabled"], ao = ["disabled"], so = { class: "visualization" }, uo = { class: "progress-bar" }, lo = { class: "status" }, co = {
+}, $n = /* @__PURE__ */ ut(Rn, [["__scopeId", "data-v-eb6c9c13"]]), Bn = { class: "cart-system" }, In = { class: "mode-group" }, Un = { class: "mode-group-left" }, Dn = ["disabled"], Fn = ["disabled"], Mn = { class: "mode-content" }, Vn = { key: 0 }, Wn = { class: "spray-systems" }, qn = { class: "spray-system" }, Kn = { class: "controls" }, zn = { class: "input-group" }, Qn = { class: "input-group" }, Hn = { class: "button-group" }, Gn = ["disabled"], Jn = ["disabled"], Yn = { class: "visualization" }, Xn = { class: "progress-bar" }, Zn = { class: "status" }, eo = {
   key: 1,
   class: "auto-mode-container"
-}, fo = { class: "auto-mode-title" }, po = { class: "auto-mode-title" }, vo = {
+}, to = { class: "auto-mode-title" }, no = { class: "auto-mode-title" }, oo = {
   __name: "CartSystem",
   props: {
     message: {
@@ -440,62 +440,62 @@ const ut = (be, Y) => {
     }
   },
   setup(be) {
-    const Y = V("semi-auto"), X = V("both-side"), i = V(30), d = V(30), e = V(i.value), n = V(d.value), o = V(i.value), r = V(d.value), t = V(!1), a = V(0), u = V("左侧喷雾系统就绪"), s = V(!1), c = V(!1), l = V(0);
+    const Y = V("semi-auto"), X = V("both-side"), i = V(30), d = V(30), e = V(i.value), n = V(d.value), o = V(i.value), r = V(d.value), t = V(!1), a = V(0), u = V("喷雾系统就绪"), s = V(!1), c = V(!1), l = V(0);
     let f = null;
     const g = V(30), v = V(30), p = V(g.value), h = V(v.value), m = V(g.value), y = V(v.value), O = V(!1), C = V(0), x = V("右侧喷雾系统就绪"), w = V(!1), b = V(!1), E = V(0);
     let j = null;
-    const L = V("喷雾尚未工作"), S = V("喷雾尚未工作"), I = V(!1), W = V(!1), Z = V(!1), ae = V(0), J = V("未知"), q = V(!1), D = V("未知"), A = V(!1), { sendToPyQt: T } = Xe(), K = yt({
+    const L = V("喷雾尚未工作"), S = V("喷雾尚未工作"), I = V(!1), W = V(!1), Z = V(!1), ae = V(0), J = V("未知"), q = V(!1), U = V("未知"), A = V(!1), { sendToPyQt: T } = Xe(), K = gt({
       isPyQtWebEngine: !1
-    }), ne = vt(() => Y.value === "auto" && q.value === !1 ? `左侧湿度: ${J.value}%` : Y.value === "auto" && q.value === !0 ? `左侧湿度: ${J.value}, 无法使用自动模式, 请检查异常传感器` : " "), M = vt(() => Y.value === "auto" && A.value === !1 ? `右侧湿度: ${D.value}%` : Y.value === "auto" && A.value === !0 ? `右侧湿度: ${D.value}, 无法使用自动模式, 请检查异常传感器` : " ");
+    }), ne = vt(() => Y.value === "auto" && q.value === !1 ? `左侧湿度: ${J.value}%` : Y.value === "auto" && q.value === !0 ? `左侧湿度: ${J.value}, 无法使用自动模式, 请检查异常传感器` : " "), M = vt(() => Y.value === "auto" && A.value === !1 ? `右侧湿度: ${U.value}%` : Y.value === "auto" && A.value === !0 ? `右侧湿度: ${U.value}, 无法使用自动模式, 请检查异常传感器` : " ");
     dt(() => {
       if (K.isPyQtWebEngine = typeof window.qt < "u" && window.qt.webChannelTransport, K.isPyQtWebEngine) {
         console.log("在PyQt QWebEngine环境中运行");
-        const { message: re } = Xe();
-        et(re, (P) => {
-          if (P && P.type === "update_dolly_settings")
+        const { message: ie } = Xe();
+        et(ie, (D) => {
+          if (D && D.type === "update_dolly_settings")
             try {
-              const H = JSON.parse(P.content);
-              (H.side === "left" || !H.side) && (e.value = H.dolly_single_run_time, n.value = H.dolly_run_interval_time, o.value = e.value, r.value = n.value), (H.side === "right" || !H.side) && (p.value = H.dolly_single_run_time, h.value = H.dolly_run_interval_time, m.value = p.value, y.value = h.value), console.log("dolly Settings updated:", H);
-            } catch (H) {
-              console.error("Failed to parse dolly settings data:", H);
+              const G = JSON.parse(D.content);
+              (G.side === "left" || !G.side) && (e.value = G.dolly_single_run_time, n.value = G.dolly_run_interval_time, o.value = e.value, r.value = n.value), (G.side === "right" || !G.side) && (p.value = G.dolly_single_run_time, h.value = G.dolly_run_interval_time, m.value = p.value, y.value = h.value), console.log("dolly Settings updated:", G);
+            } catch (G) {
+              console.error("Failed to parse dolly settings data:", G);
             }
-          else if (P && P.type === "update_dolly_state")
-            P.content ? $e("喷雾正在运行") : $e("喷雾尚未工作");
-          else if (P && P.type === "update_dolly2_state")
-            P.content ? Te("喷雾正在运行") : Te("喷雾尚未工作");
-          else if (P && P.type === "update_water_tank_status")
+          else if (D && D.type === "update_dolly_state")
+            D.content ? $e("喷雾正在运行") : $e("喷雾尚未工作");
+          else if (D && D.type === "update_dolly2_state")
+            D.content ? Ce("喷雾正在运行") : Ce("喷雾尚未工作");
+          else if (D && D.type === "update_water_tank_status")
             try {
-              const H = JSON.parse(P.content);
-              H.side === "left" ? W.value = H.low_water : H.side === "right" && (Z.value = H.low_water), W.value || Z.value ? (I.value = !0, Y.value === "auto" ? Ae("semi-auto") : (B(), F())) : I.value = !1, console.log("Water tank status updated:", H);
-            } catch (H) {
-              console.error("Failed to parse water tank status data:", H);
+              const G = JSON.parse(D.content);
+              G.side === "left" ? W.value = G.low_water : G.side === "right" && (Z.value = G.low_water), W.value || Z.value ? (I.value = !0, Y.value === "auto" ? Ae("semi-auto") : ($(), F())) : I.value = !1, console.log("Water tank status updated:", G);
+            } catch (G) {
+              console.error("Failed to parse water tank status data:", G);
             }
-          else if (P && P.type === "CartSystem_init")
+          else if (D && D.type === "CartSystem_init")
             console.log("Received CartSystem_init message"), Se();
-          else if (P && P.type === "CartSystem_set") {
-            console.log("Received CartSystem_set message:", P.content);
-            const H = JSON.parse(P.content);
-            if (H.method === "setMode")
-              Ae(H.args.newMode);
-            else if (H.method === "startSystem")
-              H.args && H.args.side === "left" ? $() : (H.args && H.args.side === "right" || $(), ee());
-            else if (H.method === "stopSystem")
-              H.args && H.args.side === "left" ? B() : (H.args && H.args.side === "right" || B(), F());
-            else if (H.method === "updateDollySettings") {
-              const Pe = H.args;
+          else if (D && D.type === "CartSystem_set") {
+            console.log("Received CartSystem_set message:", D.content);
+            const G = JSON.parse(D.content);
+            if (G.method === "setMode")
+              Ae(G.args.newMode);
+            else if (G.method === "startSystem")
+              G.args && G.args.side === "left" ? R() : (G.args && G.args.side === "right" || R(), ee());
+            else if (G.method === "stopSystem")
+              G.args && G.args.side === "left" ? $() : (G.args && G.args.side === "right" || $(), F());
+            else if (G.method === "updateDollySettings") {
+              const Pe = G.args;
               Pe.side === "left" ? (e.value = Pe.dolly_single_run_time, n.value = Pe.dolly_run_interval_time, o.value = e.value, r.value = n.value, Ke("left")) : Pe.side === "right" ? (p.value = Pe.dolly_single_run_time, h.value = Pe.dolly_run_interval_time, m.value = p.value, y.value = h.value, Ke("right")) : (e.value = p.value = Pe.dolly_single_run_time, n.value = h.value = Pe.dolly_run_interval_time, o.value = m.value = e.value, r.value = y.value = n.value, Ke()), console.log("dolly Settings received:", Pe);
-            } else H.method === "setTankMode" && Ue(H.args.newMode);
-          } else if (P && P.type === "update_sensor_avg_data") {
-            console.log("Received sensor avg data:", P.content);
-            const H = JSON.parse(P.content);
-            H.type === "humidity1" ? H.value !== -1 ? (J.value = String(H.value), q.value = !1) : (q.value = !0, J.value = "未知") : H.type === "humidity2" && (H.value !== -1 ? (D.value = String(H.value), A.value = !1) : (A.value = !0, D.value = "未知"));
+            } else G.method === "setTankMode" && Ue(G.args.newMode);
+          } else if (D && D.type === "update_sensor_avg_data") {
+            console.log("Received sensor avg data:", D.content);
+            const G = JSON.parse(D.content);
+            G.type === "humidity1" ? G.value !== -1 ? (J.value = String(G.value), q.value = !1) : (q.value = !0, J.value = "未知") : G.type === "humidity2" && (G.value !== -1 ? (U.value = String(G.value), A.value = !1) : (A.value = !0, U.value = "未知"));
           }
         });
       } else
         console.log("在普通网页环境中运行");
     });
     const Se = () => {
-      const re = {
+      const ie = {
         mode: Y.value,
         // 左侧喷雾系统
         currentLeftRunTime: i.value,
@@ -525,15 +525,15 @@ const ut = (be, Y) => {
         phaseStartTime: ae.value,
         tankmode: X.value
       };
-      console.log("Sending initial cart system state:", re), T("CartSystem_init_response", re);
+      console.log("Sending initial cart system state:", ie), T("CartSystem_init_response", ie);
     }, ve = be;
-    et(() => ve.message, (re) => {
-      re != null && re.content && (Y.value === "auto" ? Ae("semi-auto") : (B(), F()));
+    et(() => ve.message, (ie) => {
+      ie != null && ie.content && (Y.value === "auto" ? Ae("semi-auto") : ($(), F()));
     });
-    const Ue = (re) => {
-      X.value = re, re === "one-side" ? T("controlDolly", { target: "setTankMode", mode: "one-side" }) : T("controlDolly", { target: "setTankMode", mode: "both-side" });
-    }, Ae = (re) => {
-      Y.value = re, K.isPyQtWebEngine && (re === "auto" ? (B(), F(), T("controlDolly", { target: "setMode", mode: "auto" })) : (te("left"), te("right"), $e("喷雾尚未工作"), Te("喷雾尚未工作"), T("controlDolly", { target: "setMode", mode: "semi-auto" })));
+    const Ue = (ie) => {
+      X.value = ie, ie === "one-side" ? T("controlDolly", { target: "setTankMode", mode: "one-side" }) : T("controlDolly", { target: "setTankMode", mode: "both-side" });
+    }, Ae = (ie) => {
+      Y.value = ie, K.isPyQtWebEngine && (ie === "auto" ? ($(), F(), T("controlDolly", { target: "setMode", mode: "auto" })) : (te("left"), te("right"), $e("喷雾尚未工作"), Ce("喷雾尚未工作"), T("controlDolly", { target: "setMode", mode: "semi-auto" })));
     }, Fe = () => {
       e.value = Math.max(1, parseInt(e.value) || 1), o.value = e.value, Ke("left");
     }, Ne = () => {
@@ -543,287 +543,245 @@ const ut = (be, Y) => {
     }, He = () => {
       h.value = Math.max(0, parseInt(h.value) || 0), y.value = h.value, Ke("right");
     };
-    function Ke(re = null) {
+    function Ke(ie = null) {
       if (K.isPyQtWebEngine)
-        if (console.log("在PyQt QWebEngine环境中执行更新设置"), re === "left") {
-          const P = {
+        if (console.log("在PyQt QWebEngine环境中执行更新设置"), ie === "left") {
+          const D = {
             target: "dolly_settings",
             side: "left",
             dolly_single_run_time: o.value,
             dolly_run_interval_time: r.value
           };
-          T("controlDolly", P);
-        } else if (re === "right") {
-          const P = {
+          T("controlDolly", D);
+        } else if (ie === "right") {
+          const D = {
             target: "dolly_settings",
             side: "right",
             dolly_single_run_time: m.value,
             dolly_run_interval_time: y.value
           };
-          T("controlDolly", P);
+          T("controlDolly", D);
         } else {
-          const P = {
+          const D = {
             target: "dolly_settings",
             dolly_single_run_time: o.value,
             dolly_run_interval_time: r.value
           };
-          T("controlDolly", P);
+          T("controlDolly", D);
         }
       else
         console.log("在普通网页环境中执行更新设置");
     }
-    const $ = () => {
+    const R = () => {
       t.value = !0, he();
-    }, B = () => {
-      te("left"), t.value = !1, cancelAnimationFrame(f), a.value = 0, u.value = "左侧喷雾系统就绪";
+    }, $ = () => {
+      te("left"), te("right"), t.value = !1, cancelAnimationFrame(f), a.value = 0, u.value = "喷雾系统就绪";
     }, ee = () => {
       O.value = !0, _e();
     }, F = () => {
       te("right"), O.value = !1, cancelAnimationFrame(j), C.value = 0, x.value = "右侧喷雾系统就绪";
     };
-    function te(re = null) {
+    function te(ie = null) {
       if (K.isPyQtWebEngine) {
         console.log("在PyQt QWebEngine环境中执行停止喷雾");
-        const P = {
+        const D = {
           target: "setState",
           dolly_state: !1
         };
-        re && (P.side = re), T("controlDolly", P);
+        ie && (D.side = ie), T("controlDolly", D);
       } else
         console.log("在普通网页环境中执行停止喷雾");
     }
-    function ie(re = null) {
+    function re(ie = null) {
       if (K.isPyQtWebEngine) {
         console.log("在PyQt QWebEngine环境中执行临时停止喷雾");
-        const P = {
+        const D = {
           target: "setState",
           dolly_state: !1
         };
-        re && (P.side = re), T("tempControlDolly", P);
+        ie && (D.side = ie), T("tempControlDolly", D);
       } else
         console.log("在普通网页环境中执行临时停止喷雾");
     }
-    function we(re = null) {
+    function we(ie = null) {
       if (K.isPyQtWebEngine) {
         console.log("在PyQt QWebEngine环境中执行开始喷雾");
-        const P = {
+        const D = {
           target: "setState",
           dolly_state: !0
         };
-        re && (P.side = re), T("controlDolly", P);
+        ie && (D.side = ie), T("controlDolly", D);
       } else
         console.log("在普通网页环境中执行开始喷雾");
     }
     const he = () => {
-      we("left"), u.value = "左侧喷雾运行中", a.value = 0;
-      const re = Date.now();
-      l.value = re, i.value = o.value;
-      const P = () => {
-        const H = (Date.now() - re) / 1e3, Pe = Math.max(0, i.value - H);
-        a.value = H / i.value * 100, u.value = `左侧喷雾运行中: 剩余 ${Pe.toFixed(1)} 秒`, H < i.value && t.value ? f = requestAnimationFrame(P) : t.value && (a.value = 100, r.value > 0 && ie("left"), ce());
+      we("left"), we("right"), u.value = "喷雾运行中", a.value = 0;
+      const ie = Date.now();
+      l.value = ie, i.value = o.value;
+      const D = () => {
+        const G = (Date.now() - ie) / 1e3, Pe = Math.max(0, i.value - G);
+        a.value = G / i.value * 100, u.value = `喷雾运行中: 剩余 ${Pe.toFixed(1)} 秒`, G < i.value && t.value ? f = requestAnimationFrame(D) : t.value && (a.value = 100, r.value > 0 && (re("left"), re("right")), ce());
       };
-      f = requestAnimationFrame(P);
+      f = requestAnimationFrame(D);
     }, ce = () => {
-      u.value = "等待左侧下次运行";
-      const re = Date.now();
-      l.value = re, d.value = r.value;
-      const P = () => {
-        const H = (Date.now() - re) / 1e3, Pe = Math.max(0, d.value - H);
-        u.value = `等待左侧下次运行: ${Pe.toFixed(1)}秒`, Pe > 0 && t.value ? f = requestAnimationFrame(P) : t.value && he();
+      u.value = "等待下次运行";
+      const ie = Date.now();
+      l.value = ie, d.value = r.value;
+      const D = () => {
+        const G = (Date.now() - ie) / 1e3, Pe = Math.max(0, d.value - G);
+        u.value = `等待下次运行: ${Pe.toFixed(1)}秒`, Pe > 0 && t.value ? f = requestAnimationFrame(D) : t.value && he();
       };
-      f = requestAnimationFrame(P);
+      f = requestAnimationFrame(D);
     }, _e = () => {
       we("right"), x.value = "右侧喷雾运行中", C.value = 0;
-      const re = Date.now();
-      E.value = re, g.value = m.value;
-      const P = () => {
-        const H = (Date.now() - re) / 1e3, Pe = Math.max(0, g.value - H);
-        C.value = H / g.value * 100, x.value = `右侧喷雾运行中: 剩余 ${Pe.toFixed(1)} 秒`, H < g.value && O.value ? j = requestAnimationFrame(P) : O.value && (C.value = 100, y.value > 0 && ie("right"), je());
+      const ie = Date.now();
+      E.value = ie, g.value = m.value;
+      const D = () => {
+        const G = (Date.now() - ie) / 1e3, Pe = Math.max(0, g.value - G);
+        C.value = G / g.value * 100, x.value = `右侧喷雾运行中: 剩余 ${Pe.toFixed(1)} 秒`, G < g.value && O.value ? j = requestAnimationFrame(D) : O.value && (C.value = 100, y.value > 0 && re("right"), Oe());
       };
-      j = requestAnimationFrame(P);
-    }, je = () => {
+      j = requestAnimationFrame(D);
+    }, Oe = () => {
       x.value = "等待右侧下次运行";
-      const re = Date.now();
-      E.value = re, v.value = y.value;
-      const P = () => {
-        const H = (Date.now() - re) / 1e3, Pe = Math.max(0, v.value - H);
-        x.value = `等待右侧下次运行: ${Pe.toFixed(1)}秒`, Pe > 0 && O.value ? j = requestAnimationFrame(P) : O.value && _e();
+      const ie = Date.now();
+      E.value = ie, v.value = y.value;
+      const D = () => {
+        const G = (Date.now() - ie) / 1e3, Pe = Math.max(0, v.value - G);
+        x.value = `等待右侧下次运行: ${Pe.toFixed(1)}秒`, Pe > 0 && O.value ? j = requestAnimationFrame(D) : O.value && _e();
       };
-      j = requestAnimationFrame(P);
-    }, $e = (re) => {
-      L.value = re;
-    }, Te = (re) => {
-      S.value = re;
+      j = requestAnimationFrame(D);
+    }, $e = (ie) => {
+      L.value = ie;
+    }, Ce = (ie) => {
+      S.value = ie;
     };
     return _t(() => {
       cancelAnimationFrame(f), cancelAnimationFrame(j);
-    }), (re, P) => (xe(), ke(ot, null, [
-      P[23] || (P[23] = k("h2", null, " 喷雾系统【数字开关output1控制】 ", -1)),
-      P[24] || (P[24] = k("div", { class: "label-box" }, [
-        k("label", null, "自动模式下，当平均湿度低于设置的湿度下限时，喷雾开启；当平均湿度高于设置的湿度上限时，喷雾关闭"),
-        k("br")
+    }), (ie, D) => (xe(), ke(ot, null, [
+      D[17] || (D[17] = _("h2", null, " 喷雾系统 ", -1)),
+      D[18] || (D[18] = _("div", { class: "label-box" }, [
+        _("label", null, "输出：output3控制左侧喷雾，output4控制右侧喷雾，output5/6控制小车"),
+        _("br"),
+        _("label", null, "自动模式下，当湿度低于设置的湿度下限时，喷雾开启；当湿度高于设置的湿度上限时，喷雾关闭【当有小车时，有一侧喷雾启动，小车即启动，两侧喷雾均关闭，小车才停止】"),
+        _("br")
       ], -1)),
-      k("div", Bn, [
-        k("div", In, [
-          k("div", Un, [
-            k("button", {
+      _("div", Bn, [
+        _("div", In, [
+          _("div", Un, [
+            _("button", {
               class: nt(["mode-button", { active: Y.value === "semi-auto" && !I.value }]),
               disabled: I.value,
-              onClick: P[0] || (P[0] = (H) => Y.value === "auto" ? Ae("semi-auto") : () => {
+              onClick: D[0] || (D[0] = (G) => Y.value === "auto" ? Ae("semi-auto") : () => {
               })
             }, "半自动模式", 10, Dn),
-            k("button", {
+            _("button", {
               class: nt(["mode-button", { active: Y.value === "auto" && !I.value }]),
               disabled: I.value,
-              onClick: P[1] || (P[1] = (H) => Y.value === "semi-auto" ? Ae("auto") : () => {
+              onClick: D[1] || (D[1] = (G) => Y.value === "semi-auto" ? Ae("auto") : () => {
               })
             }, "自动模式", 10, Fn)
           ])
         ]),
-        k("div", Mn, [
+        _("div", Mn, [
           Y.value === "semi-auto" ? (xe(), ke("div", Vn, [
-            k("div", Wn, [
-              k("div", qn, [
-                P[17] || (P[17] = k("h3", null, "左侧喷雾系统", -1)),
-                k("div", Kn, [
-                  k("div", zn, [
-                    P[14] || (P[14] = k("label", null, "喷雾运行时间 (秒):", -1)),
-                    k("div", {
+            _("div", Wn, [
+              _("div", qn, [
+                D[15] || (D[15] = _("h3", null, "双侧定时喷雾系统", -1)),
+                _("div", Kn, [
+                  _("div", zn, [
+                    D[12] || (D[12] = _("label", null, "喷雾运行时间 (秒):", -1)),
+                    _("div", {
                       class: "input-wrapper",
-                      onClick: P[2] || (P[2] = (H) => s.value = !0)
-                    }, Oe(e.value), 1)
+                      onClick: D[2] || (D[2] = (G) => s.value = !0)
+                    }, Te(e.value), 1)
                   ]),
-                  k("div", Qn, [
-                    P[15] || (P[15] = k("label", null, "喷雾暂停时间 (秒):", -1)),
-                    k("div", {
+                  _("div", Qn, [
+                    D[13] || (D[13] = _("label", null, "喷雾暂停时间 (秒):", -1)),
+                    _("div", {
                       class: "input-wrapper",
-                      onClick: P[3] || (P[3] = (H) => c.value = !0)
-                    }, Oe(n.value), 1)
+                      onClick: D[3] || (D[3] = (G) => c.value = !0)
+                    }, Te(n.value), 1)
                   ]),
-                  k("div", Hn, [
-                    k("button", {
-                      onClick: $,
+                  _("div", Hn, [
+                    _("button", {
+                      onClick: R,
                       disabled: t.value || I.value
                     }, "开始", 8, Gn),
-                    k("button", {
-                      onClick: B,
+                    _("button", {
+                      onClick: $,
                       disabled: !t.value || I.value
                     }, "停止", 8, Jn)
                   ])
                 ]),
-                k("div", Yn, [
-                  k("div", Xn, [
-                    k("div", {
+                _("div", Yn, [
+                  _("div", Xn, [
+                    _("div", {
                       class: "progress",
-                      style: gt({ width: a.value + "%" })
+                      style: kt({ width: a.value + "%" })
                     }, null, 4),
-                    k("div", {
+                    _("div", {
                       class: "cart",
-                      style: gt({ left: a.value + "%" })
-                    }, P[16] || (P[16] = [
-                      k("span", { class: "cart-icon" }, "🚜", -1)
+                      style: kt({ left: a.value + "%" })
+                    }, D[14] || (D[14] = [
+                      _("span", { class: "cart-icon" }, "🚜", -1)
                     ]), 4)
                   ])
                 ]),
-                k("div", Zn, Oe(u.value), 1)
-              ]),
-              k("div", eo, [
-                P[21] || (P[21] = k("h3", null, "右侧喷雾系统", -1)),
-                k("div", to, [
-                  k("div", no, [
-                    P[18] || (P[18] = k("label", null, "喷雾运行时间 (秒):", -1)),
-                    k("div", {
-                      class: "input-wrapper",
-                      onClick: P[4] || (P[4] = (H) => w.value = !0)
-                    }, Oe(p.value), 1)
-                  ]),
-                  k("div", oo, [
-                    P[19] || (P[19] = k("label", null, "喷雾暂停时间 (秒):", -1)),
-                    k("div", {
-                      class: "input-wrapper",
-                      onClick: P[5] || (P[5] = (H) => b.value = !0)
-                    }, Oe(h.value), 1)
-                  ]),
-                  k("div", ro, [
-                    k("button", {
-                      onClick: ee,
-                      disabled: O.value || I.value
-                    }, "开始", 8, io),
-                    k("button", {
-                      onClick: F,
-                      disabled: !O.value || I.value
-                    }, "停止", 8, ao)
-                  ])
-                ]),
-                k("div", so, [
-                  k("div", uo, [
-                    k("div", {
-                      class: "progress",
-                      style: gt({ width: C.value + "%" })
-                    }, null, 4),
-                    k("div", {
-                      class: "cart",
-                      style: gt({ left: C.value + "%" })
-                    }, P[20] || (P[20] = [
-                      k("span", { class: "cart-icon" }, "🚜", -1)
-                    ]), 4)
-                  ])
-                ]),
-                k("div", lo, Oe(x.value), 1)
+                _("div", Zn, Te(u.value), 1)
               ])
             ])
-          ])) : (xe(), ke("div", co, [
-            k("div", fo, "自动模式左侧喷雾受左侧湿度传感器控制, " + Oe(ne.value), 1),
-            k("div", {
+          ])) : (xe(), ke("div", eo, [
+            _("div", to, "自动模式左侧喷雾受左侧湿度传感器控制, " + Te(ne.value), 1),
+            _("div", {
               class: nt(["auto-mode-status", { working: L.value === "喷雾正在运行" }])
-            }, " 左侧喷雾：" + Oe(L.value), 3),
-            k("div", po, "自动模式右侧喷雾受右侧湿度传感器控制, " + Oe(M.value), 1),
-            k("div", {
+            }, " 左侧喷雾：" + Te(L.value), 3),
+            _("div", no, "自动模式右侧喷雾受右侧湿度传感器控制, " + Te(M.value), 1),
+            _("div", {
               class: nt(["auto-mode-status", { working: S.value === "喷雾正在运行" }])
-            }, " 右侧喷雾：" + Oe(S.value), 3),
-            P[22] || (P[22] = k("div", { class: "auto-mode-placeholder" }, null, -1))
+            }, " 右侧喷雾：" + Te(S.value), 3),
+            D[16] || (D[16] = _("div", { class: "auto-mode-placeholder" }, null, -1))
           ]))
         ]),
         ze(pt, {
           modelValue: e.value,
           "onUpdate:modelValue": [
-            P[6] || (P[6] = (H) => e.value = H),
+            D[4] || (D[4] = (G) => e.value = G),
             Fe
           ],
           showKeyboard: s.value,
-          "onUpdate:showKeyboard": P[7] || (P[7] = (H) => s.value = H)
+          "onUpdate:showKeyboard": D[5] || (D[5] = (G) => s.value = G)
         }, null, 8, ["modelValue", "showKeyboard"]),
         ze(pt, {
           modelValue: n.value,
           "onUpdate:modelValue": [
-            P[8] || (P[8] = (H) => n.value = H),
+            D[6] || (D[6] = (G) => n.value = G),
             Ne
           ],
           showKeyboard: c.value,
-          "onUpdate:showKeyboard": P[9] || (P[9] = (H) => c.value = H)
+          "onUpdate:showKeyboard": D[7] || (D[7] = (G) => c.value = G)
         }, null, 8, ["modelValue", "showKeyboard"]),
         ze(pt, {
           modelValue: p.value,
           "onUpdate:modelValue": [
-            P[10] || (P[10] = (H) => p.value = H),
+            D[8] || (D[8] = (G) => p.value = G),
             Re
           ],
           showKeyboard: w.value,
-          "onUpdate:showKeyboard": P[11] || (P[11] = (H) => w.value = H)
+          "onUpdate:showKeyboard": D[9] || (D[9] = (G) => w.value = G)
         }, null, 8, ["modelValue", "showKeyboard"]),
         ze(pt, {
           modelValue: h.value,
           "onUpdate:modelValue": [
-            P[12] || (P[12] = (H) => h.value = H),
+            D[10] || (D[10] = (G) => h.value = G),
             He
           ],
           showKeyboard: b.value,
-          "onUpdate:showKeyboard": P[13] || (P[13] = (H) => b.value = H)
+          "onUpdate:showKeyboard": D[11] || (D[11] = (G) => b.value = G)
         }, null, 8, ["modelValue", "showKeyboard"])
       ])
     ], 64));
   }
-}, ho = /* @__PURE__ */ ut(vo, [["__scopeId", "data-v-725c3617"]]), mo = { class: "mode-controls" }, go = { class: "btn-group" }, yo = { class: "steam_engine" }, bo = ["disabled"], wo = { class: "steam_engine" }, xo = ["disabled"], ko = { class: "text_status" }, _o = {
+}, ro = /* @__PURE__ */ ut(oo, [["__scopeId", "data-v-e19b9e31"]]), io = { class: "mode-controls" }, ao = { class: "btn-group" }, so = { class: "steam_engine" }, uo = ["disabled"], lo = { class: "steam_engine" }, co = ["disabled"], fo = { class: "text_status" }, po = {
   __name: "IntegratedControlSystem",
   props: {
     message: {
@@ -833,7 +791,7 @@ const ut = (be, Y) => {
     }
   },
   setup(be) {
-    const Y = V(!1), X = V(!1), i = V(!1), d = V(!1), e = V(!1), { sendToPyQt: n } = Xe(), o = yt({
+    const Y = V(!1), X = V(!1), i = V(!1), d = V(!1), e = V(!1), { sendToPyQt: n } = Xe(), o = gt({
       isPyQtWebEngine: !1
     }), r = be;
     et(() => r.message, (v) => {
@@ -858,10 +816,10 @@ const ut = (be, Y) => {
     });
     const t = V("未知"), a = V("未知"), u = vt(() => {
       if (!i.value) return "手动模式";
-      if (d.value === !1 && e.value === !1) return `自动模式受水下传感器温度控制, 水箱1温度: ${t.value}°C, 水箱2温度: ${a.value}°C`;
-      if (d.value === !0 && e.value === !1) return `自动模式受水下传感器温度控制, 水箱1温度: ${t.value}°C, 水箱2温度: ${a.value}°C, 水箱1传感器异常`;
-      if (d.value === !1 && e.value === !0) return `自动模式受水下传感器温度控制, 水箱1温度: ${t.value}°C, 水箱2温度: ${a.value}°C, 水箱2传感器异常`;
-      if (d.value === !0 && e.value === !0) return `自动模式受水下传感器温度控制, 水箱1温度: ${t.value}°C, 水箱2温度: ${a.value}°C, 水箱1和水箱2传感器异常`;
+      if (d.value === !1 && e.value === !1) return `自动模式受水下传感器温度控制, 左侧水箱温度: ${t.value}°C, 右侧水箱温度: ${a.value}°C`;
+      if (d.value === !0 && e.value === !1) return `自动模式受水下传感器温度控制, 左侧水箱温度: ${t.value}°C, 右侧水箱温度: ${a.value}°C, 左侧水箱传感器异常`;
+      if (d.value === !1 && e.value === !0) return `自动模式受水下传感器温度控制, 左侧水箱温度: ${t.value}°C, 右侧水箱温度: ${a.value}°C, 右侧水箱传感器异常`;
+      if (d.value === !0 && e.value === !0) return `自动模式受水下传感器温度控制, 左侧水箱温度: ${t.value}°C, 右侧水箱温度: ${a.value}°C, 左侧水箱和右侧水箱传感器异常`;
     });
     async function s(v) {
       const p = i.value;
@@ -880,68 +838,72 @@ const ut = (be, Y) => {
       n("setEngineState", { engine: "heatEngine2", state: !X.value }), X.value = !X.value;
     }
     return (v, p) => (xe(), ke(ot, null, [
-      p[4] || (p[4] = k("h2", null, "水箱加热系统【数字开关output2控制】", -1)),
-      p[5] || (p[5] = k("div", { class: "label-box" }, [
-        k("label", null, "自动模式下，当平均温度低于设置的温度下限时，加热开启；当平均温度高于设置的温度上限时，加热关闭"),
-        k("br")
+      p[6] || (p[6] = _("h2", null, "水箱加热系统", -1)),
+      p[7] || (p[7] = _("div", { class: "label-box" }, [
+        _("label", null, "输出：output1控制左侧水箱加热，output2控制右侧水箱加热"),
+        _("br"),
+        _("label", null, "自动模式下，当水箱温度低于设置的温度下限时，加热开启；当水箱温度高于设置的温度上限时，加热关闭"),
+        _("br")
       ], -1)),
-      k("div", mo, [
-        k("div", go, [
-          k("button", {
+      _("div", io, [
+        _("div", ao, [
+          _("button", {
             onClick: p[0] || (p[0] = (h) => s("manual")),
             class: nt([{ active: !i.value }, "mode-btn"])
           }, "手动模式", 2),
-          k("button", {
+          _("button", {
             onClick: p[1] || (p[1] = (h) => s("auto")),
             class: nt([{ active: i.value }, "mode-btn"])
           }, "自动模式", 2)
         ])
       ]),
-      k("div", yo, [
-        k("div", {
+      _("div", so, [
+        p[3] || (p[3] = _("h3", null, "左侧水箱加热", -1)),
+        _("div", {
           class: nt(["status", { on: Y.value }])
         }, [
-          p[2] || (p[2] = k("div", { class: "status-indicator" }, null, -1)),
-          ft(" " + Oe(Y.value ? "开" : "关"), 1)
+          p[2] || (p[2] = _("div", { class: "status-indicator" }, null, -1)),
+          ft(" " + Te(Y.value ? "开" : "关"), 1)
         ], 2),
-        k("button", {
+        _("button", {
           onClick: f,
           disabled: i.value,
           class: "control-btn"
-        }, Oe(Y.value ? "关闭" : "开启"), 9, bo)
+        }, Te(Y.value ? "关闭" : "开启"), 9, uo)
       ]),
-      k("div", wo, [
-        k("div", {
+      _("div", lo, [
+        p[5] || (p[5] = _("h3", null, "右侧水箱加热", -1)),
+        _("div", {
           class: nt(["status", { on: X.value }])
         }, [
-          p[3] || (p[3] = k("div", { class: "status-indicator" }, null, -1)),
-          ft(" " + Oe(X.value ? "开" : "关"), 1)
+          p[4] || (p[4] = _("div", { class: "status-indicator" }, null, -1)),
+          ft(" " + Te(X.value ? "开" : "关"), 1)
         ], 2),
-        k("button", {
+        _("button", {
           onClick: g,
           disabled: i.value,
           class: "control-btn"
-        }, Oe(X.value ? "关闭" : "开启"), 9, xo)
+        }, Te(X.value ? "关闭" : "开启"), 9, co)
       ]),
-      k("div", ko, Oe(u.value), 1)
+      _("div", fo, Te(u.value), 1)
     ], 64));
   }
-}, So = /* @__PURE__ */ ut(_o, [["__scopeId", "data-v-50473875"]]), Oo = { class: "data-actions" }, jo = {
+}, vo = /* @__PURE__ */ ut(po, [["__scopeId", "data-v-54e4a3ba"]]), ho = { class: "data-actions" }, mo = {
   key: 0,
   class: "modal-overlay"
-}, Eo = { class: "modal-content settings-modal" }, Co = { class: "setting-group" }, To = { class: "setting-item" }, Lo = { class: "toggle-switch" }, Ao = {
+}, go = { class: "modal-content settings-modal" }, yo = { class: "setting-group" }, bo = { class: "setting-item" }, wo = { class: "toggle-switch" }, xo = {
   key: 1,
   class: "modal-overlay"
-}, Po = {
+}, ko = {
   key: 2,
   class: "modal-overlay"
-}, No = { class: "modal-content update-modal" }, Ro = {
+}, _o = { class: "modal-content update-modal" }, So = {
   key: 3,
   class: "modal-overlay"
-}, $o = { class: "modal-content" }, Bo = {
+}, Oo = { class: "modal-content" }, jo = {
   __name: "DataExport",
   setup(be) {
-    const { sendToPyQt: Y } = Xe(), X = yt({
+    const { sendToPyQt: Y } = Xe(), X = gt({
       isPyQtWebEngine: !1
     }), i = V(!1), d = V(!1), e = V(""), n = V(!1), o = V(!1), r = V(!1), t = V(!1), a = V(""), u = V(!1), s = () => {
       t.value = !0, a.value = "", document.body.style.overflow = "hidden";
@@ -1003,56 +965,56 @@ const ut = (be, Y) => {
     }, C = () => {
       d.value = !1;
     };
-    return (x, w) => (xe(), ke("div", Oo, [
-      k("div", { class: "action-buttons" }, [
-        k("div", { class: "button-group" }, [
-          k("button", {
+    return (x, w) => (xe(), ke("div", ho, [
+      _("div", { class: "action-buttons" }, [
+        _("div", { class: "button-group" }, [
+          _("button", {
             onClick: p,
             class: "export-btn"
           }, "导出数据")
         ]),
-        k("div", { class: "button-group" }, [
-          k("button", {
+        _("div", { class: "button-group" }, [
+          _("button", {
             onClick: h,
             class: "clear-btn"
           }, "清空数据")
         ]),
-        k("div", { class: "button-group" }, [
-          k("button", {
+        _("div", { class: "button-group" }, [
+          _("button", {
             onClick: f,
             class: "settings-btn"
           }, "开发者模式")
         ]),
-        k("div", { class: "button-group" }, [
-          k("button", {
+        _("div", { class: "button-group" }, [
+          _("button", {
             onClick: s,
             class: "update-btn"
           }, "更新")
         ])
       ]),
-      n.value ? (xe(), ke("div", jo, [
-        k("div", Eo, [
-          k("div", Co, [
-            w[7] || (w[7] = k("h2", null, "传感器调试模式【开发者测试用】", -1)),
-            k("div", To, [
-              w[6] || (w[6] = k("span", { class: "setting-label" }, "调试模式：", -1)),
-              k("div", Lo, [
-                lt(k("input", {
+      n.value ? (xe(), ke("div", mo, [
+        _("div", go, [
+          _("div", yo, [
+            w[7] || (w[7] = _("h2", null, "传感器调试模式【开发者测试用】", -1)),
+            _("div", bo, [
+              w[6] || (w[6] = _("span", { class: "setting-label" }, "调试模式：", -1)),
+              _("div", wo, [
+                lt(_("input", {
                   type: "checkbox",
                   id: "debug-toggle",
                   "onUpdate:modelValue": w[0] || (w[0] = (b) => r.value = b)
                 }, null, 512), [
                   [Rt, r.value]
                 ]),
-                w[5] || (w[5] = k("label", { for: "debug-toggle" }, null, -1))
+                w[5] || (w[5] = _("label", { for: "debug-toggle" }, null, -1))
               ])
             ]),
-            k("div", { class: "modal-buttons" }, [
-              k("button", {
+            _("div", { class: "modal-buttons" }, [
+              _("button", {
                 onClick: v,
                 class: "confirm-btn"
               }, "保存"),
-              k("button", {
+              _("button", {
                 onClick: g,
                 class: "cancel-btn"
               }, "取消")
@@ -1060,29 +1022,29 @@ const ut = (be, Y) => {
           ])
         ])
       ])) : st("", !0),
-      i.value ? (xe(), ke("div", Ao, [
-        k("div", { class: "modal-content" }, [
-          w[8] || (w[8] = k("h2", null, "确定要清空所有数据吗？此操作不可撤销。", -1)),
-          k("div", { class: "modal-buttons" }, [
-            k("button", {
+      i.value ? (xe(), ke("div", xo, [
+        _("div", { class: "modal-content" }, [
+          w[8] || (w[8] = _("h2", null, "确定要清空所有数据吗？此操作不可撤销。", -1)),
+          _("div", { class: "modal-buttons" }, [
+            _("button", {
               onClick: y,
               class: "confirm-btn"
             }, "确定"),
-            k("button", {
+            _("button", {
               onClick: m,
               class: "cancel-btn"
             }, "取消")
           ])
         ])
       ])) : st("", !0),
-      t.value ? (xe(), ke("div", Po, [
-        k("div", No, [
-          w[9] || (w[9] = k("h2", null, "更新版本", -1)),
-          k("div", {
+      t.value ? (xe(), ke("div", ko, [
+        _("div", _o, [
+          w[9] || (w[9] = _("h2", null, "更新版本", -1)),
+          _("div", {
             class: "update-input",
             onClick: w[2] || (w[2] = (b) => u.value = !0)
           }, [
-            lt(k("input", {
+            lt(_("input", {
               type: "text",
               "onUpdate:modelValue": w[1] || (w[1] = (b) => a.value = b),
               placeholder: "请输入更新版号",
@@ -1091,12 +1053,12 @@ const ut = (be, Y) => {
               [ht, a.value]
             ])
           ]),
-          k("div", { class: "modal-buttons" }, [
-            k("button", {
+          _("div", { class: "modal-buttons" }, [
+            _("button", {
               onClick: c,
               class: "confirm-btn"
             }, "更新"),
-            k("button", {
+            _("button", {
               onClick: l,
               class: "cancel-btn"
             }, "取消")
@@ -1109,11 +1071,11 @@ const ut = (be, Y) => {
         "show-keyboard": u.value,
         "onUpdate:showKeyboard": w[4] || (w[4] = (b) => u.value = b)
       }, null, 8, ["modelValue", "show-keyboard"]),
-      d.value ? (xe(), ke("div", Ro, [
-        k("div", $o, [
-          k("h2", null, Oe(e.value), 1),
-          k("div", { class: "modal-buttons" }, [
-            k("button", {
+      d.value ? (xe(), ke("div", So, [
+        _("div", Oo, [
+          _("h2", null, Te(e.value), 1),
+          _("div", { class: "modal-buttons" }, [
+            _("button", {
               onClick: C,
               class: "confirm-btn"
             }, "确定")
@@ -1122,16 +1084,16 @@ const ut = (be, Y) => {
       ])) : st("", !0)
     ]));
   }
-}, Io = /* @__PURE__ */ ut(Bo, [["__scopeId", "data-v-d87ac98e"]]);
-var Uo = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : typeof global < "u" ? global : typeof self < "u" ? self : {};
-function Do(be) {
+}, Eo = /* @__PURE__ */ ut(jo, [["__scopeId", "data-v-d87ac98e"]]);
+var Co = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : typeof global < "u" ? global : typeof self < "u" ? self : {};
+function To(be) {
   return be && be.__esModule && Object.prototype.hasOwnProperty.call(be, "default") ? be.default : be;
 }
 var Lt = { exports: {} };
 (function(be, Y) {
   (function(X, i) {
     be.exports = i(Nt);
-  })(typeof self < "u" ? self : Uo, function(X) {
+  })(typeof self < "u" ? self : Co, function(X) {
     return function(i) {
       var d = {};
       function e(n) {
@@ -1312,12 +1274,12 @@ var Lt = { exports: {} };
           if (j.length === 0) return c(W, j) === null ? [j] : [];
           for (var ae = 0, J = 0, q = []; J < j.length; ) {
             W.lastIndex = h ? J : 0;
-            var D, A = c(W, h ? j : j.slice(J));
-            if (A === null || (D = v(s(W.lastIndex + (h ? 0 : J)), j.length)) === ae) J = u(j, J, S);
+            var U, A = c(W, h ? j : j.slice(J));
+            if (A === null || (U = v(s(W.lastIndex + (h ? 0 : J)), j.length)) === ae) J = u(j, J, S);
             else {
               if (q.push(j.slice(ae, J)), q.length === Z) return q;
               for (var T = 1; T <= A.length - 1; T++) if (q.push(A[T]), q.length === Z) return q;
-              J = ae = D;
+              J = ae = U;
             }
           }
           return q.push(j.slice(ae)), q;
@@ -1427,12 +1389,12 @@ var Lt = { exports: {} };
         (function(o, r) {
           i.exports = r();
         })(0, function() {
-          function o($, B) {
-            return B = { exports: {} }, $(B, B.exports), B.exports;
+          function o(R, $) {
+            return $ = { exports: {} }, R($, $.exports), $.exports;
           }
-          var r = o(function($, B) {
+          var r = o(function(R, $) {
             (function(ee, F) {
-              $.exports = F();
+              R.exports = F();
             })(0, function() {
               function ee(ce) {
                 var _e = ce && typeof ce == "object";
@@ -1442,130 +1404,130 @@ var Lt = { exports: {} };
                 return Array.isArray(ce) ? [] : {};
               }
               function te(ce, _e) {
-                var je = _e && _e.clone === !0;
-                return je && ee(ce) ? he(F(ce), ce, _e) : ce;
+                var Oe = _e && _e.clone === !0;
+                return Oe && ee(ce) ? he(F(ce), ce, _e) : ce;
               }
-              function ie(ce, _e, je) {
+              function re(ce, _e, Oe) {
                 var $e = ce.slice();
-                return _e.forEach(function(Te, re) {
-                  typeof $e[re] > "u" ? $e[re] = te(Te, je) : ee(Te) ? $e[re] = he(ce[re], Te, je) : ce.indexOf(Te) === -1 && $e.push(te(Te, je));
+                return _e.forEach(function(Ce, ie) {
+                  typeof $e[ie] > "u" ? $e[ie] = te(Ce, Oe) : ee(Ce) ? $e[ie] = he(ce[ie], Ce, Oe) : ce.indexOf(Ce) === -1 && $e.push(te(Ce, Oe));
                 }), $e;
               }
-              function we(ce, _e, je) {
+              function we(ce, _e, Oe) {
                 var $e = {};
-                return ee(ce) && Object.keys(ce).forEach(function(Te) {
-                  $e[Te] = te(ce[Te], je);
-                }), Object.keys(_e).forEach(function(Te) {
-                  ee(_e[Te]) && ce[Te] ? $e[Te] = he(ce[Te], _e[Te], je) : $e[Te] = te(_e[Te], je);
+                return ee(ce) && Object.keys(ce).forEach(function(Ce) {
+                  $e[Ce] = te(ce[Ce], Oe);
+                }), Object.keys(_e).forEach(function(Ce) {
+                  ee(_e[Ce]) && ce[Ce] ? $e[Ce] = he(ce[Ce], _e[Ce], Oe) : $e[Ce] = te(_e[Ce], Oe);
                 }), $e;
               }
-              function he(ce, _e, je) {
-                var $e = Array.isArray(_e), Te = je || { arrayMerge: ie }, re = Te.arrayMerge || ie;
-                return $e ? Array.isArray(ce) ? re(ce, _e, je) : te(_e, je) : we(ce, _e, je);
+              function he(ce, _e, Oe) {
+                var $e = Array.isArray(_e), Ce = Oe || { arrayMerge: re }, ie = Ce.arrayMerge || re;
+                return $e ? Array.isArray(ce) ? ie(ce, _e, Oe) : te(_e, Oe) : we(ce, _e, Oe);
               }
               return he.all = function(ce, _e) {
                 if (!Array.isArray(ce) || ce.length < 2) throw new Error("first argument should be an array with at least two elements");
-                return ce.reduce(function(je, $e) {
-                  return he(je, $e, _e);
+                return ce.reduce(function(Oe, $e) {
+                  return he(Oe, $e, _e);
                 });
               }, he;
             });
           });
-          function t($) {
-            return $ = $ || /* @__PURE__ */ Object.create(null), { on: function(B, ee) {
-              ($[B] || ($[B] = [])).push(ee);
-            }, off: function(B, ee) {
-              $[B] && $[B].splice($[B].indexOf(ee) >>> 0, 1);
-            }, emit: function(B, ee) {
-              ($[B] || []).map(function(F) {
+          function t(R) {
+            return R = R || /* @__PURE__ */ Object.create(null), { on: function($, ee) {
+              (R[$] || (R[$] = [])).push(ee);
+            }, off: function($, ee) {
+              R[$] && R[$].splice(R[$].indexOf(ee) >>> 0, 1);
+            }, emit: function($, ee) {
+              (R[$] || []).map(function(F) {
                 F(ee);
-              }), ($["*"] || []).map(function(F) {
-                F(B, ee);
+              }), (R["*"] || []).map(function(F) {
+                F($, ee);
               });
             } };
           }
-          var a = o(function($, B) {
+          var a = o(function(R, $) {
             var ee = { svg: { name: "xmlns", uri: "http://www.w3.org/2000/svg" }, xlink: { name: "xmlns:xlink", uri: "http://www.w3.org/1999/xlink" } };
-            B.default = ee, $.exports = B.default;
-          }), u = function($) {
-            return Object.keys($).map(function(B) {
-              var ee = $[B].toString().replace(/"/g, "&quot;");
-              return B + '="' + ee + '"';
+            $.default = ee, R.exports = $.default;
+          }), u = function(R) {
+            return Object.keys(R).map(function($) {
+              var ee = R[$].toString().replace(/"/g, "&quot;");
+              return $ + '="' + ee + '"';
             }).join(" ");
           }, s = a.svg, c = a.xlink, l = {};
           l[s.name] = s.uri, l[c.name] = c.uri;
-          var f, g = function($, B) {
-            $ === void 0 && ($ = "");
-            var ee = r(l, B || {}), F = u(ee);
-            return "<svg " + F + ">" + $ + "</svg>";
-          }, v = a.svg, p = a.xlink, h = { attrs: (f = { style: ["position: absolute", "width: 0", "height: 0"].join("; "), "aria-hidden": "true" }, f[v.name] = v.uri, f[p.name] = p.uri, f) }, m = function($) {
-            this.config = r(h, $ || {}), this.symbols = [];
+          var f, g = function(R, $) {
+            R === void 0 && (R = "");
+            var ee = r(l, $ || {}), F = u(ee);
+            return "<svg " + F + ">" + R + "</svg>";
+          }, v = a.svg, p = a.xlink, h = { attrs: (f = { style: ["position: absolute", "width: 0", "height: 0"].join("; "), "aria-hidden": "true" }, f[v.name] = v.uri, f[p.name] = p.uri, f) }, m = function(R) {
+            this.config = r(h, R || {}), this.symbols = [];
           };
-          m.prototype.add = function($) {
-            var B = this, ee = B.symbols, F = this.find($.id);
-            return F ? (ee[ee.indexOf(F)] = $, !1) : (ee.push($), !0);
-          }, m.prototype.remove = function($) {
-            var B = this, ee = B.symbols, F = this.find($);
+          m.prototype.add = function(R) {
+            var $ = this, ee = $.symbols, F = this.find(R.id);
+            return F ? (ee[ee.indexOf(F)] = R, !1) : (ee.push(R), !0);
+          }, m.prototype.remove = function(R) {
+            var $ = this, ee = $.symbols, F = this.find(R);
             return !!F && (ee.splice(ee.indexOf(F), 1), F.destroy(), !0);
-          }, m.prototype.find = function($) {
-            return this.symbols.filter(function(B) {
-              return B.id === $;
+          }, m.prototype.find = function(R) {
+            return this.symbols.filter(function($) {
+              return $.id === R;
             })[0] || null;
-          }, m.prototype.has = function($) {
-            return this.find($) !== null;
+          }, m.prototype.has = function(R) {
+            return this.find(R) !== null;
           }, m.prototype.stringify = function() {
-            var $ = this.config, B = $.attrs, ee = this.symbols.map(function(F) {
+            var R = this.config, $ = R.attrs, ee = this.symbols.map(function(F) {
               return F.stringify();
             }).join("");
-            return g(ee, B);
+            return g(ee, $);
           }, m.prototype.toString = function() {
             return this.stringify();
           }, m.prototype.destroy = function() {
-            this.symbols.forEach(function($) {
-              return $.destroy();
+            this.symbols.forEach(function(R) {
+              return R.destroy();
             });
           };
-          var y = function($) {
-            var B = $.id, ee = $.viewBox, F = $.content;
-            this.id = B, this.viewBox = ee, this.content = F;
+          var y = function(R) {
+            var $ = R.id, ee = R.viewBox, F = R.content;
+            this.id = $, this.viewBox = ee, this.content = F;
           };
           y.prototype.stringify = function() {
             return this.content;
           }, y.prototype.toString = function() {
             return this.stringify();
           }, y.prototype.destroy = function() {
-            var $ = this;
-            ["id", "viewBox", "content"].forEach(function(B) {
-              return delete $[B];
+            var R = this;
+            ["id", "viewBox", "content"].forEach(function($) {
+              return delete R[$];
             });
           };
-          var O = function($) {
-            var B = !!document.importNode, ee = new DOMParser().parseFromString($, "image/svg+xml").documentElement;
-            return B ? document.importNode(ee, !0) : ee;
-          }, C = function($) {
-            function B() {
-              $.apply(this, arguments);
+          var O = function(R) {
+            var $ = !!document.importNode, ee = new DOMParser().parseFromString(R, "image/svg+xml").documentElement;
+            return $ ? document.importNode(ee, !0) : ee;
+          }, C = function(R) {
+            function $() {
+              R.apply(this, arguments);
             }
-            $ && (B.__proto__ = $), B.prototype = Object.create($ && $.prototype), B.prototype.constructor = B;
+            R && ($.__proto__ = R), $.prototype = Object.create(R && R.prototype), $.prototype.constructor = $;
             var ee = { isMounted: {} };
             return ee.isMounted.get = function() {
               return !!this.node;
-            }, B.createFromExistingNode = function(F) {
-              return new B({ id: F.getAttribute("id"), viewBox: F.getAttribute("viewBox"), content: F.outerHTML });
-            }, B.prototype.destroy = function() {
-              this.isMounted && this.unmount(), $.prototype.destroy.call(this);
-            }, B.prototype.mount = function(F) {
+            }, $.createFromExistingNode = function(F) {
+              return new $({ id: F.getAttribute("id"), viewBox: F.getAttribute("viewBox"), content: F.outerHTML });
+            }, $.prototype.destroy = function() {
+              this.isMounted && this.unmount(), R.prototype.destroy.call(this);
+            }, $.prototype.mount = function(F) {
               if (this.isMounted) return this.node;
-              var te = typeof F == "string" ? document.querySelector(F) : F, ie = this.render();
-              return this.node = ie, te.appendChild(ie), ie;
-            }, B.prototype.render = function() {
+              var te = typeof F == "string" ? document.querySelector(F) : F, re = this.render();
+              return this.node = re, te.appendChild(re), re;
+            }, $.prototype.render = function() {
               var F = this.stringify();
               return O(g(F)).childNodes[0];
-            }, B.prototype.unmount = function() {
+            }, $.prototype.unmount = function() {
               this.node.parentNode.removeChild(this.node);
-            }, Object.defineProperties(B.prototype, ee), B;
-          }(y), x = { autoConfigure: !0, mountTo: "body", syncUrlsWithBaseTag: !1, listenLocationChangeEvent: !0, locationChangeEvent: "locationChange", locationChangeAngularEmitter: !1, usagesToUpdate: "use[*|href]", moveGradientsOutsideSymbol: !1 }, w = function($) {
-            return Array.prototype.slice.call($, 0);
+            }, Object.defineProperties($.prototype, ee), $;
+          }(y), x = { autoConfigure: !0, mountTo: "body", syncUrlsWithBaseTag: !1, listenLocationChangeEvent: !0, locationChangeEvent: "locationChange", locationChangeAngularEmitter: !1, usagesToUpdate: "use[*|href]", moveGradientsOutsideSymbol: !1 }, w = function(R) {
+            return Array.prototype.slice.call(R, 0);
           }, b = { isChrome: function() {
             return /chrome/i.test(navigator.userAgent);
           }, isFirefox: function() {
@@ -1574,138 +1536,138 @@ var Lt = { exports: {} };
             return /msie/i.test(navigator.userAgent) || /trident/i.test(navigator.userAgent);
           }, isEdge: function() {
             return /edge/i.test(navigator.userAgent);
-          } }, E = function($, B) {
+          } }, E = function(R, $) {
             var ee = document.createEvent("CustomEvent");
-            ee.initCustomEvent($, !1, !1, B), window.dispatchEvent(ee);
-          }, j = function($) {
-            var B = [];
-            return w($.querySelectorAll("style")).forEach(function(ee) {
-              ee.textContent += "", B.push(ee);
-            }), B;
-          }, L = function($) {
-            return ($ || window.location.href).split("#")[0];
-          }, S = function($) {
-            angular.module("ng").run(["$rootScope", function(B) {
-              B.$on("$locationChangeSuccess", function(ee, F, te) {
-                E($, { oldUrl: te, newUrl: F });
+            ee.initCustomEvent(R, !1, !1, $), window.dispatchEvent(ee);
+          }, j = function(R) {
+            var $ = [];
+            return w(R.querySelectorAll("style")).forEach(function(ee) {
+              ee.textContent += "", $.push(ee);
+            }), $;
+          }, L = function(R) {
+            return (R || window.location.href).split("#")[0];
+          }, S = function(R) {
+            angular.module("ng").run(["$rootScope", function($) {
+              $.$on("$locationChangeSuccess", function(ee, F, te) {
+                E(R, { oldUrl: te, newUrl: F });
               });
             }]);
-          }, I = "linearGradient, radialGradient, pattern, mask, clipPath", W = function($, B) {
-            return B === void 0 && (B = I), w($.querySelectorAll("symbol")).forEach(function(ee) {
-              w(ee.querySelectorAll(B)).forEach(function(F) {
+          }, I = "linearGradient, radialGradient, pattern, mask, clipPath", W = function(R, $) {
+            return $ === void 0 && ($ = I), w(R.querySelectorAll("symbol")).forEach(function(ee) {
+              w(ee.querySelectorAll($)).forEach(function(F) {
                 ee.parentNode.insertBefore(F, ee);
               });
-            }), $;
+            }), R;
           };
-          function Z($, B) {
-            var ee = w($).reduce(function(F, te) {
+          function Z(R, $) {
+            var ee = w(R).reduce(function(F, te) {
               if (!te.attributes) return F;
-              var ie = w(te.attributes), we = B ? ie.filter(B) : ie;
+              var re = w(te.attributes), we = $ ? re.filter($) : re;
               return F.concat(we);
             }, []);
             return ee;
           }
           var ae = a.xlink.uri, J = "xlink:href", q = /[{}|\\\^\[\]`"<>]/g;
-          function D($) {
-            return $.replace(q, function(B) {
-              return "%" + B[0].charCodeAt(0).toString(16).toUpperCase();
+          function U(R) {
+            return R.replace(q, function($) {
+              return "%" + $[0].charCodeAt(0).toString(16).toUpperCase();
             });
           }
-          function A($) {
-            return $.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          function A(R) {
+            return R.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
           }
-          function T($, B, ee) {
-            return w($).forEach(function(F) {
+          function T(R, $, ee) {
+            return w(R).forEach(function(F) {
               var te = F.getAttribute(J);
-              if (te && te.indexOf(B) === 0) {
-                var ie = te.replace(B, ee);
-                F.setAttributeNS(ae, J, ie);
+              if (te && te.indexOf($) === 0) {
+                var re = te.replace($, ee);
+                F.setAttributeNS(ae, J, re);
               }
-            }), $;
+            }), R;
           }
-          var K, ne = ["clipPath", "colorProfile", "src", "cursor", "fill", "filter", "marker", "markerStart", "markerMid", "markerEnd", "mask", "stroke", "style"], M = ne.map(function($) {
-            return "[" + $ + "]";
-          }).join(","), Se = function($, B, ee, F) {
-            var te = D(ee), ie = D(F), we = $.querySelectorAll(M), he = Z(we, function(ce) {
-              var _e = ce.localName, je = ce.value;
-              return ne.indexOf(_e) !== -1 && je.indexOf("url(" + te) !== -1;
+          var K, ne = ["clipPath", "colorProfile", "src", "cursor", "fill", "filter", "marker", "markerStart", "markerMid", "markerEnd", "mask", "stroke", "style"], M = ne.map(function(R) {
+            return "[" + R + "]";
+          }).join(","), Se = function(R, $, ee, F) {
+            var te = U(ee), re = U(F), we = R.querySelectorAll(M), he = Z(we, function(ce) {
+              var _e = ce.localName, Oe = ce.value;
+              return ne.indexOf(_e) !== -1 && Oe.indexOf("url(" + te) !== -1;
             });
             he.forEach(function(ce) {
-              return ce.value = ce.value.replace(new RegExp(A(te), "g"), ie);
-            }), T(B, te, ie);
-          }, ve = { MOUNT: "mount", SYMBOL_MOUNT: "symbol_mount" }, Ue = function($) {
-            function B(F) {
+              return ce.value = ce.value.replace(new RegExp(A(te), "g"), re);
+            }), T($, te, re);
+          }, ve = { MOUNT: "mount", SYMBOL_MOUNT: "symbol_mount" }, Ue = function(R) {
+            function $(F) {
               var te = this;
-              F === void 0 && (F = {}), $.call(this, r(x, F));
-              var ie = t();
-              this._emitter = ie, this.node = null;
+              F === void 0 && (F = {}), R.call(this, r(x, F));
+              var re = t();
+              this._emitter = re, this.node = null;
               var we = this, he = we.config;
               if (he.autoConfigure && this._autoConfigure(F), he.syncUrlsWithBaseTag) {
                 var ce = document.getElementsByTagName("base")[0].getAttribute("href");
-                ie.on(ve.MOUNT, function() {
+                re.on(ve.MOUNT, function() {
                   return te.updateUrls("#", ce);
                 });
               }
               var _e = this._handleLocationChange.bind(this);
-              this._handleLocationChange = _e, he.listenLocationChangeEvent && window.addEventListener(he.locationChangeEvent, _e), he.locationChangeAngularEmitter && S(he.locationChangeEvent), ie.on(ve.MOUNT, function(je) {
-                he.moveGradientsOutsideSymbol && W(je);
-              }), ie.on(ve.SYMBOL_MOUNT, function(je) {
-                he.moveGradientsOutsideSymbol && W(je.parentNode), (b.isIE() || b.isEdge()) && j(je);
+              this._handleLocationChange = _e, he.listenLocationChangeEvent && window.addEventListener(he.locationChangeEvent, _e), he.locationChangeAngularEmitter && S(he.locationChangeEvent), re.on(ve.MOUNT, function(Oe) {
+                he.moveGradientsOutsideSymbol && W(Oe);
+              }), re.on(ve.SYMBOL_MOUNT, function(Oe) {
+                he.moveGradientsOutsideSymbol && W(Oe.parentNode), (b.isIE() || b.isEdge()) && j(Oe);
               });
             }
-            $ && (B.__proto__ = $), B.prototype = Object.create($ && $.prototype), B.prototype.constructor = B;
+            R && ($.__proto__ = R), $.prototype = Object.create(R && R.prototype), $.prototype.constructor = $;
             var ee = { isMounted: {} };
             return ee.isMounted.get = function() {
               return !!this.node;
-            }, B.prototype._autoConfigure = function(F) {
-              var te = this, ie = te.config;
-              typeof F.syncUrlsWithBaseTag > "u" && (ie.syncUrlsWithBaseTag = typeof document.getElementsByTagName("base")[0] < "u"), typeof F.locationChangeAngularEmitter > "u" && (ie.locationChangeAngularEmitter = typeof window.angular < "u"), typeof F.moveGradientsOutsideSymbol > "u" && (ie.moveGradientsOutsideSymbol = b.isFirefox());
-            }, B.prototype._handleLocationChange = function(F) {
-              var te = F.detail, ie = te.oldUrl, we = te.newUrl;
-              this.updateUrls(ie, we);
-            }, B.prototype.add = function(F) {
-              var te = this, ie = $.prototype.add.call(this, F);
-              return this.isMounted && ie && (F.mount(te.node), this._emitter.emit(ve.SYMBOL_MOUNT, F.node)), ie;
-            }, B.prototype.attach = function(F) {
-              var te = this, ie = this;
-              if (ie.isMounted) return ie.node;
+            }, $.prototype._autoConfigure = function(F) {
+              var te = this, re = te.config;
+              typeof F.syncUrlsWithBaseTag > "u" && (re.syncUrlsWithBaseTag = typeof document.getElementsByTagName("base")[0] < "u"), typeof F.locationChangeAngularEmitter > "u" && (re.locationChangeAngularEmitter = typeof window.angular < "u"), typeof F.moveGradientsOutsideSymbol > "u" && (re.moveGradientsOutsideSymbol = b.isFirefox());
+            }, $.prototype._handleLocationChange = function(F) {
+              var te = F.detail, re = te.oldUrl, we = te.newUrl;
+              this.updateUrls(re, we);
+            }, $.prototype.add = function(F) {
+              var te = this, re = R.prototype.add.call(this, F);
+              return this.isMounted && re && (F.mount(te.node), this._emitter.emit(ve.SYMBOL_MOUNT, F.node)), re;
+            }, $.prototype.attach = function(F) {
+              var te = this, re = this;
+              if (re.isMounted) return re.node;
               var we = typeof F == "string" ? document.querySelector(F) : F;
-              return ie.node = we, this.symbols.forEach(function(he) {
-                he.mount(ie.node), te._emitter.emit(ve.SYMBOL_MOUNT, he.node);
+              return re.node = we, this.symbols.forEach(function(he) {
+                he.mount(re.node), te._emitter.emit(ve.SYMBOL_MOUNT, he.node);
               }), w(we.querySelectorAll("symbol")).forEach(function(he) {
                 var ce = C.createFromExistingNode(he);
-                ce.node = he, ie.add(ce);
+                ce.node = he, re.add(ce);
               }), this._emitter.emit(ve.MOUNT, we), we;
-            }, B.prototype.destroy = function() {
-              var F = this, te = F.config, ie = F.symbols, we = F._emitter;
-              ie.forEach(function(he) {
+            }, $.prototype.destroy = function() {
+              var F = this, te = F.config, re = F.symbols, we = F._emitter;
+              re.forEach(function(he) {
                 return he.destroy();
               }), we.off("*"), window.removeEventListener(te.locationChangeEvent, this._handleLocationChange), this.isMounted && this.unmount();
-            }, B.prototype.mount = function(F, te) {
+            }, $.prototype.mount = function(F, te) {
               F === void 0 && (F = this.config.mountTo), te === void 0 && (te = !1);
-              var ie = this;
-              if (ie.isMounted) return ie.node;
-              var we = typeof F == "string" ? document.querySelector(F) : F, he = ie.render();
+              var re = this;
+              if (re.isMounted) return re.node;
+              var we = typeof F == "string" ? document.querySelector(F) : F, he = re.render();
               return this.node = he, te && we.childNodes[0] ? we.insertBefore(he, we.childNodes[0]) : we.appendChild(he), this._emitter.emit(ve.MOUNT, he), he;
-            }, B.prototype.render = function() {
+            }, $.prototype.render = function() {
               return O(this.stringify());
-            }, B.prototype.unmount = function() {
+            }, $.prototype.unmount = function() {
               this.node.parentNode.removeChild(this.node);
-            }, B.prototype.updateUrls = function(F, te) {
+            }, $.prototype.updateUrls = function(F, te) {
               if (!this.isMounted) return !1;
-              var ie = document.querySelectorAll(this.config.usagesToUpdate);
-              return Se(this.node, ie, L(F) + "#", L(te) + "#"), !0;
-            }, Object.defineProperties(B.prototype, ee), B;
-          }(m), Ae = o(function($) {
+              var re = document.querySelectorAll(this.config.usagesToUpdate);
+              return Se(this.node, re, L(F) + "#", L(te) + "#"), !0;
+            }, Object.defineProperties($.prototype, ee), $;
+          }(m), Ae = o(function(R) {
             /*!
               * domready (c) Dustin Diaz 2014 - License MIT
               */
-            (function(B, ee) {
-              $.exports = ee();
+            (function($, ee) {
+              R.exports = ee();
             })(0, function() {
-              var B, ee = [], F = document, te = F.documentElement.doScroll, ie = "DOMContentLoaded", we = (te ? /^loaded|^c/ : /^loaded|^i|^c/).test(F.readyState);
-              return we || F.addEventListener(ie, B = function() {
-                for (F.removeEventListener(ie, B), we = 1; B = ee.shift(); ) B();
+              var $, ee = [], F = document, te = F.documentElement.doScroll, re = "DOMContentLoaded", we = (te ? /^loaded|^c/ : /^loaded|^i|^c/).test(F.readyState);
+              return we || F.addEventListener(re, $ = function() {
+                for (F.removeEventListener(re, $), we = 1; $ = ee.shift(); ) $();
               }), function(he) {
                 we ? setTimeout(he, 0) : ee.push(he);
               };
@@ -1713,8 +1675,8 @@ var Lt = { exports: {} };
           }), Fe = "__SVG_SPRITE_NODE__", Ne = "__SVG_SPRITE__", Re = !!window[Ne];
           Re ? K = window[Ne] : (K = new Ue({ attrs: { id: Fe, "aria-hidden": "true" } }), window[Ne] = K);
           var He = function() {
-            var $ = document.getElementById(Fe);
-            $ ? K.attach($) : K.mount(document.body, !0);
+            var R = document.getElementById(Fe);
+            R ? K.attach(R) : K.mount(document.body, !0);
           };
           document.body ? He() : Ae(He);
           var Ke = K;
@@ -2069,9 +2031,9 @@ var Lt = { exports: {} };
       }));
       if (E) {
         for (var j = function(W, Z) {
-          var ae, J = this instanceof j, q = s(W), D = Z === void 0;
-          if (!J && q && W.constructor === j && D) return W;
-          w ? q && !D && (W = W.source) : W instanceof j && (D && (Z = c.call(W)), W = W.source), b && (ae = !!Z && Z.indexOf("y") > -1, ae && (Z = Z.replace(/y/g, "")));
+          var ae, J = this instanceof j, q = s(W), U = Z === void 0;
+          if (!J && q && W.constructor === j && U) return W;
+          w ? q && !U && (W = W.source) : W instanceof j && (U && (Z = c.call(W)), W = W.source), b && (ae = !!Z && Z.indexOf("y") > -1, ae && (Z = Z.replace(/y/g, "")));
           var A = t(w ? new y(W, Z) : y(W, Z), J ? this : O, j);
           return b && ae && v(A, { sticky: ae }), A;
         }, L = function(W) {
@@ -2190,8 +2152,8 @@ var Lt = { exports: {} };
             var ae = String(Z[0]);
             ae === "" && (E.lastIndex = u(j, r(E.lastIndex), I));
           }
-          for (var J = "", q = 0, D = 0; D < W.length; D++) {
-            Z = W[D];
+          for (var J = "", q = 0, U = 0; U < W.length; U++) {
+            Z = W[U];
             for (var A = String(Z[0]), T = l(f(t(Z.index), j.length), 0), K = [], ne = 1; ne < Z.length; ne++) K.push(g(Z[ne]));
             var M = Z.groups;
             if (L) {
@@ -2396,16 +2358,16 @@ var Lt = { exports: {} };
       i.exports = function(p, h, m) {
         var y = p.indexOf("Map") !== -1, O = p.indexOf("Weak") !== -1, C = y ? "set" : "add", x = o[p], w = x && x.prototype, b = x, E = {}, j = function(J) {
           var q = w[J];
-          t(w, J, J == "add" ? function(D) {
-            return q.call(this, D === 0 ? 0 : D), this;
-          } : J == "delete" ? function(D) {
-            return !(O && !c(D)) && q.call(this, D === 0 ? 0 : D);
-          } : J == "get" ? function(D) {
-            return O && !c(D) ? void 0 : q.call(this, D === 0 ? 0 : D);
-          } : J == "has" ? function(D) {
-            return !(O && !c(D)) && q.call(this, D === 0 ? 0 : D);
-          } : function(D, A) {
-            return q.call(this, D === 0 ? 0 : D, A), this;
+          t(w, J, J == "add" ? function(U) {
+            return q.call(this, U === 0 ? 0 : U), this;
+          } : J == "delete" ? function(U) {
+            return !(O && !c(U)) && q.call(this, U === 0 ? 0 : U);
+          } : J == "get" ? function(U) {
+            return O && !c(U) ? void 0 : q.call(this, U === 0 ? 0 : U);
+          } : J == "has" ? function(U) {
+            return !(O && !c(U)) && q.call(this, U === 0 ? 0 : U);
+          } : function(U, A) {
+            return q.call(this, U === 0 ? 0 : U, A), this;
           });
         }, L = r(p, typeof x != "function" || !(O || w.forEach && !l(function() {
           new x().entries().next();
@@ -2422,8 +2384,8 @@ var Lt = { exports: {} };
           });
           Z || (b = h(function(J, q) {
             s(J, b, p);
-            var D = v(new x(), J, b);
-            return q != null && u(q, D[C], { that: D, AS_ENTRIES: y }), D;
+            var U = v(new x(), J, b);
+            return q != null && u(q, U[C], { that: U, AS_ENTRIES: y }), U;
           }), b.prototype = w, w.constructor = b), (W || ae) && (j("delete"), j("has"), y && j("get")), (ae || I) && j(C), O && w.clear && delete w.clear;
         }
         return E[p] = b, n({ global: !0, forced: b != x }, E), g(b, p), O || m.setStrong(b, p, y), b;
@@ -2525,7 +2487,7 @@ var Lt = { exports: {} };
         o(b, w, E);
         var I, W, Z, ae = function(ne) {
           if (ne === j && T) return T;
-          if (!p && ne in D) return D[ne];
+          if (!p && ne in U) return U[ne];
           switch (ne) {
             case m:
               return function() {
@@ -2543,10 +2505,10 @@ var Lt = { exports: {} };
           return function() {
             return new b(this);
           };
-        }, J = w + " Iterator", q = !1, D = x.prototype, A = D[h] || D["@@iterator"] || j && D[j], T = !p && A || ae(j), K = w == "Array" && D.entries || A;
+        }, J = w + " Iterator", q = !1, U = x.prototype, A = U[h] || U["@@iterator"] || j && U[j], T = !p && A || ae(j), K = w == "Array" && U.entries || A;
         if (K && (I = r(K.call(new x())), v !== Object.prototype && I.next && (l || r(I) === v || (t ? t(I, v) : typeof I[h] != "function" && u(I, h, C)), a(I, J, !0, !0), l && (f[J] = C))), j == y && A && A.name !== y && (q = !0, T = function() {
           return A.call(this);
-        }), l && !S || D[h] === T || u(D, h, T), f[w] = T, j) if (W = { values: ae(y), keys: L ? T : ae(m), entries: ae(O) }, S) for (Z in W) (p || q || !(Z in D)) && s(D, Z, W[Z]);
+        }), l && !S || U[h] === T || u(U, h, T), f[w] = T, j) if (W = { values: ae(y), keys: L ? T : ae(m), entries: ae(O) }, S) for (Z in W) (p || q || !(Z in U)) && s(U, Z, W[Z]);
         else n({ target: w, proto: !0, forced: p || q }, W);
         return W;
       };
@@ -2842,7 +2804,7 @@ var Lt = { exports: {} };
             if (ne === v) throw new Error("Generator is already running");
             if (ne === p) {
               if (M === "throw") throw Se;
-              return D();
+              return U();
             }
             for (K.method = M, K.arg = Se; ; ) {
               var ve = K.delegate;
@@ -2906,9 +2868,9 @@ var Lt = { exports: {} };
               return ne.next = ne;
             }
           }
-          return { next: D };
+          return { next: U };
         }
-        function D() {
+        function U() {
           return { value: n, done: !0 };
         }
       })(/* @__PURE__ */ function() {
@@ -2992,32 +2954,32 @@ var Lt = { exports: {} };
       var n = e("342f");
       i.exports = /web0s(?!.*chrome)/i.test(n);
     }, a4d3: function(i, d, e) {
-      var n = e("23e7"), o = e("da84"), r = e("d066"), t = e("c430"), a = e("83ab"), u = e("4930"), s = e("fdbf"), c = e("d039"), l = e("5135"), f = e("e8b5"), g = e("861d"), v = e("825a"), p = e("7b0b"), h = e("fc6a"), m = e("c04e"), y = e("5c6c"), O = e("7c73"), C = e("df75"), x = e("241c"), w = e("057f"), b = e("7418"), E = e("06cf"), j = e("9bf2"), L = e("d1e7"), S = e("9112"), I = e("6eeb"), W = e("5692"), Z = e("f772"), ae = e("d012"), J = e("90e3"), q = e("b622"), D = e("e538"), A = e("746f"), T = e("d44e"), K = e("69f3"), ne = e("b727").forEach, M = Z("hidden"), Se = "Symbol", ve = "prototype", Ue = q("toPrimitive"), Ae = K.set, Fe = K.getterFor(Se), Ne = Object[ve], Re = o.Symbol, He = r("JSON", "stringify"), Ke = E.f, $ = j.f, B = w.f, ee = L.f, F = W("symbols"), te = W("op-symbols"), ie = W("string-to-symbol-registry"), we = W("symbol-to-string-registry"), he = W("wks"), ce = o.QObject, _e = !ce || !ce[ve] || !ce[ve].findChild, je = a && c(function() {
-        return O($({}, "a", { get: function() {
-          return $(this, "a", { value: 7 }).a;
+      var n = e("23e7"), o = e("da84"), r = e("d066"), t = e("c430"), a = e("83ab"), u = e("4930"), s = e("fdbf"), c = e("d039"), l = e("5135"), f = e("e8b5"), g = e("861d"), v = e("825a"), p = e("7b0b"), h = e("fc6a"), m = e("c04e"), y = e("5c6c"), O = e("7c73"), C = e("df75"), x = e("241c"), w = e("057f"), b = e("7418"), E = e("06cf"), j = e("9bf2"), L = e("d1e7"), S = e("9112"), I = e("6eeb"), W = e("5692"), Z = e("f772"), ae = e("d012"), J = e("90e3"), q = e("b622"), U = e("e538"), A = e("746f"), T = e("d44e"), K = e("69f3"), ne = e("b727").forEach, M = Z("hidden"), Se = "Symbol", ve = "prototype", Ue = q("toPrimitive"), Ae = K.set, Fe = K.getterFor(Se), Ne = Object[ve], Re = o.Symbol, He = r("JSON", "stringify"), Ke = E.f, R = j.f, $ = w.f, ee = L.f, F = W("symbols"), te = W("op-symbols"), re = W("string-to-symbol-registry"), we = W("symbol-to-string-registry"), he = W("wks"), ce = o.QObject, _e = !ce || !ce[ve] || !ce[ve].findChild, Oe = a && c(function() {
+        return O(R({}, "a", { get: function() {
+          return R(this, "a", { value: 7 }).a;
         } })).a != 7;
       }) ? function(z, oe, le) {
         var ge = Ke(Ne, oe);
-        ge && delete Ne[oe], $(z, oe, le), ge && z !== Ne && $(Ne, oe, ge);
-      } : $, $e = function(z, oe) {
+        ge && delete Ne[oe], R(z, oe, le), ge && z !== Ne && R(Ne, oe, ge);
+      } : R, $e = function(z, oe) {
         var le = F[z] = O(Re[ve]);
         return Ae(le, { type: Se, tag: z, description: oe }), a || (le.description = oe), le;
-      }, Te = s ? function(z) {
+      }, Ce = s ? function(z) {
         return typeof z == "symbol";
       } : function(z) {
         return Object(z) instanceof Re;
-      }, re = function(z, oe, le) {
-        z === Ne && re(te, oe, le), v(z);
+      }, ie = function(z, oe, le) {
+        z === Ne && ie(te, oe, le), v(z);
         var ge = m(oe, !0);
-        return v(le), l(F, ge) ? (le.enumerable ? (l(z, M) && z[M][ge] && (z[M][ge] = !1), le = O(le, { enumerable: y(0, !1) })) : (l(z, M) || $(z, M, y(1, {})), z[M][ge] = !0), je(z, ge, le)) : $(z, ge, le);
-      }, P = function(z, oe) {
+        return v(le), l(F, ge) ? (le.enumerable ? (l(z, M) && z[M][ge] && (z[M][ge] = !1), le = O(le, { enumerable: y(0, !1) })) : (l(z, M) || R(z, M, y(1, {})), z[M][ge] = !0), Oe(z, ge, le)) : R(z, ge, le);
+      }, D = function(z, oe) {
         v(z);
         var le = h(oe), ge = C(le).concat(fe(le));
         return ne(ge, function(Ve) {
-          a && !Pe.call(le, Ve) || re(z, Ve, le[Ve]);
+          a && !Pe.call(le, Ve) || ie(z, Ve, le[Ve]);
         }), z;
-      }, H = function(z, oe) {
-        return oe === void 0 ? O(z) : P(O(z), oe);
+      }, G = function(z, oe) {
+        return oe === void 0 ? O(z) : D(O(z), oe);
       }, Pe = function(z) {
         var oe = m(z, !0), le = ee.call(this, oe);
         return !(this === Ne && l(F, oe) && !l(te, oe)) && (!(le || !l(this, oe) || !l(F, oe) || l(this, M) && this[M][oe]) || le);
@@ -3028,12 +2990,12 @@ var Lt = { exports: {} };
           return !Ve || !l(F, ge) || l(le, M) && le[M][ge] || (Ve.enumerable = !0), Ve;
         }
       }, se = function(z) {
-        var oe = B(h(z)), le = [];
+        var oe = $(h(z)), le = [];
         return ne(oe, function(ge) {
           l(F, ge) || l(ae, ge) || le.push(ge);
         }), le;
       }, fe = function(z) {
-        var oe = z === Ne, le = B(oe ? te : h(z)), ge = [];
+        var oe = z === Ne, le = $(oe ? te : h(z)), ge = [];
         return ne(le, function(Ve) {
           !l(F, Ve) || oe && !l(Ne, Ve) || ge.push(F[Ve]);
         }), ge;
@@ -3041,32 +3003,32 @@ var Lt = { exports: {} };
       if (u || (Re = function() {
         if (this instanceof Re) throw TypeError("Symbol is not a constructor");
         var z = arguments.length && arguments[0] !== void 0 ? String(arguments[0]) : void 0, oe = J(z), le = function(ge) {
-          this === Ne && le.call(te, ge), l(this, M) && l(this[M], oe) && (this[M][oe] = !1), je(this, oe, y(1, ge));
+          this === Ne && le.call(te, ge), l(this, M) && l(this[M], oe) && (this[M][oe] = !1), Oe(this, oe, y(1, ge));
         };
-        return a && _e && je(Ne, oe, { configurable: !0, set: le }), $e(oe, z);
+        return a && _e && Oe(Ne, oe, { configurable: !0, set: le }), $e(oe, z);
       }, I(Re[ve], "toString", function() {
         return Fe(this).tag;
       }), I(Re, "withoutSetter", function(z) {
         return $e(J(z), z);
-      }), L.f = Pe, j.f = re, E.f = Q, x.f = w.f = se, b.f = fe, D.f = function(z) {
+      }), L.f = Pe, j.f = ie, E.f = Q, x.f = w.f = se, b.f = fe, U.f = function(z) {
         return $e(q(z), z);
-      }, a && ($(Re[ve], "description", { configurable: !0, get: function() {
+      }, a && (R(Re[ve], "description", { configurable: !0, get: function() {
         return Fe(this).description;
       } }), t || I(Ne, "propertyIsEnumerable", Pe, { unsafe: !0 }))), n({ global: !0, wrap: !0, forced: !u, sham: !u }, { Symbol: Re }), ne(C(he), function(z) {
         A(z);
       }), n({ target: Se, stat: !0, forced: !u }, { for: function(z) {
         var oe = String(z);
-        if (l(ie, oe)) return ie[oe];
+        if (l(re, oe)) return re[oe];
         var le = Re(oe);
-        return ie[oe] = le, we[le] = oe, le;
+        return re[oe] = le, we[le] = oe, le;
       }, keyFor: function(z) {
-        if (!Te(z)) throw TypeError(z + " is not a symbol");
+        if (!Ce(z)) throw TypeError(z + " is not a symbol");
         if (l(we, z)) return we[z];
       }, useSetter: function() {
         _e = !0;
       }, useSimple: function() {
         _e = !1;
-      } }), n({ target: "Object", stat: !0, forced: !u, sham: !a }, { create: H, defineProperty: re, defineProperties: P, getOwnPropertyDescriptor: Q }), n({ target: "Object", stat: !0, forced: !u }, { getOwnPropertyNames: se, getOwnPropertySymbols: fe }), n({ target: "Object", stat: !0, forced: c(function() {
+      } }), n({ target: "Object", stat: !0, forced: !u, sham: !a }, { create: G, defineProperty: ie, defineProperties: D, getOwnPropertyDescriptor: Q }), n({ target: "Object", stat: !0, forced: !u }, { getOwnPropertyNames: se, getOwnPropertySymbols: fe }), n({ target: "Object", stat: !0, forced: c(function() {
         b.f(1);
       }) }, { getOwnPropertySymbols: function(z) {
         return b.f(p(z));
@@ -3077,8 +3039,8 @@ var Lt = { exports: {} };
         });
         n({ target: "JSON", stat: !0, forced: me }, { stringify: function(z, oe, le) {
           for (var ge, Ve = [z], Ge = 1; arguments.length > Ge; ) Ve.push(arguments[Ge++]);
-          if (ge = oe, (g(oe) || z !== void 0) && !Te(z)) return f(oe) || (oe = function(rt, Ee) {
-            if (typeof ge == "function" && (Ee = ge.call(this, rt, Ee)), !Te(Ee)) return Ee;
+          if (ge = oe, (g(oe) || z !== void 0) && !Ce(z)) return f(oe) || (oe = function(rt, je) {
+            if (typeof ge == "function" && (je = ge.call(this, rt, je)), !Ce(je)) return je;
           }), Ve[1] = oe, He.apply(null, Ve);
         } });
       }
@@ -3928,7 +3890,7 @@ var Lt = { exports: {} };
         return o ? n.replace(/\/+$/, "") + "/" + o.replace(/^\/+/, "") : n;
       };
     }, e6cf: function(i, d, e) {
-      var n, o, r, t, a = e("23e7"), u = e("c430"), s = e("da84"), c = e("d066"), l = e("fea9"), f = e("6eeb"), g = e("e2cc"), v = e("d44e"), p = e("2626"), h = e("861d"), m = e("1c0b"), y = e("19aa"), O = e("8925"), C = e("2266"), x = e("1c7e"), w = e("4840"), b = e("2cf4").set, E = e("b575"), j = e("cdf9"), L = e("44de"), S = e("f069"), I = e("e667"), W = e("69f3"), Z = e("94ca"), ae = e("b622"), J = e("605d"), q = e("2d00"), D = ae("species"), A = "Promise", T = W.get, K = W.set, ne = W.getterFor(A), M = l, Se = s.TypeError, ve = s.document, Ue = s.process, Ae = c("fetch"), Fe = S.f, Ne = Fe, Re = !!(ve && ve.createEvent && s.dispatchEvent), He = typeof PromiseRejectionEvent == "function", Ke = "unhandledrejection", $ = "rejectionhandled", B = 0, ee = 1, F = 2, te = 1, ie = 2, we = Z(A, function() {
+      var n, o, r, t, a = e("23e7"), u = e("c430"), s = e("da84"), c = e("d066"), l = e("fea9"), f = e("6eeb"), g = e("e2cc"), v = e("d44e"), p = e("2626"), h = e("861d"), m = e("1c0b"), y = e("19aa"), O = e("8925"), C = e("2266"), x = e("1c7e"), w = e("4840"), b = e("2cf4").set, E = e("b575"), j = e("cdf9"), L = e("44de"), S = e("f069"), I = e("e667"), W = e("69f3"), Z = e("94ca"), ae = e("b622"), J = e("605d"), q = e("2d00"), U = ae("species"), A = "Promise", T = W.get, K = W.set, ne = W.getterFor(A), M = l, Se = s.TypeError, ve = s.document, Ue = s.process, Ae = c("fetch"), Fe = S.f, Ne = Fe, Re = !!(ve && ve.createEvent && s.dispatchEvent), He = typeof PromiseRejectionEvent == "function", Ke = "unhandledrejection", R = "rejectionhandled", $ = 0, ee = 1, F = 2, te = 1, re = 2, we = Z(A, function() {
         var Q = O(M) !== String(M);
         if (!Q && (q === 66 || !J && !He) || u && !M.prototype.finally) return !0;
         if (q >= 51 && /native code/.test(M)) return !1;
@@ -3937,7 +3899,7 @@ var Lt = { exports: {} };
           }, function() {
           });
         }, me = se.constructor = {};
-        return me[D] = fe, !(se.then(function() {
+        return me[U] = fe, !(se.then(function() {
         }) instanceof fe);
       }), he = we || !x(function(Q) {
         M.all(Q).catch(function() {
@@ -3951,38 +3913,38 @@ var Lt = { exports: {} };
           var fe = Q.reactions;
           E(function() {
             for (var me = Q.value, z = Q.state == ee, oe = 0; fe.length > oe; ) {
-              var le, ge, Ve, Ge = fe[oe++], rt = z ? Ge.ok : Ge.fail, Ee = Ge.resolve, it = Ge.reject, Ze = Ge.domain;
+              var le, ge, Ve, Ge = fe[oe++], rt = z ? Ge.ok : Ge.fail, je = Ge.resolve, it = Ge.reject, Ze = Ge.domain;
               try {
-                rt ? (z || (Q.rejection === ie && re(Q), Q.rejection = te), rt === !0 ? le = me : (Ze && Ze.enter(), le = rt(me), Ze && (Ze.exit(), Ve = !0)), le === Ge.promise ? it(Se("Promise-chain cycle")) : (ge = ce(le)) ? ge.call(le, Ee, it) : Ee(le)) : it(me);
-              } catch (bt) {
-                Ze && !Ve && Ze.exit(), it(bt);
+                rt ? (z || (Q.rejection === re && ie(Q), Q.rejection = te), rt === !0 ? le = me : (Ze && Ze.enter(), le = rt(me), Ze && (Ze.exit(), Ve = !0)), le === Ge.promise ? it(Se("Promise-chain cycle")) : (ge = ce(le)) ? ge.call(le, je, it) : je(le)) : it(me);
+              } catch (yt) {
+                Ze && !Ve && Ze.exit(), it(yt);
               }
             }
             Q.reactions = [], Q.notified = !1, se && !Q.rejection && $e(Q);
           });
         }
-      }, je = function(Q, se, fe) {
+      }, Oe = function(Q, se, fe) {
         var me, z;
         Re ? (me = ve.createEvent("Event"), me.promise = se, me.reason = fe, me.initEvent(Q, !1, !0), s.dispatchEvent(me)) : me = { promise: se, reason: fe }, !He && (z = s["on" + Q]) ? z(me) : Q === Ke && L("Unhandled promise rejection", fe);
       }, $e = function(Q) {
         b.call(s, function() {
-          var se, fe = Q.facade, me = Q.value, z = Te(Q);
+          var se, fe = Q.facade, me = Q.value, z = Ce(Q);
           if (z && (se = I(function() {
-            J ? Ue.emit("unhandledRejection", me, fe) : je(Ke, fe, me);
-          }), Q.rejection = J || Te(Q) ? ie : te, se.error)) throw se.value;
+            J ? Ue.emit("unhandledRejection", me, fe) : Oe(Ke, fe, me);
+          }), Q.rejection = J || Ce(Q) ? re : te, se.error)) throw se.value;
         });
-      }, Te = function(Q) {
+      }, Ce = function(Q) {
         return Q.rejection !== te && !Q.parent;
-      }, re = function(Q) {
+      }, ie = function(Q) {
         b.call(s, function() {
           var se = Q.facade;
-          J ? Ue.emit("rejectionHandled", se) : je($, se, Q.value);
+          J ? Ue.emit("rejectionHandled", se) : Oe(R, se, Q.value);
         });
-      }, P = function(Q, se, fe) {
+      }, D = function(Q, se, fe) {
         return function(me) {
           Q(se, me, fe);
         };
-      }, H = function(Q, se, fe) {
+      }, G = function(Q, se, fe) {
         Q.done || (Q.done = !0, fe && (Q = fe), Q.value = se, Q.state = F, _e(Q, !0));
       }, Pe = function(Q, se, fe) {
         if (!Q.done) {
@@ -3993,13 +3955,13 @@ var Lt = { exports: {} };
             me ? E(function() {
               var z = { done: !1 };
               try {
-                me.call(se, P(Pe, z, Q), P(H, z, Q));
+                me.call(se, D(Pe, z, Q), D(G, z, Q));
               } catch (oe) {
-                H(z, oe, Q);
+                G(z, oe, Q);
               }
             }) : (Q.value = se, Q.state = ee, _e(Q, !1));
           } catch (z) {
-            H({ done: !1 }, z, Q);
+            G({ done: !1 }, z, Q);
           }
         }
       };
@@ -4007,20 +3969,20 @@ var Lt = { exports: {} };
         y(this, M, A), m(Q), n.call(this);
         var se = T(this);
         try {
-          Q(P(Pe, se), P(H, se));
+          Q(D(Pe, se), D(G, se));
         } catch (fe) {
-          H(se, fe);
+          G(se, fe);
         }
       }, n = function(Q) {
-        K(this, { type: A, done: !1, notified: !1, parent: !1, reactions: [], rejection: !1, state: B, value: void 0 });
+        K(this, { type: A, done: !1, notified: !1, parent: !1, reactions: [], rejection: !1, state: $, value: void 0 });
       }, n.prototype = g(M.prototype, { then: function(Q, se) {
         var fe = ne(this), me = Fe(w(this, M));
-        return me.ok = typeof Q != "function" || Q, me.fail = typeof se == "function" && se, me.domain = J ? Ue.domain : void 0, fe.parent = !0, fe.reactions.push(me), fe.state != B && _e(fe, !1), me.promise;
+        return me.ok = typeof Q != "function" || Q, me.fail = typeof se == "function" && se, me.domain = J ? Ue.domain : void 0, fe.parent = !0, fe.reactions.push(me), fe.state != $ && _e(fe, !1), me.promise;
       }, catch: function(Q) {
         return this.then(void 0, Q);
       } }), o = function() {
         var Q = new n(), se = T(Q);
-        this.promise = Q, this.resolve = P(Pe, se), this.reject = P(H, se);
+        this.promise = Q, this.resolve = D(Pe, se), this.reject = D(G, se);
       }, S.f = Fe = function(Q) {
         return Q === M || Q === r ? new o(Q) : Ne(Q);
       }, u || typeof l != "function" || (t = l.prototype.then, f(l.prototype, "then", function(Q, se) {
@@ -4039,9 +4001,9 @@ var Lt = { exports: {} };
         var se = this, fe = Fe(se), me = fe.resolve, z = fe.reject, oe = I(function() {
           var le = m(se.resolve), ge = [], Ve = 0, Ge = 1;
           C(Q, function(rt) {
-            var Ee = Ve++, it = !1;
+            var je = Ve++, it = !1;
             ge.push(void 0), Ge++, le.call(se, rt).then(function(Ze) {
-              it || (it = !0, ge[Ee] = Ze, --Ge || me(ge));
+              it || (it = !0, ge[je] = Ze, --Ge || me(ge));
             }, z);
           }), --Ge || me(ge);
         });
@@ -4167,122 +4129,122 @@ var Lt = { exports: {} };
       }
       e("b0c0");
       var t = e("8bbf"), a = { class: "key-board-container" }, u = { class: "key-board-area" };
-      function s(_, U, R, N, G, ue) {
+      function s(k, B, N, P, H, ue) {
         var pe = Object(t.resolveComponent)("Result"), de = Object(t.resolveComponent)("DefaultBoard"), ye = Object(t.resolveComponent)("HandBoard"), Me = Object(t.resolveComponent)("svg-icon"), We = Object(t.resolveDirective)("handleDrag");
-        return Object(t.openBlock)(), Object(t.createBlock)(t.Transition, { name: _.animateClass || "move-bottom-to-top" }, { default: Object(t.withCtx)(function() {
-          return [_.visible ? (Object(t.openBlock)(), Object(t.createBlock)("div", { key: 0, class: "key-board", onMousedown: U[1] || (U[1] = Object(t.withModifiers)(function() {
-          }, ["prevent"])) }, [Object(t.createVNode)("div", a, [Object(t.createVNode)(pe, { data: _.resultVal, onChange: _.change }, null, 8, ["data", "onChange"]), Object(t.createVNode)("div", u, [_.showMode === "default" ? (Object(t.openBlock)(), Object(t.createBlock)(de, { key: 0, ref: "defaultBoardRef", onTrigger: _.trigger, onChange: _.change, onTranslate: _.translate }, null, 8, ["onTrigger", "onChange", "onTranslate"])) : Object(t.createCommentVNode)("", !0), _.showMode === "handwrite" ? (Object(t.openBlock)(), Object(t.createBlock)(ye, { key: 1, onTrigger: _.trigger, onChange: _.change }, null, 8, ["onTrigger", "onChange"])) : Object(t.createCommentVNode)("", !0)])]), _.showHandleBar ? Object(t.withDirectives)((Object(t.openBlock)(), Object(t.createBlock)("div", { key: 0, class: "key-board-drag-handle", style: { color: _.color } }, [Object(t.createVNode)("span", null, Object(t.toDisplayString)(_.dargHandleText || "将键盘拖到您喜欢的位置"), 1), Object(t.createVNode)(Me, { "icon-class": "drag" })], 4)), [[We]]) : Object(t.createCommentVNode)("", !0)], 32)) : Object(t.createCommentVNode)("", !0)];
+        return Object(t.openBlock)(), Object(t.createBlock)(t.Transition, { name: k.animateClass || "move-bottom-to-top" }, { default: Object(t.withCtx)(function() {
+          return [k.visible ? (Object(t.openBlock)(), Object(t.createBlock)("div", { key: 0, class: "key-board", onMousedown: B[1] || (B[1] = Object(t.withModifiers)(function() {
+          }, ["prevent"])) }, [Object(t.createVNode)("div", a, [Object(t.createVNode)(pe, { data: k.resultVal, onChange: k.change }, null, 8, ["data", "onChange"]), Object(t.createVNode)("div", u, [k.showMode === "default" ? (Object(t.openBlock)(), Object(t.createBlock)(de, { key: 0, ref: "defaultBoardRef", onTrigger: k.trigger, onChange: k.change, onTranslate: k.translate }, null, 8, ["onTrigger", "onChange", "onTranslate"])) : Object(t.createCommentVNode)("", !0), k.showMode === "handwrite" ? (Object(t.openBlock)(), Object(t.createBlock)(ye, { key: 1, onTrigger: k.trigger, onChange: k.change }, null, 8, ["onTrigger", "onChange"])) : Object(t.createCommentVNode)("", !0)])]), k.showHandleBar ? Object(t.withDirectives)((Object(t.openBlock)(), Object(t.createBlock)("div", { key: 0, class: "key-board-drag-handle", style: { color: k.color } }, [Object(t.createVNode)("span", null, Object(t.toDisplayString)(k.dargHandleText || "将键盘拖到您喜欢的位置"), 1), Object(t.createVNode)(Me, { "icon-class": "drag" })], 4)), [[We]]) : Object(t.createCommentVNode)("", !0)], 32)) : Object(t.createCommentVNode)("", !0)];
         }), _: 1 }, 8, ["name"]);
       }
       e("b64b"), e("a4d3"), e("4de4"), e("e439"), e("159b"), e("dbb4");
-      function c(_, U, R) {
-        return U in _ ? Object.defineProperty(_, U, { value: R, enumerable: !0, configurable: !0, writable: !0 }) : _[U] = R, _;
+      function c(k, B, N) {
+        return B in k ? Object.defineProperty(k, B, { value: N, enumerable: !0, configurable: !0, writable: !0 }) : k[B] = N, k;
       }
-      function l(_, U) {
-        var R = Object.keys(_);
+      function l(k, B) {
+        var N = Object.keys(k);
         if (Object.getOwnPropertySymbols) {
-          var N = Object.getOwnPropertySymbols(_);
-          U && (N = N.filter(function(G) {
-            return Object.getOwnPropertyDescriptor(_, G).enumerable;
-          })), R.push.apply(R, N);
+          var P = Object.getOwnPropertySymbols(k);
+          B && (P = P.filter(function(H) {
+            return Object.getOwnPropertyDescriptor(k, H).enumerable;
+          })), N.push.apply(N, P);
         }
-        return R;
-      }
-      function f(_) {
-        for (var U = 1; U < arguments.length; U++) {
-          var R = arguments[U] != null ? arguments[U] : {};
-          U % 2 ? l(Object(R), !0).forEach(function(N) {
-            c(_, N, R[N]);
-          }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(_, Object.getOwnPropertyDescriptors(R)) : l(Object(R)).forEach(function(N) {
-            Object.defineProperty(_, N, Object.getOwnPropertyDescriptor(R, N));
-          });
-        }
-        return _;
-      }
-      function g(_, U) {
-        (U == null || U > _.length) && (U = _.length);
-        for (var R = 0, N = new Array(U); R < U; R++) N[R] = _[R];
         return N;
       }
-      function v(_) {
-        if (Array.isArray(_)) return g(_);
+      function f(k) {
+        for (var B = 1; B < arguments.length; B++) {
+          var N = arguments[B] != null ? arguments[B] : {};
+          B % 2 ? l(Object(N), !0).forEach(function(P) {
+            c(k, P, N[P]);
+          }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(k, Object.getOwnPropertyDescriptors(N)) : l(Object(N)).forEach(function(P) {
+            Object.defineProperty(k, P, Object.getOwnPropertyDescriptor(N, P));
+          });
+        }
+        return k;
+      }
+      function g(k, B) {
+        (B == null || B > k.length) && (B = k.length);
+        for (var N = 0, P = new Array(B); N < B; N++) P[N] = k[N];
+        return P;
+      }
+      function v(k) {
+        if (Array.isArray(k)) return g(k);
       }
       e("e01a"), e("d3b7"), e("d28b"), e("3ca3"), e("e260"), e("ddb0"), e("a630");
-      function p(_) {
-        if (typeof Symbol < "u" && Symbol.iterator in Object(_)) return Array.from(_);
+      function p(k) {
+        if (typeof Symbol < "u" && Symbol.iterator in Object(k)) return Array.from(k);
       }
       e("fb6a");
-      function h(_, U) {
-        if (_) {
-          if (typeof _ == "string") return g(_, U);
-          var R = Object.prototype.toString.call(_).slice(8, -1);
-          return R === "Object" && _.constructor && (R = _.constructor.name), R === "Map" || R === "Set" ? Array.from(_) : R === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(R) ? g(_, U) : void 0;
+      function h(k, B) {
+        if (k) {
+          if (typeof k == "string") return g(k, B);
+          var N = Object.prototype.toString.call(k).slice(8, -1);
+          return N === "Object" && k.constructor && (N = k.constructor.name), N === "Map" || N === "Set" ? Array.from(k) : N === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(N) ? g(k, B) : void 0;
         }
       }
       function m() {
         throw new TypeError(`Invalid attempt to spread non-iterable instance.
 In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
       }
-      function y(_) {
-        return v(_) || p(_) || h(_) || m();
+      function y(k) {
+        return v(k) || p(k) || h(k) || m();
       }
       e("d81d"), e("7db0"), e("99af"), e("4d63"), e("ac1f"), e("25f0"), e("13d5"), e("5530"), e("7320");
-      function O(_, U) {
-        if (!(_ instanceof U)) throw new TypeError("Cannot call a class as a function");
+      function O(k, B) {
+        if (!(k instanceof B)) throw new TypeError("Cannot call a class as a function");
       }
-      function C(_, U) {
-        for (var R = 0; R < U.length; R++) {
-          var N = U[R];
-          N.enumerable = N.enumerable || !1, N.configurable = !0, "value" in N && (N.writable = !0), Object.defineProperty(_, N.key, N);
+      function C(k, B) {
+        for (var N = 0; N < B.length; N++) {
+          var P = B[N];
+          P.enumerable = P.enumerable || !1, P.configurable = !0, "value" in P && (P.writable = !0), Object.defineProperty(k, P.key, P);
         }
       }
-      function x(_, U, R) {
-        return U && C(_.prototype, U), _;
+      function x(k, B, N) {
+        return B && C(k.prototype, B), k;
       }
       var w = function() {
-        function _() {
-          O(this, _), this.listeners = {};
+        function k() {
+          O(this, k), this.listeners = {};
         }
-        return x(_, [{ key: "on", value: function(U, R) {
-          var N = this, G = this.listeners[U];
-          return G || (G = []), G.push(R), this.listeners[U] = G, function() {
-            N.remove(U, R);
+        return x(k, [{ key: "on", value: function(B, N) {
+          var P = this, H = this.listeners[B];
+          return H || (H = []), H.push(N), this.listeners[B] = H, function() {
+            P.remove(B, N);
           };
-        } }, { key: "emit", value: function(U) {
-          var R = this.listeners[U];
-          if (Array.isArray(R)) {
-            for (var N = arguments.length, G = new Array(N > 1 ? N - 1 : 0), ue = 1; ue < N; ue++) G[ue - 1] = arguments[ue];
-            for (var pe = 0; pe < R.length; pe++) {
-              var de = R[pe];
-              typeof de == "function" && de.apply(void 0, G);
+        } }, { key: "emit", value: function(B) {
+          var N = this.listeners[B];
+          if (Array.isArray(N)) {
+            for (var P = arguments.length, H = new Array(P > 1 ? P - 1 : 0), ue = 1; ue < P; ue++) H[ue - 1] = arguments[ue];
+            for (var pe = 0; pe < N.length; pe++) {
+              var de = N[pe];
+              typeof de == "function" && de.apply(void 0, H);
             }
           }
-        } }, { key: "remove", value: function(U, R) {
-          if (R) {
-            var N = this.listeners[U];
-            if (!N) return;
-            N = N.filter(function(G) {
-              return G !== R;
-            }), this.listeners[U] = N;
-          } else this.listeners[U] = null, delete this.listeners[U];
-        } }]), _;
-      }(), b = new w(), E = { mounted: function(_, U, R) {
-        var N = _.parentNode;
-        _.onmousedown = function(G) {
-          var ue = G.clientX - N.offsetLeft, pe = G.clientY - N.offsetTop;
+        } }, { key: "remove", value: function(B, N) {
+          if (N) {
+            var P = this.listeners[B];
+            if (!P) return;
+            P = P.filter(function(H) {
+              return H !== N;
+            }), this.listeners[B] = P;
+          } else this.listeners[B] = null, delete this.listeners[B];
+        } }]), k;
+      }(), b = new w(), E = { mounted: function(k, B, N) {
+        var P = k.parentNode;
+        k.onmousedown = function(H) {
+          var ue = H.clientX - P.offsetLeft, pe = H.clientY - P.offsetTop;
           document.onmousemove = function(de) {
             var ye = de.clientX - ue, Me = de.clientY - pe;
-            N.style.left = ye + "px", N.style.top = Me + "px";
+            P.style.left = ye + "px", P.style.top = Me + "px";
           }, document.onmouseup = function() {
             Object(t.nextTick)(function() {
               b.emit("updateBound");
             }), document.onmousemove = null, document.onmouseup = null;
           };
-        }, _.ontouchstart = function(G) {
-          var ue = G.touches[0].pageX, pe = G.touches[0].pageY, de = ue - N.offsetLeft, ye = pe - N.offsetTop;
+        }, k.ontouchstart = function(H) {
+          var ue = H.touches[0].pageX, pe = H.touches[0].pageY, de = ue - P.offsetLeft, ye = pe - P.offsetTop;
           document.ontouchmove = function(Me) {
             var We = Me.touches[0].pageX, Qe = Me.touches[0].pageY, Je = We - de, mt = Qe - ye;
-            N.style.left = Je + "px", N.style.top = mt + "px";
+            P.style.left = Je + "px", P.style.top = mt + "px";
           }, document.ontouchend = function() {
             Object(t.nextTick)(function() {
               b.emit("updateBound");
@@ -4293,26 +4255,26 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       Object(t.pushScopeId)("data-v-02e63132");
       var S = { key: 0, class: "key-board-code-show" }, I = { class: "key-board-result-show" }, W = { class: "key-board-result-show-container" }, Z = { key: 0, class: "key-board-result-show-more" };
       Object(t.popScopeId)();
-      var ae = L(function(_, U, R, N, G, ue) {
-        return _.status === "CN" || _.status === "handwrite" ? (Object(t.openBlock)(), Object(t.createBlock)("div", { key: 0, class: "key-board-result", style: { color: _.color } }, [_.status === "CN" ? (Object(t.openBlock)(), Object(t.createBlock)("div", S, Object(t.toDisplayString)(_.data.code), 1)) : Object(t.createCommentVNode)("", !0), Object(t.createVNode)("div", I, [Object(t.createVNode)("div", W, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(_.showList[_.showIndex], function(pe, de) {
+      var ae = L(function(k, B, N, P, H, ue) {
+        return k.status === "CN" || k.status === "handwrite" ? (Object(t.openBlock)(), Object(t.createBlock)("div", { key: 0, class: "key-board-result", style: { color: k.color } }, [k.status === "CN" ? (Object(t.openBlock)(), Object(t.createBlock)("div", S, Object(t.toDisplayString)(k.data.code), 1)) : Object(t.createCommentVNode)("", !0), Object(t.createVNode)("div", I, [Object(t.createVNode)("div", W, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(k.showList[k.showIndex], function(pe, de) {
           return Object(t.openBlock)(), Object(t.createBlock)("span", { key: de, onClick: function(ye) {
-            return _.selectWord(pe);
+            return k.selectWord(pe);
           } }, Object(t.toDisplayString)(de + 1) + "." + Object(t.toDisplayString)(pe), 9, ["onClick"]);
-        }), 128))]), _.valueList.length > 11 ? (Object(t.openBlock)(), Object(t.createBlock)("div", Z, [Object(t.createVNode)("span", { style: _.getStyle, onClick: U[1] || (U[1] = function() {
-          return _.upper && _.upper.apply(_, arguments);
-        }) }, null, 4), Object(t.createVNode)("span", { style: _.getStyle, onClick: U[2] || (U[2] = function() {
-          return _.lower && _.lower.apply(_, arguments);
+        }), 128))]), k.valueList.length > 11 ? (Object(t.openBlock)(), Object(t.createBlock)("div", Z, [Object(t.createVNode)("span", { style: k.getStyle, onClick: B[1] || (B[1] = function() {
+          return k.upper && k.upper.apply(k, arguments);
+        }) }, null, 4), Object(t.createVNode)("span", { style: k.getStyle, onClick: B[2] || (B[2] = function() {
+          return k.lower && k.lower.apply(k, arguments);
         }) }, null, 4)])) : Object(t.createCommentVNode)("", !0)])], 4)) : Object(t.createCommentVNode)("", !0);
-      }), J = (e("1276"), e("6062"), e("5319"), function(_, U) {
-        for (var R = 0, N = []; R < _.length; ) N.push(_.slice(R, R += U));
-        return N;
-      }), q = Symbol("KEYBOARD_CONTEXT"), D = function(_) {
-        Object(t.provide)(q, _);
+      }), J = (e("1276"), e("6062"), e("5319"), function(k, B) {
+        for (var N = 0, P = []; N < k.length; ) P.push(k.slice(N, N += B));
+        return P;
+      }), q = Symbol("KEYBOARD_CONTEXT"), U = function(k) {
+        Object(t.provide)(q, k);
       }, A = function() {
         return Object(t.inject)(q);
-      }, T = Object(t.defineComponent)({ props: { data: Object }, emits: ["change"], setup: function(_, U) {
-        var R = U.emit, N = A(), G = Object(t.computed)(function() {
-          return { borderTopColor: N == null ? void 0 : N.color };
+      }, T = Object(t.defineComponent)({ props: { data: Object }, emits: ["change"], setup: function(k, B) {
+        var N = B.emit, P = A(), H = Object(t.computed)(function() {
+          return { borderTopColor: P == null ? void 0 : P.color };
         }), ue = Object(t.reactive)({ status: "", valueList: [], showList: [], showIndex: 0 });
         function pe() {
           ue.showIndex !== 0 && (ue.showIndex -= 1);
@@ -4324,10 +4286,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           ue.showIndex = 0, ue.showList = [], ue.valueList = [], b.emit("resultReset");
         }
         function Me(We) {
-          ye(), R("change", We);
+          ye(), N("change", We);
         }
         return Object(t.watch)(function() {
-          return _.data;
+          return k.data;
         }, function(We) {
           var Qe;
           ue.showIndex = 0, ue.valueList = (We == null || (Qe = We.value) === null || Qe === void 0 ? void 0 : Qe.split("")) || [], ue.valueList.length !== 0 ? ue.showList = J(ue.valueList, 11) : ue.showList = [];
@@ -4340,94 +4302,94 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           });
         }), Object(t.onUnmounted)(function() {
           b.remove("keyBoardChange"), b.remove("getWordsFromServer");
-        }), f({ color: N == null ? void 0 : N.color, upper: pe, lower: de, getStyle: G, selectWord: Me }, Object(t.toRefs)(ue));
+        }), f({ color: P == null ? void 0 : P.color, upper: pe, lower: de, getStyle: H, selectWord: Me }, Object(t.toRefs)(ue));
       } });
       e("e66c"), T.render = ae, T.__scopeId = "data-v-02e63132";
-      var K = T, ne = e("bc3a"), M = e.n(ne), Se = 15e3, ve = function(_) {
-        M.a.defaults.baseURL = _, M.a.defaults.timeout = Se, M.a.defaults.headers.post["Content-Type"] = "application/json;charset=UTF-8";
+      var K = T, ne = e("bc3a"), M = e.n(ne), Se = 15e3, ve = function(k) {
+        M.a.defaults.baseURL = k, M.a.defaults.timeout = Se, M.a.defaults.headers.post["Content-Type"] = "application/json;charset=UTF-8";
       };
-      function Ue(_, U, R, N, G, ue) {
-        return Object(t.openBlock)(), Object(t.createBlock)("svg", { class: "svg-icon", style: { stroke: _.color } }, [Object(t.createVNode)("use", { "xlink:href": _.iconName }, null, 8, ["xlink:href"])], 4);
+      function Ue(k, B, N, P, H, ue) {
+        return Object(t.openBlock)(), Object(t.createBlock)("svg", { class: "svg-icon", style: { stroke: k.color } }, [Object(t.createVNode)("use", { "xlink:href": k.iconName }, null, 8, ["xlink:href"])], 4);
       }
-      var Ae = Object(t.defineComponent)({ name: "SvgIcon", props: { iconClass: { type: String, required: !0 }, className: { type: String, default: "" } }, setup: function(_) {
-        var U = A(), R = Object(t.computed)(function() {
-          return "#icon-".concat(_.iconClass);
+      var Ae = Object(t.defineComponent)({ name: "SvgIcon", props: { iconClass: { type: String, required: !0 }, className: { type: String, default: "" } }, setup: function(k) {
+        var B = A(), N = Object(t.computed)(function() {
+          return "#icon-".concat(k.iconClass);
         });
-        return { color: U == null ? void 0 : U.color, iconName: R };
+        return { color: B == null ? void 0 : B.color, iconName: N };
       } });
       e("38cd"), Ae.render = Ue;
       var Fe = Ae, Ne = Object(t.withScopeId)("data-v-1b5e0983");
       Object(t.pushScopeId)("data-v-1b5e0983");
       var Re = { class: "hand-write-board" }, He = { class: "hand-write-board-opers" };
       Object(t.popScopeId)();
-      var Ke = Ne(function(_, U, R, N, G, ue) {
+      var Ke = Ne(function(k, B, N, P, H, ue) {
         var pe = Object(t.resolveComponent)("PaintBoard"), de = Object(t.resolveComponent)("KeyCodeButton");
-        return Object(t.openBlock)(), Object(t.createBlock)("div", Re, [Object(t.createVNode)(pe, { lib: _.isCn ? "CN" : "EN" }, null, 8, ["lib"]), Object(t.createVNode)("div", He, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(_.handBoardOperList, function(ye) {
-          return Object(t.openBlock)(), Object(t.createBlock)(de, { key: ye.type, type: ye.type, data: ye.data, isCn: _.isCn, onClick: _.click }, null, 8, ["type", "data", "isCn", "onClick"]);
+        return Object(t.openBlock)(), Object(t.createBlock)("div", Re, [Object(t.createVNode)(pe, { lib: k.isCn ? "CN" : "EN" }, null, 8, ["lib"]), Object(t.createVNode)("div", He, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(k.handBoardOperList, function(ye) {
+          return Object(t.openBlock)(), Object(t.createBlock)(de, { key: ye.type, type: ye.type, data: ye.data, isCn: k.isCn, onClick: k.click }, null, 8, ["type", "data", "isCn", "onClick"]);
         }), 128))])]);
-      }), $ = { class: "paint-board" };
-      function B(_, U, R, N, G, ue) {
-        return Object(t.openBlock)(), Object(t.createBlock)("div", $, [Object(t.createVNode)("canvas", { ref: "canvasRef", width: _.width, height: _.height, onTouchstart: U[1] || (U[1] = function() {
-          return _.down && _.down.apply(_, arguments);
-        }), onTouchmove: U[2] || (U[2] = function() {
-          return _.move && _.move.apply(_, arguments);
-        }), onTouchend: U[3] || (U[3] = function() {
-          return _.mouseup && _.mouseup.apply(_, arguments);
-        }), onMousedown: U[4] || (U[4] = function() {
-          return _.down && _.down.apply(_, arguments);
-        }), onMousemove: U[5] || (U[5] = function() {
-          return _.move && _.move.apply(_, arguments);
-        }), onMouseup: U[6] || (U[6] = function() {
-          return _.mouseup && _.mouseup.apply(_, arguments);
-        }), onMouseleave: U[7] || (U[7] = function() {
-          return _.mouseup && _.mouseup.apply(_, arguments);
+      }), R = { class: "paint-board" };
+      function $(k, B, N, P, H, ue) {
+        return Object(t.openBlock)(), Object(t.createBlock)("div", R, [Object(t.createVNode)("canvas", { ref: "canvasRef", width: k.width, height: k.height, onTouchstart: B[1] || (B[1] = function() {
+          return k.down && k.down.apply(k, arguments);
+        }), onTouchmove: B[2] || (B[2] = function() {
+          return k.move && k.move.apply(k, arguments);
+        }), onTouchend: B[3] || (B[3] = function() {
+          return k.mouseup && k.mouseup.apply(k, arguments);
+        }), onMousedown: B[4] || (B[4] = function() {
+          return k.down && k.down.apply(k, arguments);
+        }), onMousemove: B[5] || (B[5] = function() {
+          return k.move && k.move.apply(k, arguments);
+        }), onMouseup: B[6] || (B[6] = function() {
+          return k.mouseup && k.mouseup.apply(k, arguments);
+        }), onMouseleave: B[7] || (B[7] = function() {
+          return k.mouseup && k.mouseup.apply(k, arguments);
         }) }, null, 40, ["width", "height"])]);
       }
       e("e6cf");
-      function ee(_, U, R, N, G, ue, pe) {
+      function ee(k, B, N, P, H, ue, pe) {
         try {
-          var de = _[ue](pe), ye = de.value;
+          var de = k[ue](pe), ye = de.value;
         } catch (Me) {
-          return void R(Me);
+          return void N(Me);
         }
-        de.done ? U(ye) : Promise.resolve(ye).then(N, G);
+        de.done ? B(ye) : Promise.resolve(ye).then(P, H);
       }
-      function F(_) {
+      function F(k) {
         return function() {
-          var U = this, R = arguments;
-          return new Promise(function(N, G) {
-            var ue = _.apply(U, R);
+          var B = this, N = arguments;
+          return new Promise(function(P, H) {
+            var ue = k.apply(B, N);
             function pe(ye) {
-              ee(ue, N, G, pe, de, "next", ye);
+              ee(ue, P, H, pe, de, "next", ye);
             }
             function de(ye) {
-              ee(ue, N, G, pe, de, "throw", ye);
+              ee(ue, P, H, pe, de, "throw", ye);
             }
             pe(void 0);
           });
         };
       }
       e("96cf"), e("caad"), e("2532");
-      var te, ie, we = function() {
-        var _ = F(regeneratorRuntime.mark(function U(R, N, G, ue) {
+      var te, re, we = function() {
+        var k = F(regeneratorRuntime.mark(function B(N, P, H, ue) {
           return regeneratorRuntime.wrap(function(pe) {
             for (; ; ) switch (pe.prev = pe.next) {
               case 0:
-                return pe.next = 2, M.a.post("", { lib: ue, lpXis: R, lpYis: N, lpCis: G });
+                return pe.next = 2, M.a.post("", { lib: ue, lpXis: N, lpYis: P, lpCis: H });
               case 2:
                 return pe.abrupt("return", pe.sent);
               case 3:
               case "end":
                 return pe.stop();
             }
-          }, U);
+          }, B);
         }));
-        return function(U, R, N, G) {
-          return _.apply(this, arguments);
+        return function(B, N, P, H) {
+          return k.apply(this, arguments);
         };
-      }(), he = Object(t.defineComponent)({ name: "PaintBoard", props: { lib: String }, setup: function(_) {
-        var U = A(), R = Object(t.reactive)({ width: 0, height: 0, isMouseDown: !1, x: 0, y: 0, oldX: 0, oldY: 0, clickX: [], clickY: [], clickC: [] }), N = Object(t.ref)(null);
-        function G() {
+      }(), he = Object(t.defineComponent)({ name: "PaintBoard", props: { lib: String }, setup: function(k) {
+        var B = A(), N = Object(t.reactive)({ width: 0, height: 0, isMouseDown: !1, x: 0, y: 0, oldX: 0, oldY: 0, clickX: [], clickY: [], clickC: [] }), P = Object(t.ref)(null);
+        function H() {
           return ue.apply(this, arguments);
         }
         function ue() {
@@ -4436,7 +4398,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return regeneratorRuntime.wrap(function(tt) {
               for (; ; ) switch (tt.prev = tt.next) {
                 case 0:
-                  return tt.next = 2, we(R.clickX, R.clickY, R.clickC, _.lib);
+                  return tt.next = 2, we(N.clickX, N.clickY, N.clickC, k.lib);
                 case 2:
                   Ye = tt.sent, qe = Ye.data, b.emit("getWordsFromServer", (qe == null ? void 0 : qe.v) || "");
                 case 5:
@@ -4447,59 +4409,59 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           })), ue.apply(this, arguments);
         }
         function pe() {
-          N.value && te && (R.clickX = [], R.clickY = [], R.clickC = [], te.clearRect(0, 0, R.width, R.height));
+          P.value && te && (N.clickX = [], N.clickY = [], N.clickC = [], te.clearRect(0, 0, N.width, N.height));
         }
         function de(Be) {
           if (Be.type.includes("mouse")) {
             var Ye = Be;
-            return Math.floor(Ye.clientX - R.x);
+            return Math.floor(Ye.clientX - N.x);
           }
           if (Be.type.includes("touch")) {
             var qe, tt = Be;
-            return Math.floor(((qe = tt.targetTouches[0]) === null || qe === void 0 ? void 0 : qe.clientX) - R.x);
+            return Math.floor(((qe = tt.targetTouches[0]) === null || qe === void 0 ? void 0 : qe.clientX) - N.x);
           }
           return 0;
         }
         function ye(Be) {
           if (Be.type.includes("mouse")) {
             var Ye = Be;
-            return Math.floor(Ye.clientY - R.y);
+            return Math.floor(Ye.clientY - N.y);
           }
           if (Be.type.includes("touch")) {
             var qe, tt = Be;
-            return Math.floor(((qe = tt.targetTouches[0]) === null || qe === void 0 ? void 0 : qe.clientY) - R.y);
+            return Math.floor(((qe = tt.targetTouches[0]) === null || qe === void 0 ? void 0 : qe.clientY) - N.y);
           }
           return 0;
         }
         function Me(Be) {
           if (te) {
-            R.isMouseDown = !0;
+            N.isMouseDown = !0;
             var Ye = de(Be), qe = ye(Be);
-            clearTimeout(ie), R.oldX = Ye, R.oldY = qe, te.beginPath();
+            clearTimeout(re), N.oldX = Ye, N.oldY = qe, te.beginPath();
           }
         }
         function We(Be) {
-          if (te && (Be.preventDefault(), R.isMouseDown)) {
+          if (te && (Be.preventDefault(), N.isMouseDown)) {
             var Ye = de(Be), qe = ye(Be);
-            R.clickX.push(Ye), R.clickY.push(qe), R.clickC.push(0), te.strokeStyle = U == null ? void 0 : U.color, te.fillStyle = U == null ? void 0 : U.color, te.lineWidth = 4, te.lineCap = "round", te.moveTo(R.oldX, R.oldY), te.lineTo(Ye, qe), te.stroke(), R.oldX = Ye, R.oldY = qe;
+            N.clickX.push(Ye), N.clickY.push(qe), N.clickC.push(0), te.strokeStyle = B == null ? void 0 : B.color, te.fillStyle = B == null ? void 0 : B.color, te.lineWidth = 4, te.lineCap = "round", te.moveTo(N.oldX, N.oldY), te.lineTo(Ye, qe), te.stroke(), N.oldX = Ye, N.oldY = qe;
           }
         }
         function Qe() {
-          R.isMouseDown && (R.isMouseDown = !1, ie = setTimeout(function() {
+          N.isMouseDown && (N.isMouseDown = !1, re = setTimeout(function() {
             pe();
-          }, 1500), R.clickC.pop(), R.clickC.push(1), G());
+          }, 1500), N.clickC.pop(), N.clickC.push(1), H());
         }
         function Je() {
           Object(t.nextTick)(function() {
             if (document.querySelector(".paint-board")) {
               var Be = document.querySelector(".paint-board").getBoundingClientRect();
-              R.x = Be.x, R.y = Be.y, R.width = parseFloat(window.getComputedStyle(document.querySelector(".paint-board")).width), R.height = parseFloat(window.getComputedStyle(document.querySelector(".paint-board")).height);
+              N.x = Be.x, N.y = Be.y, N.width = parseFloat(window.getComputedStyle(document.querySelector(".paint-board")).width), N.height = parseFloat(window.getComputedStyle(document.querySelector(".paint-board")).height);
             }
           });
         }
         function mt() {
           var Be;
-          te = (Be = N.value) === null || Be === void 0 ? void 0 : Be.getContext("2d"), pe(), Je(), window.addEventListener("animationend", Je), window.addEventListener("resize", Je), window.addEventListener("scroll", Je);
+          te = (Be = P.value) === null || Be === void 0 ? void 0 : Be.getContext("2d"), pe(), Je(), window.addEventListener("animationend", Je), window.addEventListener("resize", Je), window.addEventListener("scroll", Je);
         }
         return Object(t.onMounted)(function() {
           mt(), b.on("updateBound", function() {
@@ -4507,257 +4469,257 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           });
         }), Object(t.onUnmounted)(function() {
           window.removeEventListener("animationend", Je), window.removeEventListener("resize", Je), window.removeEventListener("scroll", Je), b.remove("updateBound");
-        }), f(f({}, Object(t.toRefs)(R)), {}, { move: We, down: Me, mouseup: Qe, canvasRef: N });
+        }), f(f({}, Object(t.toRefs)(N)), {}, { move: We, down: Me, mouseup: Qe, canvasRef: P });
       } });
-      he.render = B;
+      he.render = $;
       var ce = he;
-      function _e(_, U, R, N, G, ue) {
+      function _e(k, B, N, P, H, ue) {
         var pe = Object(t.resolveComponent)("svg-icon");
-        return Object(t.openBlock)(), Object(t.createBlock)("button", { class: ["key-board-button", "key-board-button-".concat(_.type), { "key-board-button-active": _.isUpper && _.type === "upper" || _.isNum && _.type === "change2num" || _.isSymbol && _.type === "#+=" }], style: _.getStyle, onClick: U[1] || (U[1] = function() {
-          return _.click && _.click.apply(_, arguments);
-        }), onMouseenter: U[2] || (U[2] = function(de) {
-          return _.isHoverStatus = !0;
-        }), onMouseleave: U[3] || (U[3] = function(de) {
-          return _.isHoverStatus = !1;
-        }) }, [_.type === "upper" || _.type === "delete" || _.type === "handwrite" || _.type === "close" || _.type === "back" ? (Object(t.openBlock)(), Object(t.createBlock)(pe, { key: 0, "icon-class": _.type }, null, 8, ["icon-class"])) : (Object(t.openBlock)(), Object(t.createBlock)("span", { key: 1, innerHTML: _.getCode }, null, 8, ["innerHTML"]))], 38);
+        return Object(t.openBlock)(), Object(t.createBlock)("button", { class: ["key-board-button", "key-board-button-".concat(k.type), { "key-board-button-active": k.isUpper && k.type === "upper" || k.isNum && k.type === "change2num" || k.isSymbol && k.type === "#+=" }], style: k.getStyle, onClick: B[1] || (B[1] = function() {
+          return k.click && k.click.apply(k, arguments);
+        }), onMouseenter: B[2] || (B[2] = function(de) {
+          return k.isHoverStatus = !0;
+        }), onMouseleave: B[3] || (B[3] = function(de) {
+          return k.isHoverStatus = !1;
+        }) }, [k.type === "upper" || k.type === "delete" || k.type === "handwrite" || k.type === "close" || k.type === "back" ? (Object(t.openBlock)(), Object(t.createBlock)(pe, { key: 0, "icon-class": k.type }, null, 8, ["icon-class"])) : (Object(t.openBlock)(), Object(t.createBlock)("span", { key: 1, innerHTML: k.getCode }, null, 8, ["innerHTML"]))], 38);
       }
-      var je = Object(t.defineComponent)({ name: "KeyCodeButton", components: { SvgIcon: Fe }, props: { type: String, data: String, isCn: Boolean, isNum: Boolean, isUpper: Boolean, isSymbol: Boolean }, emits: ["click"], setup: function(_, U) {
-        var R = U.emit, N = A(), G = Object(t.ref)(!1), ue = Object(t.computed)(function() {
-          return _.type === "change2lang" ? _.isCn ? "<label>中</label>/EN" : "<label>EN</label>/中" : _.isUpper ? _.data.toUpperCase() : _.data;
+      var Oe = Object(t.defineComponent)({ name: "KeyCodeButton", components: { SvgIcon: Fe }, props: { type: String, data: String, isCn: Boolean, isNum: Boolean, isUpper: Boolean, isSymbol: Boolean }, emits: ["click"], setup: function(k, B) {
+        var N = B.emit, P = A(), H = Object(t.ref)(!1), ue = Object(t.computed)(function() {
+          return k.type === "change2lang" ? k.isCn ? "<label>中</label>/EN" : "<label>EN</label>/中" : k.isUpper ? k.data.toUpperCase() : k.data;
         }), pe = Object(t.computed)(function() {
-          return _.isUpper && _.type === "upper" || _.isNum && _.type === "change2num" || _.isSymbol && _.type === "#+=" || G.value ? { color: "#f5f5f5", background: N == null ? void 0 : N.color } : { color: N == null ? void 0 : N.color, background: "#f5f5f5" };
+          return k.isUpper && k.type === "upper" || k.isNum && k.type === "change2num" || k.isSymbol && k.type === "#+=" || H.value ? { color: "#f5f5f5", background: P == null ? void 0 : P.color } : { color: P == null ? void 0 : P.color, background: "#f5f5f5" };
         });
         function de(ye) {
-          ye.preventDefault(), R("click", { data: _.isUpper ? _.data.toUpperCase() : _.data, type: _.type });
+          ye.preventDefault(), N("click", { data: k.isUpper ? k.data.toUpperCase() : k.data, type: k.type });
         }
-        return { isHoverStatus: G, getStyle: pe, getCode: ue, click: de };
+        return { isHoverStatus: H, getStyle: pe, getCode: ue, click: de };
       } });
-      e("de23"), je.render = _e;
-      var $e = je, Te = Object(t.defineComponent)({ name: "PaintPart", components: { PaintBoard: ce, KeyCodeButton: $e }, setup: function(_, U) {
-        var R = U.emit, N = A(), G = Object(t.reactive)({ handBoardOperList: [{ data: "中/EN", type: "change2lang" }, { data: "", type: "back" }, { data: "", type: "delete" }, { data: "", type: "close" }], isCn: !0 });
+      e("de23"), Oe.render = _e;
+      var $e = Oe, Ce = Object(t.defineComponent)({ name: "PaintPart", components: { PaintBoard: ce, KeyCodeButton: $e }, setup: function(k, B) {
+        var N = B.emit, P = A(), H = Object(t.reactive)({ handBoardOperList: [{ data: "中/EN", type: "change2lang" }, { data: "", type: "back" }, { data: "", type: "delete" }, { data: "", type: "close" }], isCn: !0 });
         function ue(pe) {
           var de = pe.data, ye = pe.type;
           switch (ye) {
             case "close":
-              N == null || N.closeKeyBoard();
+              P == null || P.closeKeyBoard();
               break;
             case "back":
-              N == null || N.changeDefaultBoard(), b.emit("resultReset"), b.emit("keyBoardChange", G.isCn && "CN");
+              P == null || P.changeDefaultBoard(), b.emit("resultReset"), b.emit("keyBoardChange", H.isCn && "CN");
               break;
             case "change2lang":
-              G.isCn = !G.isCn;
+              H.isCn = !H.isCn;
               break;
             case "delete":
-              R("trigger", { data: de, type: ye });
+              N("trigger", { data: de, type: ye });
               break;
           }
         }
-        return f({ click: ue }, Object(t.toRefs)(G));
+        return f({ click: ue }, Object(t.toRefs)(H));
       } });
-      e("9aaf"), Te.render = Ke, Te.__scopeId = "data-v-1b5e0983";
-      var re = Te, P = Object(t.withScopeId)("data-v-4b78e5a1");
+      e("9aaf"), Ce.render = Ke, Ce.__scopeId = "data-v-1b5e0983";
+      var ie = Ce, D = Object(t.withScopeId)("data-v-4b78e5a1");
       Object(t.pushScopeId)("data-v-4b78e5a1");
-      var H = { class: "default-key-board" }, Pe = { class: "line line4" };
+      var G = { class: "default-key-board" }, Pe = { class: "line line4" };
       Object(t.popScopeId)();
-      var Q = P(function(_, U, R, N, G, ue) {
+      var Q = D(function(k, B, N, P, H, ue) {
         var pe = Object(t.resolveComponent)("KeyCodeButton");
-        return Object(t.openBlock)(), Object(t.createBlock)("div", H, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(_.lineList, function(de, ye) {
+        return Object(t.openBlock)(), Object(t.createBlock)("div", G, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(k.lineList, function(de, ye) {
           return Object(t.openBlock)(), Object(t.createBlock)("div", { class: ["line", "line".concat(ye + 1)], key: ye }, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(de, function(Me) {
-            return Object(t.openBlock)(), Object(t.createBlock)(pe, { isUpper: _.isUpper, key: Me, type: Me, data: Me, isSymbol: _.isSymbol, onClick: _.click }, null, 8, ["isUpper", "type", "data", "isSymbol", "onClick"]);
+            return Object(t.openBlock)(), Object(t.createBlock)(pe, { isUpper: k.isUpper, key: Me, type: Me, data: Me, isSymbol: k.isSymbol, onClick: k.click }, null, 8, ["isUpper", "type", "data", "isSymbol", "onClick"]);
           }), 128))], 2);
-        }), 128)), Object(t.createVNode)("div", Pe, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(_.line4, function(de) {
-          return Object(t.openBlock)(), Object(t.createBlock)(pe, { key: de.type, type: de.type, data: de.data, isCn: _.isCn, isNum: _.isNum, onClick: _.click }, null, 8, ["type", "data", "isCn", "isNum", "onClick"]);
+        }), 128)), Object(t.createVNode)("div", Pe, [(Object(t.openBlock)(!0), Object(t.createBlock)(t.Fragment, null, Object(t.renderList)(k.line4, function(de) {
+          return Object(t.openBlock)(), Object(t.createBlock)(pe, { key: de.type, type: de.type, data: de.data, isCn: k.isCn, isNum: k.isNum, onClick: k.click }, null, 8, ["type", "data", "isCn", "isNum", "onClick"]);
         }), 128))])]);
-      }), se = (e("a434"), { line1: ["[", "]", "{", "}", "+", "-", "*", "/", "%", "="], line2: ["_", "—", "|", "~", "^", "《", "》", "$", "&"], line3: ["#+=", "……", ",", "?", "!", ".", "’", "'", "delete"] }), fe = { line1: ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"], line2: ["a", "s", "d", "f", "g", "h", "j", "k", "l"], line3: ["upper", "z", "x", "c", "v", "b", "n", "m", "delete"] }, me = { line1: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"], line2: ["-", "/", ":", "(", ")", "¥", "@", "“", "”"], line3: ["#+=", "。", "，", "、", "？", "！", ".", ";", "delete"] }, z = [{ data: ".?123", type: "change2num" }, { data: "", type: "change2lang" }, { data: " ", type: "space" }, { data: "", type: "close" }], oe = Object(t.defineComponent)({ name: "DefaultKeyBoard", components: { KeyCodeButton: $e }, emits: ["translate", "trigger", "change"], setup: function(_, U) {
-        var R = U.emit, N = A(), G = Object(t.reactive)({ lineList: [fe.line1, fe.line2, fe.line3], line4: [], isUpper: !1, isCn: !0, isNum: !1, isSymbol: !1, oldVal: "" });
+      }), se = (e("a434"), { line1: ["[", "]", "{", "}", "+", "-", "*", "/", "%", "="], line2: ["_", "—", "|", "~", "^", "《", "》", "$", "&"], line3: ["#+=", "……", ",", "?", "!", ".", "’", "'", "delete"] }), fe = { line1: ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"], line2: ["a", "s", "d", "f", "g", "h", "j", "k", "l"], line3: ["upper", "z", "x", "c", "v", "b", "n", "m", "delete"] }, me = { line1: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"], line2: ["-", "/", ":", "(", ")", "¥", "@", "“", "”"], line3: ["#+=", "。", "，", "、", "？", "！", ".", ";", "delete"] }, z = [{ data: ".?123", type: "change2num" }, { data: "", type: "change2lang" }, { data: " ", type: "space" }, { data: "", type: "close" }], oe = Object(t.defineComponent)({ name: "DefaultKeyBoard", components: { KeyCodeButton: $e }, emits: ["translate", "trigger", "change"], setup: function(k, B) {
+        var N = B.emit, P = A(), H = Object(t.reactive)({ lineList: [fe.line1, fe.line2, fe.line3], line4: [], isUpper: !1, isCn: !0, isNum: !1, isSymbol: !1, oldVal: "" });
         function ue() {
           var de;
-          G.line4 = JSON.parse(JSON.stringify(z)), N != null && (de = N.modeList) !== null && de !== void 0 && de.find(function(ye) {
+          H.line4 = JSON.parse(JSON.stringify(z)), P != null && (de = P.modeList) !== null && de !== void 0 && de.find(function(ye) {
             return ye === "handwrite";
-          }) && N !== null && N !== void 0 && N.handApi && G.line4.splice(2, 0, { data: "", type: "handwrite" });
+          }) && P !== null && P !== void 0 && P.handApi && H.line4.splice(2, 0, { data: "", type: "handwrite" });
         }
         function pe(de) {
           var ye = de.data, Me = de.type;
           switch (Me) {
             case "close":
-              G.oldVal = "", N == null || N.closeKeyBoard();
+              H.oldVal = "", P == null || P.closeKeyBoard();
               break;
             case "upper":
-              G.oldVal = "", G.isUpper = !G.isUpper;
+              H.oldVal = "", H.isUpper = !H.isUpper;
               break;
             case "change2lang":
-              G.isCn = !G.isCn, G.isNum || G.isSymbol || b.emit("keyBoardChange", G.isCn ? "CN" : "EN");
+              H.isCn = !H.isCn, H.isNum || H.isSymbol || b.emit("keyBoardChange", H.isCn ? "CN" : "EN");
               break;
             case "change2num":
-              if (G.isNum = !G.isNum, G.isSymbol = !1, G.isNum) {
+              if (H.isNum = !H.isNum, H.isSymbol = !1, H.isNum) {
                 var We;
                 b.emit("keyBoardChange", "number");
                 var Qe = JSON.parse(JSON.stringify(me.line3));
-                N != null && (We = N.modeList) !== null && We !== void 0 && We.find(function(Je) {
+                P != null && (We = P.modeList) !== null && We !== void 0 && We.find(function(Je) {
                   return Je === "symbol";
-                }) || (Qe.shift(), Qe.unshift("+")), G.lineList = [me.line1, me.line2, Qe];
-              } else b.emit("keyBoardChange", G.isCn ? "CN" : "EN"), G.lineList = [fe.line1, fe.line2, fe.line3];
+                }) || (Qe.shift(), Qe.unshift("+")), H.lineList = [me.line1, me.line2, Qe];
+              } else b.emit("keyBoardChange", H.isCn ? "CN" : "EN"), H.lineList = [fe.line1, fe.line2, fe.line3];
               break;
             case "#+=":
-              G.isSymbol = !G.isSymbol, G.isSymbol ? (b.emit("keyBoardChange", "symbol"), G.lineList = [se.line1, se.line2, se.line3]) : (b.emit("keyBoardChange", "number"), G.lineList = [me.line1, me.line2, me.line3]);
+              H.isSymbol = !H.isSymbol, H.isSymbol ? (b.emit("keyBoardChange", "symbol"), H.lineList = [se.line1, se.line2, se.line3]) : (b.emit("keyBoardChange", "number"), H.lineList = [me.line1, me.line2, me.line3]);
               break;
             case "handwrite":
             case "delete":
-              G.isCn && Me === "delete" && G.oldVal ? (G.oldVal = G.oldVal.substr(0, G.oldVal.length - 1), R("translate", G.oldVal)) : (Me === "handwrite" && b.emit("keyBoardChange", "handwrite"), R("trigger", { data: ye, type: Me }));
+              H.isCn && Me === "delete" && H.oldVal ? (H.oldVal = H.oldVal.substr(0, H.oldVal.length - 1), N("translate", H.oldVal)) : (Me === "handwrite" && b.emit("keyBoardChange", "handwrite"), N("trigger", { data: ye, type: Me }));
               break;
             default:
-              !G.isCn || G.isNum || G.isSymbol ? R("change", ye) : (R("translate", G.oldVal + ye), G.oldVal = G.oldVal + ye);
+              !H.isCn || H.isNum || H.isSymbol ? N("change", ye) : (N("translate", H.oldVal + ye), H.oldVal = H.oldVal + ye);
               break;
           }
         }
         return ue(), Object(t.onMounted)(function() {
           b.on("resultReset", function() {
-            G.oldVal = "";
+            H.oldVal = "";
           });
-        }), f(f({}, Object(t.toRefs)(G)), {}, { click: pe });
+        }), f(f({}, Object(t.toRefs)(H)), {}, { click: pe });
       } });
       e("f8b0"), oe.render = Q, oe.__scopeId = "data-v-4b78e5a1";
-      var le = oe, ge = { a: "阿啊呵腌嗄吖锕", e: "额阿俄恶鹅遏鄂厄饿峨扼娥鳄哦蛾噩愕讹锷垩婀鹗萼谔莪腭锇颚呃阏屙苊轭", ai: "爱埃艾碍癌哀挨矮隘蔼唉皑哎霭捱暧嫒嗳瑷嗌锿砹", ei: "诶", xi: "系西席息希习吸喜细析戏洗悉锡溪惜稀袭夕洒晰昔牺腊烯熙媳栖膝隙犀蹊硒兮熄曦禧嬉玺奚汐徙羲铣淅嘻歙熹矽蟋郗唏皙隰樨浠忾蜥檄郄翕阋鳃舾屣葸螅咭粞觋欷僖醯鼷裼穸饩舄禊诶菥蓰", yi: "一以已意议义益亿易医艺食依移衣异伊仪宜射遗疑毅谊亦疫役忆抑尾乙译翼蛇溢椅沂泄逸蚁夷邑怡绎彝裔姨熠贻矣屹颐倚诣胰奕翌疙弈轶蛾驿壹猗臆弋铱旖漪迤佚翊诒怿痍懿饴峄揖眙镒仡黟肄咿翳挹缢呓刈咦嶷羿钇殪荑薏蜴镱噫癔苡悒嗌瘗衤佾埸圯舣酏劓", an: "安案按岸暗鞍氨俺胺铵谙庵黯鹌桉埯犴揞厂广", han: "厂汉韩含旱寒汗涵函喊憾罕焊翰邯撼瀚憨捍酣悍鼾邗颔蚶晗菡旰顸犴焓撖", ang: "昂仰盎肮", ao: "奥澳傲熬凹鳌敖遨鏖袄坳翱嗷拗懊岙螯骜獒鏊艹媪廒聱", wa: "瓦挖娃洼袜蛙凹哇佤娲呙腽", yu: "于与育余预域予遇奥语誉玉鱼雨渔裕愈娱欲吁舆宇羽逾豫郁寓吾狱喻御浴愉禹俞邪榆愚渝尉淤虞屿峪粥驭瑜禺毓钰隅芋熨瘀迂煜昱汩於臾盂聿竽萸妪腴圄谕觎揄龉谀俣馀庾妤瘐鬻欤鹬阈嵛雩鹆圉蜮伛纡窬窳饫蓣狳肀舁蝓燠", niu: "牛纽扭钮拗妞忸狃", o: "哦噢喔", ba: "把八巴拔伯吧坝爸霸罢芭跋扒叭靶疤笆耙鲅粑岜灞钯捌菝魃茇", pa: "怕帕爬扒趴琶啪葩耙杷钯筢", pi: "被批副否皮坏辟啤匹披疲罢僻毗坯脾譬劈媲屁琵邳裨痞癖陂丕枇噼霹吡纰砒铍淠郫埤濞睥芘蚍圮鼙罴蜱疋貔仳庀擗甓陴", bi: "比必币笔毕秘避闭佛辟壁弊彼逼碧鼻臂蔽拂泌璧庇痹毙弼匕鄙陛裨贲敝蓖吡篦纰俾铋毖筚荸薜婢哔跸濞秕荜愎睥妣芘箅髀畀滗狴萆嬖襞舭", bai: "百白败摆伯拜柏佰掰呗擘捭稗", bo: "波博播勃拨薄佛伯玻搏柏泊舶剥渤卜驳簿脖膊簸菠礴箔铂亳钵帛擘饽跛钹趵檗啵鹁擗踣", bei: "北被备倍背杯勃贝辈悲碑臂卑悖惫蓓陂钡狈呗焙碚褙庳鞴孛鹎邶鐾", ban: "办版半班般板颁伴搬斑扮拌扳瓣坂阪绊钣瘢舨癍", pan: "判盘番潘攀盼拚畔胖叛拌蹒磐爿蟠泮袢襻丬", bin: "份宾频滨斌彬濒殡缤鬓槟摈膑玢镔豳髌傧", bang: "帮邦彭旁榜棒膀镑绑傍磅蚌谤梆浜蒡", pang: "旁庞乓磅螃彷滂逄耪", beng: "泵崩蚌蹦迸绷甭嘣甏堋", bao: "报保包宝暴胞薄爆炮饱抱堡剥鲍曝葆瀑豹刨褒雹孢苞煲褓趵鸨龅勹", bu: "不部步布补捕堡埔卜埠簿哺怖钚卟瓿逋晡醭钸", pu: "普暴铺浦朴堡葡谱埔扑仆蒲曝瀑溥莆圃璞濮菩蹼匍噗氆攵镨攴镤", mian: "面棉免绵缅勉眠冕娩腼渑湎沔黾宀眄", po: "破繁坡迫颇朴泊婆泼魄粕鄱珀陂叵笸泺皤钋钷", fan: "反范犯繁饭泛翻凡返番贩烦拚帆樊藩矾梵蕃钒幡畈蘩蹯燔", fu: "府服副负富复福夫妇幅付扶父符附腐赴佛浮覆辅傅伏抚赋辐腹弗肤阜袱缚甫氟斧孚敷俯拂俘咐腑孵芙涪釜脯茯馥宓绂讣呋罘麸蝠匐芾蜉跗凫滏蝮驸绋蚨砩桴赙菔呒趺苻拊阝鲋怫稃郛莩幞祓艴黻黼鳆", ben: "本体奔苯笨夯贲锛畚坌", feng: "风丰封峰奉凤锋冯逢缝蜂枫疯讽烽俸沣酆砜葑唪", bian: "变便边编遍辩鞭辨贬匾扁卞汴辫砭苄蝙鳊弁窆笾煸褊碥忭缏", pian: "便片篇偏骗翩扁骈胼蹁谝犏缏", zhen: "镇真针圳振震珍阵诊填侦臻贞枕桢赈祯帧甄斟缜箴疹砧榛鸩轸稹溱蓁胗椹朕畛浈", biao: "表标彪镖裱飚膘飙镳婊骠飑杓髟鳔灬瘭", piao: "票朴漂飘嫖瓢剽缥殍瞟骠嘌莩螵", huo: "和活或货获火伙惑霍祸豁嚯藿锪蠖钬耠镬夥灬劐攉", bie: "别鳖憋瘪蹩", min: "民敏闽闵皿泯岷悯珉抿黾缗玟愍苠鳘", fen: "分份纷奋粉氛芬愤粪坟汾焚酚吩忿棼玢鼢瀵偾鲼", bing: "并病兵冰屏饼炳秉丙摒柄槟禀枋邴冫", geng: "更耕颈庚耿梗埂羹哽赓绠鲠", fang: "方放房防访纺芳仿坊妨肪邡舫彷枋鲂匚钫", xian: "现先县见线限显险献鲜洗宪纤陷闲贤仙衔掀咸嫌掺羡弦腺痫娴舷馅酰铣冼涎暹籼锨苋蚬跹岘藓燹鹇氙莶霰跣猃彡祆筅", fou: "不否缶", ca: "拆擦嚓礤", cha: "查察差茶插叉刹茬楂岔诧碴嚓喳姹杈汊衩搽槎镲苴檫馇锸猹", cai: "才采财材菜彩裁蔡猜踩睬", can: "参残餐灿惨蚕掺璨惭粲孱骖黪", shen: "信深参身神什审申甚沈伸慎渗肾绅莘呻婶娠砷蜃哂椹葚吲糁渖诜谂矧胂", cen: "参岑涔", san: "三参散伞叁糁馓毵", cang: "藏仓苍沧舱臧伧", zang: "藏脏葬赃臧奘驵", chen: "称陈沈沉晨琛臣尘辰衬趁忱郴宸谌碜嗔抻榇伧谶龀肜", cao: "草操曹槽糙嘈漕螬艚屮", ce: "策测册侧厕栅恻", ze: "责则泽择侧咋啧仄箦赜笮舴昃迮帻", zhai: "债择齐宅寨侧摘窄斋祭翟砦瘵哜", dao: "到道导岛倒刀盗稻蹈悼捣叨祷焘氘纛刂帱忉", ceng: "层曾蹭噌", zha: "查扎炸诈闸渣咋乍榨楂札栅眨咤柞喳喋铡蚱吒怍砟揸痄哳齄", chai: "差拆柴钗豺侪虿瘥", ci: "次此差词辞刺瓷磁兹慈茨赐祠伺雌疵鹚糍呲粢", zi: "资自子字齐咨滋仔姿紫兹孜淄籽梓鲻渍姊吱秭恣甾孳訾滓锱辎趑龇赀眦缁呲笫谘嵫髭茈粢觜耔", cuo: "措错磋挫搓撮蹉锉厝嵯痤矬瘥脞鹾", chan: "产单阐崭缠掺禅颤铲蝉搀潺蟾馋忏婵孱觇廛谄谗澶骣羼躔蒇冁", shan: "山单善陕闪衫擅汕扇掺珊禅删膳缮赡鄯栅煽姗跚鳝嬗潸讪舢苫疝掸膻钐剡蟮芟埏彡骟", zhan: "展战占站崭粘湛沾瞻颤詹斩盏辗绽毡栈蘸旃谵搌", xin: "新心信辛欣薪馨鑫芯锌忻莘昕衅歆囟忄镡", lian: "联连练廉炼脸莲恋链帘怜涟敛琏镰濂楝鲢殓潋裢裣臁奁莶蠊蔹", chang: "场长厂常偿昌唱畅倡尝肠敞倘猖娼淌裳徜昶怅嫦菖鲳阊伥苌氅惝鬯", zhang: "长张章障涨掌帐胀彰丈仗漳樟账杖璋嶂仉瘴蟑獐幛鄣嫜", chao: "超朝潮炒钞抄巢吵剿绰嘲晁焯耖怊", zhao: "着照招找召朝赵兆昭肇罩钊沼嘲爪诏濯啁棹笊", zhou: "调州周洲舟骤轴昼宙粥皱肘咒帚胄绉纣妯啁诌繇碡籀酎荮", che: "车彻撤尺扯澈掣坼砗屮", ju: "车局据具举且居剧巨聚渠距句拒俱柜菊拘炬桔惧矩鞠驹锯踞咀瞿枸掬沮莒橘飓疽钜趄踽遽琚龃椐苣裾榘狙倨榉苴讵雎锔窭鞫犋屦醵", cheng: "成程城承称盛抢乘诚呈净惩撑澄秤橙骋逞瞠丞晟铛埕塍蛏柽铖酲裎枨", rong: "容荣融绒溶蓉熔戎榕茸冗嵘肜狨蝾", sheng: "生声升胜盛乘圣剩牲甸省绳笙甥嵊晟渑眚", deng: "等登邓灯澄凳瞪蹬噔磴嶝镫簦戥", zhi: "制之治质职只志至指织支值知识直致执置止植纸拓智殖秩旨址滞氏枝芝脂帜汁肢挚稚酯掷峙炙栉侄芷窒咫吱趾痔蜘郅桎雉祉郦陟痣蛭帙枳踯徵胝栀贽祗豸鸷摭轵卮轾彘觯絷跖埴夂黹忮骘膣踬", zheng: "政正证争整征郑丁症挣蒸睁铮筝拯峥怔诤狰徵钲", tang: "堂唐糖汤塘躺趟倘棠烫淌膛搪镗傥螳溏帑羰樘醣螗耥铴瑭", chi: "持吃池迟赤驰尺斥齿翅匙痴耻炽侈弛叱啻坻眙嗤墀哧茌豉敕笞饬踟蚩柢媸魑篪褫彳鸱螭瘛眵傺", shi: "是时实事市十使世施式势视识师史示石食始士失适试什泽室似诗饰殖释驶氏硕逝湿蚀狮誓拾尸匙仕柿矢峙侍噬嗜栅拭嘘屎恃轼虱耆舐莳铈谥炻豕鲥饣螫酾筮埘弑礻蓍鲺贳", qi: "企其起期气七器汽奇齐启旗棋妻弃揭枝歧欺骑契迄亟漆戚岂稽岐琦栖缉琪泣乞砌祁崎绮祺祈凄淇杞脐麒圻憩芪伎俟畦耆葺沏萋骐鳍綦讫蕲屺颀亓碛柒啐汔綮萁嘁蛴槭欹芑桤丌蜞", chuai: "揣踹啜搋膪", tuo: "托脱拓拖妥驼陀沱鸵驮唾椭坨佗砣跎庹柁橐乇铊沲酡鼍箨柝", duo: "多度夺朵躲铎隋咄堕舵垛惰哆踱跺掇剁柁缍沲裰哚隳", xue: "学血雪削薛穴靴谑噱鳕踅泶彐", chong: "重种充冲涌崇虫宠忡憧舂茺铳艟", chou: "筹抽绸酬愁丑臭仇畴稠瞅踌惆俦瘳雠帱", qiu: "求球秋丘邱仇酋裘龟囚遒鳅虬蚯泅楸湫犰逑巯艽俅蝤赇鼽糗", xiu: "修秀休宿袖绣臭朽锈羞嗅岫溴庥馐咻髹鸺貅", chu: "出处础初助除储畜触楚厨雏矗橱锄滁躇怵绌搐刍蜍黜杵蹰亍樗憷楮", tuan: "团揣湍疃抟彖", zhui: "追坠缀揣椎锥赘惴隹骓缒", chuan: "传川船穿串喘椽舛钏遄氚巛舡", zhuan: "专转传赚砖撰篆馔啭颛", yuan: "元员院原源远愿园援圆缘袁怨渊苑宛冤媛猿垣沅塬垸鸳辕鸢瑗圜爰芫鼋橼螈眢箢掾", cuan: "窜攒篡蹿撺爨汆镩", chuang: "创床窗闯幢疮怆", zhuang: "装状庄壮撞妆幢桩奘僮戆", chui: "吹垂锤炊椎陲槌捶棰", chun: "春纯醇淳唇椿蠢鹑朐莼肫蝽", zhun: "准屯淳谆肫窀", cu: "促趋趣粗簇醋卒蹴猝蹙蔟殂徂", dun: "吨顿盾敦蹲墩囤沌钝炖盹遁趸砘礅", qu: "区去取曲趋渠趣驱屈躯衢娶祛瞿岖龋觑朐蛐癯蛆苣阒诎劬蕖蘧氍黢蠼璩麴鸲磲", xu: "需许续须序徐休蓄畜虚吁绪叙旭邪恤墟栩絮圩婿戌胥嘘浒煦酗诩朐盱蓿溆洫顼勖糈砉醑", chuo: "辍绰戳淖啜龊踔辶", zu: "组族足祖租阻卒俎诅镞菹", ji: "济机其技基记计系期际及集级几给积极己纪即继击既激绩急奇吉季齐疾迹鸡剂辑籍寄挤圾冀亟寂暨脊跻肌稽忌饥祭缉棘矶汲畸姬藉瘠骥羁妓讥稷蓟悸嫉岌叽伎鲫诘楫荠戟箕霁嵇觊麂畿玑笈犄芨唧屐髻戢佶偈笄跽蒺乩咭赍嵴虮掎齑殛鲚剞洎丌墼蕺彐芰哜", cong: "从丛匆聪葱囱琮淙枞骢苁璁", zong: "总从综宗纵踪棕粽鬃偬枞腙", cou: "凑辏腠楱", cui: "衰催崔脆翠萃粹摧璀瘁悴淬啐隹毳榱", wei: "为位委未维卫围违威伟危味微唯谓伪慰尾魏韦胃畏帷喂巍萎蔚纬潍尉渭惟薇苇炜圩娓诿玮崴桅偎逶倭猥囗葳隗痿猬涠嵬韪煨艉隹帏闱洧沩隈鲔軎", cun: "村存寸忖皴", zuo: "作做座左坐昨佐琢撮祚柞唑嘬酢怍笮阼胙", zuan: "钻纂攥缵躜", da: "大达打答搭沓瘩惮嗒哒耷鞑靼褡笪怛妲", dai: "大代带待贷毒戴袋歹呆隶逮岱傣棣怠殆黛甙埭诒绐玳呔迨", tai: "大台太态泰抬胎汰钛苔薹肽跆邰鲐酞骀炱", ta: "他它她拓塔踏塌榻沓漯獭嗒挞蹋趿遢铊鳎溻闼", dan: "但单石担丹胆旦弹蛋淡诞氮郸耽殚惮儋眈疸澹掸膻啖箪聃萏瘅赕", lu: "路六陆录绿露鲁卢炉鹿禄赂芦庐碌麓颅泸卤潞鹭辘虏璐漉噜戮鲈掳橹轳逯渌蓼撸鸬栌氇胪镥簏舻辂垆", tan: "谈探坦摊弹炭坛滩贪叹谭潭碳毯瘫檀痰袒坍覃忐昙郯澹钽锬", ren: "人任认仁忍韧刃纫饪妊荏稔壬仞轫亻衽", jie: "家结解价界接节她届介阶街借杰洁截姐揭捷劫戒皆竭桔诫楷秸睫藉拮芥诘碣嗟颉蚧孑婕疖桀讦疥偈羯袷哜喈卩鲒骱", yan: "研严验演言眼烟沿延盐炎燕岩宴艳颜殷彦掩淹阎衍铅雁咽厌焰堰砚唁焉晏檐蜒奄俨腌妍谚兖筵焱偃闫嫣鄢湮赝胭琰滟阉魇酽郾恹崦芫剡鼹菸餍埏谳讠厣罨", dang: "当党档荡挡宕砀铛裆凼菪谠", tao: "套讨跳陶涛逃桃萄淘掏滔韬叨洮啕绦饕鼗", tiao: "条调挑跳迢眺苕窕笤佻啁粜髫铫祧龆蜩鲦", te: "特忑忒铽慝", de: "的地得德底锝", dei: "得", di: "的地第提低底抵弟迪递帝敌堤蒂缔滴涤翟娣笛棣荻谛狄邸嘀砥坻诋嫡镝碲骶氐柢籴羝睇觌", ti: "体提题弟替梯踢惕剔蹄棣啼屉剃涕锑倜悌逖嚏荑醍绨鹈缇裼", tui: "推退弟腿褪颓蜕忒煺", you: "有由又优游油友右邮尤忧幼犹诱悠幽佑釉柚铀鱿囿酉攸黝莠猷蝣疣呦蚴莸莜铕宥繇卣牖鼬尢蚰侑", dian: "电点店典奠甸碘淀殿垫颠滇癫巅惦掂癜玷佃踮靛钿簟坫阽", tian: "天田添填甜甸恬腆佃舔钿阗忝殄畋栝掭", zhu: "主术住注助属逐宁著筑驻朱珠祝猪诸柱竹铸株瞩嘱贮煮烛苎褚蛛拄铢洙竺蛀渚伫杼侏澍诛茱箸炷躅翥潴邾槠舳橥丶瘃麈疰", nian: "年念酿辗碾廿捻撵拈蔫鲶埝鲇辇黏", diao: "调掉雕吊钓刁貂凋碉鲷叼铫铞", yao: "要么约药邀摇耀腰遥姚窑瑶咬尧钥谣肴夭侥吆疟妖幺杳舀窕窈曜鹞爻繇徭轺铫鳐崾珧", die: "跌叠蝶迭碟爹谍牒耋佚喋堞瓞鲽垤揲蹀", she: "设社摄涉射折舍蛇拾舌奢慑赦赊佘麝歙畲厍猞揲滠", ye: "业也夜叶射野液冶喝页爷耶邪咽椰烨掖拽曳晔谒腋噎揶靥邺铘揲", xie: "些解协写血叶谢械鞋胁斜携懈契卸谐泄蟹邪歇泻屑挟燮榭蝎撷偕亵楔颉缬邂鲑瀣勰榍薤绁渫廨獬躞", zhe: "这者着著浙折哲蔗遮辙辄柘锗褶蜇蛰鹧谪赭摺乇磔螫", ding: "定订顶丁鼎盯钉锭叮仃铤町酊啶碇腚疔玎耵", diu: "丢铥", ting: "听庭停厅廷挺亭艇婷汀铤烃霆町蜓葶梃莛", dong: "动东董冬洞懂冻栋侗咚峒氡恫胴硐垌鸫岽胨", tong: "同通统童痛铜桶桐筒彤侗佟潼捅酮砼瞳恸峒仝嗵僮垌茼", zhong: "中重种众终钟忠仲衷肿踵冢盅蚣忪锺舯螽夂", dou: "都斗读豆抖兜陡逗窦渎蚪痘蔸钭篼", du: "度都独督读毒渡杜堵赌睹肚镀渎笃竺嘟犊妒牍蠹椟黩芏髑", duan: "断段短端锻缎煅椴簖", dui: "对队追敦兑堆碓镦怼憝", rui: "瑞兑锐睿芮蕊蕤蚋枘", yue: "月说约越乐跃兑阅岳粤悦曰钥栎钺樾瀹龠哕刖", tun: "吞屯囤褪豚臀饨暾氽", hui: "会回挥汇惠辉恢徽绘毁慧灰贿卉悔秽溃荟晖彗讳诲珲堕诙蕙晦睢麾烩茴喙桧蛔洄浍虺恚蟪咴隳缋哕", wu: "务物无五武午吴舞伍污乌误亡恶屋晤悟吾雾芜梧勿巫侮坞毋诬呜钨邬捂鹜兀婺妩於戊鹉浯蜈唔骛仵焐芴鋈庑鼯牾怃圬忤痦迕杌寤阢", ya: "亚压雅牙押鸭呀轧涯崖邪芽哑讶鸦娅衙丫蚜碣垭伢氩桠琊揠吖睚痖疋迓岈砑", he: "和合河何核盖贺喝赫荷盒鹤吓呵苛禾菏壑褐涸阂阖劾诃颌嗬貉曷翮纥盍", wo: "我握窝沃卧挝涡斡渥幄蜗喔倭莴龌肟硪", en: "恩摁蒽", n: "嗯唔", er: "而二尔儿耳迩饵洱贰铒珥佴鸸鲕", fa: "发法罚乏伐阀筏砝垡珐", quan: "全权券泉圈拳劝犬铨痊诠荃醛蜷颧绻犭筌鬈悛辁畎", fei: "费非飞肥废菲肺啡沸匪斐蜚妃诽扉翡霏吠绯腓痱芾淝悱狒榧砩鲱篚镄", pei: "配培坏赔佩陪沛裴胚妃霈淠旆帔呸醅辔锫", ping: "平评凭瓶冯屏萍苹乒坪枰娉俜鲆", fo: "佛", hu: "和护许户核湖互乎呼胡戏忽虎沪糊壶葫狐蝴弧瑚浒鹄琥扈唬滹惚祜囫斛笏芴醐猢怙唿戽槲觳煳鹕冱瓠虍岵鹱烀轷", ga: "夹咖嘎尬噶旮伽尕钆尜", ge: "个合各革格歌哥盖隔割阁戈葛鸽搁胳舸疙铬骼蛤咯圪镉颌仡硌嗝鬲膈纥袼搿塥哿虼", ha: "哈蛤铪", xia: "下夏峡厦辖霞夹虾狭吓侠暇遐瞎匣瑕唬呷黠硖罅狎瘕柙", gai: "改该盖概溉钙丐芥赅垓陔戤", hai: "海还害孩亥咳骸骇氦嗨胲醢", gan: "干感赶敢甘肝杆赣乾柑尴竿秆橄矸淦苷擀酐绀泔坩旰疳澉", gang: "港钢刚岗纲冈杠缸扛肛罡戆筻", jiang: "将强江港奖讲降疆蒋姜浆匠酱僵桨绛缰犟豇礓洚茳糨耩", hang: "行航杭巷夯吭桁沆绗颃", gong: "工公共供功红贡攻宫巩龚恭拱躬弓汞蚣珙觥肱廾", hong: "红宏洪轰虹鸿弘哄烘泓訇蕻闳讧荭黉薨", guang: "广光逛潢犷胱咣桄", qiong: "穷琼穹邛茕筇跫蛩銎", gao: "高告搞稿膏糕镐皋羔锆杲郜睾诰藁篙缟槁槔", hao: "好号毫豪耗浩郝皓昊皋蒿壕灏嚎濠蚝貉颢嗥薅嚆", li: "理力利立里李历例离励礼丽黎璃厉厘粒莉梨隶栗荔沥犁漓哩狸藜罹篱鲤砺吏澧俐骊溧砾莅锂笠蠡蛎痢雳俪傈醴栎郦俚枥喱逦娌鹂戾砬唳坜疠蜊黧猁鬲粝蓠呖跞疬缡鲡鳢嫠詈悝苈篥轹", jia: "家加价假佳架甲嘉贾驾嫁夹稼钾挟拮迦伽颊浃枷戛荚痂颉镓笳珈岬胛袈郏葭袷瘕铗跏蛱恝哿", luo: "落罗络洛逻螺锣骆萝裸漯烙摞骡咯箩珞捋荦硌雒椤镙跞瘰泺脶猡倮蠃", ke: "可科克客刻课颗渴壳柯棵呵坷恪苛咳磕珂稞瞌溘轲窠嗑疴蝌岢铪颏髁蚵缂氪骒钶锞", qia: "卡恰洽掐髂袷咭葜", gei: "给", gen: "根跟亘艮哏茛", hen: "很狠恨痕哏", gou: "构购够句沟狗钩拘勾苟垢枸篝佝媾诟岣彀缑笱鞲觏遘", kou: "口扣寇叩抠佝蔻芤眍筘", gu: "股古顾故固鼓骨估谷贾姑孤雇辜菇沽咕呱锢钴箍汩梏痼崮轱鸪牯蛊诂毂鹘菰罟嘏臌觚瞽蛄酤牿鲴", pai: "牌排派拍迫徘湃俳哌蒎", gua: "括挂瓜刮寡卦呱褂剐胍诖鸹栝呙", tou: "投头透偷愉骰亠", guai: "怪拐乖", kuai: "会快块筷脍蒯侩浍郐蒉狯哙", guan: "关管观馆官贯冠惯灌罐莞纶棺斡矜倌鹳鳏盥掼涫", wan: "万完晚湾玩碗顽挽弯蔓丸莞皖宛婉腕蜿惋烷琬畹豌剜纨绾脘菀芄箢", ne: "呢哪呐讷疒", gui: "规贵归轨桂柜圭鬼硅瑰跪龟匮闺诡癸鳜桧皈鲑刽晷傀眭妫炅庋簋刿宄匦", jun: "军均俊君峻菌竣钧骏龟浚隽郡筠皲麇捃", jiong: "窘炯迥炅冂扃", jue: "决绝角觉掘崛诀獗抉爵嚼倔厥蕨攫珏矍蹶谲镢鳜噱桷噘撅橛孓觖劂爝", gun: "滚棍辊衮磙鲧绲丨", hun: "婚混魂浑昏棍珲荤馄诨溷阍", guo: "国过果郭锅裹帼涡椁囗蝈虢聒埚掴猓崞蜾呙馘", hei: "黑嘿嗨", kan: "看刊勘堪坎砍侃嵌槛瞰阚龛戡凵莰", heng: "衡横恒亨哼珩桁蘅", mo: "万没么模末冒莫摩墨默磨摸漠脉膜魔沫陌抹寞蘑摹蓦馍茉嘿谟秣蟆貉嫫镆殁耱嬷麽瘼貊貘", peng: "鹏朋彭膨蓬碰苹棚捧亨烹篷澎抨硼怦砰嘭蟛堋", hou: "后候厚侯猴喉吼逅篌糇骺後鲎瘊堠", hua: "化华划话花画滑哗豁骅桦猾铧砉", huai: "怀坏淮徊槐踝", huan: "还环换欢患缓唤焕幻痪桓寰涣宦垸洹浣豢奂郇圜獾鲩鬟萑逭漶锾缳擐", xun: "讯训迅孙寻询循旬巡汛勋逊熏徇浚殉驯鲟薰荀浔洵峋埙巽郇醺恂荨窨蕈曛獯", huang: "黄荒煌皇凰慌晃潢谎惶簧璜恍幌湟蝗磺隍徨遑肓篁鳇蟥癀", nai: "能乃奶耐奈鼐萘氖柰佴艿", luan: "乱卵滦峦鸾栾銮挛孪脔娈", qie: "切且契窃茄砌锲怯伽惬妾趄挈郄箧慊", jian: "建间件见坚检健监减简艰践兼鉴键渐柬剑尖肩舰荐箭浅剪俭碱茧奸歼拣捡煎贱溅槛涧堑笺谏饯锏缄睑謇蹇腱菅翦戬毽笕犍硷鞯牮枧湔鲣囝裥踺搛缣鹣蒹谫僭戋趼楗", nan: "南难男楠喃囡赧腩囝蝻", qian: "前千钱签潜迁欠纤牵浅遣谦乾铅歉黔谴嵌倩钳茜虔堑钎骞阡掮钤扦芊犍荨仟芡悭缱佥愆褰凵肷岍搴箝慊椠", qiang: "强抢疆墙枪腔锵呛羌蔷襁羟跄樯戕嫱戗炝镪锖蜣", xiang: "向项相想乡象响香降像享箱羊祥湘详橡巷翔襄厢镶飨饷缃骧芗庠鲞葙蟓", jiao: "教交较校角觉叫脚缴胶轿郊焦骄浇椒礁佼蕉娇矫搅绞酵剿嚼饺窖跤蛟侥狡姣皎茭峤铰醮鲛湫徼鹪僬噍艽挢敫", zhuo: "着著缴桌卓捉琢灼浊酌拙茁涿镯淖啄濯焯倬擢斫棹诼浞禚", qiao: "桥乔侨巧悄敲俏壳雀瞧翘窍峭锹撬荞跷樵憔鞘橇峤诮谯愀鞒硗劁缲", xiao: "小效销消校晓笑肖削孝萧俏潇硝宵啸嚣霄淆哮筱逍姣箫骁枭哓绡蛸崤枵魈", si: "司四思斯食私死似丝饲寺肆撕泗伺嗣祀厮驷嘶锶俟巳蛳咝耜笥纟糸鸶缌澌姒汜厶兕", kai: "开凯慨岂楷恺揩锴铠忾垲剀锎蒈", jin: "进金今近仅紧尽津斤禁锦劲晋谨筋巾浸襟靳瑾烬缙钅矜觐堇馑荩噤廑妗槿赆衿卺", qin: "亲勤侵秦钦琴禽芹沁寝擒覃噙矜嗪揿溱芩衾廑锓吣檎螓", jing: "经京精境竞景警竟井惊径静劲敬净镜睛晶颈荆兢靖泾憬鲸茎腈菁胫阱旌粳靓痉箐儆迳婧肼刭弪獍", ying: "应营影英景迎映硬盈赢颖婴鹰荧莹樱瑛蝇萦莺颍膺缨瀛楹罂荥萤鹦滢蓥郢茔嘤璎嬴瘿媵撄潆", jiu: "就究九酒久救旧纠舅灸疚揪咎韭玖臼柩赳鸠鹫厩啾阄桕僦鬏", zui: "最罪嘴醉咀蕞觜", juan: "卷捐圈眷娟倦绢隽镌涓鹃鄄蠲狷锩桊", suan: "算酸蒜狻", yun: "员运云允孕蕴韵酝耘晕匀芸陨纭郧筠恽韫郓氲殒愠昀菀狁", qun: "群裙逡麇", ka: "卡喀咖咔咯佧胩", kang: "康抗扛慷炕亢糠伉钪闶", keng: "坑铿吭", kao: "考靠烤拷铐栲尻犒", ken: "肯垦恳啃龈裉", yin: "因引银印音饮阴隐姻殷淫尹荫吟瘾寅茵圻垠鄞湮蚓氤胤龈窨喑铟洇狺夤廴吲霪茚堙", kong: "空控孔恐倥崆箜", ku: "苦库哭酷裤枯窟挎骷堀绔刳喾", kua: "跨夸垮挎胯侉", kui: "亏奎愧魁馈溃匮葵窥盔逵睽馗聩喟夔篑岿喹揆隗傀暌跬蒉愦悝蝰", kuan: "款宽髋", kuang: "况矿框狂旷眶匡筐邝圹哐贶夼诳诓纩", que: "确却缺雀鹊阙瘸榷炔阕悫", kun: "困昆坤捆琨锟鲲醌髡悃阃", kuo: "扩括阔廓蛞", la: "拉落垃腊啦辣蜡喇剌旯砬邋瘌", lai: "来莱赖睐徕籁涞赉濑癞崃疠铼", lan: "兰览蓝篮栏岚烂滥缆揽澜拦懒榄斓婪阑褴罱啉谰镧漤", lin: "林临邻赁琳磷淋麟霖鳞凛拎遴蔺吝粼嶙躏廪檩啉辚膦瞵懔", lang: "浪朗郎廊狼琅榔螂阆锒莨啷蒗稂", liang: "量两粮良辆亮梁凉谅粱晾靓踉莨椋魉墚", lao: "老劳落络牢捞涝烙姥佬崂唠酪潦痨醪铑铹栳耢", mu: "目模木亩幕母牧莫穆姆墓慕牟牡募睦缪沐暮拇姥钼苜仫毪坶", le: "了乐勒肋叻鳓嘞仂泐", lei: "类累雷勒泪蕾垒磊擂镭肋羸耒儡嫘缧酹嘞诔檑", sui: "随岁虽碎尿隧遂髓穗绥隋邃睢祟濉燧谇眭荽", lie: "列烈劣裂猎冽咧趔洌鬣埒捩躐", leng: "冷愣棱楞塄", ling: "领令另零灵龄陵岭凌玲铃菱棱伶羚苓聆翎泠瓴囹绫呤棂蛉酃鲮柃", lia: "俩", liao: "了料疗辽廖聊寥缪僚燎缭撂撩嘹潦镣寮蓼獠钌尥鹩", liu: "流刘六留柳瘤硫溜碌浏榴琉馏遛鎏骝绺镏旒熘鹨锍", lun: "论轮伦仑纶沦抡囵", lv: "率律旅绿虑履吕铝屡氯缕滤侣驴榈闾偻褛捋膂稆", lou: "楼露漏陋娄搂篓喽镂偻瘘髅耧蝼嵝蒌", mao: "贸毛矛冒貌茂茅帽猫髦锚懋袤牦卯铆耄峁瑁蟊茆蝥旄泖昴瞀", long: "龙隆弄垄笼拢聋陇胧珑窿茏咙砻垅泷栊癃", nong: "农浓弄脓侬哝", shuang: "双爽霜孀泷", shu: "术书数属树输束述署朱熟殊蔬舒疏鼠淑叔暑枢墅俞曙抒竖蜀薯梳戍恕孰沭赎庶漱塾倏澍纾姝菽黍腧秫毹殳疋摅", shuai: "率衰帅摔甩蟀", lve: "略掠锊", ma: "么马吗摩麻码妈玛嘛骂抹蚂唛蟆犸杩", me: "么麽", mai: "买卖麦迈脉埋霾荬劢", man: "满慢曼漫埋蔓瞒蛮鳗馒幔谩螨熳缦镘颟墁鞔", mi: "米密秘迷弥蜜谜觅靡泌眯麋猕谧咪糜宓汨醚嘧弭脒冖幂祢縻蘼芈糸敉", men: "们门闷瞒汶扪焖懑鞔钔", mang: "忙盲茫芒氓莽蟒邙硭漭", meng: "蒙盟梦猛孟萌氓朦锰檬勐懵蟒蜢虻黾蠓艨甍艋瞢礞", miao: "苗秒妙描庙瞄缪渺淼藐缈邈鹋杪眇喵", mou: "某谋牟缪眸哞鍪蛑侔厶", miu: "缪谬", mei: "美没每煤梅媒枚妹眉魅霉昧媚玫酶镁湄寐莓袂楣糜嵋镅浼猸鹛", wen: "文问闻稳温纹吻蚊雯紊瘟汶韫刎璺玟阌", mie: "灭蔑篾乜咩蠛", ming: "明名命鸣铭冥茗溟酩瞑螟暝", na: "内南那纳拿哪娜钠呐捺衲镎肭", nei: "内那哪馁", nuo: "难诺挪娜糯懦傩喏搦锘", ruo: "若弱偌箬", nang: "囊馕囔曩攮", nao: "脑闹恼挠瑙淖孬垴铙桡呶硇猱蛲", ni: "你尼呢泥疑拟逆倪妮腻匿霓溺旎昵坭铌鲵伲怩睨猊", nen: "嫩恁", neng: "能", nin: "您恁", niao: "鸟尿溺袅脲茑嬲", nie: "摄聂捏涅镍孽捻蘖啮蹑嗫臬镊颞乜陧", niang: "娘酿", ning: "宁凝拧泞柠咛狞佞聍甯", nu: "努怒奴弩驽帑孥胬", nv: "女钕衄恧", ru: "入如女乳儒辱汝茹褥孺濡蠕嚅缛溽铷洳薷襦颥蓐", nuan: "暖", nve: "虐疟", re: "热若惹喏", ou: "区欧偶殴呕禺藕讴鸥瓯沤耦怄", pao: "跑炮泡抛刨袍咆疱庖狍匏脬", pou: "剖掊裒", pen: "喷盆湓", pie: "瞥撇苤氕丿", pin: "品贫聘频拼拚颦姘嫔榀牝", se: "色塞瑟涩啬穑铯槭", qing: "情青清请亲轻庆倾顷卿晴氢擎氰罄磬蜻箐鲭綮苘黥圊檠謦", zan: "赞暂攒堑昝簪糌瓒錾趱拶", shao: "少绍召烧稍邵哨韶捎勺梢鞘芍苕劭艄筲杓潲", sao: "扫骚嫂梢缫搔瘙臊埽缲鳋", sha: "沙厦杀纱砂啥莎刹杉傻煞鲨霎嗄痧裟挲铩唼歃", xuan: "县选宣券旋悬轩喧玄绚渲璇炫萱癣漩眩暄煊铉楦泫谖痃碹揎镟儇", ran: "然染燃冉苒髯蚺", rang: "让壤攘嚷瓤穰禳", rao: "绕扰饶娆桡荛", reng: "仍扔", ri: "日", rou: "肉柔揉糅鞣蹂", ruan: "软阮朊", run: "润闰", sa: "萨洒撒飒卅仨脎", suo: "所些索缩锁莎梭琐嗦唆唢娑蓑羧挲桫嗍睃", sai: "思赛塞腮噻鳃", shui: "说水税谁睡氵", sang: "桑丧嗓搡颡磉", sen: "森", seng: "僧", shai: "筛晒", shang: "上商尚伤赏汤裳墒晌垧觞殇熵绱", xing: "行省星腥猩惺兴刑型形邢饧醒幸杏性姓陉荇荥擤悻硎", shou: "收手受首售授守寿瘦兽狩绶艏扌", shuo: "说数硕烁朔铄妁槊蒴搠", su: "速素苏诉缩塑肃俗宿粟溯酥夙愫簌稣僳谡涑蔌嗉觫", shua: "刷耍唰", shuan: "栓拴涮闩", shun: "顺瞬舜吮", song: "送松宋讼颂耸诵嵩淞怂悚崧凇忪竦菘", sou: "艘搜擞嗽嗖叟馊薮飕嗾溲锼螋瞍", sun: "损孙笋荪榫隼狲飧", teng: "腾疼藤滕誊", tie: "铁贴帖餮萜", tu: "土突图途徒涂吐屠兔秃凸荼钍菟堍酴", wai: "外歪崴", wang: "王望往网忘亡旺汪枉妄惘罔辋魍", weng: "翁嗡瓮蓊蕹", zhua: "抓挝爪", yang: "样养央阳洋扬杨羊详氧仰秧痒漾疡泱殃恙鸯徉佯怏炀烊鞅蛘", xiong: "雄兄熊胸凶匈汹芎", yo: "哟唷", yong: "用永拥勇涌泳庸俑踊佣咏雍甬镛臃邕蛹恿慵壅痈鳙墉饔喁", za: "杂扎咱砸咋匝咂拶", zai: "在再灾载栽仔宰哉崽甾", zao: "造早遭枣噪灶燥糟凿躁藻皂澡蚤唣", zei: "贼", zen: "怎谮", zeng: "增曾综赠憎锃甑罾缯", zhei: "这", zou: "走邹奏揍诹驺陬楱鄹鲰", zhuai: "转拽", zun: "尊遵鳟樽撙", dia: "嗲", nou: "耨" }, Ve = e("ec57"), Ge = function(_) {
-        return _.keys().map(_);
+      var le = oe, ge = { a: "阿啊呵腌嗄吖锕", e: "额阿俄恶鹅遏鄂厄饿峨扼娥鳄哦蛾噩愕讹锷垩婀鹗萼谔莪腭锇颚呃阏屙苊轭", ai: "爱埃艾碍癌哀挨矮隘蔼唉皑哎霭捱暧嫒嗳瑷嗌锿砹", ei: "诶", xi: "系西席息希习吸喜细析戏洗悉锡溪惜稀袭夕洒晰昔牺腊烯熙媳栖膝隙犀蹊硒兮熄曦禧嬉玺奚汐徙羲铣淅嘻歙熹矽蟋郗唏皙隰樨浠忾蜥檄郄翕阋鳃舾屣葸螅咭粞觋欷僖醯鼷裼穸饩舄禊诶菥蓰", yi: "一以已意议义益亿易医艺食依移衣异伊仪宜射遗疑毅谊亦疫役忆抑尾乙译翼蛇溢椅沂泄逸蚁夷邑怡绎彝裔姨熠贻矣屹颐倚诣胰奕翌疙弈轶蛾驿壹猗臆弋铱旖漪迤佚翊诒怿痍懿饴峄揖眙镒仡黟肄咿翳挹缢呓刈咦嶷羿钇殪荑薏蜴镱噫癔苡悒嗌瘗衤佾埸圯舣酏劓", an: "安案按岸暗鞍氨俺胺铵谙庵黯鹌桉埯犴揞厂广", han: "厂汉韩含旱寒汗涵函喊憾罕焊翰邯撼瀚憨捍酣悍鼾邗颔蚶晗菡旰顸犴焓撖", ang: "昂仰盎肮", ao: "奥澳傲熬凹鳌敖遨鏖袄坳翱嗷拗懊岙螯骜獒鏊艹媪廒聱", wa: "瓦挖娃洼袜蛙凹哇佤娲呙腽", yu: "于与育余预域予遇奥语誉玉鱼雨渔裕愈娱欲吁舆宇羽逾豫郁寓吾狱喻御浴愉禹俞邪榆愚渝尉淤虞屿峪粥驭瑜禺毓钰隅芋熨瘀迂煜昱汩於臾盂聿竽萸妪腴圄谕觎揄龉谀俣馀庾妤瘐鬻欤鹬阈嵛雩鹆圉蜮伛纡窬窳饫蓣狳肀舁蝓燠", niu: "牛纽扭钮拗妞忸狃", o: "哦噢喔", ba: "把八巴拔伯吧坝爸霸罢芭跋扒叭靶疤笆耙鲅粑岜灞钯捌菝魃茇", pa: "怕帕爬扒趴琶啪葩耙杷钯筢", pi: "被批副否皮坏辟啤匹披疲罢僻毗坯脾譬劈媲屁琵邳裨痞癖陂丕枇噼霹吡纰砒铍淠郫埤濞睥芘蚍圮鼙罴蜱疋貔仳庀擗甓陴", bi: "比必币笔毕秘避闭佛辟壁弊彼逼碧鼻臂蔽拂泌璧庇痹毙弼匕鄙陛裨贲敝蓖吡篦纰俾铋毖筚荸薜婢哔跸濞秕荜愎睥妣芘箅髀畀滗狴萆嬖襞舭", bai: "百白败摆伯拜柏佰掰呗擘捭稗", bo: "波博播勃拨薄佛伯玻搏柏泊舶剥渤卜驳簿脖膊簸菠礴箔铂亳钵帛擘饽跛钹趵檗啵鹁擗踣", bei: "北被备倍背杯勃贝辈悲碑臂卑悖惫蓓陂钡狈呗焙碚褙庳鞴孛鹎邶鐾", ban: "办版半班般板颁伴搬斑扮拌扳瓣坂阪绊钣瘢舨癍", pan: "判盘番潘攀盼拚畔胖叛拌蹒磐爿蟠泮袢襻丬", bin: "份宾频滨斌彬濒殡缤鬓槟摈膑玢镔豳髌傧", bang: "帮邦彭旁榜棒膀镑绑傍磅蚌谤梆浜蒡", pang: "旁庞乓磅螃彷滂逄耪", beng: "泵崩蚌蹦迸绷甭嘣甏堋", bao: "报保包宝暴胞薄爆炮饱抱堡剥鲍曝葆瀑豹刨褒雹孢苞煲褓趵鸨龅勹", bu: "不部步布补捕堡埔卜埠簿哺怖钚卟瓿逋晡醭钸", pu: "普暴铺浦朴堡葡谱埔扑仆蒲曝瀑溥莆圃璞濮菩蹼匍噗氆攵镨攴镤", mian: "面棉免绵缅勉眠冕娩腼渑湎沔黾宀眄", po: "破繁坡迫颇朴泊婆泼魄粕鄱珀陂叵笸泺皤钋钷", fan: "反范犯繁饭泛翻凡返番贩烦拚帆樊藩矾梵蕃钒幡畈蘩蹯燔", fu: "府服副负富复福夫妇幅付扶父符附腐赴佛浮覆辅傅伏抚赋辐腹弗肤阜袱缚甫氟斧孚敷俯拂俘咐腑孵芙涪釜脯茯馥宓绂讣呋罘麸蝠匐芾蜉跗凫滏蝮驸绋蚨砩桴赙菔呒趺苻拊阝鲋怫稃郛莩幞祓艴黻黼鳆", ben: "本体奔苯笨夯贲锛畚坌", feng: "风丰封峰奉凤锋冯逢缝蜂枫疯讽烽俸沣酆砜葑唪", bian: "变便边编遍辩鞭辨贬匾扁卞汴辫砭苄蝙鳊弁窆笾煸褊碥忭缏", pian: "便片篇偏骗翩扁骈胼蹁谝犏缏", zhen: "镇真针圳振震珍阵诊填侦臻贞枕桢赈祯帧甄斟缜箴疹砧榛鸩轸稹溱蓁胗椹朕畛浈", biao: "表标彪镖裱飚膘飙镳婊骠飑杓髟鳔灬瘭", piao: "票朴漂飘嫖瓢剽缥殍瞟骠嘌莩螵", huo: "和活或货获火伙惑霍祸豁嚯藿锪蠖钬耠镬夥灬劐攉", bie: "别鳖憋瘪蹩", min: "民敏闽闵皿泯岷悯珉抿黾缗玟愍苠鳘", fen: "分份纷奋粉氛芬愤粪坟汾焚酚吩忿棼玢鼢瀵偾鲼", bing: "并病兵冰屏饼炳秉丙摒柄槟禀枋邴冫", geng: "更耕颈庚耿梗埂羹哽赓绠鲠", fang: "方放房防访纺芳仿坊妨肪邡舫彷枋鲂匚钫", xian: "现先县见线限显险献鲜洗宪纤陷闲贤仙衔掀咸嫌掺羡弦腺痫娴舷馅酰铣冼涎暹籼锨苋蚬跹岘藓燹鹇氙莶霰跣猃彡祆筅", fou: "不否缶", ca: "拆擦嚓礤", cha: "查察差茶插叉刹茬楂岔诧碴嚓喳姹杈汊衩搽槎镲苴檫馇锸猹", cai: "才采财材菜彩裁蔡猜踩睬", can: "参残餐灿惨蚕掺璨惭粲孱骖黪", shen: "信深参身神什审申甚沈伸慎渗肾绅莘呻婶娠砷蜃哂椹葚吲糁渖诜谂矧胂", cen: "参岑涔", san: "三参散伞叁糁馓毵", cang: "藏仓苍沧舱臧伧", zang: "藏脏葬赃臧奘驵", chen: "称陈沈沉晨琛臣尘辰衬趁忱郴宸谌碜嗔抻榇伧谶龀肜", cao: "草操曹槽糙嘈漕螬艚屮", ce: "策测册侧厕栅恻", ze: "责则泽择侧咋啧仄箦赜笮舴昃迮帻", zhai: "债择齐宅寨侧摘窄斋祭翟砦瘵哜", dao: "到道导岛倒刀盗稻蹈悼捣叨祷焘氘纛刂帱忉", ceng: "层曾蹭噌", zha: "查扎炸诈闸渣咋乍榨楂札栅眨咤柞喳喋铡蚱吒怍砟揸痄哳齄", chai: "差拆柴钗豺侪虿瘥", ci: "次此差词辞刺瓷磁兹慈茨赐祠伺雌疵鹚糍呲粢", zi: "资自子字齐咨滋仔姿紫兹孜淄籽梓鲻渍姊吱秭恣甾孳訾滓锱辎趑龇赀眦缁呲笫谘嵫髭茈粢觜耔", cuo: "措错磋挫搓撮蹉锉厝嵯痤矬瘥脞鹾", chan: "产单阐崭缠掺禅颤铲蝉搀潺蟾馋忏婵孱觇廛谄谗澶骣羼躔蒇冁", shan: "山单善陕闪衫擅汕扇掺珊禅删膳缮赡鄯栅煽姗跚鳝嬗潸讪舢苫疝掸膻钐剡蟮芟埏彡骟", zhan: "展战占站崭粘湛沾瞻颤詹斩盏辗绽毡栈蘸旃谵搌", xin: "新心信辛欣薪馨鑫芯锌忻莘昕衅歆囟忄镡", lian: "联连练廉炼脸莲恋链帘怜涟敛琏镰濂楝鲢殓潋裢裣臁奁莶蠊蔹", chang: "场长厂常偿昌唱畅倡尝肠敞倘猖娼淌裳徜昶怅嫦菖鲳阊伥苌氅惝鬯", zhang: "长张章障涨掌帐胀彰丈仗漳樟账杖璋嶂仉瘴蟑獐幛鄣嫜", chao: "超朝潮炒钞抄巢吵剿绰嘲晁焯耖怊", zhao: "着照招找召朝赵兆昭肇罩钊沼嘲爪诏濯啁棹笊", zhou: "调州周洲舟骤轴昼宙粥皱肘咒帚胄绉纣妯啁诌繇碡籀酎荮", che: "车彻撤尺扯澈掣坼砗屮", ju: "车局据具举且居剧巨聚渠距句拒俱柜菊拘炬桔惧矩鞠驹锯踞咀瞿枸掬沮莒橘飓疽钜趄踽遽琚龃椐苣裾榘狙倨榉苴讵雎锔窭鞫犋屦醵", cheng: "成程城承称盛抢乘诚呈净惩撑澄秤橙骋逞瞠丞晟铛埕塍蛏柽铖酲裎枨", rong: "容荣融绒溶蓉熔戎榕茸冗嵘肜狨蝾", sheng: "生声升胜盛乘圣剩牲甸省绳笙甥嵊晟渑眚", deng: "等登邓灯澄凳瞪蹬噔磴嶝镫簦戥", zhi: "制之治质职只志至指织支值知识直致执置止植纸拓智殖秩旨址滞氏枝芝脂帜汁肢挚稚酯掷峙炙栉侄芷窒咫吱趾痔蜘郅桎雉祉郦陟痣蛭帙枳踯徵胝栀贽祗豸鸷摭轵卮轾彘觯絷跖埴夂黹忮骘膣踬", zheng: "政正证争整征郑丁症挣蒸睁铮筝拯峥怔诤狰徵钲", tang: "堂唐糖汤塘躺趟倘棠烫淌膛搪镗傥螳溏帑羰樘醣螗耥铴瑭", chi: "持吃池迟赤驰尺斥齿翅匙痴耻炽侈弛叱啻坻眙嗤墀哧茌豉敕笞饬踟蚩柢媸魑篪褫彳鸱螭瘛眵傺", shi: "是时实事市十使世施式势视识师史示石食始士失适试什泽室似诗饰殖释驶氏硕逝湿蚀狮誓拾尸匙仕柿矢峙侍噬嗜栅拭嘘屎恃轼虱耆舐莳铈谥炻豕鲥饣螫酾筮埘弑礻蓍鲺贳", qi: "企其起期气七器汽奇齐启旗棋妻弃揭枝歧欺骑契迄亟漆戚岂稽岐琦栖缉琪泣乞砌祁崎绮祺祈凄淇杞脐麒圻憩芪伎俟畦耆葺沏萋骐鳍綦讫蕲屺颀亓碛柒啐汔綮萁嘁蛴槭欹芑桤丌蜞", chuai: "揣踹啜搋膪", tuo: "托脱拓拖妥驼陀沱鸵驮唾椭坨佗砣跎庹柁橐乇铊沲酡鼍箨柝", duo: "多度夺朵躲铎隋咄堕舵垛惰哆踱跺掇剁柁缍沲裰哚隳", xue: "学血雪削薛穴靴谑噱鳕踅泶彐", chong: "重种充冲涌崇虫宠忡憧舂茺铳艟", chou: "筹抽绸酬愁丑臭仇畴稠瞅踌惆俦瘳雠帱", qiu: "求球秋丘邱仇酋裘龟囚遒鳅虬蚯泅楸湫犰逑巯艽俅蝤赇鼽糗", xiu: "修秀休宿袖绣臭朽锈羞嗅岫溴庥馐咻髹鸺貅", chu: "出处础初助除储畜触楚厨雏矗橱锄滁躇怵绌搐刍蜍黜杵蹰亍樗憷楮", tuan: "团揣湍疃抟彖", zhui: "追坠缀揣椎锥赘惴隹骓缒", chuan: "传川船穿串喘椽舛钏遄氚巛舡", zhuan: "专转传赚砖撰篆馔啭颛", yuan: "元员院原源远愿园援圆缘袁怨渊苑宛冤媛猿垣沅塬垸鸳辕鸢瑗圜爰芫鼋橼螈眢箢掾", cuan: "窜攒篡蹿撺爨汆镩", chuang: "创床窗闯幢疮怆", zhuang: "装状庄壮撞妆幢桩奘僮戆", chui: "吹垂锤炊椎陲槌捶棰", chun: "春纯醇淳唇椿蠢鹑朐莼肫蝽", zhun: "准屯淳谆肫窀", cu: "促趋趣粗簇醋卒蹴猝蹙蔟殂徂", dun: "吨顿盾敦蹲墩囤沌钝炖盹遁趸砘礅", qu: "区去取曲趋渠趣驱屈躯衢娶祛瞿岖龋觑朐蛐癯蛆苣阒诎劬蕖蘧氍黢蠼璩麴鸲磲", xu: "需许续须序徐休蓄畜虚吁绪叙旭邪恤墟栩絮圩婿戌胥嘘浒煦酗诩朐盱蓿溆洫顼勖糈砉醑", chuo: "辍绰戳淖啜龊踔辶", zu: "组族足祖租阻卒俎诅镞菹", ji: "济机其技基记计系期际及集级几给积极己纪即继击既激绩急奇吉季齐疾迹鸡剂辑籍寄挤圾冀亟寂暨脊跻肌稽忌饥祭缉棘矶汲畸姬藉瘠骥羁妓讥稷蓟悸嫉岌叽伎鲫诘楫荠戟箕霁嵇觊麂畿玑笈犄芨唧屐髻戢佶偈笄跽蒺乩咭赍嵴虮掎齑殛鲚剞洎丌墼蕺彐芰哜", cong: "从丛匆聪葱囱琮淙枞骢苁璁", zong: "总从综宗纵踪棕粽鬃偬枞腙", cou: "凑辏腠楱", cui: "衰催崔脆翠萃粹摧璀瘁悴淬啐隹毳榱", wei: "为位委未维卫围违威伟危味微唯谓伪慰尾魏韦胃畏帷喂巍萎蔚纬潍尉渭惟薇苇炜圩娓诿玮崴桅偎逶倭猥囗葳隗痿猬涠嵬韪煨艉隹帏闱洧沩隈鲔軎", cun: "村存寸忖皴", zuo: "作做座左坐昨佐琢撮祚柞唑嘬酢怍笮阼胙", zuan: "钻纂攥缵躜", da: "大达打答搭沓瘩惮嗒哒耷鞑靼褡笪怛妲", dai: "大代带待贷毒戴袋歹呆隶逮岱傣棣怠殆黛甙埭诒绐玳呔迨", tai: "大台太态泰抬胎汰钛苔薹肽跆邰鲐酞骀炱", ta: "他它她拓塔踏塌榻沓漯獭嗒挞蹋趿遢铊鳎溻闼", dan: "但单石担丹胆旦弹蛋淡诞氮郸耽殚惮儋眈疸澹掸膻啖箪聃萏瘅赕", lu: "路六陆录绿露鲁卢炉鹿禄赂芦庐碌麓颅泸卤潞鹭辘虏璐漉噜戮鲈掳橹轳逯渌蓼撸鸬栌氇胪镥簏舻辂垆", tan: "谈探坦摊弹炭坛滩贪叹谭潭碳毯瘫檀痰袒坍覃忐昙郯澹钽锬", ren: "人任认仁忍韧刃纫饪妊荏稔壬仞轫亻衽", jie: "家结解价界接节她届介阶街借杰洁截姐揭捷劫戒皆竭桔诫楷秸睫藉拮芥诘碣嗟颉蚧孑婕疖桀讦疥偈羯袷哜喈卩鲒骱", yan: "研严验演言眼烟沿延盐炎燕岩宴艳颜殷彦掩淹阎衍铅雁咽厌焰堰砚唁焉晏檐蜒奄俨腌妍谚兖筵焱偃闫嫣鄢湮赝胭琰滟阉魇酽郾恹崦芫剡鼹菸餍埏谳讠厣罨", dang: "当党档荡挡宕砀铛裆凼菪谠", tao: "套讨跳陶涛逃桃萄淘掏滔韬叨洮啕绦饕鼗", tiao: "条调挑跳迢眺苕窕笤佻啁粜髫铫祧龆蜩鲦", te: "特忑忒铽慝", de: "的地得德底锝", dei: "得", di: "的地第提低底抵弟迪递帝敌堤蒂缔滴涤翟娣笛棣荻谛狄邸嘀砥坻诋嫡镝碲骶氐柢籴羝睇觌", ti: "体提题弟替梯踢惕剔蹄棣啼屉剃涕锑倜悌逖嚏荑醍绨鹈缇裼", tui: "推退弟腿褪颓蜕忒煺", you: "有由又优游油友右邮尤忧幼犹诱悠幽佑釉柚铀鱿囿酉攸黝莠猷蝣疣呦蚴莸莜铕宥繇卣牖鼬尢蚰侑", dian: "电点店典奠甸碘淀殿垫颠滇癫巅惦掂癜玷佃踮靛钿簟坫阽", tian: "天田添填甜甸恬腆佃舔钿阗忝殄畋栝掭", zhu: "主术住注助属逐宁著筑驻朱珠祝猪诸柱竹铸株瞩嘱贮煮烛苎褚蛛拄铢洙竺蛀渚伫杼侏澍诛茱箸炷躅翥潴邾槠舳橥丶瘃麈疰", nian: "年念酿辗碾廿捻撵拈蔫鲶埝鲇辇黏", diao: "调掉雕吊钓刁貂凋碉鲷叼铫铞", yao: "要么约药邀摇耀腰遥姚窑瑶咬尧钥谣肴夭侥吆疟妖幺杳舀窕窈曜鹞爻繇徭轺铫鳐崾珧", die: "跌叠蝶迭碟爹谍牒耋佚喋堞瓞鲽垤揲蹀", she: "设社摄涉射折舍蛇拾舌奢慑赦赊佘麝歙畲厍猞揲滠", ye: "业也夜叶射野液冶喝页爷耶邪咽椰烨掖拽曳晔谒腋噎揶靥邺铘揲", xie: "些解协写血叶谢械鞋胁斜携懈契卸谐泄蟹邪歇泻屑挟燮榭蝎撷偕亵楔颉缬邂鲑瀣勰榍薤绁渫廨獬躞", zhe: "这者着著浙折哲蔗遮辙辄柘锗褶蜇蛰鹧谪赭摺乇磔螫", ding: "定订顶丁鼎盯钉锭叮仃铤町酊啶碇腚疔玎耵", diu: "丢铥", ting: "听庭停厅廷挺亭艇婷汀铤烃霆町蜓葶梃莛", dong: "动东董冬洞懂冻栋侗咚峒氡恫胴硐垌鸫岽胨", tong: "同通统童痛铜桶桐筒彤侗佟潼捅酮砼瞳恸峒仝嗵僮垌茼", zhong: "中重种众终钟忠仲衷肿踵冢盅蚣忪锺舯螽夂", dou: "都斗读豆抖兜陡逗窦渎蚪痘蔸钭篼", du: "度都独督读毒渡杜堵赌睹肚镀渎笃竺嘟犊妒牍蠹椟黩芏髑", duan: "断段短端锻缎煅椴簖", dui: "对队追敦兑堆碓镦怼憝", rui: "瑞兑锐睿芮蕊蕤蚋枘", yue: "月说约越乐跃兑阅岳粤悦曰钥栎钺樾瀹龠哕刖", tun: "吞屯囤褪豚臀饨暾氽", hui: "会回挥汇惠辉恢徽绘毁慧灰贿卉悔秽溃荟晖彗讳诲珲堕诙蕙晦睢麾烩茴喙桧蛔洄浍虺恚蟪咴隳缋哕", wu: "务物无五武午吴舞伍污乌误亡恶屋晤悟吾雾芜梧勿巫侮坞毋诬呜钨邬捂鹜兀婺妩於戊鹉浯蜈唔骛仵焐芴鋈庑鼯牾怃圬忤痦迕杌寤阢", ya: "亚压雅牙押鸭呀轧涯崖邪芽哑讶鸦娅衙丫蚜碣垭伢氩桠琊揠吖睚痖疋迓岈砑", he: "和合河何核盖贺喝赫荷盒鹤吓呵苛禾菏壑褐涸阂阖劾诃颌嗬貉曷翮纥盍", wo: "我握窝沃卧挝涡斡渥幄蜗喔倭莴龌肟硪", en: "恩摁蒽", n: "嗯唔", er: "而二尔儿耳迩饵洱贰铒珥佴鸸鲕", fa: "发法罚乏伐阀筏砝垡珐", quan: "全权券泉圈拳劝犬铨痊诠荃醛蜷颧绻犭筌鬈悛辁畎", fei: "费非飞肥废菲肺啡沸匪斐蜚妃诽扉翡霏吠绯腓痱芾淝悱狒榧砩鲱篚镄", pei: "配培坏赔佩陪沛裴胚妃霈淠旆帔呸醅辔锫", ping: "平评凭瓶冯屏萍苹乒坪枰娉俜鲆", fo: "佛", hu: "和护许户核湖互乎呼胡戏忽虎沪糊壶葫狐蝴弧瑚浒鹄琥扈唬滹惚祜囫斛笏芴醐猢怙唿戽槲觳煳鹕冱瓠虍岵鹱烀轷", ga: "夹咖嘎尬噶旮伽尕钆尜", ge: "个合各革格歌哥盖隔割阁戈葛鸽搁胳舸疙铬骼蛤咯圪镉颌仡硌嗝鬲膈纥袼搿塥哿虼", ha: "哈蛤铪", xia: "下夏峡厦辖霞夹虾狭吓侠暇遐瞎匣瑕唬呷黠硖罅狎瘕柙", gai: "改该盖概溉钙丐芥赅垓陔戤", hai: "海还害孩亥咳骸骇氦嗨胲醢", gan: "干感赶敢甘肝杆赣乾柑尴竿秆橄矸淦苷擀酐绀泔坩旰疳澉", gang: "港钢刚岗纲冈杠缸扛肛罡戆筻", jiang: "将强江港奖讲降疆蒋姜浆匠酱僵桨绛缰犟豇礓洚茳糨耩", hang: "行航杭巷夯吭桁沆绗颃", gong: "工公共供功红贡攻宫巩龚恭拱躬弓汞蚣珙觥肱廾", hong: "红宏洪轰虹鸿弘哄烘泓訇蕻闳讧荭黉薨", guang: "广光逛潢犷胱咣桄", qiong: "穷琼穹邛茕筇跫蛩銎", gao: "高告搞稿膏糕镐皋羔锆杲郜睾诰藁篙缟槁槔", hao: "好号毫豪耗浩郝皓昊皋蒿壕灏嚎濠蚝貉颢嗥薅嚆", li: "理力利立里李历例离励礼丽黎璃厉厘粒莉梨隶栗荔沥犁漓哩狸藜罹篱鲤砺吏澧俐骊溧砾莅锂笠蠡蛎痢雳俪傈醴栎郦俚枥喱逦娌鹂戾砬唳坜疠蜊黧猁鬲粝蓠呖跞疬缡鲡鳢嫠詈悝苈篥轹", jia: "家加价假佳架甲嘉贾驾嫁夹稼钾挟拮迦伽颊浃枷戛荚痂颉镓笳珈岬胛袈郏葭袷瘕铗跏蛱恝哿", luo: "落罗络洛逻螺锣骆萝裸漯烙摞骡咯箩珞捋荦硌雒椤镙跞瘰泺脶猡倮蠃", ke: "可科克客刻课颗渴壳柯棵呵坷恪苛咳磕珂稞瞌溘轲窠嗑疴蝌岢铪颏髁蚵缂氪骒钶锞", qia: "卡恰洽掐髂袷咭葜", gei: "给", gen: "根跟亘艮哏茛", hen: "很狠恨痕哏", gou: "构购够句沟狗钩拘勾苟垢枸篝佝媾诟岣彀缑笱鞲觏遘", kou: "口扣寇叩抠佝蔻芤眍筘", gu: "股古顾故固鼓骨估谷贾姑孤雇辜菇沽咕呱锢钴箍汩梏痼崮轱鸪牯蛊诂毂鹘菰罟嘏臌觚瞽蛄酤牿鲴", pai: "牌排派拍迫徘湃俳哌蒎", gua: "括挂瓜刮寡卦呱褂剐胍诖鸹栝呙", tou: "投头透偷愉骰亠", guai: "怪拐乖", kuai: "会快块筷脍蒯侩浍郐蒉狯哙", guan: "关管观馆官贯冠惯灌罐莞纶棺斡矜倌鹳鳏盥掼涫", wan: "万完晚湾玩碗顽挽弯蔓丸莞皖宛婉腕蜿惋烷琬畹豌剜纨绾脘菀芄箢", ne: "呢哪呐讷疒", gui: "规贵归轨桂柜圭鬼硅瑰跪龟匮闺诡癸鳜桧皈鲑刽晷傀眭妫炅庋簋刿宄匦", jun: "军均俊君峻菌竣钧骏龟浚隽郡筠皲麇捃", jiong: "窘炯迥炅冂扃", jue: "决绝角觉掘崛诀獗抉爵嚼倔厥蕨攫珏矍蹶谲镢鳜噱桷噘撅橛孓觖劂爝", gun: "滚棍辊衮磙鲧绲丨", hun: "婚混魂浑昏棍珲荤馄诨溷阍", guo: "国过果郭锅裹帼涡椁囗蝈虢聒埚掴猓崞蜾呙馘", hei: "黑嘿嗨", kan: "看刊勘堪坎砍侃嵌槛瞰阚龛戡凵莰", heng: "衡横恒亨哼珩桁蘅", mo: "万没么模末冒莫摩墨默磨摸漠脉膜魔沫陌抹寞蘑摹蓦馍茉嘿谟秣蟆貉嫫镆殁耱嬷麽瘼貊貘", peng: "鹏朋彭膨蓬碰苹棚捧亨烹篷澎抨硼怦砰嘭蟛堋", hou: "后候厚侯猴喉吼逅篌糇骺後鲎瘊堠", hua: "化华划话花画滑哗豁骅桦猾铧砉", huai: "怀坏淮徊槐踝", huan: "还环换欢患缓唤焕幻痪桓寰涣宦垸洹浣豢奂郇圜獾鲩鬟萑逭漶锾缳擐", xun: "讯训迅孙寻询循旬巡汛勋逊熏徇浚殉驯鲟薰荀浔洵峋埙巽郇醺恂荨窨蕈曛獯", huang: "黄荒煌皇凰慌晃潢谎惶簧璜恍幌湟蝗磺隍徨遑肓篁鳇蟥癀", nai: "能乃奶耐奈鼐萘氖柰佴艿", luan: "乱卵滦峦鸾栾銮挛孪脔娈", qie: "切且契窃茄砌锲怯伽惬妾趄挈郄箧慊", jian: "建间件见坚检健监减简艰践兼鉴键渐柬剑尖肩舰荐箭浅剪俭碱茧奸歼拣捡煎贱溅槛涧堑笺谏饯锏缄睑謇蹇腱菅翦戬毽笕犍硷鞯牮枧湔鲣囝裥踺搛缣鹣蒹谫僭戋趼楗", nan: "南难男楠喃囡赧腩囝蝻", qian: "前千钱签潜迁欠纤牵浅遣谦乾铅歉黔谴嵌倩钳茜虔堑钎骞阡掮钤扦芊犍荨仟芡悭缱佥愆褰凵肷岍搴箝慊椠", qiang: "强抢疆墙枪腔锵呛羌蔷襁羟跄樯戕嫱戗炝镪锖蜣", xiang: "向项相想乡象响香降像享箱羊祥湘详橡巷翔襄厢镶飨饷缃骧芗庠鲞葙蟓", jiao: "教交较校角觉叫脚缴胶轿郊焦骄浇椒礁佼蕉娇矫搅绞酵剿嚼饺窖跤蛟侥狡姣皎茭峤铰醮鲛湫徼鹪僬噍艽挢敫", zhuo: "着著缴桌卓捉琢灼浊酌拙茁涿镯淖啄濯焯倬擢斫棹诼浞禚", qiao: "桥乔侨巧悄敲俏壳雀瞧翘窍峭锹撬荞跷樵憔鞘橇峤诮谯愀鞒硗劁缲", xiao: "小效销消校晓笑肖削孝萧俏潇硝宵啸嚣霄淆哮筱逍姣箫骁枭哓绡蛸崤枵魈", si: "司四思斯食私死似丝饲寺肆撕泗伺嗣祀厮驷嘶锶俟巳蛳咝耜笥纟糸鸶缌澌姒汜厶兕", kai: "开凯慨岂楷恺揩锴铠忾垲剀锎蒈", jin: "进金今近仅紧尽津斤禁锦劲晋谨筋巾浸襟靳瑾烬缙钅矜觐堇馑荩噤廑妗槿赆衿卺", qin: "亲勤侵秦钦琴禽芹沁寝擒覃噙矜嗪揿溱芩衾廑锓吣檎螓", jing: "经京精境竞景警竟井惊径静劲敬净镜睛晶颈荆兢靖泾憬鲸茎腈菁胫阱旌粳靓痉箐儆迳婧肼刭弪獍", ying: "应营影英景迎映硬盈赢颖婴鹰荧莹樱瑛蝇萦莺颍膺缨瀛楹罂荥萤鹦滢蓥郢茔嘤璎嬴瘿媵撄潆", jiu: "就究九酒久救旧纠舅灸疚揪咎韭玖臼柩赳鸠鹫厩啾阄桕僦鬏", zui: "最罪嘴醉咀蕞觜", juan: "卷捐圈眷娟倦绢隽镌涓鹃鄄蠲狷锩桊", suan: "算酸蒜狻", yun: "员运云允孕蕴韵酝耘晕匀芸陨纭郧筠恽韫郓氲殒愠昀菀狁", qun: "群裙逡麇", ka: "卡喀咖咔咯佧胩", kang: "康抗扛慷炕亢糠伉钪闶", keng: "坑铿吭", kao: "考靠烤拷铐栲尻犒", ken: "肯垦恳啃龈裉", yin: "因引银印音饮阴隐姻殷淫尹荫吟瘾寅茵圻垠鄞湮蚓氤胤龈窨喑铟洇狺夤廴吲霪茚堙", kong: "空控孔恐倥崆箜", ku: "苦库哭酷裤枯窟挎骷堀绔刳喾", kua: "跨夸垮挎胯侉", kui: "亏奎愧魁馈溃匮葵窥盔逵睽馗聩喟夔篑岿喹揆隗傀暌跬蒉愦悝蝰", kuan: "款宽髋", kuang: "况矿框狂旷眶匡筐邝圹哐贶夼诳诓纩", que: "确却缺雀鹊阙瘸榷炔阕悫", kun: "困昆坤捆琨锟鲲醌髡悃阃", kuo: "扩括阔廓蛞", la: "拉落垃腊啦辣蜡喇剌旯砬邋瘌", lai: "来莱赖睐徕籁涞赉濑癞崃疠铼", lan: "兰览蓝篮栏岚烂滥缆揽澜拦懒榄斓婪阑褴罱啉谰镧漤", lin: "林临邻赁琳磷淋麟霖鳞凛拎遴蔺吝粼嶙躏廪檩啉辚膦瞵懔", lang: "浪朗郎廊狼琅榔螂阆锒莨啷蒗稂", liang: "量两粮良辆亮梁凉谅粱晾靓踉莨椋魉墚", lao: "老劳落络牢捞涝烙姥佬崂唠酪潦痨醪铑铹栳耢", mu: "目模木亩幕母牧莫穆姆墓慕牟牡募睦缪沐暮拇姥钼苜仫毪坶", le: "了乐勒肋叻鳓嘞仂泐", lei: "类累雷勒泪蕾垒磊擂镭肋羸耒儡嫘缧酹嘞诔檑", sui: "随岁虽碎尿隧遂髓穗绥隋邃睢祟濉燧谇眭荽", lie: "列烈劣裂猎冽咧趔洌鬣埒捩躐", leng: "冷愣棱楞塄", ling: "领令另零灵龄陵岭凌玲铃菱棱伶羚苓聆翎泠瓴囹绫呤棂蛉酃鲮柃", lia: "俩", liao: "了料疗辽廖聊寥缪僚燎缭撂撩嘹潦镣寮蓼獠钌尥鹩", liu: "流刘六留柳瘤硫溜碌浏榴琉馏遛鎏骝绺镏旒熘鹨锍", lun: "论轮伦仑纶沦抡囵", lv: "率律旅绿虑履吕铝屡氯缕滤侣驴榈闾偻褛捋膂稆", lou: "楼露漏陋娄搂篓喽镂偻瘘髅耧蝼嵝蒌", mao: "贸毛矛冒貌茂茅帽猫髦锚懋袤牦卯铆耄峁瑁蟊茆蝥旄泖昴瞀", long: "龙隆弄垄笼拢聋陇胧珑窿茏咙砻垅泷栊癃", nong: "农浓弄脓侬哝", shuang: "双爽霜孀泷", shu: "术书数属树输束述署朱熟殊蔬舒疏鼠淑叔暑枢墅俞曙抒竖蜀薯梳戍恕孰沭赎庶漱塾倏澍纾姝菽黍腧秫毹殳疋摅", shuai: "率衰帅摔甩蟀", lve: "略掠锊", ma: "么马吗摩麻码妈玛嘛骂抹蚂唛蟆犸杩", me: "么麽", mai: "买卖麦迈脉埋霾荬劢", man: "满慢曼漫埋蔓瞒蛮鳗馒幔谩螨熳缦镘颟墁鞔", mi: "米密秘迷弥蜜谜觅靡泌眯麋猕谧咪糜宓汨醚嘧弭脒冖幂祢縻蘼芈糸敉", men: "们门闷瞒汶扪焖懑鞔钔", mang: "忙盲茫芒氓莽蟒邙硭漭", meng: "蒙盟梦猛孟萌氓朦锰檬勐懵蟒蜢虻黾蠓艨甍艋瞢礞", miao: "苗秒妙描庙瞄缪渺淼藐缈邈鹋杪眇喵", mou: "某谋牟缪眸哞鍪蛑侔厶", miu: "缪谬", mei: "美没每煤梅媒枚妹眉魅霉昧媚玫酶镁湄寐莓袂楣糜嵋镅浼猸鹛", wen: "文问闻稳温纹吻蚊雯紊瘟汶韫刎璺玟阌", mie: "灭蔑篾乜咩蠛", ming: "明名命鸣铭冥茗溟酩瞑螟暝", na: "内南那纳拿哪娜钠呐捺衲镎肭", nei: "内那哪馁", nuo: "难诺挪娜糯懦傩喏搦锘", ruo: "若弱偌箬", nang: "囊馕囔曩攮", nao: "脑闹恼挠瑙淖孬垴铙桡呶硇猱蛲", ni: "你尼呢泥疑拟逆倪妮腻匿霓溺旎昵坭铌鲵伲怩睨猊", nen: "嫩恁", neng: "能", nin: "您恁", niao: "鸟尿溺袅脲茑嬲", nie: "摄聂捏涅镍孽捻蘖啮蹑嗫臬镊颞乜陧", niang: "娘酿", ning: "宁凝拧泞柠咛狞佞聍甯", nu: "努怒奴弩驽帑孥胬", nv: "女钕衄恧", ru: "入如女乳儒辱汝茹褥孺濡蠕嚅缛溽铷洳薷襦颥蓐", nuan: "暖", nve: "虐疟", re: "热若惹喏", ou: "区欧偶殴呕禺藕讴鸥瓯沤耦怄", pao: "跑炮泡抛刨袍咆疱庖狍匏脬", pou: "剖掊裒", pen: "喷盆湓", pie: "瞥撇苤氕丿", pin: "品贫聘频拼拚颦姘嫔榀牝", se: "色塞瑟涩啬穑铯槭", qing: "情青清请亲轻庆倾顷卿晴氢擎氰罄磬蜻箐鲭綮苘黥圊檠謦", zan: "赞暂攒堑昝簪糌瓒錾趱拶", shao: "少绍召烧稍邵哨韶捎勺梢鞘芍苕劭艄筲杓潲", sao: "扫骚嫂梢缫搔瘙臊埽缲鳋", sha: "沙厦杀纱砂啥莎刹杉傻煞鲨霎嗄痧裟挲铩唼歃", xuan: "县选宣券旋悬轩喧玄绚渲璇炫萱癣漩眩暄煊铉楦泫谖痃碹揎镟儇", ran: "然染燃冉苒髯蚺", rang: "让壤攘嚷瓤穰禳", rao: "绕扰饶娆桡荛", reng: "仍扔", ri: "日", rou: "肉柔揉糅鞣蹂", ruan: "软阮朊", run: "润闰", sa: "萨洒撒飒卅仨脎", suo: "所些索缩锁莎梭琐嗦唆唢娑蓑羧挲桫嗍睃", sai: "思赛塞腮噻鳃", shui: "说水税谁睡氵", sang: "桑丧嗓搡颡磉", sen: "森", seng: "僧", shai: "筛晒", shang: "上商尚伤赏汤裳墒晌垧觞殇熵绱", xing: "行省星腥猩惺兴刑型形邢饧醒幸杏性姓陉荇荥擤悻硎", shou: "收手受首售授守寿瘦兽狩绶艏扌", shuo: "说数硕烁朔铄妁槊蒴搠", su: "速素苏诉缩塑肃俗宿粟溯酥夙愫簌稣僳谡涑蔌嗉觫", shua: "刷耍唰", shuan: "栓拴涮闩", shun: "顺瞬舜吮", song: "送松宋讼颂耸诵嵩淞怂悚崧凇忪竦菘", sou: "艘搜擞嗽嗖叟馊薮飕嗾溲锼螋瞍", sun: "损孙笋荪榫隼狲飧", teng: "腾疼藤滕誊", tie: "铁贴帖餮萜", tu: "土突图途徒涂吐屠兔秃凸荼钍菟堍酴", wai: "外歪崴", wang: "王望往网忘亡旺汪枉妄惘罔辋魍", weng: "翁嗡瓮蓊蕹", zhua: "抓挝爪", yang: "样养央阳洋扬杨羊详氧仰秧痒漾疡泱殃恙鸯徉佯怏炀烊鞅蛘", xiong: "雄兄熊胸凶匈汹芎", yo: "哟唷", yong: "用永拥勇涌泳庸俑踊佣咏雍甬镛臃邕蛹恿慵壅痈鳙墉饔喁", za: "杂扎咱砸咋匝咂拶", zai: "在再灾载栽仔宰哉崽甾", zao: "造早遭枣噪灶燥糟凿躁藻皂澡蚤唣", zei: "贼", zen: "怎谮", zeng: "增曾综赠憎锃甑罾缯", zhei: "这", zou: "走邹奏揍诹驺陬楱鄹鲰", zhuai: "转拽", zun: "尊遵鳟樽撙", dia: "嗲", nou: "耨" }, Ve = e("ec57"), Ge = function(k) {
+        return k.keys().map(k);
       };
       Ge(Ve);
-      var rt = [], Ee = null, it = Object(t.defineComponent)({ name: "KeyBoard", inheritAttrs: !1, props: { color: { type: String, default: "#eaa050" }, modeList: { type: Array, default: function() {
+      var rt = [], je = null, it = Object(t.defineComponent)({ name: "KeyBoard", inheritAttrs: !1, props: { color: { type: String, default: "#eaa050" }, modeList: { type: Array, default: function() {
         return ["handwrite", "symbol"];
-      } }, blurHide: { type: Boolean, default: !0 }, showHandleBar: { type: Boolean, default: !0 }, modal: Boolean, closeOnClickModal: { type: Boolean, default: !0 }, handApi: String, animateClass: String, dargHandleText: String }, emits: ["keyChange", "change", "closed", "modalClick"], directives: { handleDrag: j }, components: { Result: K, SvgIcon: Fe, HandBoard: re, DefaultBoard: le }, setup: function(_, U) {
-        var R = U.emit, N = Object(t.reactive)({ showMode: "default", visible: !1, resultVal: {} }), G = Object(t.ref)(null);
-        function ue(Ce) {
+      } }, blurHide: { type: Boolean, default: !0 }, showHandleBar: { type: Boolean, default: !0 }, modal: Boolean, closeOnClickModal: { type: Boolean, default: !0 }, handApi: String, animateClass: String, dargHandleText: String }, emits: ["keyChange", "change", "closed", "modalClick"], directives: { handleDrag: j }, components: { Result: K, SvgIcon: Fe, HandBoard: ie, DefaultBoard: le }, setup: function(k, B) {
+        var N = B.emit, P = Object(t.reactive)({ showMode: "default", visible: !1, resultVal: {} }), H = Object(t.ref)(null);
+        function ue(Ee) {
           var Le, Ie;
           switch (Object(t.nextTick)(function() {
             b.emit("keyBoardChange", "CN");
-          }), Ce) {
+          }), Ee) {
             case "en":
-              N.showMode = "default", Object(t.nextTick)(function() {
+              P.showMode = "default", Object(t.nextTick)(function() {
                 var De;
-                (De = G.value) === null || De === void 0 || De.click({ data: "", type: "change2lang" });
+                (De = H.value) === null || De === void 0 || De.click({ data: "", type: "change2lang" });
               });
               break;
             case "number":
-              N.showMode = "default", Object(t.nextTick)(function() {
+              P.showMode = "default", Object(t.nextTick)(function() {
                 var De;
-                (De = G.value) === null || De === void 0 || De.click({ data: ".?123", type: "change2num" });
+                (De = H.value) === null || De === void 0 || De.click({ data: ".?123", type: "change2num" });
               });
               break;
             case "handwrite":
-              (Le = _.modeList) !== null && Le !== void 0 && Le.find(function(De) {
+              (Le = k.modeList) !== null && Le !== void 0 && Le.find(function(De) {
                 return De === "handwrite";
-              }) && _.handApi ? (N.showMode = "handwrite", Object(t.nextTick)(function() {
+              }) && k.handApi ? (P.showMode = "handwrite", Object(t.nextTick)(function() {
                 b.emit("keyBoardChange", "handwrite");
-              })) : N.showMode = "default";
+              })) : P.showMode = "default";
               break;
             case "symbol":
-              N.showMode = "default", (Ie = _.modeList) !== null && Ie !== void 0 && Ie.find(function(De) {
+              P.showMode = "default", (Ie = k.modeList) !== null && Ie !== void 0 && Ie.find(function(De) {
                 return De === "symbol";
               }) && Object(t.nextTick)(function() {
                 var De, at;
-                (De = G.value) === null || De === void 0 || De.click({ data: ".?123", type: "change2num" }), (at = G.value) === null || at === void 0 || at.click({ data: "#+=", type: "#+=" });
+                (De = H.value) === null || De === void 0 || De.click({ data: ".?123", type: "change2num" }), (at = H.value) === null || at === void 0 || at.click({ data: "#+=", type: "#+=" });
               });
               break;
             default:
-              N.showMode = "default";
+              P.showMode = "default";
               break;
           }
         }
-        function pe(Ce) {
-          if (N.visible = !0, Ee = Ce.target, ue(Ee.getAttribute("data-mode")), document.querySelector(".key-board-modal")) {
+        function pe(Ee) {
+          if (P.visible = !0, je = Ee.target, ue(je.getAttribute("data-mode")), document.querySelector(".key-board-modal")) {
             var Le = document.querySelector(".key-board-modal");
             Le.style.display = "block";
           }
         }
         function de() {
-          if (Ee && Ee.blur(), Ee = null, N.visible = !1, R("closed"), N.showMode = "default", N.resultVal = {}, document.querySelector(".key-board-modal")) {
-            var Ce = document.querySelector(".key-board-modal");
-            Ce.style.display = "none";
+          if (je && je.blur(), je = null, P.visible = !1, N("closed"), P.showMode = "default", P.resultVal = {}, document.querySelector(".key-board-modal")) {
+            var Ee = document.querySelector(".key-board-modal");
+            Ee.style.display = "none";
           }
         }
         function ye() {
-          _.closeOnClickModal && de(), R("modalClick");
+          k.closeOnClickModal && de(), N("modalClick");
         }
         function Me() {
-          var Ce;
+          var Ee;
           if (document.querySelector(".key-board-modal")) {
             var Le;
             (Le = document.querySelector(".key-board-modal")) === null || Le === void 0 || Le.addEventListener("click", ye);
           } else {
             var Ie = document.createElement("div");
-            Ie.className = "key-board-modal", Ie.style.display = "none", (Ce = document.querySelector("body")) === null || Ce === void 0 || Ce.appendChild(Ie), Ie.addEventListener("click", ye);
+            Ie.className = "key-board-modal", Ie.style.display = "none", (Ee = document.querySelector("body")) === null || Ee === void 0 || Ee.appendChild(Ie), Ie.addEventListener("click", ye);
           }
         }
         function We() {
-          _.handApi && ve(_.handApi), [].concat(y(document.querySelectorAll("input")), y(document.querySelectorAll("textarea"))).forEach(function(Ce) {
-            Ce.getAttribute("data-mode") !== null && (rt.push(Ce), Ce.addEventListener("focus", pe), _.blurHide && Ce.addEventListener("blur", de));
+          k.handApi && ve(k.handApi), [].concat(y(document.querySelectorAll("input")), y(document.querySelectorAll("textarea"))).forEach(function(Ee) {
+            Ee.getAttribute("data-mode") !== null && (rt.push(Ee), Ee.addEventListener("focus", pe), k.blurHide && Ee.addEventListener("blur", de));
           });
         }
-        function Qe(Ce) {
-          if (!Ee) return "";
-          var Le = Ee, Ie = Le.selectionStart, De = Le.selectionEnd;
+        function Qe(Ee) {
+          if (!je) return "";
+          var Le = je, Ie = Le.selectionStart, De = Le.selectionEnd;
           if (!Ie || !De) return "";
-          var at = Ce.substring(0, Ie - 1) + Ce.substring(De);
+          var at = Ee.substring(0, Ie - 1) + Ee.substring(De);
           return Le.value = at, Le.focus(), Le.selectionStart = Ie - 1, Le.selectionEnd = Ie - 1, at;
         }
-        function Je(Ce) {
-          var Le = Ce.type;
+        function Je(Ee) {
+          var Le = Ee.type;
           switch (Le) {
             case "handwrite":
-              N.showMode = "handwrite";
+              P.showMode = "handwrite";
               break;
             case "delete":
-              if (!Ee) return;
-              var Ie = Qe(Ee.value);
-              Ee.value = Ie, R("change", Ie, Ee.getAttribute("data-prop") || Ee);
+              if (!je) return;
+              var Ie = Qe(je.value);
+              je.value = Ie, N("change", Ie, je.getAttribute("data-prop") || je);
               break;
           }
         }
-        function mt(Ce, Le) {
-          if (!Ee) return "";
-          var Ie = Ee, De = Ie.selectionStart || 0, at = Ie.selectionEnd || 0, St = Ce.substring(0, De) + Le + Ce.substring(at);
+        function mt(Ee, Le) {
+          if (!je) return "";
+          var Ie = je, De = Ie.selectionStart || 0, at = Ie.selectionEnd || 0, St = Ee.substring(0, De) + Le + Ee.substring(at);
           return Ie.value = St, Ie.focus(), Ie.selectionStart = De + Le.length, Ie.selectionEnd = De + Le.length, St;
         }
-        function Be(Ce) {
-          if (Ee) {
-            var Le = mt(Ee.value, Ce);
-            Ee.value = Le, R("change", Le, Ee.getAttribute("data-prop") || Ee), R("keyChange", Ce, Ee.getAttribute("data-prop") || Ee);
+        function Be(Ee) {
+          if (je) {
+            var Le = mt(je.value, Ee);
+            je.value = Le, N("change", Le, je.getAttribute("data-prop") || je), N("keyChange", Ee, je.getAttribute("data-prop") || je);
           }
         }
-        function Ye(Ce) {
-          var Le = new RegExp("^".concat(Ce, "\\w*")), Ie = Object.keys(ge).filter(function(De) {
+        function Ye(Ee) {
+          var Le = new RegExp("^".concat(Ee, "\\w*")), Ie = Object.keys(ge).filter(function(De) {
             return Le.test(De);
           }).sort();
-          N.resultVal = { code: Ce, value: Ce ? Ie.length > 1 ? Ie.reduce(function(De, at) {
+          P.resultVal = { code: Ee, value: Ee ? Ie.length > 1 ? Ie.reduce(function(De, at) {
             return De + ge[at];
-          }, "") : ge[Ie[0]] : "" }, Ee && R("keyChange", Ce, Ee.getAttribute("data-prop") || Ee);
+          }, "") : ge[Ie[0]] : "" }, je && N("keyChange", Ee, je.getAttribute("data-prop") || je);
         }
         function qe() {
           We();
         }
         function tt() {
-          return Ee;
+          return je;
         }
         return Object(t.onMounted)(function() {
-          _.modal && Me(), We(), b.on("resultReset", function() {
-            N.resultVal = {};
+          k.modal && Me(), We(), b.on("resultReset", function() {
+            P.resultVal = {};
           });
         }), Object(t.onUnmounted)(function() {
-          var Ce;
-          (Ce = document.querySelector(".key-board-modal")) === null || Ce === void 0 || Ce.removeEventListener("click", ye), rt.forEach(function(Le) {
+          var Ee;
+          (Ee = document.querySelector(".key-board-modal")) === null || Ee === void 0 || Ee.removeEventListener("click", ye), rt.forEach(function(Le) {
             Le.removeEventListener("focus", pe), Le.removeEventListener("blur", de);
           });
-        }), D(Object(t.reactive)({ color: _.color, modeList: _.modeList, handApi: _.handApi, closeKeyBoard: function() {
+        }), U(Object(t.reactive)({ color: k.color, modeList: k.modeList, handApi: k.handApi, closeKeyBoard: function() {
           de();
         }, changeDefaultBoard: function() {
-          N.showMode = "default";
-        } })), f(f({}, Object(t.toRefs)(N)), {}, { defaultBoardRef: G, getCurrentInput: tt, translate: Ye, reSignUp: qe, trigger: Je, change: Be });
+          P.showMode = "default";
+        } })), f(f({}, Object(t.toRefs)(P)), {}, { defaultBoardRef: H, getCurrentInput: tt, translate: Ye, reSignUp: qe, trigger: Je, change: Be });
       } });
       it.render = s;
       var Ze = it;
-      Ze.install = function(_) {
-        _.component(Ze.name, Ze);
+      Ze.install = function(k) {
+        k.component(Ze.name, Ze);
       };
-      var bt = Ze, Pt = bt;
+      var yt = Ze, Pt = yt;
       d.default = Pt;
     }, fb6a: function(i, d, e) {
       var n = e("23e7"), o = e("861d"), r = e("e8b5"), t = e("23cb"), a = e("50c4"), u = e("fc6a"), s = e("8418"), c = e("b622"), l = e("1dde"), f = l("slice"), g = c("species"), v = [].slice, p = Math.max;
@@ -4783,8 +4745,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     } });
   });
 })(Lt);
-var Fo = Lt.exports;
-const At = /* @__PURE__ */ Do(Fo);
+var Lo = Lt.exports;
+const At = /* @__PURE__ */ To(Lo);
 $t({
   components: { KeyBoard: At },
   setup() {
@@ -4796,13 +4758,13 @@ $t({
     };
   }
 });
-const Mo = { class: "wifi-component" }, Vo = { class: "row" }, Wo = { class: "column" }, qo = { class: "column" }, Ko = { class: "status" }, zo = { class: "row" }, Qo = { class: "column" }, Ho = {
+const Ao = { class: "wifi-component" }, Po = { class: "row" }, No = { class: "column" }, Ro = { class: "column" }, $o = { class: "status" }, Bo = { class: "row" }, Io = { class: "column" }, Uo = {
   key: 0,
   class: "wifi-modal"
-}, Go = { class: "wifi-modal-content" }, Jo = { class: "wifi-list" }, Yo = {
+}, Do = { class: "wifi-modal-content" }, Fo = { class: "wifi-list" }, Mo = {
   key: 0,
   class: "no-wifi"
-}, Xo = ["onClick"], Zo = { class: "wifi-ssid" }, er = { class: "signal-strength" }, tr = {
+}, Vo = ["onClick"], Wo = { class: "wifi-ssid" }, qo = { class: "signal-strength" }, Ko = {
   __name: "WiFi",
   setup(be) {
     const { sendToPyQt: Y } = Xe(), X = V("未连接"), i = V("无网络"), d = V("未知"), e = V(""), n = V(""), o = V(!1), r = V([]), t = V(null), a = () => {
@@ -4843,10 +4805,10 @@ const Mo = { class: "wifi-component" }, Vo = { class: "row" }, Wo = { class: "co
     }, p = (h, m) => {
       m.placeholder === "WiFi 名称" ? e.value = h : m.placeholder === "WiFi 密码" && (n.value = h);
     };
-    return (h, m) => (xe(), ke("div", Mo, [
-      k("div", Vo, [
-        k("div", Wo, [
-          lt(k("input", {
+    return (h, m) => (xe(), ke("div", Ao, [
+      _("div", Po, [
+        _("div", No, [
+          lt(_("input", {
             "onUpdate:modelValue": m[0] || (m[0] = (y) => e.value = y),
             placeholder: "WiFi 名称",
             "data-mode": ""
@@ -4854,17 +4816,17 @@ const Mo = { class: "wifi-component" }, Vo = { class: "row" }, Wo = { class: "co
             [ht, e.value]
           ])
         ]),
-        k("div", qo, [
-          k("div", Ko, [
-            ft(" WiFi: " + Oe(X.value) + " | 网络: " + Oe(i.value) + " ", 1),
-            m[2] || (m[2] = k("br", null, null, -1)),
-            ft(" zerotier ip地址: " + Oe(d.value), 1)
+        _("div", Ro, [
+          _("div", $o, [
+            ft(" WiFi: " + Te(X.value) + " | 网络: " + Te(i.value) + " ", 1),
+            m[2] || (m[2] = _("br", null, null, -1)),
+            ft(" zerotier ip地址: " + Te(d.value), 1)
           ])
         ])
       ]),
-      k("div", zo, [
-        k("div", Qo, [
-          lt(k("input", {
+      _("div", Bo, [
+        _("div", Io, [
+          lt(_("input", {
             "onUpdate:modelValue": m[1] || (m[1] = (y) => n.value = y),
             placeholder: "WiFi 密码",
             "data-mode": ""
@@ -4872,10 +4834,10 @@ const Mo = { class: "wifi-component" }, Vo = { class: "row" }, Wo = { class: "co
             [ht, n.value]
           ])
         ]),
-        k("div", { class: "column" }, [
-          k("div", { class: "button-group" }, [
-            k("button", { onClick: c }, "搜索可用 WiFi"),
-            k("button", { onClick: v }, "连接 WiFi")
+        _("div", { class: "column" }, [
+          _("div", { class: "button-group" }, [
+            _("button", { onClick: c }, "搜索可用 WiFi"),
+            _("button", { onClick: v }, "连接 WiFi")
           ])
         ])
       ]),
@@ -4886,34 +4848,34 @@ const Mo = { class: "wifi-component" }, Vo = { class: "row" }, Wo = { class: "co
         onChange: p,
         class: "scaled-keyboard"
       }),
-      o.value ? (xe(), ke("div", Ho, [
-        k("div", Go, [
-          m[4] || (m[4] = k("h2", null, "可用的WiFi网络", -1)),
-          k("div", Jo, [
-            r.value.length === 0 ? (xe(), ke("div", Yo, m[3] || (m[3] = [
-              k("div", { class: "loading-spinner" }, null, -1),
-              k("div", null, "搜索中...", -1)
+      o.value ? (xe(), ke("div", Uo, [
+        _("div", Do, [
+          m[4] || (m[4] = _("h2", null, "可用的WiFi网络", -1)),
+          _("div", Fo, [
+            r.value.length === 0 ? (xe(), ke("div", Mo, m[3] || (m[3] = [
+              _("div", { class: "loading-spinner" }, null, -1),
+              _("div", null, "搜索中...", -1)
             ]))) : (xe(!0), ke(ot, { key: 1 }, ct(r.value, (y) => (xe(), ke("div", {
               key: y.ssid,
               class: "wifi-item",
               onClick: (O) => g(y)
             }, [
-              k("span", Zo, Oe(y.ssid), 1),
-              k("span", er, "信号强度: " + Oe(y.signal), 1)
-            ], 8, Xo))), 128))
+              _("span", Wo, Te(y.ssid), 1),
+              _("span", qo, "信号强度: " + Te(y.signal), 1)
+            ], 8, Vo))), 128))
           ]),
-          k("div", { class: "modal-buttons" }, [
-            k("button", { onClick: l }, "重新搜索"),
-            k("button", { onClick: f }, "关闭")
+          _("div", { class: "modal-buttons" }, [
+            _("button", { onClick: l }, "重新搜索"),
+            _("button", { onClick: f }, "关闭")
           ])
         ])
       ])) : st("", !0)
     ]));
   }
-}, nr = /* @__PURE__ */ ut(tr, [["__scopeId", "data-v-e6b1dc64"]]), or = {
+}, zo = /* @__PURE__ */ ut(Ko, [["__scopeId", "data-v-e6b1dc64"]]), Qo = {
   key: 0,
   class: "numeric-keyboard"
-}, rr = { class: "keyboard" }, ir = { class: "current-value" }, ar = ["onClick"], sr = {
+}, Ho = { class: "keyboard" }, Go = { class: "current-value" }, Jo = ["onClick"], Yo = {
   __name: "StrNumericKeyboard",
   props: {
     modelValue: {
@@ -4939,9 +4901,9 @@ const Mo = { class: "wifi-component" }, Vo = { class: "row" }, Wo = { class: "co
     const n = (o) => {
       o === "清除" ? e.value = "" : o === "确定" ? (i("update:modelValue", e.value), i("update:showKeyboard", !1)) : e.value += o;
     };
-    return (o, r) => be.showKeyboard ? (xe(), ke("div", or, [
-      k("div", rr, [
-        k("div", ir, Oe(e.value), 1),
+    return (o, r) => be.showKeyboard ? (xe(), ke("div", Qo, [
+      _("div", Ho, [
+        _("div", Go, Te(e.value), 1),
         (xe(!0), ke(ot, null, ct(d.value, (t) => (xe(), ke("div", {
           key: t.join(),
           class: "row"
@@ -4950,25 +4912,25 @@ const Mo = { class: "wifi-component" }, Vo = { class: "row" }, Wo = { class: "co
             key: a,
             onClick: (u) => n(a),
             class: nt({ "function-key": a === "清除" || a === "确定" })
-          }, Oe(a), 11, ar))), 128))
+          }, Te(a), 11, Jo))), 128))
         ]))), 128))
       ])
     ])) : st("", !0);
   }
-}, jt = /* @__PURE__ */ ut(sr, [["__scopeId", "data-v-2ccc1cb7"]]), ur = { class: "container" }, lr = { class: "column" }, cr = { class: "status-bar" }, dr = ["disabled"], fr = { class: "column" }, pr = {
+}, jt = /* @__PURE__ */ ut(Yo, [["__scopeId", "data-v-2ccc1cb7"]]), Xo = { class: "container" }, Zo = { class: "column" }, er = { class: "status-bar" }, tr = ["disabled"], nr = { class: "column" }, or = {
   key: 0,
   class: "modal"
-}, vr = { class: "modal-content" }, hr = {
+}, rr = { class: "modal-content" }, ir = {
   __name: "Lock",
   emits: ["messageFromA"],
   setup(be, { emit: Y }) {
-    const { sendToPyQt: X } = Xe(), i = yt({
+    const { sendToPyQt: X } = Xe(), i = gt({
       isPyQtWebEngine: !1
     }), d = V("未激活"), e = V(0), n = V(""), o = V(""), r = V(!1), t = V(7776e3);
     let a, u;
     const s = V(0), c = V(1), l = V(null), f = V(!1), g = V(!1), v = vt(() => d.value === "未激活" ? "设备状态: 未激活" : d.value === "永久激活" ? "设备状态: 已永久激活" : `即将第 ${c.value} 次锁定 - 剩余时间: ${p.value}`), p = vt(() => {
-      const J = Math.floor(e.value / 86400), q = Math.floor(e.value % (24 * 60 * 60) / (60 * 60)), D = Math.floor(e.value % (60 * 60) / 60), A = e.value % 60;
-      return `${J}天 ${q.toString().padStart(2, "0")}:${D.toString().padStart(2, "0")}:${A.toString().padStart(2, "0")}`;
+      const J = Math.floor(e.value / 86400), q = Math.floor(e.value % (24 * 60 * 60) / (60 * 60)), U = Math.floor(e.value % (60 * 60) / 60), A = e.value % 60;
+      return `${J}天 ${q.toString().padStart(2, "0")}:${U.toString().padStart(2, "0")}:${A.toString().padStart(2, "0")}`;
     }), h = vt(() => d.value === "未激活" ? "按住以激活设备" : `设备码：${n.value}`);
     function m(J) {
       d.value === "未激活" && (J.target.setPointerCapture(J.pointerId), s.value = 0, u = setInterval(() => {
@@ -5025,31 +4987,31 @@ const Mo = { class: "wifi-component" }, Vo = { class: "row" }, Wo = { class: "co
         et(J, (q) => {
           if (q && q.type === "confirm_lock_password")
             try {
-              const D = JSON.parse(q.content);
-              D.target === "attemptUnlock" && (D.result === "success" ? (r.value ? l.value = Date.now() : l.value = l.value + t.value * 1e3, X("update_baseTime", l.value), I(), X("Lock_set_response", { method: "extendLockTime", args: { baseTime: l.value } })) : D.result === "forever_success" ? (S(), X("Lock_set_response", { method: "permanentUnlock", args: {} })) : X("Lock_set_response", { method: "unlockFailed", args: {} }));
-            } catch (D) {
-              console.error("Failed to parse confirm lock password :", D);
+              const U = JSON.parse(q.content);
+              U.target === "attemptUnlock" && (U.result === "success" ? (r.value ? l.value = Date.now() : l.value = l.value + t.value * 1e3, X("update_baseTime", l.value), I(), X("Lock_set_response", { method: "extendLockTime", args: { baseTime: l.value } })) : U.result === "forever_success" ? (S(), X("Lock_set_response", { method: "permanentUnlock", args: {} })) : X("Lock_set_response", { method: "unlockFailed", args: {} }));
+            } catch (U) {
+              console.error("Failed to parse confirm lock password :", U);
             }
           else if (q && q.type === "device_activated")
             try {
-              const D = JSON.parse(q.content);
-              x(D.device_random_code, D.device_base_time);
-            } catch (D) {
-              console.error("Failed to parse device activation result:", D);
+              const U = JSON.parse(q.content);
+              x(U.device_random_code, U.device_base_time);
+            } catch (U) {
+              console.error("Failed to parse device activation result:", U);
             }
           else if (q && q.type === "device_info")
             try {
-              const D = JSON.parse(q.content);
-              d.value = D.device_status, n.value = D.device_random_code, c.value = D.device_lock_count, l.value = D.device_base_time, D.device_status === "已激活" ? w() : D.device_status === "永久激活" && S();
-            } catch (D) {
-              console.error("Failed to parse device status:", D);
+              const U = JSON.parse(q.content);
+              d.value = U.device_status, n.value = U.device_random_code, c.value = U.device_lock_count, l.value = U.device_base_time, U.device_status === "已激活" ? w() : U.device_status === "永久激活" && S();
+            } catch (U) {
+              console.error("Failed to parse device status:", U);
             }
           else if (q && q.type === "Lock_init")
             W();
           else if (q && q.type === "Lock_set") {
             console.log("Lock_set:", q.content);
-            const D = JSON.parse(q.content);
-            D.method === "requestActivation" ? C() : D.method === "attemptUnlock" && L(D.args.password);
+            const U = JSON.parse(q.content);
+            U.method === "requestActivation" ? C() : U.method === "attemptUnlock" && L(U.args.password);
           }
         });
       } else
@@ -5078,10 +5040,10 @@ const Mo = { class: "wifi-component" }, Vo = { class: "row" }, Wo = { class: "co
         // 时间戳
       });
     };
-    return (J, q) => (xe(), ke("div", ur, [
-      k("div", lr, [
-        k("div", cr, Oe(v.value), 1),
-        k("button", {
+    return (J, q) => (xe(), ke("div", Xo, [
+      _("div", Zo, [
+        _("div", er, Te(v.value), 1),
+        _("button", {
           class: "activation-button",
           onPointerdown: m,
           onPointerup: y,
@@ -5089,41 +5051,41 @@ const Mo = { class: "wifi-component" }, Vo = { class: "row" }, Wo = { class: "co
           onPointerleave: O,
           disabled: d.value !== "未激活"
         }, [
-          ft(Oe(h.value) + " ", 1),
-          k("div", {
+          ft(Te(h.value) + " ", 1),
+          _("div", {
             class: "progress-bar",
-            style: gt({ width: s.value + "%" })
+            style: kt({ width: s.value + "%" })
           }, null, 4)
-        ], 40, dr)
+        ], 40, tr)
       ]),
-      k("div", fr, [
-        lt(k("input", {
-          "onUpdate:modelValue": q[0] || (q[0] = (D) => o.value = D),
+      _("div", nr, [
+        lt(_("input", {
+          "onUpdate:modelValue": q[0] || (q[0] = (U) => o.value = U),
           placeholder: "输入解锁密钥",
           readonly: "",
-          onFocus: q[1] || (q[1] = (D) => f.value = !0)
+          onFocus: q[1] || (q[1] = (U) => f.value = !0)
         }, null, 544), [
           [ht, o.value]
         ]),
-        k("button", {
+        _("button", {
           class: "unlock-button",
           onClick: j
         }, "解锁")
       ]),
-      r.value ? (xe(), ke("div", pr, [
-        k("div", vr, [
-          q[8] || (q[8] = k("h3", null, "设备已锁定", -1)),
-          k("h3", null, "第 " + Oe(c.value) + " 次锁定", 1),
-          k("h3", null, "设备随机码: " + Oe(n.value), 1),
-          lt(k("input", {
-            "onUpdate:modelValue": q[2] || (q[2] = (D) => o.value = D),
+      r.value ? (xe(), ke("div", or, [
+        _("div", rr, [
+          q[8] || (q[8] = _("h3", null, "设备已锁定", -1)),
+          _("h3", null, "第 " + Te(c.value) + " 次锁定", 1),
+          _("h3", null, "设备随机码: " + Te(n.value), 1),
+          lt(_("input", {
+            "onUpdate:modelValue": q[2] || (q[2] = (U) => o.value = U),
             placeholder: "输入解锁密钥",
             readonly: "",
-            onFocus: q[3] || (q[3] = (D) => g.value = !0)
+            onFocus: q[3] || (q[3] = (U) => g.value = !0)
           }, null, 544), [
             [ht, o.value]
           ]),
-          k("button", {
+          _("button", {
             class: "unlock-button",
             onClick: j
           }, "解锁")
@@ -5131,43 +5093,43 @@ const Mo = { class: "wifi-component" }, Vo = { class: "row" }, Wo = { class: "co
       ])) : st("", !0),
       ze(jt, {
         modelValue: o.value,
-        "onUpdate:modelValue": q[4] || (q[4] = (D) => o.value = D),
+        "onUpdate:modelValue": q[4] || (q[4] = (U) => o.value = U),
         showKeyboard: f.value,
-        "onUpdate:showKeyboard": q[5] || (q[5] = (D) => f.value = D)
+        "onUpdate:showKeyboard": q[5] || (q[5] = (U) => f.value = U)
       }, null, 8, ["modelValue", "showKeyboard"]),
       ze(jt, {
         modelValue: o.value,
-        "onUpdate:modelValue": q[6] || (q[6] = (D) => o.value = D),
+        "onUpdate:modelValue": q[6] || (q[6] = (U) => o.value = U),
         showKeyboard: g.value,
-        "onUpdate:showKeyboard": q[7] || (q[7] = (D) => g.value = D)
+        "onUpdate:showKeyboard": q[7] || (q[7] = (U) => g.value = U)
       }, null, 8, ["modelValue", "showKeyboard"])
     ]));
   }
-}, mr = /* @__PURE__ */ ut(hr, [["__scopeId", "data-v-3d3fd364"]]), gr = { class: "app-container" }, yr = { class: "control-row" }, br = { class: "control-item" }, wr = { class: "control-item" }, kr = {
+}, ar = /* @__PURE__ */ ut(ir, [["__scopeId", "data-v-3d3fd364"]]), sr = { class: "app-container" }, ur = { class: "control-row" }, lr = { class: "control-item" }, cr = { class: "control-item" }, fr = {
   __name: "App",
   setup(be) {
     Ut();
     const Y = V(""), X = (i) => {
       Y.value = i;
     };
-    return (i, d) => (xe(), ke("div", gr, [
-      d[0] || (d[0] = k("h1", null, "涪特智能养护台车控制系统", -1)),
+    return (i, d) => (xe(), ke("div", sr, [
+      d[0] || (d[0] = _("h1", null, "涪特智能养护台车控制系统", -1)),
       ze($n),
-      ze(Io),
+      ze(Eo),
       ze(sn),
-      k("div", yr, [
-        k("div", br, [
-          ze(So, { message: Y.value }, null, 8, ["message"])
+      _("div", ur, [
+        _("div", lr, [
+          ze(vo, { message: Y.value }, null, 8, ["message"])
         ]),
-        k("div", wr, [
-          ze(ho, { message: Y.value }, null, 8, ["message"])
+        _("div", cr, [
+          ze(ro, { message: Y.value }, null, 8, ["message"])
         ])
       ]),
-      ze(nr),
-      ze(mr, { onMessageFromA: X })
+      ze(zo),
+      ze(ar, { onMessageFromA: X })
     ]));
   }
 };
 export {
-  kr as default
+  fr as default
 };

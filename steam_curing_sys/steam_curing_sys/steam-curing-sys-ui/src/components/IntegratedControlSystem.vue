@@ -1,9 +1,10 @@
 <template>
   <!-- <div class="integrated-control-system"> -->
-    <h2>水箱加热系统【数字开关output2控制】</h2>
+    <h2>水箱加热系统</h2>
 
     <div class="label-box" >
-      <label>自动模式下，当平均温度低于设置的温度下限时，加热开启；当平均温度高于设置的温度上限时，加热关闭</label><br>
+      <label>输出：output1控制左侧水箱加热，output2控制右侧水箱加热</label><br>
+      <label>自动模式下，当水箱温度低于设置的温度下限时，加热开启；当水箱温度高于设置的温度上限时，加热关闭</label><br>
     </div>
 
     <div class="mode-controls">
@@ -16,6 +17,7 @@
             <!-- Heat Engine -->
             
     <div class="steam_engine">
+      <h3>左侧水箱加热</h3>
       <div class="status" :class="{ 'on': heatEngineOn }">
         <div class="status-indicator"></div>
         {{ heatEngineOn ? '开' : '关' }}
@@ -26,6 +28,7 @@
     </div>
 
     <div class="steam_engine">
+      <h3>右侧水箱加热</h3>
       <div class="status" :class="{ 'on': heatEngineOn2 }">
         <div class="status-indicator"></div>
         {{ heatEngineOn2 ? '开' : '关' }}
@@ -176,10 +179,10 @@ const temp2 = ref("未知");
 
 const newStatusMessage = computed(() => {
   if (!isAutoMode.value) return '手动模式';
-  if (sensor1_error.value === false && sensor2_error.value === false) return `自动模式受水下传感器温度控制, 水箱1温度: ${temp1.value}°C, 水箱2温度: ${temp2.value}°C`;
-  if (sensor1_error.value === true && sensor2_error.value === false) return `自动模式受水下传感器温度控制, 水箱1温度: ${temp1.value}°C, 水箱2温度: ${temp2.value}°C, 水箱1传感器异常`;
-  if (sensor1_error.value === false && sensor2_error.value === true) return `自动模式受水下传感器温度控制, 水箱1温度: ${temp1.value}°C, 水箱2温度: ${temp2.value}°C, 水箱2传感器异常`;
-  if (sensor1_error.value === true && sensor2_error.value === true) return `自动模式受水下传感器温度控制, 水箱1温度: ${temp1.value}°C, 水箱2温度: ${temp2.value}°C, 水箱1和水箱2传感器异常`;
+  if (sensor1_error.value === false && sensor2_error.value === false) return `自动模式受水下传感器温度控制, 左侧水箱温度: ${temp1.value}°C, 右侧水箱温度: ${temp2.value}°C`;
+  if (sensor1_error.value === true && sensor2_error.value === false) return `自动模式受水下传感器温度控制, 左侧水箱温度: ${temp1.value}°C, 右侧水箱温度: ${temp2.value}°C, 左侧水箱传感器异常`;
+  if (sensor1_error.value === false && sensor2_error.value === true) return `自动模式受水下传感器温度控制, 左侧水箱温度: ${temp1.value}°C, 右侧水箱温度: ${temp2.value}°C, 右侧水箱传感器异常`;
+  if (sensor1_error.value === true && sensor2_error.value === true) return `自动模式受水下传感器温度控制, 左侧水箱温度: ${temp1.value}°C, 右侧水箱温度: ${temp2.value}°C, 左侧水箱和右侧水箱传感器异常`;
 });
 
 async function setMode(mode) {

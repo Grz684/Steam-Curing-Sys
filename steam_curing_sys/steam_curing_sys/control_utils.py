@@ -30,6 +30,7 @@ class ControlUtils():
         self.zone1_humidifier_on = False
         self.zone2_humidifier_on = False
 
+        self.all_dolly_on = False
         self.left_dolly_on = False
         self.right_dolly_on = False
 
@@ -51,7 +52,7 @@ class ControlUtils():
         self.switch_to_sprinkler = False
 
         # debug时不连接Modbus服务器
-        self.debug = True
+        self.debug = False
 
         self.output_num = 6 # 输出数量
 
@@ -246,6 +247,15 @@ class ControlUtils():
                 self.control_output(self.trolly_addr, True)
                 self.control_output(self.trolly_addr_2, True)
 
+    def turn_all_dolly_on(self):
+        if not self.dolly_on:
+            logger.info('Turning dolly ON')
+            self.dolly_on = True
+            self.control_output(self.left_spray_addr, True)
+            self.control_output(self.right_spray_addr, True)
+            self.control_output(self.trolly_addr, True)
+            self.control_output(self.trolly_addr_2, True)
+
         # if not self.dolly_on:
         #     logger.info('Turning dolly ON')
         #     self.dolly_on = True
@@ -340,6 +350,23 @@ class ControlUtils():
                     self.trolly_on = False
                     self.control_output(self.trolly_addr, False)
                     self.control_output(self.trolly_addr_2, False)
+            # self.control_output(self.dolly_move_addr, False)
+            # self.control_output(self.dolly_move_addr_back_up, False)
+            # self.control_output(self.zone2_output_addr, False)
+            # self.control_output(self.zone1_output_addr, False)
+
+    def turn_all_dolly_off(self):
+        if self.all_dolly_on:
+            logger.info('Turning dolly OFF')
+            self.left_dolly_on = False
+            self.right_dolly_on = False
+            self.control_output(self.left_spray_addr, False)
+            self.control_output(self.right_spray_addr, False)
+            if self.trolly_on:
+                logger.info('小车关闭')
+                self.trolly_on = False
+                self.control_output(self.trolly_addr, False)
+                self.control_output(self.trolly_addr_2, False)
             # self.control_output(self.dolly_move_addr, False)
             # self.control_output(self.dolly_move_addr_back_up, False)
             # self.control_output(self.zone2_output_addr, False)

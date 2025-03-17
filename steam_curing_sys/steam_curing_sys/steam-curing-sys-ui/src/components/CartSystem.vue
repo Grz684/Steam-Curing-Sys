@@ -1,7 +1,8 @@
 <template>
-  <h2> 喷雾系统【数字开关output1控制】 </h2>
+  <h2> 喷雾系统 </h2>
   <div class="label-box" >
-      <label>自动模式下，当平均湿度低于设置的湿度下限时，喷雾开启；当平均湿度高于设置的湿度上限时，喷雾关闭</label><br>
+      <label>输出：output3控制左侧喷雾，output4控制右侧喷雾，output5/6控制小车</label><br>
+      <label>自动模式下，当湿度低于设置的湿度下限时，喷雾开启；当湿度高于设置的湿度上限时，喷雾关闭【当有小车时，有一侧喷雾启动，小车即启动，两侧喷雾均关闭，小车才停止】</label><br>
     </div>
   <div class="cart-system">
     <!-- 新增的缺水保护功能 -->
@@ -31,7 +32,7 @@
         <div class="spray-systems">
           <!-- 左侧喷雾系统 -->
           <div class="spray-system">
-            <h3>左侧喷雾系统</h3>
+            <h3>双侧定时喷雾系统</h3>
             <div class="controls">
               <div class="input-group">
                 <label>喷雾运行时间 (秒):</label>
@@ -66,7 +67,7 @@
           </div>
           
           <!-- 右侧喷雾系统 -->
-          <div class="spray-system">
+          <!-- <div class="spray-system">
             <h3>右侧喷雾系统</h3>
             <div class="controls">
               <div class="input-group">
@@ -99,7 +100,7 @@
             <div class="status">
               {{ rightStatusMessage }}
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -159,7 +160,7 @@ const nextLeftRunTime = ref(currentLeftRunTime.value);
 const nextLeftIntervalTime = ref(currentLeftIntervalTime.value);
 const isLeftRunning = ref(false);
 const leftProgress = ref(0);
-const leftStatusMessage = ref('左侧喷雾系统就绪');
+const leftStatusMessage = ref('喷雾系统就绪');
 const showLeftRunTimeKeyboard = ref(false);
 const showLeftIntervalTimeKeyboard = ref(false);
 const leftPhaseStartTime = ref(0);
@@ -549,10 +550,11 @@ const startLeftSystem = () => {
 
 const stopLeftSystem = () => {
   stopDolly('left');
+  stopDolly('right');
   isLeftRunning.value = false;
   cancelAnimationFrame(leftAnimationFrame);
   leftProgress.value = 0;
-  leftStatusMessage.value = '左侧喷雾系统就绪';
+  leftStatusMessage.value = '喷雾系统就绪';
 };
 
 // 右侧喷雾系统控制
@@ -626,7 +628,8 @@ function startDolly(side = null) {
 // 左侧喷雾系统运行
 const runLeftCart = () => {
   startDolly('left');
-  leftStatusMessage.value = '左侧喷雾运行中';
+  startDolly('right');
+  leftStatusMessage.value = '喷雾运行中';
   leftProgress.value = 0;
   const startTime = Date.now();
   leftPhaseStartTime.value = startTime;
@@ -637,7 +640,7 @@ const runLeftCart = () => {
     const elapsed = (Date.now() - startTime) / 1000;
     const remaining = Math.max(0, currentLeftRunTime.value - elapsed);
     leftProgress.value = (elapsed / currentLeftRunTime.value) * 100;
-    leftStatusMessage.value = `左侧喷雾运行中: 剩余 ${remaining.toFixed(1)} 秒`;
+    leftStatusMessage.value = `喷雾运行中: 剩余 ${remaining.toFixed(1)} 秒`;
     
     if (elapsed < currentLeftRunTime.value && isLeftRunning.value) {
       leftAnimationFrame = requestAnimationFrame(updateProgress);
@@ -645,6 +648,7 @@ const runLeftCart = () => {
       leftProgress.value = 100;
       if (nextLeftIntervalTime.value > 0) {
         tempStopDolly('left');
+        tempStopDolly('right');
       }
       startLeftInterval();
     }
@@ -654,7 +658,7 @@ const runLeftCart = () => {
 };
 
 const startLeftInterval = () => {
-  leftStatusMessage.value = '等待左侧下次运行';
+  leftStatusMessage.value = '等待下次运行';
   const startTime = Date.now();
   leftPhaseStartTime.value = startTime;
   
@@ -663,7 +667,7 @@ const startLeftInterval = () => {
   const updateNextRun = () => {
     const elapsed = (Date.now() - startTime) / 1000;
     const remaining = Math.max(0, currentLeftIntervalTime.value - elapsed);
-    leftStatusMessage.value = `等待左侧下次运行: ${remaining.toFixed(1)}秒`;
+    leftStatusMessage.value = `等待下次运行: ${remaining.toFixed(1)}秒`;
     
     if (remaining > 0 && isLeftRunning.value) {
       leftAnimationFrame = requestAnimationFrame(updateNextRun);

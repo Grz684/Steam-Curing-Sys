@@ -212,20 +212,16 @@ class QtSignalHandler(QObject):
             if control["side"] == "left":
                 dolly_state = control["dolly_state"]
                 if dolly_state:
-                    self.left_dolly_state = True
                     # 这里dolly用于控制喷雾机
                     self.control_utils.turn_left_dolly_on()
                 else:
-                    self.left_dolly_state = False
                     self.control_utils.turn_left_dolly_off()
             elif control["side"] == "right":
                 dolly_state = control["dolly_state"]
                 if dolly_state:
-                    self.right_dolly_state = True
                     # 这里dolly用于控制喷雾机
                     self.control_utils.turn_right_dolly_on()
                 else:
-                    self.right_dolly_state = False
                     self.control_utils.turn_right_dolly_off()
 
         elif control["target"] == "dolly_settings":

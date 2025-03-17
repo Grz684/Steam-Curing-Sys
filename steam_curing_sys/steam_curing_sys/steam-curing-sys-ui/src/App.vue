@@ -69,7 +69,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: flex-start; /* 确保顶端对齐 */
-  gap: 30px; /* 增加间距 */
+  gap: 70px; /* 增加间距 */
   margin: 10px 0;
   width: 100%;
   box-sizing: border-box;

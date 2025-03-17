@@ -127,7 +127,7 @@ const applyAdjustment = async () => {
 <template>
   <div class="sensor-data-group">
     <div class="sensor-section">
-      <h2>温度传感器【温感1与温感2为温湿度传感器温度数据，温感3与温感4为水下温度数据】</h2>
+      <h2>温度传感器【温感1与温感2为温湿度传感器温度数据，温感3与温感4分别为左侧水箱、右侧水箱温度数据】</h2>
       <div class="sensor-container">
         <div class="sensor-grid">
           <div v-for="(value, sensor) in sensorData.temperature" 
@@ -142,7 +142,7 @@ const applyAdjustment = async () => {
     </div>
     
     <div class="sensor-section">
-      <h2>湿度传感器</h2>
+      <h2>湿度传感器【湿感1与湿感2分别为左侧、右侧湿度数据】</h2>
       <div class="sensor-container">
         <div class="sensor-grid">
           <div v-for="(value, sensor) in sensorData.humidity" 
