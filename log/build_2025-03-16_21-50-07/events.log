@@ -1,0 +1,5 @@
+[0.000000] (-) TimerEvent: {}
+[0.001901] (-) JobUnselected: {'identifier': 'optocoupler_input_publisher'}
+[0.002664] (-) JobUnselected: {'identifier': 'steam_curing_sys'}
+[0.003230] (-) JobUnselected: {'identifier': 'temp_humidity_publisher'}
+[0.003908] (-) EventReactorShutdown: {}

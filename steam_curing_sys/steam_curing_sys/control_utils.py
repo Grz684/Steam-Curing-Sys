@@ -17,15 +17,23 @@ class ControlUtils():
         # self.zone1_heater_on = False
         # self.zone2_heater_on = False
         # 配置加热和喷淋端口
-        self.spray_addr = 0
-        self.heater_addr = 1
+        self.left_spray_addr = 2
+        self.right_spray_addr = 3
+        self.trolly_addr = 4
+        self.trolly_addr_2 = 5
+        self.heater_addr = 0
+        self.heater2_addr = 1
 
         self.heater_on = False
+        self.heater2_on = False
 
         self.zone1_humidifier_on = False
         self.zone2_humidifier_on = False
 
-        self.dolly_on = False
+        self.left_dolly_on = False
+        self.right_dolly_on = False
+
+        self.trolly_on = False
 
         self.zone1_output_addr = 0
         self.zone2_output_addr = 1
@@ -43,7 +51,7 @@ class ControlUtils():
         self.switch_to_sprinkler = False
 
         # debug时不连接Modbus服务器
-        self.debug = False
+        self.debug = True
 
         self.output_num = 6 # 输出数量
 
@@ -174,11 +182,23 @@ class ControlUtils():
             logger.info('Turning heat engine ON')
             self.control_output(self.heater_addr, True)
 
+    def turn_heat_engine2_on(self):
+        if not self.heater2_on:
+            self.heater2_on = True
+            logger.info('Turning heat engine ON')
+            self.control_output(self.heater2_addr, True)
+
     def turn_heat_engine_off(self):
         if self.heater_on:
             self.heater_on = False
             logger.info('Turning heat engine OFF')
             self.control_output(self.heater_addr, False)
+
+    def turn_heat_engine2_off(self):
+        if self.heater2_on:
+            self.heater2_on = False
+            logger.info('Turning heat engine OFF')
+            self.control_output(self.heater2_addr, False)
 
     def turn_zone1_humidifier_on(self):
         if not self.zone1_humidifier_on:
@@ -204,11 +224,27 @@ class ControlUtils():
             logger.info('Turning zone2 humidifier OFF')
             self.control_output(self.zone2_output_addr, False)
                 
-    def turn_dolly_on(self, one_side_flag):
-        if not self.dolly_on:
-            logger.info('Turning 喷雾 ON')
-            self.dolly_on = True
-            self.control_output(self.spray_addr, True)
+    def turn_left_dolly_on(self):
+        if not self.left_dolly_on:
+            logger.info('Turning 左喷雾 ON')
+            self.left_dolly_on = True
+            self.control_output(self.left_spray_addr, True)
+            if not self.trolly_on:
+                logger.info('小车开启')
+                self.trolly_on = True
+                self.control_output(self.trolly_addr, True)
+                self.control_output(self.trolly_addr_2, True)
+    
+    def turn_right_dolly_on(self):
+        if not self.right_dolly_on:
+            logger.info('Turning 右喷雾 ON')
+            self.right_dolly_on = True
+            self.control_output(self.right_spray_addr, True)
+            if not self.trolly_on:
+                logger.info('小车开启')
+                self.trolly_on = True
+                self.control_output(self.trolly_addr, True)
+                self.control_output(self.trolly_addr_2, True)
 
         # if not self.dolly_on:
         #     logger.info('Turning dolly ON')
@@ -234,7 +270,7 @@ class ControlUtils():
             # threading.Thread(target=self._delayed_pulse_off, daemon=True).start()
     
     def adjust_dolly_to_one_side(self):
-        if not self.one_side_flag and self.dolly_on:
+        if not self.one_side_flag and self.left_dolly_on:
             self.one_side_flag = True
             if self.single_zone2_open:
                 self.control_output(self.zone2_output_addr, True)
@@ -244,7 +280,7 @@ class ControlUtils():
                 self.control_output(self.zone1_output_addr, True)
 
     def adjust_dolly_to_both_side(self):
-        if self.one_side_flag and self.dolly_on:
+        if self.one_side_flag and self.left_dolly_on:
             self.one_side_flag = False
             self.control_output(self.zone1_output_addr, True)
             self.control_output(self.zone2_output_addr, True)
@@ -277,11 +313,33 @@ class ControlUtils():
         time.sleep(0.5)
         self.control_output(self.pulse_addr, False)
 
-    def turn_dolly_off(self):
-        if self.dolly_on:
-            logger.info('Turning 喷雾 OFF')
-            self.dolly_on = False
-            self.control_output(self.spray_addr, False)
+    def turn_left_dolly_off(self):
+        if self.left_dolly_on:
+            logger.info('Turning 左喷雾 OFF')
+            self.left_dolly_on = False
+            self.control_output(self.left_spray_addr, False)
+            if self.left_dolly_on == False and self.right_dolly_on == False:
+                if self.trolly_on:
+                    logger.info('小车关闭')
+                    self.trolly_on = False
+                    self.control_output(self.trolly_addr, False)
+                    self.control_output(self.trolly_addr_2, False)
+            # self.control_output(self.dolly_move_addr, False)
+            # self.control_output(self.dolly_move_addr_back_up, False)
+            # self.control_output(self.zone2_output_addr, False)
+            # self.control_output(self.zone1_output_addr, False)
+
+    def turn_right_dolly_off(self):
+        if self.right_dolly_on:
+            logger.info('Turning 右喷雾 OFF')
+            self.right_dolly_on = False
+            self.control_output(self.right_spray_addr, False)
+            if self.left_dolly_on == False and self.right_dolly_on == False:
+                if self.trolly_on:
+                    logger.info('小车关闭')
+                    self.trolly_on = False
+                    self.control_output(self.trolly_addr, False)
+                    self.control_output(self.trolly_addr_2, False)
             # self.control_output(self.dolly_move_addr, False)
             # self.control_output(self.dolly_move_addr_back_up, False)
             # self.control_output(self.zone2_output_addr, False)

@@ -81,29 +81,47 @@ class SensorSubscriberNode(Node):
                 sensor: value 
                 for sensor, value in self.temp_data.items() 
                 if sensor in ('temperature_sensor_3', 'temperature_sensor_4') 
-                and value != -1
+                # and value != -1
             }
             # updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
 
-            if updated_temp_data:
-                updated_temp_data_avg = sum(updated_temp_data.values()) / len(updated_temp_data)
+            if 'temperature_sensor_3' in updated_temp_data:
+                # updated_temp_data_avg = sum(updated_temp_data.values()) / len(updated_temp_data)
+                tank1_temp = updated_temp_data['temperature_sensor_3']
                 self.qtSignalHandler.sensor_avg_data_updated.emit({
-                    "type": "temp",
-                    "value": round(updated_temp_data_avg, 1)
+                    "type": "temp1",
+                    "value": round(tank1_temp, 1),
                 })
-                if updated_temp_data_avg < self.qtSignalHandler.temp_lower_limit:
-                    # 开启两水泵
-                    self.control_utils.turn_heat_engine_on()
-                    self.qtSignalHandler.update_heat_engine_status.emit(True)
-                elif updated_temp_data_avg > self.qtSignalHandler.temp_upper_limit:
-                    self.control_utils.turn_heat_engine_off()
-                    self.qtSignalHandler.update_heat_engine_status.emit(False)
+                if tank1_temp != -1:
+                    if  tank1_temp < self.qtSignalHandler.temp_lower_limit:
+                        # 开启两水泵
+                        self.control_utils.turn_heat_engine_on()
+                        self.qtSignalHandler.update_heat_engine_status.emit(True)
+                    elif tank1_temp > self.qtSignalHandler.temp_upper_limit:
+                        self.control_utils.turn_heat_engine_off()
+                        self.qtSignalHandler.update_heat_engine_status.emit(False)
 
-            else:
+            if 'temperature_sensor_4' in updated_temp_data:
+                # updated_temp_data_avg = sum(updated_temp_data.values()) / len(updated_temp_data)
+                tank2_temp = updated_temp_data['temperature_sensor_4']
                 self.qtSignalHandler.sensor_avg_data_updated.emit({
-                    "type": "temp",
-                    "value": -1
+                    "type": "temp2",
+                    "value": round(tank2_temp, 1)
                 })
+                if tank2_temp != -1:
+                    if  tank2_temp < self.qtSignalHandler.temp_lower_limit:
+                        # 开启两水泵
+                        self.control_utils.turn_heat_engine2_on()
+                        self.qtSignalHandler.update_heat_engine2_status.emit(True)
+                    elif tank2_temp > self.qtSignalHandler.temp_upper_limit:
+                        self.control_utils.turn_heat_engine2_off()
+                        self.qtSignalHandler.update_heat_engine2_status.emit(False)
+
+            # else:
+            #     self.qtSignalHandler.sensor_avg_data_updated.emit({
+            #         "type": "temp",
+            #         "value": -1
+            #     })
                 # self.process_sprinkler_data(updated_temp_data)
                 # self.process_data_zone1(
                 #     {k: v for k, v in updated_temp_data.items() if k in [f'temperature_sensor_{i}' for i in range(1, 9)]},  # 修改为前 8 个传感器
@@ -116,27 +134,35 @@ class SensorSubscriberNode(Node):
 
     def dolly_timer_callback(self):
         if self.qtSignalHandler.get_dolly_auto_mode():
-            updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items() if value != -1}
+            updated_humidity_data = {sensor: value for sensor, value in self.humidity_data.items()}
 
-            if updated_humidity_data:
-                updated_humidity_data_avg = sum(updated_humidity_data.values()) / len(updated_humidity_data)
+            if 'humidity_sensor_1' in updated_humidity_data:
+                tank1_humidity = updated_humidity_data['humidity_sensor_1']
+                self.qtSignalHandler.sensor_avg_data_updated.emit({
+                    "type": "humidity1",
+                    "value": round(tank1_humidity, 1),
+                })
+                if tank1_humidity != -1:
+                    if tank1_humidity < self.qtSignalHandler.humidity_lower_limit:
+                        self.control_utils.turn_left_dolly_on()
+                        self.qtSignalHandler.update_dolly_state.emit(True)
+                    elif tank1_humidity > self.qtSignalHandler.humidity_upper_limit:
+                        self.control_utils.turn_left_dolly_off()
+                        self.qtSignalHandler.update_dolly_state.emit(False)
 
-                if updated_humidity_data_avg < self.qtSignalHandler.humidity_lower_limit:
-                    self.control_utils.turn_dolly_on(self.qtSignalHandler.one_side_flag)
-                    self.qtSignalHandler.update_dolly_state.emit(True)
-                elif updated_humidity_data_avg > self.qtSignalHandler.humidity_upper_limit:
-                    self.control_utils.turn_dolly_off()
-                    self.qtSignalHandler.update_dolly_state.emit(False)
-                    
+            if 'humidity_sensor_2' in updated_humidity_data:
+                tank2_humidity = updated_humidity_data['humidity_sensor_2']
                 self.qtSignalHandler.sensor_avg_data_updated.emit({
-                    "type": "humidity",
-                    "value": round(updated_humidity_data_avg, 1)
+                    "type": "humidity2",
+                    "value": round(tank2_humidity, 1)
                 })
-            else:
-                self.qtSignalHandler.sensor_avg_data_updated.emit({
-                    "type": "humidity",
-                    "value": -1
-                })
+                if tank2_humidity != -1:
+                    if tank2_humidity < self.qtSignalHandler.humidity_lower_limit:
+                        self.control_utils.turn_right_dolly_on()
+                        self.qtSignalHandler.update_dolly2_state.emit(True)
+                    elif tank2_humidity > self.qtSignalHandler.humidity_upper_limit:
+                        self.control_utils.turn_right_dolly_off()
+                        self.qtSignalHandler.update_dolly2_state.emit(False)
 
     # def process_data_zone1(self, temp_data, humidity_data):
     #     if temp_data:

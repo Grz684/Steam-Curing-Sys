@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 class QtSignalHandler(QObject):
     # pyqtSignal必须是类属性
     update_dolly_state = pyqtSignal(bool)
+    update_dolly2_state = pyqtSignal(bool)
     limit_settings = pyqtSignal(float, float, float, float)
     load_limit_settings = pyqtSignal(float, float, float, float)
     load_sprinkler_settings = pyqtSignal(dict)
@@ -42,6 +43,7 @@ class QtSignalHandler(QObject):
 
     sensor_avg_data_updated = pyqtSignal(dict)
     update_heat_engine_status = pyqtSignal(bool)
+    update_heat_engine2_status = pyqtSignal(bool)
     
     # error_occurred = pyqtSignal(str)  # 添加错误信号
 
@@ -82,7 +84,8 @@ class QtSignalHandler(QObject):
 
         # 水箱工作模式
         self.one_side_flag = False
-        self.dolly_state = False
+        self.left_dolly_state = False
+        self.right_dolly_state = False
 
     def activate_device(self):
         # 将当前时间保存进数据库
@@ -199,21 +202,37 @@ class QtSignalHandler(QObject):
         logger.info(f"Steam engine state: {state}")
         if state["engine"] == "heatEngine":
             self.control_utils.turn_heat_engine_on() if state["state"] else self.control_utils.turn_heat_engine_off()
+        if state["engine"] == "heatEngine2":
+            self.control_utils.turn_heat_engine2_on() if state["state"] else self.control_utils.turn_heat_engine2_off()
+        
 
     def dolly_control(self, control):
         if control["target"] == "setState":
             # 半自动模式下控制dolly
-            dolly_state = control["dolly_state"]
-            if dolly_state:
-                self.dolly_state = True
-                # 这里dolly用于控制喷雾机
-                self.control_utils.turn_dolly_on(self.one_side_flag)
-            else:
-                self.dolly_state = False
-                self.control_utils.turn_dolly_off()
+            if control["side"] == "left":
+                dolly_state = control["dolly_state"]
+                if dolly_state:
+                    self.left_dolly_state = True
+                    # 这里dolly用于控制喷雾机
+                    self.control_utils.turn_left_dolly_on()
+                else:
+                    self.left_dolly_state = False
+                    self.control_utils.turn_left_dolly_off()
+            elif control["side"] == "right":
+                dolly_state = control["dolly_state"]
+                if dolly_state:
+                    self.right_dolly_state = True
+                    # 这里dolly用于控制喷雾机
+                    self.control_utils.turn_right_dolly_on()
+                else:
+                    self.right_dolly_state = False
+                    self.control_utils.turn_right_dolly_off()
 
         elif control["target"] == "dolly_settings":
-            self.save_dolly_settings(control["dolly_single_run_time"], control["dolly_run_interval_time"])
+            if control["side"] == "left":
+                self.save_left_dolly_settings(control["dolly_single_run_time"], control["dolly_run_interval_time"])
+            elif control["side"] == "right":
+                self.save_right_dolly_settings(control["dolly_single_run_time"], control["dolly_run_interval_time"])
         elif control["target"] == "setMode":
             if control["mode"] == "auto":
                 with self.dolly_mode_lock:
@@ -331,26 +350,62 @@ class QtSignalHandler(QObject):
         }
         self.config_manager.update_multiple_config(new_configs)
 
-    def save_dolly_settings(self, dolly_single_run_time, dolly_run_interval_time):
+    def save_left_dolly_settings(self, dolly_single_run_time, dolly_run_interval_time):
         new_configs = {
-            'dolly_single_run_time': dolly_single_run_time,
-            'dolly_run_interval_time': dolly_run_interval_time,
+            'left_dolly_single_run_time': dolly_single_run_time,
+            'left_dolly_run_interval_time': dolly_run_interval_time,
+        }
+        self.config_manager.update_multiple_config(new_configs)
+
+    def save_right_dolly_settings(self, dolly_single_run_time, dolly_run_interval_time):
+        new_configs = {
+            'right_dolly_single_run_time': dolly_single_run_time,
+            'right_dolly_run_interval_time': dolly_run_interval_time,
         }
         self.config_manager.update_multiple_config(new_configs)
 
     def load_dolly(self):
-        dolly_configs = self.config_manager.get_multiple_config([
-            'dolly_single_run_time',
-            'dolly_run_interval_time',
+        left_dolly_configs = self.config_manager.get_multiple_config([
+            'left_dolly_single_run_time',
+            'left_dolly_run_interval_time',
+        ])
+
+        right_dolly_configs = self.config_manager.get_multiple_config([
+            'right_dolly_single_run_time',
+            'right_dolly_run_interval_time',
         ])
         
-        if dolly_configs:
-            self.dolly_single_run_time = dolly_configs['dolly_single_run_time']
-            self.dolly_run_interval_time = dolly_configs['dolly_run_interval_time']
-            logger.info(f"Loaded dolly settings: {dolly_configs}")
+        if left_dolly_configs:
+            # self.dolly_single_run_time = dolly_configs['dolly_single_run_time']
+            # self.dolly_run_interval_time = dolly_configs['dolly_run_interval_time']
+            logger.info(f"Loaded dolly settings: {left_dolly_configs}")
+            dolly_configs = {
+                'side': 'left',
+                'dolly_single_run_time': left_dolly_configs['left_dolly_single_run_time'],
+                'dolly_run_interval_time': left_dolly_configs['left_dolly_run_interval_time'],
+            }
             self.load_dolly_settings.emit(dolly_configs)
         else:
             dolly_configs = {
+                'side': 'left',
+                'dolly_single_run_time': self.dolly_single_run_time,
+                'dolly_run_interval_time': self.dolly_run_interval_time,
+            }
+            self.load_dolly_settings.emit(dolly_configs)
+        
+        if right_dolly_configs:
+            # self.dolly_single_run_time = dolly_configs['dolly_single_run_time']
+            # self.dolly_run_interval_time = dolly_configs['dolly_run_interval_time']
+            logger.info(f"Loaded dolly settings: {right_dolly_configs}")
+            dolly_configs = {
+                'side': 'right',
+                'dolly_single_run_time': right_dolly_configs['right_dolly_single_run_time'],
+                'dolly_run_interval_time': right_dolly_configs['right_dolly_run_interval_time'],
+            }
+            self.load_dolly_settings.emit(dolly_configs)
+        else:
+            dolly_configs = {
+                'side': 'right',
                 'dolly_single_run_time': self.dolly_single_run_time,
                 'dolly_run_interval_time': self.dolly_run_interval_time,
             }

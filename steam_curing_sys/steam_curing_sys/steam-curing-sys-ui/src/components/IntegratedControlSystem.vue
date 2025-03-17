@@ -24,6 +24,16 @@
         {{ heatEngineOn ? '关闭' : '开启' }}
       </button>
     </div>
+
+    <div class="steam_engine">
+      <div class="status" :class="{ 'on': heatEngineOn2 }">
+        <div class="status-indicator"></div>
+        {{ heatEngineOn2 ? '开' : '关' }}
+      </div>
+      <button @click="click_toggleEngine2" :disabled="isAutoMode" class="control-btn">
+        {{ heatEngineOn2 ? '关闭' : '开启' }}
+      </button>
+    </div>
            
     <div class="text_status">{{ newStatusMessage }}</div>
   <!-- </div> -->
@@ -35,11 +45,13 @@ import { useWebChannel } from './useWebChannel';
 
 // Steam Engine Control
 const heatEngineOn = ref(false);
+const heatEngineOn2 = ref(false);
 
 // Shared state
 const isAutoMode = ref(false);
 
-const sensor_error = ref(false);
+const sensor1_error = ref(false);
+const sensor2_error = ref(false);
 
 const { sendToPyQt } = useWebChannel();
 
@@ -77,6 +89,9 @@ onMounted(() => {
       if (newMessage && newMessage.type === 'update_heat_engine_status') {
         heatEngineOn.value = newMessage.content;
       }
+      else if (newMessage && newMessage.type === 'update_heat_engine2_status') {
+        heatEngineOn2.value = newMessage.content;
+      }
       // else if (newMessage && newMessage.type === 'IntegratedControlSystem_init') {
       //   console.log('Received IntegratedControlSystem_init message');
       //   sendInitialState();
@@ -84,14 +99,24 @@ onMounted(() => {
       else if (newMessage && newMessage.type === 'update_sensor_avg_data') {
         console.log('Received sensor avg data:', newMessage.content);
         const data = JSON.parse(newMessage.content);
-        if (data.type === 'temp') {
+        if (data.type === 'temp1') {
           if (data.value !== -1) {
-            avg_temp.value = String(data.value);
-            sensor_error.value = false;
+            temp1.value = String(data.value);
+            sensor1_error.value = false;
           }
           else {
-            sensor_error.value = true;
-            avg_temp.value = '未知';
+            sensor1_error.value = true;
+            temp1.value = '未知';
+          }
+        }
+        else if (data.type === 'temp2') {
+          if (data.value !== -1) {
+            temp2.value = String(data.value);
+            sensor2_error.value = false;
+          }
+          else {
+            sensor2_error.value = true;
+            temp2.value = '未知';
           }
         }
       }
@@ -146,13 +171,15 @@ onMounted(() => {
 //   sendToPyQt('IntegratedControlSystem_init_response', initialState);
 // };
 
-const avg_temp = ref("未知");
-const avg_humidity = ref("未知");
+const temp1 = ref("未知");
+const temp2 = ref("未知");
 
 const newStatusMessage = computed(() => {
   if (!isAutoMode.value) return '手动模式';
-  if (sensor_error.value === false) return `自动模式受水下传感器温度控制, 水下平均温度: ${avg_temp.value}°C`;
-  if (sensor_error.value === true) return `自动模式受水下传感器温度控制, 水下平均温度: ${avg_temp.value}°C, 无法使用自动模式, 请检查异常传感器`;
+  if (sensor1_error.value === false && sensor2_error.value === false) return `自动模式受水下传感器温度控制, 水箱1温度: ${temp1.value}°C, 水箱2温度: ${temp2.value}°C`;
+  if (sensor1_error.value === true && sensor2_error.value === false) return `自动模式受水下传感器温度控制, 水箱1温度: ${temp1.value}°C, 水箱2温度: ${temp2.value}°C, 水箱1传感器异常`;
+  if (sensor1_error.value === false && sensor2_error.value === true) return `自动模式受水下传感器温度控制, 水箱1温度: ${temp1.value}°C, 水箱2温度: ${temp2.value}°C, 水箱2传感器异常`;
+  if (sensor1_error.value === true && sensor2_error.value === true) return `自动模式受水下传感器温度控制, 水箱1温度: ${temp1.value}°C, 水箱2温度: ${temp2.value}°C, 水箱1和水箱2传感器异常`;
 });
 
 async function setMode(mode) {
@@ -173,11 +200,17 @@ async function setMode(mode) {
       if (heatEngineOn.value) {
         await toggleheatEngine();
       }
+      if (heatEngineOn2.value) {
+        await toggleheatEngine2();
+      }
     }
     else {
       // 自动切换到手动模式时，关闭所有引擎
       if (heatEngineOn.value) {
         await toggleheatEngine();
+      }
+      if (heatEngineOn2.value) {
+        await toggleheatEngine2();
       }
     }
   }
@@ -190,12 +223,28 @@ async function toggleheatEngine() {
   }
 }
 
+async function toggleheatEngine2() {
+  if (environment.isPyQtWebEngine) {
+    sendToPyQt('setEngineState', { engine: 'heatEngine2', state: !heatEngineOn2.value });
+    heatEngineOn2.value = !heatEngineOn2.value;
+  }
+}
+
 async function click_toggleEngine() {
     // sendToPyQt('IntegratedControlSystem_set_response', { method: 'click_toggleSprayEngine', args: {} });
     // 切换到喷雾系统
     sendToPyQt('setEngineState', { engine: 'heatEngine', state: !heatEngineOn.value });
     // sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
     heatEngineOn.value = !heatEngineOn.value;
+    // rightEngineOn.value = !rightEngineOn.value;
+}
+
+async function click_toggleEngine2() {
+    // sendToPyQt('IntegratedControlSystem_set_response', { method: 'click_toggleSprayEngine', args: {} });
+    // 切换到喷雾系统
+    sendToPyQt('setEngineState', { engine: 'heatEngine2', state: !heatEngineOn2.value });
+    // sendToPyQt('setEngineState', { engine: 'right', state: !rightEngineOn.value });
+    heatEngineOn2.value = !heatEngineOn2.value;
     // rightEngineOn.value = !rightEngineOn.value;
 }
 

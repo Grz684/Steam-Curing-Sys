@@ -451,8 +451,17 @@ class MainWindow(QMainWindow):
         self.bridge.send_message(msg_type, state)
         self.bridge.mqtt_client.publish(json.dumps({"command": "update_dolly_state", "data": state}))
 
+    def update_dolly2_state(self, state):
+        msg_type = "update_dolly2_state"
+        self.bridge.send_message(msg_type, state)
+        self.bridge.mqtt_client.publish(json.dumps({"command": "update_dolly2_state", "data": state}))
+
     def update_heat_engine_status(self, status):
         msg_type = "update_heat_engine_status"
+        self.bridge.send_message(msg_type, status)
+
+    def update_heat_engine2_status(self, status):
+        msg_type = "update_heat_engine2_status"
         self.bridge.send_message(msg_type, status)
 
     def update_sensor_data(self, sensor_data):

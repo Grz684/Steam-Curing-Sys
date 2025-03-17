@@ -34,7 +34,9 @@ def main():
     qtSignalHandler.right_steam_status_updated.connect(ex.update_right_steam_status)
 
     qtSignalHandler.update_dolly_state.connect(ex.update_dolly_state)
+    qtSignalHandler.update_dolly2_state.connect(ex.update_dolly2_state)
     qtSignalHandler.update_heat_engine_status.connect(ex.update_heat_engine_status)
+    qtSignalHandler.update_heat_engine2_status.connect(ex.update_heat_engine2_status)
 
     qtSignalHandler.update_water_tank_status.connect(ex.update_water_tank_status)
     ex.bridge.dataExport.connect(qtSignalHandler.export_data)

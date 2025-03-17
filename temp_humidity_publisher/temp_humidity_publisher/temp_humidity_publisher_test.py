@@ -1,64 +1,42 @@
+import signal
 import rclpy
 from rclpy.node import Node
 from std_srvs.srv import Trigger
 import json
-import random
 import logging
-from pymodbus.client import ModbusTcpClient
-import concurrent.futures
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class TempHumidityPublisher(Node):
+class MockTempHumidityPublisher(Node):
 
     def __init__(self):
         super().__init__('temp_humidity_publisher')
           
         self.srv = self.create_service(Trigger, 'get_sensor_data', self.get_sensor_data_callback)
-
-        # self.ip_address = '192.168.3.7'  # 请替换为您的实际IP地址
-        # self.base_port = 8001  # COM1 对应的起始端口号
         
-        # # 创建16个ModbusTcpClient，每个对应一个传感器
-        # self.modbus_clients = [
-        #     ModbusTcpClient(self.ip_address, port=self.base_port + i, timeout=0.1)
-        #     for i in range(16)
-        # ]
-        self.sensor_num = 4
+        # 模拟数据，可以手动修改
+        self.mock_data = {
+            "temperatures": {
+                "temperature_sensor_1": 25.5,
+                "temperature_sensor_2": 26.3,
+                "temperature_sensor_3": 24.8,
+                "temperature_sensor_4": 27.2
+            },
+            "humidities": {
+                "humidity_sensor_1": 45.2,
+                "humidity_sensor_2": 48.7
+                # 后两个传感器没有湿度数据
+            }
+        }
 
-        self.get_logger().info('Temperature and Humidity Publisher node has been started')
-
-    def read_temperature_humidity(self, client_index):
-        temperature = round(random.uniform(38.0, 40.0), 2)
-        humidity = round(random.uniform(58.0, 60.0), 2)
-        return temperature, humidity
+        self.get_logger().info('Mock Temperature and Humidity Publisher node has been started')
 
     def read_all_sensors(self):
-        with concurrent.futures.ThreadPoolExecutor(max_workers=self.sensor_num) as executor:
-            future_to_index = {executor.submit(self.read_temperature_humidity, i): i for i in range(self.sensor_num)}
-            
-            temperatures = {}
-            humidities = {}
-            for future in concurrent.futures.as_completed(future_to_index):
-                index = future_to_index[future]
-                try:
-                    temp, humi = future.result()
-                    if temp is not None and humi is not None:
-                        temperatures[f'temperature_sensor_{index+1}'] = round(temp, 2)
-                        humidities[f'humidity_sensor_{index+1}'] = round(humi, 2)
-                    else:
-                        temperatures[f'temperature_sensor_{index+1}'] = -1
-                        humidities[f'humidity_sensor_{index+1}'] = -1
-                except Exception as exc:
-                    # self.get_logger().error(f'设备 {index+1} 生成了异常: {exc}')
-                    temperatures[f'temperature_sensor_{index+1}'] = -1
-                    humidities[f'humidity_sensor_{index+1}'] = -1
-
-        return temperatures, humidities
+        # 直接返回模拟数据
+        return self.mock_data["temperatures"], self.mock_data["humidities"]
 
     def get_sensor_data_callback(self, request, response):
-        # 模拟获取16个温度和16个湿度数据
         temperatures, humidities = self.read_all_sensors()
         
         data = {
@@ -70,23 +48,62 @@ class TempHumidityPublisher(Node):
         response.success = True
         return response
     
-    def close_all_connections(self):
-        logger.info("关闭所有连接")
+    def set_mock_data(self, temperatures=None, humidities=None):
+        """
+        手动设置模拟数据
+        
+        参数:
+        temperatures: 包含温度数据的字典
+        humidities: 包含湿度数据的字典
+        """
+        if temperatures:
+            self.mock_data["temperatures"].update(temperatures)
+        if humidities:
+            self.mock_data["humidities"].update(humidities)
+        logger.info(f"已更新模拟数据: {json.dumps(self.mock_data)}")
 
 def main(args=None):
     rclpy.init(args=args)
-    temp_humidity_publisher = TempHumidityPublisher()
+    mock_publisher = MockTempHumidityPublisher()
+    
+    # 示例：如何手动修改测试数据
+    # mock_publisher.set_mock_data(
+    #     {"temperature_sensor_1": 30.0, "temperature_sensor_2": 31.5},
+    #     {"humidity_sensor_1": 60.0}
+    # )
+    
+    node_destroyed = False
+    rclpy_shutdown = False
+
+    def signal_handler(sig, frame):
+        nonlocal node_destroyed, rclpy_shutdown
+        if not node_destroyed:
+            logger.info("收到节点关闭信号")
+            mock_publisher.destroy_node()
+            node_destroyed = True
+        if not rclpy_shutdown:
+            rclpy.shutdown()
+            rclpy_shutdown = True
+
+    signal.signal(signal.SIGINT, signal_handler)
 
     try:
-        rclpy.spin(temp_humidity_publisher)
-    except KeyboardInterrupt:
-        logger.info("传感器节点已终止")
+        rclpy.spin(mock_publisher)
     except Exception as e:
-        logger.error("传感器节点错误: %s", e)
+        logger.error("节点错误: %s", e)
     finally:
-        temp_humidity_publisher.close_all_connections()
-        temp_humidity_publisher.destroy_node()
-        rclpy.shutdown()
+        if not node_destroyed:
+            logger.info("节点正在终止...")
+            mock_publisher.destroy_node()
+            node_destroyed = True
+        else:
+            logger.info("节点已经被信号处理器终止")
+        
+        if not rclpy_shutdown:
+            rclpy.shutdown()
+            rclpy_shutdown = True
+        
+        logger.info("节点已全部终止")
 
 if __name__ == '__main__':
     main()
