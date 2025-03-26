@@ -1,0 +1,25 @@
+[4.382s] Invoking command in '/home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher': PYTHONPATH=/home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher/build --no-deps symlink_data
+[5.424s] running develop
+[6.008s] running egg_info
+[6.008s] creating optocoupler_input_publisher.egg-info
+[6.009s] writing optocoupler_input_publisher.egg-info/PKG-INFO
+[6.011s] writing dependency_links to optocoupler_input_publisher.egg-info/dependency_links.txt
+[6.011s] writing entry points to optocoupler_input_publisher.egg-info/entry_points.txt
+[6.012s] writing requirements to optocoupler_input_publisher.egg-info/requires.txt
+[6.014s] writing top-level names to optocoupler_input_publisher.egg-info/top_level.txt
+[6.018s] writing manifest file 'optocoupler_input_publisher.egg-info/SOURCES.txt'
+[6.173s] reading manifest file 'optocoupler_input_publisher.egg-info/SOURCES.txt'
+[6.176s] writing manifest file 'optocoupler_input_publisher.egg-info/SOURCES.txt'
+[6.181s] running build_ext
+[6.182s] Creating /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/lib/python3.8/site-packages/site.py
+[6.190s] Creating /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/lib/python3.8/site-packages/optocoupler-input-publisher.egg-link (link to .)
+[6.193s] Installing input_publisher script to /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/lib/optocoupler_input_publisher
+[6.196s] 
+[6.197s] Installed /home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher
+[6.198s] running symlink_data
+[6.198s] creating /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/share/ament_index
+[6.199s] creating /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/share/ament_index/resource_index
+[6.199s] creating /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/share/ament_index/resource_index/packages
+[6.200s] symbolically linking /home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher/resource/optocoupler_input_publisher -> /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/share/ament_index/resource_index/packages
+[6.201s] symbolically linking /home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher/package.xml -> /home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/share/optocoupler_input_publisher
+[6.293s] Invoked command in '/home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher' returned '0': PYTHONPATH=/home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/grz/Steam-Curing-Sys/install/optocoupler_input_publisher/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/grz/Steam-Curing-Sys/build/optocoupler_input_publisher/build --no-deps symlink_data

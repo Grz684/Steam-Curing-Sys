@@ -1,0 +1,25 @@
+[4.279s] Invoking command in '/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher': PYTHONPATH=/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/grz/Steam-Curing-Sys/build/temp_humidity_publisher/build --no-deps symlink_data
+[5.396s] running develop
+[6.040s] running egg_info
+[6.041s] creating temp_humidity_publisher.egg-info
+[6.044s] writing temp_humidity_publisher.egg-info/PKG-INFO
+[6.047s] writing dependency_links to temp_humidity_publisher.egg-info/dependency_links.txt
+[6.048s] writing entry points to temp_humidity_publisher.egg-info/entry_points.txt
+[6.048s] writing requirements to temp_humidity_publisher.egg-info/requires.txt
+[6.048s] writing top-level names to temp_humidity_publisher.egg-info/top_level.txt
+[6.053s] writing manifest file 'temp_humidity_publisher.egg-info/SOURCES.txt'
+[6.217s] reading manifest file 'temp_humidity_publisher.egg-info/SOURCES.txt'
+[6.222s] writing manifest file 'temp_humidity_publisher.egg-info/SOURCES.txt'
+[6.226s] running build_ext
+[6.227s] Creating /home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/lib/python3.8/site-packages/site.py
+[6.237s] Creating /home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/lib/python3.8/site-packages/temp-humidity-publisher.egg-link (link to .)
+[6.239s] Installing sensor_publisher script to /home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/lib/temp_humidity_publisher
+[6.239s] 
+[6.241s] Installed /home/grz/Steam-Curing-Sys/build/temp_humidity_publisher
+[6.241s] running symlink_data
+[6.242s] creating /home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/share/ament_index
+[6.243s] creating /home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/share/ament_index/resource_index
+[6.245s] creating /home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/share/ament_index/resource_index/packages
+[6.245s] symbolically linking /home/grz/Steam-Curing-Sys/build/temp_humidity_publisher/resource/temp_humidity_publisher -> /home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/share/ament_index/resource_index/packages
+[6.246s] symbolically linking /home/grz/Steam-Curing-Sys/build/temp_humidity_publisher/package.xml -> /home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/share/temp_humidity_publisher
+[6.328s] Invoked command in '/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher' returned '0': PYTHONPATH=/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/grz/Steam-Curing-Sys/build/temp_humidity_publisher/build --no-deps symlink_data

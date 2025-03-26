@@ -12,6 +12,8 @@ steam_curing_sys/password_gen.py
 steam_curing_sys/qtsignal_handler.py
 steam_curing_sys/ros2_handler_node.py
 steam_curing_sys/ros2_thread.py
+steam_curing_sys/sensor_adjustments_db.py
+steam_curing_sys/state_machine.py
 steam_curing_sys/steam_curing_sys.py
 steam_curing_sys/steam_curing_sys_UI.py
 steam_curing_sys/steam_curing_sys_UI_test.py
