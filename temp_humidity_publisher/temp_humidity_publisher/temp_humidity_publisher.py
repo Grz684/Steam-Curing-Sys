@@ -59,11 +59,13 @@ class TempHumidityPublisher(Node):
             return None, None
 
     def read_all_sensors(self):
+        # 先初始化所有传感器的数据为默认值
+        temperatures = {f'temperature_sensor_{i+1}': -1 for i in range(self.sensor_num)}
+        humidities = {f'humidity_sensor_{i+1}': -1 for i in range(self.sensor_num)}
+        
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.sensor_num) as executor:
             future_to_index = {executor.submit(self.read_temperature_humidity, i): i for i in range(self.sensor_num)}
             
-            temperatures = {}
-            humidities = {}
             for future in concurrent.futures.as_completed(future_to_index):
                 index = future_to_index[future]
                 try:
@@ -71,13 +73,9 @@ class TempHumidityPublisher(Node):
                     if temp is not None and humi is not None:
                         temperatures[f'temperature_sensor_{index+1}'] = round(temp, 2)
                         humidities[f'humidity_sensor_{index+1}'] = round(humi, 2)
-                    else:
-                        temperatures[f'temperature_sensor_{index+1}'] = -1
-                        humidities[f'humidity_sensor_{index+1}'] = -1
                 except Exception as exc:
-                    # self.get_logger().error(f'设备 {index+1} 生成了异常: {exc}')
-                    temperatures[f'temperature_sensor_{index+1}'] = -1
-                    humidities[f'humidity_sensor_{index+1}'] = -1
+                    # 异常已经被记录，字典已经有默认值，不需要再做什么
+                    pass
 
         return temperatures, humidities
 

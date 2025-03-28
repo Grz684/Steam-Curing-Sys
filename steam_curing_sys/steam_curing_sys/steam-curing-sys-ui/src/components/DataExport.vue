@@ -53,7 +53,7 @@
     <!-- 更新版本弹窗 -->
     <div v-if="showUpdate" class="modal-overlay">
       <div class="modal-content update-modal">
-        <h2>更新版本</h2>
+        <h2>更新版本【注意更新时务必全程联网！否则会更新失败】</h2>
         <div class="update-input" @click="showNumericKeyboard = true">
           <input 
             type="text" 
@@ -108,6 +108,8 @@ const showUpdate = ref(false);
 const updateVersion = ref('');
 const showNumericKeyboard = ref(false);
 
+const isInternetConnected = ref(false);
+
 const showUpdateDialog = () => {
   showUpdate.value = true;
   updateVersion.value = '';
@@ -117,6 +119,10 @@ const showUpdateDialog = () => {
 const confirmUpdate = () => {
   if (!updateVersion.value) {
     showCustomAlert('请输入更新版号！');
+    return;
+  }
+  if (!isInternetConnected.value) {
+    showCustomAlert('请先连接到互联网！');
     return;
   }
   if (environment.isPyQtWebEngine) {
@@ -192,6 +198,14 @@ onMounted(() => {
           }
         } catch (error) {
           showCustomAlert('解析更新响应失败：' + error);
+        }
+      }
+      else if (newMessage && newMessage.type === 'wifi_status') {
+        const content = JSON.parse(newMessage.content);
+        if (content.internet_status === "已联网") {
+          isInternetConnected.value = true;
+        } else {
+          isInternetConnected.value = false;
         }
       }
     });
