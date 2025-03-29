@@ -1,0 +1,94 @@
+[0.000000] (-) TimerEvent: {}
+[0.001779] (-) JobUnselected: {'identifier': 'optocoupler_input_publisher'}
+[0.001964] (steam_curing_sys) JobQueued: {'identifier': 'steam_curing_sys', 'dependencies': OrderedDict()}
+[0.002655] (temp_humidity_publisher) JobQueued: {'identifier': 'temp_humidity_publisher', 'dependencies': OrderedDict()}
+[0.002914] (steam_curing_sys) JobStarted: {'identifier': 'steam_curing_sys'}
+[0.037514] (temp_humidity_publisher) JobStarted: {'identifier': 'temp_humidity_publisher'}
+[0.098774] (-) TimerEvent: {}
+[0.200380] (-) TimerEvent: {}
+[0.301082] (-) TimerEvent: {}
+[0.401752] (-) TimerEvent: {}
+[0.502353] (-) TimerEvent: {}
+[0.603004] (-) TimerEvent: {}
+[0.703608] (-) TimerEvent: {}
+[0.804255] (-) TimerEvent: {}
+[0.905029] (-) TimerEvent: {}
+[1.006528] (-) TimerEvent: {}
+[1.107671] (-) TimerEvent: {}
+[1.208300] (-) TimerEvent: {}
+[1.310405] (-) TimerEvent: {}
+[1.411183] (-) TimerEvent: {}
+[1.511958] (-) TimerEvent: {}
+[1.613279] (-) TimerEvent: {}
+[1.713985] (-) TimerEvent: {}
+[1.815067] (-) TimerEvent: {}
+[1.915879] (-) TimerEvent: {}
+[2.017328] (-) TimerEvent: {}
+[2.118301] (-) TimerEvent: {}
+[2.219288] (-) TimerEvent: {}
+[2.319906] (-) TimerEvent: {}
+[2.420516] (-) TimerEvent: {}
+[2.521132] (-) TimerEvent: {}
+[2.622011] (-) TimerEvent: {}
+[2.722683] (-) TimerEvent: {}
+[2.823615] (-) TimerEvent: {}
+[2.924632] (-) TimerEvent: {}
+[3.025327] (-) TimerEvent: {}
+[3.125935] (-) TimerEvent: {}
+[3.226763] (-) TimerEvent: {}
+[3.298633] (steam_curing_sys) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/home/grz/Steam-Curing-Sys/build/steam_curing_sys/build', '--no-deps', 'symlink_data'], 'cwd': '/home/grz/Steam-Curing-Sys/build/steam_curing_sys', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'grz', 'SSH_CLIENT': '10.111.248.87 59574 22', 'LC_TIME': 'zh_CN.UTF-8', 'XDG_SESSION_TYPE': 'tty', 'GIT_ASKPASS': '/home/grz/.vscode-server/cli/servers/Stable-ddc367ed5c8936efe395cffeec279b04ffd7db78/server/extensions/git/dist/askpass.sh', 'SHLVL': '2', 'LD_LIBRARY_PATH': '/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib', 'BROWSER': '/home/grz/.vscode-server/cli/servers/Stable-ddc367ed5c8936efe395cffeec279b04ffd7db78/server/bin/helpers/browser.sh', 'MOTD_SHOWN': 'pam', 'HOME': '/home/grz', 'TERM_PROGRAM_VERSION': '1.98.2', 'VSCODE_IPC_HOOK_CLI': '/run/user/1000/vscode-ipc-b5d122d0-e7d8-4af7-a730-617c894cdc73.sock', 'ROS_PYTHON_VERSION': '3', 'VSCODE_GIT_ASKPASS_MAIN': '/home/grz/.vscode-server/cli/servers/Stable-ddc367ed5c8936efe395cffeec279b04ffd7db78/server/extensions/git/dist/askpass-main.js', 'LC_MONETARY': 'zh_CN.UTF-8', 'VSCODE_GIT_ASKPASS_NODE': '/home/grz/.vscode-server/cli/servers/Stable-ddc367ed5c8936efe395cffeec279b04ffd7db78/server/node', 'SSL_CERT_FILE': '/usr/lib/ssl/certs/ca-certificates.crt', 'PYDEVD_DISABLE_FILE_VALIDATION': '1', 'BUNDLED_DEBUGPY_PATH': '/home/grz/.vscode-server/extensions/ms-python.debugpy-2025.4.1-linux-x64/bundled/libs/debugpy', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'ROS_DISTRO': 'foxy', 'LOGNAME': 'grz', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'TERM': 'xterm-256color', 'XDG_SESSION_ID': '20', 'ROS_LOCALHOST_ONLY': '1', 'PATH': '/opt/ros/foxy/bin:/home/grz/.vscode-server/cli/servers/Stable-ddc367ed5c8936efe395cffeec279b04ffd7db78/server/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/grz/.vscode-server/extensions/ms-python.debugpy-2025.4.1-linux-x64/bundled/scripts/noConfigScripts:/home/grz/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand', 'LC_ADDRESS': 'zh_CN.UTF-8', 'XDG_RUNTIME_DIR': '/run/user/1000', 'SSL_CERT_DIR': '/usr/lib/ssl/certs', 'DISPLAY': ':0', 'VSCODE_DEBUGPY_ADAPTER_ENDPOINTS': '/home/grz/.vscode-server/extensions/ms-python.debugpy-2025.4.1-linux-x64/.noConfigDebugAdapterEndpoints/endpoint-7a45ae373e2e19bb.txt', 'LANG': 'en_US.UTF-8', 'LC_TELEPHONE': 'zh_CN.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-0c9c3ca1f0.sock', 'TERM_PROGRAM': 'vscode', 'ROSDISTRO_INDEX_URL': 'https://mirrors.tuna.tsinghua.edu.cn/rosdistro/index-v4.yaml', 'AMENT_PREFIX_PATH': '/opt/ros/foxy', 'SHELL': '/bin/bash', 'LC_NAME': 'zh_CN.UTF-8', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'LC_MEASUREMENT': 'zh_CN.UTF-8', 'LC_IDENTIFICATION': 'zh_CN.UTF-8', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'PWD': '/home/grz/Steam-Curing-Sys/build/steam_curing_sys', 'LC_ALL': 'en_US.UTF-8', 'SSH_CONNECTION': '10.111.248.87 59574 10.111.248.230 22', 'PYTHONPATH': '/home/grz/Steam-Curing-Sys/build/steam_curing_sys/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/grz/Steam-Curing-Sys/install/steam_curing_sys/lib/python3.8/site-packages:/opt/ros/foxy/lib/python3.8/site-packages', 'LC_NUMERIC': 'zh_CN.UTF-8', 'LC_PAPER': 'zh_CN.UTF-8', 'COLCON': '1'}, 'shell': False}
+[3.323423] (temp_humidity_publisher) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher/build', '--no-deps', 'symlink_data'], 'cwd': '/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'grz', 'SSH_CLIENT': '10.111.248.87 59574 22', 'LC_TIME': 'zh_CN.UTF-8', 'XDG_SESSION_TYPE': 'tty', 'GIT_ASKPASS': '/home/grz/.vscode-server/cli/servers/Stable-ddc367ed5c8936efe395cffeec279b04ffd7db78/server/extensions/git/dist/askpass.sh', 'SHLVL': '2', 'LD_LIBRARY_PATH': '/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib', 'BROWSER': '/home/grz/.vscode-server/cli/servers/Stable-ddc367ed5c8936efe395cffeec279b04ffd7db78/server/bin/helpers/browser.sh', 'MOTD_SHOWN': 'pam', 'HOME': '/home/grz', 'TERM_PROGRAM_VERSION': '1.98.2', 'VSCODE_IPC_HOOK_CLI': '/run/user/1000/vscode-ipc-b5d122d0-e7d8-4af7-a730-617c894cdc73.sock', 'ROS_PYTHON_VERSION': '3', 'VSCODE_GIT_ASKPASS_MAIN': '/home/grz/.vscode-server/cli/servers/Stable-ddc367ed5c8936efe395cffeec279b04ffd7db78/server/extensions/git/dist/askpass-main.js', 'LC_MONETARY': 'zh_CN.UTF-8', 'VSCODE_GIT_ASKPASS_NODE': '/home/grz/.vscode-server/cli/servers/Stable-ddc367ed5c8936efe395cffeec279b04ffd7db78/server/node', 'SSL_CERT_FILE': '/usr/lib/ssl/certs/ca-certificates.crt', 'PYDEVD_DISABLE_FILE_VALIDATION': '1', 'BUNDLED_DEBUGPY_PATH': '/home/grz/.vscode-server/extensions/ms-python.debugpy-2025.4.1-linux-x64/bundled/libs/debugpy', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'ROS_DISTRO': 'foxy', 'LOGNAME': 'grz', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'TERM': 'xterm-256color', 'XDG_SESSION_ID': '20', 'ROS_LOCALHOST_ONLY': '1', 'PATH': '/opt/ros/foxy/bin:/home/grz/.vscode-server/cli/servers/Stable-ddc367ed5c8936efe395cffeec279b04ffd7db78/server/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/grz/.vscode-server/extensions/ms-python.debugpy-2025.4.1-linux-x64/bundled/scripts/noConfigScripts:/home/grz/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand', 'LC_ADDRESS': 'zh_CN.UTF-8', 'XDG_RUNTIME_DIR': '/run/user/1000', 'SSL_CERT_DIR': '/usr/lib/ssl/certs', 'DISPLAY': ':0', 'VSCODE_DEBUGPY_ADAPTER_ENDPOINTS': '/home/grz/.vscode-server/extensions/ms-python.debugpy-2025.4.1-linux-x64/.noConfigDebugAdapterEndpoints/endpoint-7a45ae373e2e19bb.txt', 'LANG': 'en_US.UTF-8', 'LC_TELEPHONE': 'zh_CN.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-0c9c3ca1f0.sock', 'TERM_PROGRAM': 'vscode', 'ROSDISTRO_INDEX_URL': 'https://mirrors.tuna.tsinghua.edu.cn/rosdistro/index-v4.yaml', 'AMENT_PREFIX_PATH': '/opt/ros/foxy', 'SHELL': '/bin/bash', 'LC_NAME': 'zh_CN.UTF-8', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'LC_MEASUREMENT': 'zh_CN.UTF-8', 'LC_IDENTIFICATION': 'zh_CN.UTF-8', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'PWD': '/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher', 'LC_ALL': 'en_US.UTF-8', 'SSH_CONNECTION': '10.111.248.87 59574 10.111.248.230 22', 'PYTHONPATH': '/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/lib/python3.8/site-packages:/opt/ros/foxy/lib/python3.8/site-packages', 'LC_NUMERIC': 'zh_CN.UTF-8', 'LC_PAPER': 'zh_CN.UTF-8', 'COLCON': '1'}, 'shell': False}
+[3.334559] (-) TimerEvent: {}
+[3.436729] (-) TimerEvent: {}
+[3.537425] (-) TimerEvent: {}
+[3.638264] (-) TimerEvent: {}
+[3.739039] (-) TimerEvent: {}
+[3.839836] (-) TimerEvent: {}
+[3.940635] (-) TimerEvent: {}
+[4.041381] (-) TimerEvent: {}
+[4.142101] (-) TimerEvent: {}
+[4.242782] (-) TimerEvent: {}
+[4.319801] (steam_curing_sys) StdoutLine: {'line': b'running develop\n'}
+[4.332264] (temp_humidity_publisher) StdoutLine: {'line': b'running develop\n'}
+[4.342926] (-) TimerEvent: {}
+[4.443564] (-) TimerEvent: {}
+[4.544213] (-) TimerEvent: {}
+[4.644856] (-) TimerEvent: {}
+[4.745620] (-) TimerEvent: {}
+[4.846303] (-) TimerEvent: {}
+[4.849845] (steam_curing_sys) StdoutLine: {'line': b'running egg_info\n'}
+[4.850599] (steam_curing_sys) StdoutLine: {'line': b'writing steam_curing_sys.egg-info/PKG-INFO\n'}
+[4.851431] (steam_curing_sys) StdoutLine: {'line': b'writing dependency_links to steam_curing_sys.egg-info/dependency_links.txt\n'}
+[4.852141] (steam_curing_sys) StdoutLine: {'line': b'writing entry points to steam_curing_sys.egg-info/entry_points.txt\n'}
+[4.852956] (steam_curing_sys) StdoutLine: {'line': b'writing requirements to steam_curing_sys.egg-info/requires.txt\n'}
+[4.853583] (steam_curing_sys) StdoutLine: {'line': b'writing top-level names to steam_curing_sys.egg-info/top_level.txt\n'}
+[4.864454] (temp_humidity_publisher) StdoutLine: {'line': b'running egg_info\n'}
+[4.865176] (temp_humidity_publisher) StdoutLine: {'line': b'writing temp_humidity_publisher.egg-info/PKG-INFO\n'}
+[4.865952] (temp_humidity_publisher) StdoutLine: {'line': b'writing dependency_links to temp_humidity_publisher.egg-info/dependency_links.txt\n'}
+[4.867026] (temp_humidity_publisher) StdoutLine: {'line': b'writing entry points to temp_humidity_publisher.egg-info/entry_points.txt\n'}
+[4.867620] (temp_humidity_publisher) StdoutLine: {'line': b'writing requirements to temp_humidity_publisher.egg-info/requires.txt\n'}
+[4.868014] (temp_humidity_publisher) StdoutLine: {'line': b'writing top-level names to temp_humidity_publisher.egg-info/top_level.txt\n'}
+[4.946449] (-) TimerEvent: {}
+[4.998862] (steam_curing_sys) StdoutLine: {'line': b"reading manifest file 'steam_curing_sys.egg-info/SOURCES.txt'\n"}
+[5.003912] (steam_curing_sys) StdoutLine: {'line': b"writing manifest file 'steam_curing_sys.egg-info/SOURCES.txt'\n"}
+[5.008710] (steam_curing_sys) StdoutLine: {'line': b'running build_ext\n'}
+[5.009891] (steam_curing_sys) StdoutLine: {'line': b'Creating /home/grz/Steam-Curing-Sys/install/steam_curing_sys/lib/python3.8/site-packages/steam-curing-sys.egg-link (link to .)\n'}
+[5.011576] (temp_humidity_publisher) StdoutLine: {'line': b"reading manifest file 'temp_humidity_publisher.egg-info/SOURCES.txt'\n"}
+[5.013069] (steam_curing_sys) StdoutLine: {'line': b'Installing main_sys script to /home/grz/Steam-Curing-Sys/install/steam_curing_sys/lib/steam_curing_sys\n'}
+[5.014140] (steam_curing_sys) StdoutLine: {'line': b'\n'}
+[5.015084] (steam_curing_sys) StdoutLine: {'line': b'Installed /home/grz/Steam-Curing-Sys/build/steam_curing_sys\n'}
+[5.015541] (steam_curing_sys) StdoutLine: {'line': b'running symlink_data\n'}
+[5.016053] (temp_humidity_publisher) StdoutLine: {'line': b"writing manifest file 'temp_humidity_publisher.egg-info/SOURCES.txt'\n"}
+[5.019770] (temp_humidity_publisher) StdoutLine: {'line': b'running build_ext\n'}
+[5.020826] (temp_humidity_publisher) StdoutLine: {'line': b'Creating /home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/lib/python3.8/site-packages/temp-humidity-publisher.egg-link (link to .)\n'}
+[5.023876] (temp_humidity_publisher) StdoutLine: {'line': b'Installing sensor_publisher script to /home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/lib/temp_humidity_publisher\n'}
+[5.024817] (temp_humidity_publisher) StdoutLine: {'line': b'\n'}
+[5.025523] (temp_humidity_publisher) StdoutLine: {'line': b'Installed /home/grz/Steam-Curing-Sys/build/temp_humidity_publisher\n'}
+[5.026033] (temp_humidity_publisher) StdoutLine: {'line': b'running symlink_data\n'}
+[5.046678] (-) TimerEvent: {}
+[5.104157] (steam_curing_sys) CommandEnded: {'returncode': 0}
+[5.146868] (-) TimerEvent: {}
+[5.157463] (steam_curing_sys) JobEnded: {'identifier': 'steam_curing_sys', 'rc': 0}
+[5.162614] (temp_humidity_publisher) CommandEnded: {'returncode': 0}
+[5.194289] (temp_humidity_publisher) JobEnded: {'identifier': 'temp_humidity_publisher', 'rc': 0}
+[5.197582] (-) EventReactorShutdown: {}

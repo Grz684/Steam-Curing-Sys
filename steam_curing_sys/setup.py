@@ -21,7 +21,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'main_sys = steam_curing_sys.steam_curing_sys_test:main'
+            'main_sys = steam_curing_sys.steam_curing_sys:main'
         ],
     },
 )

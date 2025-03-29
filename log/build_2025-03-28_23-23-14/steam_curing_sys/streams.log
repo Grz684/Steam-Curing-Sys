@@ -1,0 +1,17 @@
+[3.255s] Invoking command in '/home/grz/Steam-Curing-Sys/build/steam_curing_sys': PYTHONPATH=/home/grz/Steam-Curing-Sys/build/steam_curing_sys/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/grz/Steam-Curing-Sys/install/steam_curing_sys/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/grz/Steam-Curing-Sys/build/steam_curing_sys/build --no-deps symlink_data
+[4.166s] running develop
+[4.721s] running egg_info
+[4.722s] writing steam_curing_sys.egg-info/PKG-INFO
+[4.723s] writing dependency_links to steam_curing_sys.egg-info/dependency_links.txt
+[4.724s] writing entry points to steam_curing_sys.egg-info/entry_points.txt
+[4.725s] writing requirements to steam_curing_sys.egg-info/requires.txt
+[4.725s] writing top-level names to steam_curing_sys.egg-info/top_level.txt
+[4.870s] reading manifest file 'steam_curing_sys.egg-info/SOURCES.txt'
+[4.874s] writing manifest file 'steam_curing_sys.egg-info/SOURCES.txt'
+[4.879s] running build_ext
+[4.881s] Creating /home/grz/Steam-Curing-Sys/install/steam_curing_sys/lib/python3.8/site-packages/steam-curing-sys.egg-link (link to .)
+[4.884s] Installing main_sys script to /home/grz/Steam-Curing-Sys/install/steam_curing_sys/lib/steam_curing_sys
+[4.885s] 
+[4.885s] Installed /home/grz/Steam-Curing-Sys/build/steam_curing_sys
+[4.885s] running symlink_data
+[4.978s] Invoked command in '/home/grz/Steam-Curing-Sys/build/steam_curing_sys' returned '0': PYTHONPATH=/home/grz/Steam-Curing-Sys/build/steam_curing_sys/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/grz/Steam-Curing-Sys/install/steam_curing_sys/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/grz/Steam-Curing-Sys/build/steam_curing_sys/build --no-deps symlink_data
