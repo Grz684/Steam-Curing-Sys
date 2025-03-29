@@ -84,26 +84,22 @@ class TempHumidityPublisher(Node):
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.sensor_num) as executor:
             future_to_index = {executor.submit(self.read_temperature_humidity, i): i for i in range(self.sensor_num)}
             
-            temperatures = {}
-            humidities = {}
+            temperatures = {f'temperature_sensor_{i+1}': -1 for i in range(self.sensor_num)}
+            humidities = {f'humidity_sensor_{i+1}': -1 for i in range(self.sensor_num)}
+            
             for future in concurrent.futures.as_completed(future_to_index):
                 index = future_to_index[future]
                 try:
                     temp, humi = future.result()
+                    
                     if temp is not None:
                         temperatures[f'temperature_sensor_{index+1}'] = round(temp, 2)
-                    else:
-                        temperatures[f'temperature_sensor_{index+1}'] = -1
-
-                    # 只有前两个传感器有湿度数据
-                    # if index >= 2:
+                    
                     if humi is not None:
                         humidities[f'humidity_sensor_{index+1}'] = round(humi, 2)
-                    else:
-                        humidities[f'humidity_sensor_{index+1}'] = -1
-                except Exception as exc:
-                    temperatures[f'temperature_sensor_{index+1}'] = -1
-                    humidities[f'humidity_sensor_{index+1}'] = -1
+                except Exception:
+                    # 异常情况下不需要做任何事，因为默认值已经设置好了
+                    pass
 
         return temperatures, humidities
 

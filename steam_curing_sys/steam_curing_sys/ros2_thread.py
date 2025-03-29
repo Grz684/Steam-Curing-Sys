@@ -31,6 +31,7 @@ class ROS2Thread(QThread):
             self.qtSignalHandler.export_completed.emit(-1)  # 发送错误信号
         except Exception as e:
             logger.error(f"ros2节点运行故障: {e}")
+            self.qtSignalHandler.export_completed.emit(-3)
             
         finally:
             # 关闭所有输出
