@@ -1,0 +1,17 @@
+[3.426s] Invoking command in '/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher': PYTHONPATH=/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/grz/Steam-Curing-Sys/build/temp_humidity_publisher/build --no-deps symlink_data
+[4.405s] running develop
+[4.950s] running egg_info
+[4.950s] writing temp_humidity_publisher.egg-info/PKG-INFO
+[4.951s] writing dependency_links to temp_humidity_publisher.egg-info/dependency_links.txt
+[4.952s] writing entry points to temp_humidity_publisher.egg-info/entry_points.txt
+[4.953s] writing requirements to temp_humidity_publisher.egg-info/requires.txt
+[4.953s] writing top-level names to temp_humidity_publisher.egg-info/top_level.txt
+[5.102s] reading manifest file 'temp_humidity_publisher.egg-info/SOURCES.txt'
+[5.105s] writing manifest file 'temp_humidity_publisher.egg-info/SOURCES.txt'
+[5.109s] running build_ext
+[5.111s] Creating /home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/lib/python3.8/site-packages/temp-humidity-publisher.egg-link (link to .)
+[5.114s] Installing sensor_publisher script to /home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/lib/temp_humidity_publisher
+[5.116s] 
+[5.117s] Installed /home/grz/Steam-Curing-Sys/build/temp_humidity_publisher
+[5.118s] running symlink_data
+[5.270s] Invoked command in '/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher' returned '0': PYTHONPATH=/home/grz/Steam-Curing-Sys/build/temp_humidity_publisher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/grz/Steam-Curing-Sys/install/temp_humidity_publisher/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/grz/Steam-Curing-Sys/build/temp_humidity_publisher/build --no-deps symlink_data

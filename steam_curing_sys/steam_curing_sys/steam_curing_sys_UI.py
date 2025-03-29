@@ -697,6 +697,9 @@ class IndustrialControlPanel(QWidget):
         elif success == -1:
             message_label = QLabel("数字继电器模块未插入，系统故障")
             dialog.setWindowFlags(Qt.Dialog | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
+        elif success == -3:
+            message_label = QLabel("ROS2节点运行错误，请联系技术人员")
+            dialog.setWindowFlags(Qt.Dialog | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
         
         message_label.setAlignment(Qt.AlignCenter)
         message_label.setFont(QFont("Arial", 18, QFont.Bold))  # 消息字体大小

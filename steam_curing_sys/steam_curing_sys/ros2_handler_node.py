@@ -300,8 +300,16 @@ class SensorSubscriberNode(Node):
             if response.success:
                 data = json.loads(response.message)
                 
-                self.temp_data = data["temperatures"]
-                self.humidity_data = data["humidities"]
+                if "temperatures" in data:
+                    for sensor_key, value in data["temperatures"].items():
+                        if sensor_key in self.temp_data:
+                            self.temp_data[sensor_key] = value
+                
+                # 更新湿度数据
+                if "humidities" in data:
+                    for sensor_key, value in data["humidities"].items():
+                        if sensor_key in self.humidity_data:
+                            self.humidity_data[sensor_key] = value
 
                 # logger.info(f'温度: {data["temperatures"]}, 湿度: {data["humidities"]}')
 
