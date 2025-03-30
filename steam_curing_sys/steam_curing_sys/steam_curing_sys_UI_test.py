@@ -16,7 +16,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 import socket
 import requests
-
+import time
 from PyQt5.QtWidgets import (
     QLabel, QPushButton, QDesktopWidget, QDialog
 )
@@ -111,11 +111,10 @@ class Bridge(QObject):
             elif method_name == "Lock_set_response":
                 self.lock_set_response(args)
             elif method_name == "update_remote_sensor_data":
+                # 这个函数需要服务器请求后调用
                 self.update_remote_sensor_data(args)
             elif method_name == "update_baseTime":
                 self.update_baseTime(args)
-            elif method_name == "saveAdjustSettings":
-                self.saveAdjustSettings(args)
             elif method_name == "DataExport_init_response":
                 self.dataExport_init_response(args)
             elif method_name == "search_wifi":
@@ -195,10 +194,10 @@ class Bridge(QObject):
         logger.info(f"Data export init response: {response}")
         self.mqtt_client.publish(json.dumps({"command": "DataExport_init_response", "data": response}))
 
-    def saveAdjustSettings(self, args):
-        logger.info(f"Save adjust settings: {args}")
-        self.adjustSettingsSaved.emit(args)
-        self.mqtt_client.publish(json.dumps({"command": "saveAdjustSettings", "data": args}))
+    # def saveAdjustSettings(self, args):
+    #     logger.info(f"Save adjust settings: {args}")
+    #     self.adjustSettingsSaved.emit(args)
+    #     self.mqtt_client.publish(json.dumps({"command": "saveAdjustSettings", "data": args}))
 
     def update_baseTime(self, baseTime):
         logger.info(f"Update baseTime: {baseTime}")
@@ -248,11 +247,26 @@ class Bridge(QObject):
         self.dollyControl.emit(args)
         # 同步远程dolly控制指令
         self.mqtt_client.publish(json.dumps({"command": "control_dolly", "data": args}))
+        if args.get('target') == 'dolly_settings':
+            self.mqtt_client.publish(json.dumps({"command": "screen_update_dolly_settings", 
+                                                 "data": {'dolly_single_run_time': args.get('dolly_single_run_time'), 
+                                                          'dolly_run_interval_time': args.get('dolly_run_interval_time')}}))
+        elif args.get('target') == 'setState':
+            # 获取Unix时间戳（从1970年1月1日至今的秒数）
+            current_timestamp = int(time.time())
+            self.mqtt_client.publish(json.dumps({"command": "screen_update_dolly_state", "data": args.get('dolly_state'), "timestamp": current_timestamp}))
+        elif args.get('target') == 'setMode':
+            self.mqtt_client.publish(json.dumps({"command": "screen_update_dolly_system_mode", "data": args.get('mode')}))
+        elif args.get('target') == 'setTankMode':
+            self.mqtt_client.publish(json.dumps({"command": "screen_update_dolly_curing_mode", "data": args.get('mode')}))
 
     def tempControlDolly(self, args):
         logger.info(f"Temp control dolly: {args}")
         self.dollyControl.emit(args)
         # 这里不发指令，区分于controlDolly
+        if args.get('target') == 'setState':
+            current_timestamp = int(time.time())
+            self.mqtt_client.publish(json.dumps({"command": "screen_update_dolly_state", "data": args.get('dolly_state'), "timestamp": current_timestamp}))
 
     def controlSprinkler(self, args):
         logger.info(f"Control sprinkler: {args}")
@@ -270,6 +284,7 @@ class Bridge(QObject):
         self.limitSettingsUpdated.emit(temp_upper, temp_lower, humidity_upper, humidity_lower)  # 发射信号
         # 同步远程温湿度设置
         self.mqtt_client.publish(json.dumps({"command": "update_limit_settings", "data": settings}))
+        self.mqtt_client.publish(json.dumps({"command": "screen_update_limit_settings", "data": settings}))
 
     def sendMessage(self, message):
         logger.info(f"Received message: {message}")
@@ -350,6 +365,7 @@ class MainWindow(QMainWindow):
         msg_type = "device_info"
         logger.info(f"Send device info: {device_info}")
         self.bridge.send_message(msg_type, json.dumps(device_info))
+        self.bridge.mqtt_client.publish(json.dumps({"command": "screen_update_device_info", "data": device_info}))
 
     def update_adjust_settings(self, settings):
         msg_type = "update_adjust_settings"
@@ -448,6 +464,8 @@ class MainWindow(QMainWindow):
         msg_type = "update_dolly_state"
         self.bridge.send_message(msg_type, state)
         self.bridge.mqtt_client.publish(json.dumps({"command": "update_dolly_state", "data": state}))
+        current_timestamp = int(time.time())
+        self.bridge.mqtt_client.publish(json.dumps({"command": "screen_update_dolly_state", "data": state, "timestamp": current_timestamp}))
 
     def update_sensor_data(self, sensor_data):
         # 将 sensor_data 转换为字典
@@ -465,11 +483,13 @@ class MainWindow(QMainWindow):
         # 发送消息
         msg_type = "update_sensor_data"
         self.bridge.send_message(msg_type, json.dumps(content))
+        self.bridge.mqtt_client.publish(json.dumps({"command": "screen_update_sensor_data", "data": content}))
 
     def update_water_tank_status(self, status):
         msg_type = "update_water_tank_status"
         self.bridge.send_message(msg_type, json.dumps(status))
         self.bridge.mqtt_client.publish(json.dumps({"command": "update_water_tank_status", "data": status}))
+        self.bridge.mqtt_client.publish(json.dumps({"command": "screen_update_water_tank_status", "data": status}))
 
     def update_limit_settings(self, temp_upper, temp_lower, humidity_upper, humidity_lower):
         msg_type = "update_limit_settings"
@@ -481,6 +501,7 @@ class MainWindow(QMainWindow):
         }
         logger.info(f"Send limit settings: {settings}")
         self.bridge.send_message(msg_type, json.dumps(settings))
+        self.bridge.mqtt_client.publish(json.dumps({"command": "screen_update_limit_settings", "data": settings}))
 
     def update_sprinkler_settings(self, settings):
         msg_type = "update_sprinkler_settings"
@@ -491,6 +512,7 @@ class MainWindow(QMainWindow):
         msg_type = "update_dolly_settings"
         logger.info(f"Send dolly settings: {settings}")
         self.bridge.send_message(msg_type, json.dumps(settings))
+        self.bridge.mqtt_client.publish(json.dumps({"command": "screen_update_dolly_settings", "data": settings}))
 
     def update_left_steam_status(self, status):
         msg_type = "update_left_steam_status"

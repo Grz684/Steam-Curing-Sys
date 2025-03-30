@@ -38,7 +38,7 @@ class ControlUtils():
         self.switch_to_sprinkler = False
 
         # debug时不连接Modbus服务器
-        self.debug = False
+        self.debug = True
 
         self.output_num = 6 # 输出数量
 
@@ -195,18 +195,22 @@ class ControlUtils():
                 self.one_side_flag = True
                 self.control_output(self.dolly_move_addr, True)
                 self.control_output(self.dolly_move_addr_back_up, True)
-                # if self.single_zone2_open:
-                #     self.control_output(self.zone2_output_addr, True)
-                #     self.control_output(self.zone1_output_addr, False)
-                # else:
-                #     self.control_output(self.zone2_output_addr, False)
-                #     self.control_output(self.zone1_output_addr, True)
+                if self.single_zone2_open:
+                    self.control_output(self.zone2_output_addr, True)
+                    self.control_output(self.zone1_output_addr, False)
+                else:
+                    self.control_output(self.zone2_output_addr, False)
+                    self.control_output(self.zone1_output_addr, True)
             else:
                 self.one_side_flag = False
                 self.control_output(self.dolly_move_addr, True)
                 self.control_output(self.dolly_move_addr_back_up, True)
                 self.control_output(self.zone2_output_addr, True)
                 self.control_output(self.zone1_output_addr, True)
+
+            return True
+        else:
+            return False
             # self.control_output(self.pulse_addr, True)
             # # 使用线程来处理延迟关闭pulse
             # threading.Thread(target=self._delayed_pulse_off, daemon=True).start()
@@ -263,6 +267,9 @@ class ControlUtils():
             self.control_output(self.dolly_move_addr_back_up, False)
             self.control_output(self.zone2_output_addr, False)
             self.control_output(self.zone1_output_addr, False)
+            return True
+        else:
+            return False
 
     def turn_all_off(self):
         for i in range(self.output_num):

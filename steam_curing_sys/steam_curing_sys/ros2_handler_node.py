@@ -152,11 +152,13 @@ class SensorSubscriberNode(Node):
     def process_data(self, humidity_data):
         if humidity_data:
             if any(humidity < self.qtSignalHandler.humidity_lower_limit for humidity in humidity_data.values()):
-                self.control_utils.turn_dolly_on(self.qtSignalHandler.one_side_flag)
-                self.qtSignalHandler.update_dolly_state.emit(True)
+                result = self.control_utils.turn_dolly_on(self.qtSignalHandler.one_side_flag)
+                if result:
+                    self.qtSignalHandler.update_dolly_state.emit(True)
             elif all(humidity > self.qtSignalHandler.humidity_upper_limit for humidity in humidity_data.values()):
-                self.control_utils.turn_dolly_off()
-                self.qtSignalHandler.update_dolly_state.emit(False)
+                result = self.control_utils.turn_dolly_off()
+                if result:
+                    self.qtSignalHandler.update_dolly_state.emit(False)
 
     def read_input_timer_callback(self):
         result = self.control_utils.read_input()

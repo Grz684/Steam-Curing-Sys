@@ -28,6 +28,10 @@ class MQTTClient:
         self.mqtt_keepalive = 10
         self.mqtt_topic_publish = "device/request"
 
+        # 添加消息队列 - 仅用于初始化阶段
+        self.message_queue = []
+        self.init_phase = True  # 标记初始化阶段
+
         # 证书路径配置
         CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
         CERT_PATH = os.path.join(CURRENT_DIR, "certs")
@@ -92,6 +96,20 @@ class MQTTClient:
             # 发送上线消息
             client.publish(self.device_status_topic, "online", 2, retain=True)
             client.subscribe(self.response_topic)
+            
+            # 仅在初始化阶段处理队列中的消息
+            if self.init_phase and self.message_queue:
+                logger.info(f"Processing {len(self.message_queue)} queued messages from initialization")
+                while self.message_queue:
+                    payload, topic, props = self.message_queue.pop(0)
+                    try:
+                        self.client.publish(topic=topic, payload=payload, properties=props)
+                        logger.info(f"Sent queued initialization message to {topic}")
+                    except Exception as e:
+                        logger.error(f"Failed to send queued message: {e}")
+                
+                # 初始化阶段结束
+                self.init_phase = False
         else:
             logger.error(f"Failed to connect, return code {rc}")
 
@@ -124,6 +142,11 @@ class MQTTClient:
             
     def on_disconnect(self, client, userdata, rc, properties=None):
         self.connected = False
+        # 断开连接时清空消息队列
+        if self.message_queue:
+            logger.info(f"Clearing message queue with {len(self.message_queue)} messages due to disconnect")
+            self.message_queue.clear()
+            
         if rc == 0:
             logger.info("Disconnected successfully")
             # 正常断开时，主动发送离线状态
@@ -151,18 +174,26 @@ class MQTTClient:
         self.client.disconnect()
 
     def publish(self, payload, topic="device/request"):
+        properties = Properties(PacketTypes.PUBLISH)
+        properties.ResponseTopic = self.response_topic
+        
         if not self.connected:
-            logger.warning("Not connected. Message not sent.")
+            # 只在初始化阶段队列消息
+            if self.init_phase:
+                logger.warning(f"Not connected during initialization. Message queued for topic: {topic}")
+                self.message_queue.append((payload, topic, properties))
+            else:
+                logger.warning(f"Not connected. Message not sent for topic: {topic}")
             return False
-        try:
-            properties = Properties(PacketTypes.PUBLISH)
-            # Properties类期望先创建对象，然后通过属性赋值来设置特定的 MQTT 属性
-            properties.ResponseTopic = self.response_topic
-            self.client.publish(topic=topic, payload=payload, properties=properties)
             
+        try:
+            self.client.publish(topic=topic, payload=payload, properties=properties)
             return True
         except Exception as e:
             logger.error(f"Failed to publish message: {e}")
+            # 只在初始化阶段队列失败的消息
+            if self.init_phase:
+                self.message_queue.append((payload, topic, properties))
             return False
 
 # 使用示例
