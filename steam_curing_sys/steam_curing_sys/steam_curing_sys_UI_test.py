@@ -483,7 +483,7 @@ class MainWindow(QMainWindow):
         # 发送消息
         msg_type = "update_sensor_data"
         self.bridge.send_message(msg_type, json.dumps(content))
-        self.bridge.mqtt_client.publish(json.dumps({"command": "screen_update_sensor_data", "data": content}))
+        self.bridge.mqtt_client.publish(json.dumps({"command": "screen_update_sensor_data", "data": content, 'timestamp': int(time.time())}))
 
     def update_water_tank_status(self, status):
         msg_type = "update_water_tank_status"

@@ -58,7 +58,7 @@ class MQTTClient:
         self.client = mqtt.Client(protocol=mqtt.MQTTv5)
 
         # 设置遗嘱消息
-        self.device_status_topic = f"device/status/{self.device_random_code}"
+        self.device_status_topic = f"device/screen_status/{self.device_random_code}"
         will_qos = 2
 
         # 创建遗嘱消息的属性
@@ -174,26 +174,37 @@ class MQTTClient:
         self.client.disconnect()
 
     def publish(self, payload, topic="device/request"):
+        # 创建普通的属性对象，不再使用ResponseTopic
         properties = Properties(PacketTypes.PUBLISH)
-        properties.ResponseTopic = self.response_topic
+        
+        try:
+            # 解析payload为JSON
+            payload_dict = json.loads(payload)
+            # 添加device_random_code到payload中
+            payload_dict["device_random_code"] = self.device_random_code
+            # 将修改后的payload重新转换为JSON字符串
+            modified_payload = json.dumps(payload_dict)
+        except json.JSONDecodeError:
+            logger.error("Payload is not a valid JSON")
+            return False
         
         if not self.connected:
             # 只在初始化阶段队列消息
             if self.init_phase:
                 logger.warning(f"Not connected during initialization. Message queued for topic: {topic}")
-                self.message_queue.append((payload, topic, properties))
+                self.message_queue.append((modified_payload, topic, properties))
             else:
                 logger.warning(f"Not connected. Message not sent for topic: {topic}")
             return False
             
         try:
-            self.client.publish(topic=topic, payload=payload, properties=properties)
+            self.client.publish(topic=topic, payload=modified_payload, properties=properties)
             return True
         except Exception as e:
             logger.error(f"Failed to publish message: {e}")
             # 只在初始化阶段队列失败的消息
             if self.init_phase:
-                self.message_queue.append((payload, topic, properties))
+                self.message_queue.append((modified_payload, topic, properties))
             return False
 
 # 使用示例
